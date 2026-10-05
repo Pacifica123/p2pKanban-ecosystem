@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "source": "Android src/features/roaming/codec.test.ts semantic vector; ciphertext independently derived from RFC XChaCha20 construction",
+  "syntheticBoardKey": "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc",
+  "event": {
+    "protocolVersion": "p2p-kanban-roaming/1",
+    "eventId": "018f22e2-1d58-7f08-9a36-1f96bd9854b1",
+    "workspaceId": "018f22e2-355a-7ba2-8ef0-d7bc788ceec8",
+    "boardId": "018f22e2-355a-7ba2-8ef0-d7bc788ceec9",
+    "capabilityEpoch": 1,
+    "replicaId": "018f22e2-29cc-7ad6-aa57-b61d74a14e52",
+    "replicaSeq": 1,
+    "logicalClock": 7,
+    "entityType": "card",
+    "entityId": "018f22e2-355a-7ba2-8ef0-d7bc788ceeca",
+    "operation": "card.put",
+    "fieldMask": [
+      "title"
+    ],
+    "payload": {
+      "card": {
+        "title": "не утечь в relay"
+      }
+    },
+    "occurredAt": "2026-07-28T12:00:00.000Z"
+  },
+  "expectedBoardTag": "ZCQpTq0h_BmIfK8JPGz16e3fhNyO2_FUtpGMJumbThw",
+  "nonce": "CQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJ",
+  "expectedCiphertext": "xVCS-BPeFgGbfl5ZGgBuhETRjbgwU-3Mzex2PrJIfintSy2yvOyaZS5ZnrJ-u8TzHu8LJx0nhHOd2Ic04qgA_ohKIqTTQeC_kDwWNjtA2aHRe0ExisTXWK0msvFUZ1DAXSbEWjI9Pz0UuMLu0GKYXOFcfF7L9M5GyOOdAcjNijNrSUsMIiOtsV5FrXV2agswy5qEKsVaijAKTAlGfQWhWGD3SqrbMCE4hmawRhf1SSHvbRoRWZgHmGYzinbCiphfOca3xGBQsmI1p7QCpSwO0T0PbVClQn2pKbl6XVOCpks2HwiBoksmwgquCHMX1SpnFAj0pEILyiaSlm9VOcNqtavXdOxnRqZVmTR-QdskBwKHlmivL8RO-CPc4ItdP4mUenglbqffm6yKo5q4l8ycvA-3ENgpgTil8h2WfRnwrTl2cEjCcrZQehH-bin4eKDREOm7eXQT0qdtV1CrfPcZ9e1qfiMAq4SZ3JIcrjjpN1LYAqkW4UlQhLjLI1K8T7y6jQx9qTasOtCkHf9JEAbg48McJ0x8GCKzbaGsKw2oWeXEQYtph1MOZvjVC9puCw0cBQKdLtwAOOj54npdHAxI_-mv9ZLCDMN1FFC6b6MqHohFSPouMNc-a-zgG1tqQEYItx9H-TEqT-YAVZ7LymR1TsGMgn6SVf5m9ia2qnBgC950HfBnR8dGZzlahg"
+}

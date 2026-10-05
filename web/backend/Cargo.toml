@@ -1,0 +1,45 @@
+[package]
+name = "p2p-planner-backend"
+version = "2.1.0"
+edition = "2021"
+default-run = "p2p-planner-backend"
+
+[workspace]
+members = [
+    ".",
+    "crates/sync-core",
+    "crates/nostr-transport",
+    "crates/iroh-transport",
+]
+resolver = "2"
+
+[features]
+default = ["nostr-shadow"]
+nostr-shadow = ["dep:p2p-kanban-nostr-transport"]
+iroh-transport = ["dep:p2p-kanban-iroh-transport"]
+
+[dependencies]
+argon2 = "0.5"
+base64 = "0.22"
+hmac = "0.12"
+rand = "0.8"
+reqwest = { version = "0.13.4", default-features = false, features = ["rustls-no-provider", "json"] }
+sha2 = "0.10"
+anyhow = "1"
+axum = { version = "0.8", features = ["json", "macros", "query", "tokio", "tracing"] }
+config = { version = "0.15", default-features = false, features = ["toml"] }
+dotenvy = "0.15"
+http = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "migrate", "uuid", "json"] }
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "sync", "time"] }
+tower = { version = "0.5", features = ["timeout", "util"] }
+tower-http = { version = "0.6", features = ["cors", "limit", "request-id", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+uuid = { version = "1", features = ["serde", "v7"] }
+p2p-kanban-sync-core = { path = "crates/sync-core" }
+p2p-kanban-nostr-transport = { path = "crates/nostr-transport", optional = true }
+p2p-kanban-iroh-transport = { path = "crates/iroh-transport", optional = true }

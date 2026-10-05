@@ -1,0 +1,38 @@
+{
+  "name": "p2p-planner-frontend",
+  "private": true,
+  "version": "2.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:browser": "playwright test e2e/smoke/auth-and-workspaces.smoke.spec.ts",
+    "test:browser:headed": "playwright test e2e/smoke/auth-and-workspaces.smoke.spec.ts --headed",
+    "test:browser:real-backend": "playwright test e2e/smoke/real-backend.smoke.spec.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.51.1",
+    "markdown-it": "14.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/markdown-it": "14.1.2",
+    "@types/node": "^25.5.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vitest": "^2.1.1"
+  }
+}

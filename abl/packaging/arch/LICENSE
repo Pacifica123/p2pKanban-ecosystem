@@ -1,0 +1,9 @@
+p2pKanban packaging notice
+
+This repository snapshot does not yet declare a public redistribution license for
+p2pKanban. The Arch package/repository machinery in A15 is intended for
+project-controlled evaluation and distribution by the rights holder.
+
+Do not publish this package to the AUR or a public mirror until the project owner
+supplies and approves the software license. Package signatures and repository
+metadata authenticate artifacts; they do not grant redistribution rights.

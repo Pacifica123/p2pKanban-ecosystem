@@ -1,0 +1,126 @@
+{
+  "formatVersion": 1,
+  "stage": "A10",
+  "facts": [
+    "Web sync-core protocol is p2p-kanban-sync/1 and its validation does not accept a generic put operation.",
+    "Web and Android use logicalClock, replicaId, eventId ordering for deterministic conflict resolution.",
+    "Android roaming protocol is p2p-kanban-roaming/1 and encrypts event JSON with XChaCha20-Poly1305 under a board capability key.",
+    "Android board.snapshot seeds a missing local snapshot and card.delete tombstones block later card.put resurrection.",
+    "A10 keeps A08 pending_local_changes separate from the durable sync_outbox protocol representation.",
+    "Fresh-host A09b UTS exposed exact getrandom 0.4.3 conflicting with secret-service 5.2.0 final offline re-resolution; A10 aligns the direct pin to getrandom 0.4.2 without weakening offline acceptance.",
+    "A10 includes a deterministic two-replica relay disruption harness that applies a dropped event after reconnect amid reorder and replay, then verifies converged card materialization."
+  ],
+  "inferences": [
+    "A desktop sync core can preserve compatibility without copying PostgreSQL or Android storage by implementing the shared protocol/merge semantics behind application and repository boundaries.",
+    "Unknown/new card fields should be preserved opaquely in SQLite so a narrower native schema does not silently destroy cross-client data."
+  ],
+  "proposals": [
+    "A11 should provision/import roaming capabilities and snapshots through device-link/2 without weakening the A10 merge and vault boundaries.",
+    "Relay orchestration should materialize local pending markers before pull/apply and should never treat relay acceptance as semantic application."
+  ],
+  "unresolved": [
+    "Legacy roaming/1 has no post-snapshot column mutation operation; local column.create markers are blocked rather than silently lost.",
+    "Board appearance is preserved as protocol evidence but native appearance parity remains A12.",
+    "Nostr relay drop/reconnect behavior still needs the transport/coordinator layer; A10 verifies reorder/replay at the sync-core boundary only."
+  ],
+  "externalAnchors": [
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/envelope.rs",
+      "sha256": "94fb11808a0a25a96792521f4919b7afa0db7506af179c8652eacf6467ef6dbd"
+    },
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/merge.rs",
+      "sha256": "635f5ad23ecadc184697aa56c4e209a185729e1a076bdb4b186de386f1eee179"
+    },
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/validation.rs",
+      "sha256": "dc14c98e41e134d9251a548fc8efc606fd46da20d19819db7e212acc45fd2be3"
+    },
+    {
+      "source": "web",
+      "path": "docs/sync/roaming-board-protocol-v1.md",
+      "sha256": "f50d1cb334b8f991d89a39794b60f6f931da5302027b31c48ca9850bd9a46841"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/types.ts",
+      "sha256": "cfd1004962a38ad07913b7d8de5986d4d28087af4540967989ccf56c4a807665"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/codec.ts",
+      "sha256": "6093d9857622c375d83403f467a2ed6e68854603af3bcbb1ea9716ba438cc0fd"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/merge.ts",
+      "sha256": "4eb262cc3558421f3f86f40d01753a222adb3af6726bca9ffd641eaef1487a14"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/service.ts",
+      "sha256": "282b00bdc89965d8734ce5f697102d10170f3fca6b748ead1b18435ffda9a223"
+    }
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/Cargo.toml",
+      "sha256": "5ddf0b3fb63a42e12c0a601b6bac35fa0cb45c4421a061c24bac9371d79a1a39"
+    },
+    {
+      "path": "src-tauri/src/domain/sync.rs",
+      "sha256": "914c4676884264c47e82547f3f6112de7f485b88355d1712514f9b930e310f27"
+    },
+    {
+      "path": "src-tauri/src/application/sync.rs",
+      "sha256": "711109b2ac0f1a0af29ff72f8265976bc5bd80eeabf2804872179631a4ab9401"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/sync.rs",
+      "sha256": "e7355b910f9f12c0618c785d2d4f27bdb99d7d6434434e0cda82877a3e0e6647"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/repository.rs",
+      "sha256": "b6d4222b1796bee120e8d5c34759d3240a4523b033c6da06d91744d28c45d2eb"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/migration.rs",
+      "sha256": "320d74e159db967c2c4ff2b1cc8b09bc6af6a8172c294651fc7a6a3fc5f08e10"
+    },
+    {
+      "path": "src-tauri/migrations/0004_sync_core.sql",
+      "sha256": "d975a65e66c6f4208d97e1a9d8e8c07b3dd6fe1070ebe32e894da3bfc0b0999a"
+    },
+    {
+      "path": "fixtures/protocol/sync-envelope-v1.json",
+      "sha256": "631e392a8c5839edc14d203e7c17f9df233e8babfc3ed541f600d1044c75e6ca"
+    },
+    {
+      "path": "fixtures/protocol/roaming-card-put-v1.json",
+      "sha256": "394847de520681376f65b7dff6d2a3661090b171eee686455ca08a94a56b2e49"
+    },
+    {
+      "path": "fixtures/protocol/roaming-card-delete-v1.json",
+      "sha256": "91e0a8ccde95c55dfc4614f5fccb07b330f85085fe0e3446476dab98e275f9c0"
+    },
+    {
+      "path": "fixtures/protocol/roaming-board-snapshot-v1.json",
+      "sha256": "aa8fb5c5b127c5845f962d1c9dcc826ec39c8d6c310d597b1cdf59633fc1515e"
+    },
+    {
+      "path": "fixtures/protocol/roaming-crypto-vector-v1.json",
+      "sha256": "588021133d1a80c03f36a9f5b691d4c4e4d03cf7a8cf9496ec19d60de8fc3550"
+    },
+    {
+      "path": "tools/check_a10.py",
+      "sha256": "23760882d09d8899606d33caedc23320553f2bb28027a1ec89a40fa336b983a5"
+    },
+    {
+      "path": "tools/uts_plan.json",
+      "sha256": "da9580c547a43b68449da2450a7eefc3881f32fc3c01eb7754cda7d74cabfa12"
+    }
+  ]
+}

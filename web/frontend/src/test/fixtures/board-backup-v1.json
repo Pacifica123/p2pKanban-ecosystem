@@ -1,0 +1,181 @@
+{
+  "manifest.json": {
+    "format": "p2p_planner_bundle",
+    "formatVersion": 1,
+    "bundleKind": "backup_snapshot",
+    "scopeKind": "board",
+    "workspaceId": "workspace-old",
+    "boardId": "board-old",
+    "includesLocalMetadata": false,
+    "summary": {
+      "scopeKind": "board",
+      "entityCounts": {
+        "workspaces": 1,
+        "boards": 1,
+        "columns": 2,
+        "cards": 2,
+        "comments": 1,
+        "checklists": 1,
+        "attachments": 0
+      },
+      "includesActivityHistory": true,
+      "includesAppearance": true,
+      "includesArchived": true,
+      "includesAttachments": false
+    }
+  },
+  "scope": {
+    "scopeKind": "board",
+    "workspaceId": "workspace-old",
+    "boardId": "board-old"
+  },
+  "origin": {
+    "exportedByUserId": "user-old",
+    "generatedAt": "2026-07-25T20:47:08.095Z",
+    "backendVisibleState": true
+  },
+  "includes": {
+    "appearance": true,
+    "activityHistory": true,
+    "archived": true,
+    "attachments": false,
+    "localMetadata": false
+  },
+  "payload": {
+    "workspaces": [
+      {
+        "id": "workspace-old",
+        "name": "Old workspace"
+      }
+    ],
+    "boards": [
+      {
+        "id": "board-old",
+        "workspaceId": "workspace-old",
+        "name": "Release plan",
+        "description": "Fixture for board import",
+        "boardType": "kanban",
+        "archivedAt": null
+      }
+    ],
+    "columns": [
+      {
+        "id": "column-todo",
+        "boardId": "board-old",
+        "name": "Todo",
+        "position": 1024,
+        "colorToken": "blue",
+        "wipLimit": 5
+      },
+      {
+        "id": "column-done",
+        "boardId": "board-old",
+        "name": "Done",
+        "position": 2048,
+        "colorToken": null,
+        "wipLimit": null
+      }
+    ],
+    "cards": [
+      {
+        "id": "card-parent",
+        "boardId": "board-old",
+        "columnId": "column-todo",
+        "parentCardId": null,
+        "title": "Prepare release",
+        "description": "Parent card",
+        "status": "active",
+        "priority": "high",
+        "position": 1024,
+        "startAt": null,
+        "dueAt": "2026-08-01T12:00:00.000Z",
+        "completedAt": null,
+        "archivedAt": null
+      },
+      {
+        "id": "card-child",
+        "boardId": "board-old",
+        "columnId": "column-done",
+        "parentCardId": "card-parent",
+        "title": "Write notes",
+        "description": null,
+        "status": "completed",
+        "priority": null,
+        "position": 1024,
+        "startAt": null,
+        "dueAt": null,
+        "completedAt": "2026-07-25T21:00:00.000Z",
+        "archivedAt": "2026-07-25T22:00:00.000Z"
+      }
+    ],
+    "labels": [
+      {
+        "id": "label-release",
+        "boardId": "board-old",
+        "name": "release",
+        "color": "#60a5fa",
+        "description": "Release work"
+      }
+    ],
+    "cardLabels": [
+      {
+        "cardId": "card-parent",
+        "labelId": "label-release"
+      }
+    ],
+    "checklists": [
+      {
+        "id": "checklist-acceptance",
+        "cardId": "card-parent",
+        "title": "Acceptance",
+        "position": 1024
+      }
+    ],
+    "checklistItems": [
+      {
+        "id": "checklist-item-docs",
+        "checklistId": "checklist-acceptance",
+        "title": "Documentation",
+        "isDone": true,
+        "position": 1024
+      }
+    ],
+    "comments": [
+      {
+        "id": "comment-one",
+        "cardId": "card-parent",
+        "body": "Check on a clean install",
+        "createdAt": "2026-07-25T21:10:00.000Z"
+      }
+    ],
+    "boardAppearanceSettings": [
+      {
+        "boardId": "board-old",
+        "themePreset": "plum-ink",
+        "wallpaperKind": "preset",
+        "wallpaperValue": "aurora",
+        "columnDensity": "comfortable",
+        "cardPreviewMode": "expanded",
+        "showCardDescription": true,
+        "showCardDates": true,
+        "showChecklistProgress": true,
+        "customProperties": {}
+      }
+    ],
+    "activityEntries": [
+      {
+        "id": "activity-old",
+        "boardId": "board-old",
+        "kind": "board.created"
+      }
+    ]
+  },
+  "restoreHints": {
+    "recommendedStrategy": "create_copy",
+    "requiresManualReview": false,
+    "destructiveRestoreAllowed": false,
+    "notes": [
+      "Preview this bundle before restore/import."
+    ]
+  }
+}

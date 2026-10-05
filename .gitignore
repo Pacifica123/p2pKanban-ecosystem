@@ -1,0 +1,18 @@
+# Корневой слой экосистемы. Правила направлений живут в их собственных .gitignore.
+
+# devctl: локальное состояние workspace монорепозитория
+/patches/
+/archives/
+/arhives/
+/UserTestSpace/
+/.devctl/state.json
+/*_evolution_*.zip
+
+# Python bytecode корневых инструментов
+__pycache__/
+*.py[cod]
+
+# Шум ОС и редакторов
+.DS_Store
+.idea/
+.vscode/

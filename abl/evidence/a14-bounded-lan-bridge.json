@@ -1,0 +1,72 @@
+{
+  "formatVersion": 1,
+  "stage": "A14",
+  "title": "Optional bounded LAN compatibility bridge",
+  "facts": [
+    "Normal Arch-native startup creates no TCP listener; the production LAN bridge is started only by an explicit typed command.",
+    "The bridge binds only a selected detected RFC1918/link-local IPv4 address on a random high port, enforces TTL/attempt/header/body limits, and auto-closes after one authenticated request.",
+    "The p2p-kanban-lan-bridge/1 envelope uses XChaCha20-Poly1305 with a 256-bit one-time capability and fixed POST/path AAD.",
+    "A fresh secp256k1/BIP340 native device keypair is generated locally at bridge start; only the public key crosses IPC and private identity material is consumed through the existing A11 SecretVault provisioning path.",
+    "The WebView keeps zero generic permissions and connect-src none; no firewall, mDNS, systemd, shell, file or general HTTP API is added."
+  ],
+  "inferences": [
+    "A temporary encrypted compatibility wrapper can close the legacy LAN enrollment gap without reintroducing the permanent backend/server deployment model.",
+    "Requiring durable SecretVault before activation avoids committing an imported profile whose device/board secrets disappear on restart."
+  ],
+  "proposals": [
+    "Remove rather than expand this bridge once all supported clients can complete native device-link provisioning without the legacy LAN wrapper.",
+    "Keep physical legacy-client interoperability as explicit multi-client evidence rather than silently widening the native endpoint set."
+  ],
+  "unresolved": [
+    "Representative Android/web legacy-client pairing against the final wrapper still requires physical/cross-client evidence.",
+    "User-facing QR rendering is not implemented; the typed UI exposes endpoint, fresh public key and one-time capability for copy/scan tooling without adding a QR/network dependency."
+  ],
+  "externalReferences": [
+    {
+      "title": "RFC 8439 ChaCha20 and Poly1305 for IETF Protocols",
+      "url": "https://www.rfc-editor.org/rfc/rfc8439"
+    },
+    {
+      "title": "k256 BIP340 Schnorr implementation documentation",
+      "url": "https://docs.rs/k256/latest/k256/schnorr/"
+    }
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/Cargo.toml",
+      "sha256": "86ab021875244cba18c738882ff329ea0cf09c849a241f55e0f5950b0aaa83b2"
+    },
+    {
+      "path": "src-tauri/src/domain/lan_bridge.rs",
+      "sha256": "befe44e6bfb1b369523a8c8ecc06e73d1b2d0bb10876d634e997cba89fcd9213"
+    },
+    {
+      "path": "src-tauri/src/application/lan_bridge.rs",
+      "sha256": "c2909aee73e297deec7a2226b5d5d7cd2fdcdc10d74aa9d2e1a6cf0fd4223f1a"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/linux/lan_bridge.rs",
+      "sha256": "be8c6559752e68b84ef392eae1da6e1a853a48aa8eaee3e3aa877e7f4adcc586"
+    },
+    {
+      "path": "src/features/system/api/lanBridge.ts",
+      "sha256": "ece1daefeb791657388e0add768acc02b72e4e6ca8ef17a87863aeda377db726"
+    },
+    {
+      "path": "fixtures/protocol/lan-bridge-v1-golden.json",
+      "sha256": "0529eeaa13acb76fb4d73908f3d5b99d2c5f1b4b578da514b0e2e4bcff8e9292"
+    },
+    {
+      "path": "tools/a14_host_lan_bridge_probe.py",
+      "sha256": "789931c2114ed92fae7f6851c353a88c19389e5223b89b2aedfcad662cf16fc8"
+    },
+    {
+      "path": "docs/evidence/A14_BOUNDED_LAN_BRIDGE.md",
+      "sha256": "1c77b5342a5733223ff3049fc8c5014e5d13bbdc170d73c3e9e9f2ceadc5da8a"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-005-ipc-and-lan-bridge.md",
+      "sha256": "d917ce8b8e5640302689402880e6d562f3654525dcce5d8c0b8f51bc5780f89e"
+    }
+  ]
+}

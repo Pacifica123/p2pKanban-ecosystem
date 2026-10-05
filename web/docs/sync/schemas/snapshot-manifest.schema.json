@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://p2p-planner.local/docs/sync/schemas/snapshot-manifest.schema.json",
+  "title": "SnapshotManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "snapshotId",
+    "createdAt",
+    "producerReplicaId",
+    "format",
+    "chunks"
+  ],
+  "properties": {
+    "snapshotId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producerReplicaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "format": {
+      "type": "string",
+      "enum": ["jsonl", "json", "tar", "zip"]
+    },
+    "workspaceIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "eventRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fromLogicalClock": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "toLogicalClock": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "chunks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/SnapshotChunk"
+      }
+    },
+    "checksum": {
+      "type": ["string", "null"]
+    }
+  },
+  "$defs": {
+    "SnapshotChunk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "sizeBytes"],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "checksum": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}

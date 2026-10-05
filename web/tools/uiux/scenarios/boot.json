@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "name": "boot",
+  "description": "Open the auth route and prove that the app shell renders without fatal runtime errors.",
+  "requires": {
+    "browser": true,
+    "frontend": true,
+    "backend": false,
+    "safeDatabase": false
+  },
+  "steps": [
+    { "goto": "/auth" },
+    { "assertVisible": "[data-testid='auth-page']" },
+    { "assertNoFatalConsole": true }
+  ]
+}

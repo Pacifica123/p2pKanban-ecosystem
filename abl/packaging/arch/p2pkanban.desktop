@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=p2pKanban
+Comment=Local-first peer-to-peer Kanban desktop client
+Exec=p2pkanban %u
+Icon=p2pkanban
+Terminal=false
+Categories=Office;ProjectManagement;
+MimeType=x-scheme-handler/p2pkanban;
+StartupNotify=true
+DBusActivatable=false

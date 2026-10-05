@@ -1,0 +1,59 @@
+{
+  "formatVersion": 1,
+  "patchId": "2026-05-05-demo-change",
+  "title": "Демонстрационное проектно-независимое изменение",
+  "summary": "Показывает универсальный формат патча devctl.",
+  "kind": "tooling",
+  "createdAt": "2026-05-05T12:00:00Z",
+  "base": {
+    "branch": "main",
+    "expectedHead": null
+  },
+  "target": {
+    "projectId": "devctl",
+    "workspaceId": "devctl",
+    "projectName": "devctl universal",
+    "expectedFiles": [
+      "devctl.py",
+      "README.md"
+    ]
+  },
+  "apply": {
+    "filesRoot": "files",
+    "delete": []
+  },
+  "checks": [
+    {
+      "name": "Проверка синтаксиса Python без генерации __pycache__",
+      "cwd": ".",
+      "command": "python -c \"import ast,pathlib; ast.parse(pathlib.Path('devctl.py').read_text(encoding='utf-8'), filename='devctl.py')\"",
+      "requiredCommands": [
+        "python"
+      ],
+      "timeoutSeconds": 120
+    }
+  ],
+  "commit": {
+    "message": "chore: применить демонстрационный universal-патч"
+  },
+  "push": {
+    "remote": "origin",
+    "branch": "main"
+  },
+  "archive": {
+    "nameSlug": "demo-change",
+    "exclude": [
+      ".git/",
+      "node_modules/",
+      "target/",
+      "dist/",
+      "build/",
+      "coverage/",
+      "__pycache__/",
+      ".env",
+      ".env.*",
+      "*.sqlite",
+      "*.db"
+    ]
+  }
+}

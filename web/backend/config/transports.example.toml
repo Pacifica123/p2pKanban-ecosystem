@@ -1,0 +1,26 @@
+# Copy these values into config/default.toml only for local experiments, or
+# prefer the equivalent TRANSPORTS__... environment variables documented in
+# docs/deployment/free-hosting-transports-v1.md. Never commit real keys.
+
+[transports]
+worker_poll_interval_ms = 1000
+batch_size = 50
+max_attempts = 12
+
+[transports.nostr]
+enabled = false
+relays = [
+  "wss://relay-one.example",
+  "wss://relay-two.example",
+  "wss://relay-three.example",
+]
+secret_key = "replace-at-runtime"
+master_key_base64 = "replace-at-runtime"
+event_kind = 1978
+fetch_timeout_secs = 10
+min_relay_acks = 3
+backfill_on_start = false
+
+[transports.iroh]
+enabled = false
+peers = []

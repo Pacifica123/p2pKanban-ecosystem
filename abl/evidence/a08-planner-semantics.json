@@ -1,0 +1,53 @@
+{
+  "formatVersion": 1,
+  "stage": "A08",
+  "facts": [
+    "A04 card repository semantics are already executable and storage independent.",
+    "Legacy web and Android both carry checklist/item positions and deletion semantics but their observed local position allocation gaps differ.",
+    "A07/A07b UTS was reported green before A08."
+  ],
+  "inferences": [
+    "A payload-free durable pending marker can make local mutation durability explicit without pretending A10 sync convergence exists."
+  ],
+  "proposals": [
+    "Schema v3 adds checklist/item durability, tombstones, local mutation sequence state and pending markers behind the existing repository boundary.",
+    "LOCAL_APPEND_STEP remains application-local policy and is not a domain or protocol compatibility constant."
+  ],
+  "unresolved": [
+    "A10 owns remote convergence, field/version merge, outbox payload and replay behavior.",
+    "A09 owns production durable secret providers.",
+    "Cross-client position rebalance/allocation compatibility is intentionally not frozen by A08."
+  ],
+  "externalAnchors": [
+    {
+      "label": "legacy web migration 0003 boards/cards/collaboration",
+      "sha256": "14005dad14f613dcea448b77deb49024d968f23c0d601642455d8357d57e75d4"
+    },
+    {
+      "label": "Android shared API types",
+      "sha256": "d6b6e360150c928e118feaa31d44260668b32eb14ce180a06c91f3855bc25f18"
+    },
+    {
+      "label": "Android local-first model",
+      "sha256": "3ff0129f6430e2909881e2f71e1efe4021f21d7881f96ffff614ab459e869f40"
+    }
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/migrations/0003_planner_slice.sql",
+      "sha256": "ebcec1f2d34192257a11b497155bfec84937f6fc7de8edbed35bb0a67569dd48"
+    },
+    {
+      "path": "src-tauri/src/application/planner.rs",
+      "sha256": "264105655fba750d0376dd727f372ab8d70114fe1c13981b80490f3d574f7f12"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/repository.rs",
+      "sha256": "b6d4222b1796bee120e8d5c34759d3240a4523b033c6da06d91744d28c45d2eb"
+    },
+    {
+      "path": "docs/architecture/03-components-data-storage-sync-security.md",
+      "sha256": "fce89266e70a17e41cbd981f6bfe42168e14c9eb5da4dd60d1d631962f7be05b"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "projectDir": ".",
+  "patchesDir": "patches",
+  "archivesDir": "archives",
+  "git": {
+    "enabled": true,
+    "remote": "origin",
+    "requireClean": true,
+    "requireUpToDate": false,
+    "bootstrapNote": "Set requireUpToDate=true after a real remote exists and branch policy is chosen.",
+    "autoCommit": true,
+    "autoPush": true,
+    "branch": "main"
+  },
+  "archive": {
+    "exclude": [
+      ".git",
+      "node_modules",
+      "target",
+      "dist",
+      "build",
+      "coverage",
+      "UserTestSpace",
+      "__pycache__",
+      "logs",
+      "tmp",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache",
+      ".env",
+      ".env.*",
+      "*.sqlite",
+      "*.sqlite3",
+      "*.db",
+      "*.pyc",
+      "*.pyo"
+    ]
+  },
+  "checkProfiles": {
+    "default": []
+  },
+  "stage0": {
+    "sourceAnchor": "archives/zapret-main.zip",
+    "referenceDocsArchive": "archives/docs.zip",
+    "referenceWrapper": "archives/reference/zapret2_strategy_wrapper.py",
+    "rule": "Каждое будущее изменение проекта должно приходить zip-патчем в patches/ и явно описывать согласование с исходным якорем zapret-main.zip.",
+    "sourceAnchorNote": "Источник правды для продукта; патчи должны объяснять, как они соотносятся с этим архивом."
+  },
+  "userTestSpaceDir": "UserTestSpace"
+}

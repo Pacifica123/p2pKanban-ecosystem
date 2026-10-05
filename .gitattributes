@@ -1,0 +1,5 @@
+# Направления задают свои правила в собственных .gitattributes; здесь только корневой слой.
+* text=auto
+*.md text eol=lf
+*.json text eol=lf
+*.py text eol=lf

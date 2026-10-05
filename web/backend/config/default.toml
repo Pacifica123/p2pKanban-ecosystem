@@ -1,0 +1,51 @@
+[app]
+name = "p2p-planner-backend"
+env = "local"
+host = "127.0.0.1"
+port = 18080
+log_format = "pretty"
+
+[database]
+url = "postgres://postgres:postgres@localhost:5432/p2p_planner"
+max_connections = 20
+min_connections = 1
+connect_timeout_secs = 5
+
+[http]
+body_limit_mb = 16
+cors_allowed_origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173", "http://127.0.0.1:5173"]
+
+[auth]
+jwt_secret = "change-me-in-real-env"
+previous_jwt_secrets = []
+access_token_ttl_minutes = 15
+refresh_token_ttl_days = 30
+public_signup_enabled = true
+refresh_cookie_name = "p2p_planner_refresh"
+device_cookie_name = "p2p_planner_device"
+cookie_same_site = "lax"
+cookie_secure = false
+enable_dev_header_auth = false
+auth_rate_limit_window_secs = 60
+auth_rate_limit_max_attempts = 20
+sensitive_rate_limit_window_secs = 60
+sensitive_rate_limit_max_attempts = 60
+
+[transports]
+worker_poll_interval_ms = 1000
+batch_size = 50
+max_attempts = 12
+
+[transports.nostr]
+enabled = false
+relays = []
+secret_key = ""
+master_key_base64 = ""
+event_kind = 1978
+fetch_timeout_secs = 10
+min_relay_acks = 3
+backfill_on_start = false
+
+[transports.iroh]
+enabled = false
+peers = []

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "name": "p2pKanban ecosystem",
+  "board": "board/board.json",
+  "metadocs": "docs/ecosystem/README.md",
+  "components": [
+    {
+      "id": "web",
+      "dir": "web",
+      "formerRepository": "kanban (github.com/Pacifica123/p2p_planner)",
+      "role": "Self-hosted web-узел: React/Vite + Rust/Axum + PostgreSQL в Docker; координатор прав и источник первичной привязки устройств.",
+      "platforms": ["linux", "windows", "macos"],
+      "versionSource": "web/VERSION",
+      "entry": "python bootstrap.py",
+      "docs": "web/README.md"
+    },
+    {
+      "id": "mobile",
+      "dir": "mobile",
+      "formerRepository": "kanban_mobile",
+      "role": "Android-клиент на React Native/Expo: local-first копия и Nostr roaming после привязки к web-узлу.",
+      "platforms": ["android"],
+      "versionSource": "mobile/package.json#version",
+      "entry": "npm ci && npm run apk",
+      "docs": "mobile/README.md"
+    },
+    {
+      "id": "abl",
+      "dir": "abl",
+      "formerRepository": "aaa (p2pkanban-archlinux-native)",
+      "role": "Нативный клиент для Arch-based Linux: Tauri 2 + WebKitGTK + Rust core + SQLite, без Docker и localhost-backend.",
+      "platforms": ["arch-linux"],
+      "versionSource": "abl/docs/IMPLEMENTATION_STATUS.md",
+      "entry": "python3 -B tools/uts_verify.py",
+      "docs": "abl/README.md"
+    },
+    {
+      "id": "devctl",
+      "dir": "devctl",
+      "formerRepository": "devctl",
+      "role": "Конвейер zip-патчей: проверка, применение, commit/push и след для всех направлений.",
+      "platforms": ["linux", "windows", "macos"],
+      "versionSource": "devctl/README.md",
+      "entry": "python3 devctl.py self install",
+      "docs": "devctl/README.md"
+    }
+  ]
+}

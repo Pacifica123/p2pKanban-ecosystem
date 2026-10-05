@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 1,
+  "stage": "A17",
+  "description": "Canonical UserTestSpace verification through A16. A16 adds a native/CLI recovery plane before WebView startup: read-only doctor/preflight, verified connection-level profile backups with hash/integrity/count manifests, a verified pre-migration restore point before any old-schema writable open, explicit safe mode and logical salvage export, and confirmed restore that quarantines the replaced profile. Recovery holds the profile flock without binding the graphical activation socket and does not start LAN/relay/WebView/update activity. Schema/protocol/CSP remain unchanged at v6. A17 adds signed AppImage/offline-kit build/stage/verify/run tooling; generic UTS checks synthetic signature/tamper cases. Actual AppImage FUSE/extract and GUI acceptance is a separate explicit release gate.",
+  "deterministic": [
+    {
+      "id": "a00",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a00.py"
+      ]
+    },
+    {
+      "id": "a01",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a01.py"
+      ]
+    },
+    {
+      "id": "a01b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a01b.py"
+      ]
+    },
+    {
+      "id": "a01c",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a01c.py"
+      ]
+    },
+    {
+      "id": "a02",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a02.py"
+      ]
+    },
+    {
+      "id": "a02b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a02b.py"
+      ]
+    },
+    {
+      "id": "a02c",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a02c.py"
+      ]
+    },
+    {
+      "id": "a02d",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a02d.py"
+      ]
+    },
+    {
+      "id": "a03",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a03.py"
+      ]
+    },
+    {
+      "id": "a04",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a04.py"
+      ]
+    },
+    {
+      "id": "a04b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a04b.py"
+      ]
+    },
+    {
+      "id": "a05",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a05.py"
+      ]
+    },
+    {
+      "id": "a05b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a05b.py"
+      ]
+    },
+    {
+      "id": "a06",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a06.py"
+      ]
+    },
+    {
+      "id": "a07",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a07.py"
+      ]
+    },
+    {
+      "id": "a07b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a07b.py"
+      ]
+    },
+    {
+      "id": "a08",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a08.py"
+      ]
+    },
+    {
+      "id": "a09",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a09.py"
+      ]
+    },
+    {
+      "id": "a09b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a09b.py"
+      ]
+    },
+    {
+      "id": "a10",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a10.py"
+      ]
+    },
+    {
+      "id": "a11",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a11.py"
+      ]
+    },
+    {
+      "id": "a12",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a12.py"
+      ]
+    },
+    {
+      "id": "a13",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a13.py"
+      ]
+    },
+    {
+      "id": "a14",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a14.py"
+      ]
+    },
+    {
+      "id": "a15",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a15.py"
+      ]
+    },
+    {
+      "id": "a16",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a16.py"
+      ]
+    },
+    {
+      "id": "a17",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a17.py"
+      ]
+    },
+    {
+      "id": "a17b",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_uts_cache_recovery.py"
+      ]
+    }
+  ],
+  "frontend": {
+    "offlineInstall": [
+      "npm",
+      "ci",
+      "--offline",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "networkPrepare": [
+      "npm",
+      "ci",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "typecheck": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "build": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "requiredArtifact": "dist/index.html"
+  },
+  "cargo": {
+    "manifest": "src-tauri/Cargo.toml",
+    "lock": "src-tauri/Cargo.lock",
+    "lockOffline": [
+      "cargo",
+      "generate-lockfile",
+      "--manifest-path",
+      "src-tauri/Cargo.toml",
+      "--offline"
+    ],
+    "lockNetwork": [
+      "cargo",
+      "generate-lockfile",
+      "--manifest-path",
+      "src-tauri/Cargo.toml"
+    ],
+    "fetchOffline": [
+      "cargo",
+      "fetch",
+      "--manifest-path",
+      "src-tauri/Cargo.toml",
+      "--locked",
+      "--offline"
+    ],
+    "fetchNetwork": [
+      "cargo",
+      "fetch",
+      "--manifest-path",
+      "src-tauri/Cargo.toml",
+      "--locked"
+    ],
+    "test": [
+      "cargo",
+      "test",
+      "--manifest-path",
+      "src-tauri/Cargo.toml",
+      "--locked",
+      "--offline"
+    ],
+    "build": [
+      "cargo",
+      "build",
+      "--manifest-path",
+      "src-tauri/Cargo.toml",
+      "--locked",
+      "--offline"
+    ],
+    "requiredArtifact": "src-tauri/target/debug/p2pkanban-arch-native"
+  },
+  "host": {
+    "buildDoctor": [
+      "python3",
+      "-B",
+      "tools/a01b_host_acceptance.py",
+      "doctor"
+    ],
+    "runtimeDoctor": [
+      "python3",
+      "-B",
+      "tools/a01c_host_runtime_probe.py",
+      "doctor"
+    ],
+    "runtimeProbe": [
+      "python3",
+      "-B",
+      "tools/a01c_host_runtime_probe.py",
+      "launch-probe",
+      "--seconds",
+      "8",
+      "--report",
+      "{report_dir}/a01c-runtime.json"
+    ],
+    "postBuildProbes": [
+      {
+        "id": "a06-instance",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a06_host_instance_probe.py"
+        ]
+      },
+      {
+        "id": "a08-planner-durability",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a08_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a09-vault-crypto",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a09_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a09-secret-service-state",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a09_host_secret_service_probe.py",
+          "--report",
+          "{report_dir}/a09-secret-service.json"
+        ]
+      },
+      {
+        "id": "a10-sync-compatibility",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a10_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a11-import-compatibility",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a11_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a12-parity-compatibility",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a12_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a13-rust-integration",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a13_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a13-desktop-integration",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a13_host_integration_probe.py"
+        ]
+      },
+      {
+        "id": "a14-rust-lan-bridge",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a14_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a14-host-lan-bridge",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a14_host_lan_bridge_probe.py"
+        ]
+      },
+      {
+        "id": "a15-package-prep",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a15_host_packaging_probe.py",
+          "--report",
+          "{report_dir}/a15-packaging.json"
+        ]
+      },
+      {
+        "id": "a16-rust-recovery",
+        "command": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "src-tauri/Cargo.toml",
+          "--locked",
+          "--offline",
+          "a16_",
+          "--",
+          "--nocapture"
+        ]
+      },
+      {
+        "id": "a16-host-recovery",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a16_host_recovery_probe.py",
+          "--report",
+          "{report_dir}/a16-recovery.json"
+        ]
+      }
+    ]
+  },
+  "manualEvidence": [
+    "In the native window confirm: mode: desktop",
+    "In the native window confirm: p2pkanban-arch-native 0.1.0 \u00b7 ok \u00b7 desktop",
+    "If hostile-navigation behavior changes later, capture a dedicated runtime test before claiming it verified",
+    "With a visible primary window, optionally confirm that starting a second instance raises/focuses the existing window rather than opening another window",
+    "A07 UI: create a workspace and board, close the native app, reopen it, then confirm the same workspace/board can be selected again",
+    "A07 UI: confirm vault status is session-only and durable secrets are disabled; no secret value should ever be rendered",
+    "A08 UI: create a column, card, checklist and checklist item; move/archive/restore the card and toggle the item, then close/reopen and confirm durable state",
+    "A08 UI: delete a checklist/item/card and confirm it does not reappear after reopen",
+    "A09 UI: vault status may be secret-service/ready+durable or session-only/provider-unavailable|provider-locked|provider-corrupt; provider absence is a supported degraded state, not a reason to store plaintext secrets",
+    "A09 provider matrix across GNOME Secret Service, KWallet Secret Service compatibility and a minimal/no-provider session remains multi-host evidence; one UTS host does not prove the whole matrix",
+    "A09 passphrase provider is implemented/tested in Rust but passphrase activation is intentionally not exposed as a generic WebView secret IPC before credential provisioning/onboarding exists",
+    "A10: sync_outbox/merge/crypto are fixture- and Rust-test verified, but relay publish/pull orchestration is not implemented yet; do not treat pending/outbox rows as relay ACK or multi-node convergence evidence",
+    "A10 roaming/1 cannot represent post-snapshot column creation in the legacy Android protocol; such local markers fail closed instead of being silently dropped",
+    "A11: portable bundle import is a native application operation; no generic WebView filesystem/keyring command is introduced.",
+    "A11: device-link/2 and web-node-link v1 methods consume already authenticated/decrypted native transport results; live Nostr signature/chunk transport and legacy-node HTTP/session orchestration are not claimed by this stage.",
+    "A11: web-node-link v1 destination provisioning requires an empty native profile and reports omitted shared workspaces/node-local hides alongside excluded deployment/session state.",
+    "A11: if Cargo needs explicit network preparation, the verifier must fetch the exact network-generated locked graph first, then delete/regenerate Cargo.lock offline, require byte-identical lock output, and continue with locked offline fetch/test/build; serde 1.0.228 remains the direct compatibility pin.",
+    "A12 UI: create a label, assign/unassign it to a card, create/delete a comment, close/reopen, and confirm durable local state plus activity provenance.",
+    "A12 UI: confirm label/comment mutations increase the separate roaming/1 unsupported parity counter and are not presented as remotely converged.",
+    "A12 UI: save valid board appearance JSON, close/reopen, confirm it persists, and confirm the normal A10 pending counter reflects the roaming-capable appearance mutation.",
+    "A12 compatibility: label/comment roaming is intentionally not claimed until a versioned wire operation exists; appearance uses the existing board.appearance.put family with the A12 normalized payload mapping.",
+    "A13 KDE Plasma Wayland: confirm sessionType=wayland and record Notifications/StatusNotifier/portal capability states; missing services must not break planner use.",
+    "A13 GNOME Wayland: confirm no visible tray host is treated as supported degraded mode and normal window close exits the process.",
+    "A13 X11: confirm sessionType=x11, second-instance p2pkanban://activate focus routing works, and no systemd user service/linger is enabled.",
+    "A14 UI: with a durable vault, confirm the LAN bridge is stopped by default; explicitly start it on a detected private/link-local IPv4 address, record the random high-port endpoint/TTL indicator, then stop it and confirm the listener disappears.",
+    "A14 security: confirm starting the bridge is disabled/refused when vault durable=false; the UI shows only fresh device public key + one-time capability and never a device private key/board key.",
+    "A14 socket evidence: in normal app mode `ss -ltnp` must show no p2pKanban TCP listener; while explicitly active it must show only the selected LAN IPv4/random high port and disappear after stop/TTL/one authenticated request.",
+    "A14 cross-client compatibility remains manual evidence: pair from one representative legacy LAN client using the versioned bridge wrapper and confirm the resulting profile reopens with A11 device-link state after the bridge has closed.",
+    "A14 must not add or mutate nftables/iptables/firewalld/ufw, mDNS/Avahi or systemd user services.",
+    "A15 clean-chroot: on a fully updated Arch x86_64 build host, build the staged resolved PKGBUILD with devtools/makechrootpkg (or current pkgctl clean-build flow), run check(), and retain the build log/package SHA-256.",
+    "A15 package lint/ownership: run namcap on the built pkg.tar.zst and confirm its file list contains only /usr/bin/p2pkanban plus the package-owned desktop/icon/license files; no /home, XDG profile, keyring, systemd unit or mutable DB is packaged.",
+    "A15 install/upgrade integrity: install from a trusted signed repository on a coherent fully updated system, run pacman -Qkk p2pkanban, launch under Wayland and X11 as applicable, and verify p2pkanban://activate routes through the A13 handler.",
+    "A15 uninstall preservation: after creating representative profile/config/state/cache data and durable SecretVault entries, pacman -R p2pkanban must remove package-owned /usr files without deleting those user-owned XDG/keyring records.",
+    "A15 signing/repository: use a project release key held outside the repository; verify package and repository DB signatures, retain release-manifest.json/key fingerprint, and publish only to project-controlled HTTPS mirrors after replacing example.invalid origins.",
+    "A15 licensing: public AUR/public-mirror publication remains blocked until the rights holder replaces the packaging notice with an approved software license.",
+    "A15 rollback: package downgrade alone is not claimed as profile/database rollback; A16 owns backup/doctor/safe-mode recovery and schema-aware rollback evidence.",
+    "A16 CLI recovery: with the GUI closed, `p2pkanban doctor` and `p2pkanban safe-mode` must run without starting WebView, relay/Iroh/LAN transport, update activity or an activation socket.",
+    "A16 backup/restore: create representative planner state, run `p2pkanban backup`, mutate it, confirm restore without `--yes` is refused, then restore the verified point with `--yes` and confirm the original state returns.",
+    "A16 migration recovery: on a copy of an older supported schema, normal startup must create a verified A16 pre-migration restore point before the existing migration engine obtains a writable migrated profile.",
+    "A16 logical salvage: `p2pkanban safe-export <path.json>` is a user-private recovery artifact containing planner content only; it is not `p2p_planner_bundle` and intentionally omits session/capability/sync operational state.",
+    "A16 failure containment: corrupt/tampered profile, manifest, backup or interrupted migration journal must enter/refuse through safe recovery paths without deleting the current profile; replaced state is quarantined during confirmed restore.",
+    "A17 real image: run tools/a17_host_appimage_probe.py on the signed offline kit, requiring both FUSE and extract/run CLI doctor evidence.",
+    "A17 GUI: on tested Arch/EndeavourOS/Manjaro x86_64 launch offline, edit/reopen, test A16 recovery on a copied profile, record glibc/WebKit baseline and confirm pacman state is untouched."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "protocolVersion": "p2p-kanban-roaming/1",
+  "eventId": "018f0000-0000-7000-8000-000000001001",
+  "workspaceId": "018f0000-0000-7000-8000-000000000001",
+  "boardId": "018f0000-0000-7000-8000-000000000002",
+  "capabilityEpoch": 3,
+  "replicaId": "018f0000-0000-7000-8000-000000001002",
+  "replicaSeq": 100,
+  "logicalClock": 100,
+  "entityType": "board",
+  "entityId": "018f0000-0000-7000-8000-000000000002",
+  "operation": "board.snapshot",
+  "fieldMask": ["*"],
+  "payload": {
+    "snapshot": {
+      "schemaVersion": 6,
+      "workspaceId": "018f0000-0000-7000-8000-000000000001",
+      "board": {
+        "id": "018f0000-0000-7000-8000-000000000002",
+        "workspaceId": "018f0000-0000-7000-8000-000000000001",
+        "name": "Roaming fixture board",
+        "description": null,
+        "boardType": "kanban",
+        "isArchived": false,
+        "createdAt": "2026-09-13T00:00:00.000Z",
+        "updatedAt": "2026-09-13T00:00:00.000Z",
+        "archivedAt": null
+      },
+      "appearance": {
+        "boardId": "018f0000-0000-7000-8000-000000000002"
+      },
+      "columns": [
+        {
+          "id": "018f0000-0000-7000-8000-000000000004",
+          "boardId": "018f0000-0000-7000-8000-000000000002",
+          "name": "Todo",
+          "description": null,
+          "position": 1000,
+          "colorToken": null,
+          "wipLimit": null,
+          "createdAt": "2026-09-13T00:00:00.000Z",
+          "updatedAt": "2026-09-13T00:00:00.000Z"
+        }
+      ],
+      "cards": [
+        {
+          "id": "018f0000-0000-7000-8000-000000000003",
+          "boardId": "018f0000-0000-7000-8000-000000000002",
+          "columnId": "018f0000-0000-7000-8000-000000000004",
+          "parentCardId": null,
+          "title": "Snapshot card",
+          "description": "Synthetic compatibility fixture",
+          "priority": null,
+          "position": 1000,
+          "startAt": null,
+          "dueAt": null,
+          "isArchived": false,
+          "labelIds": [],
+          "createdAt": "2026-09-13T00:00:00.000Z",
+          "updatedAt": "2026-09-13T00:00:00.000Z",
+          "archivedAt": null
+        }
+      ],
+      "checklistsByCardId": {
+        "018f0000-0000-7000-8000-000000000003": [
+          {
+            "id": "018f0000-0000-7000-8000-000000000005",
+            "cardId": "018f0000-0000-7000-8000-000000000003",
+            "title": "Fixture checklist",
+            "position": 1000,
+            "items": [
+              {
+                "id": "018f0000-0000-7000-8000-000000000006",
+                "checklistId": "018f0000-0000-7000-8000-000000000005",
+                "title": "Fixture item",
+                "isDone": false,
+                "position": 1000,
+                "completedAt": null,
+                "createdAt": "2026-09-13T00:00:00.000Z",
+                "updatedAt": "2026-09-13T00:00:00.000Z"
+              }
+            ],
+            "createdAt": "2026-09-13T00:00:00.000Z",
+            "updatedAt": "2026-09-13T00:00:00.000Z"
+          }
+        ]
+      },
+      "checklistsHydratedAt": "2026-09-13T00:00:00.000Z",
+      "cachedAt": "2026-09-13T00:00:00.000Z",
+      "lastServerRefreshAt": null
+    }
+  },
+  "occurredAt": "2026-09-13T00:00:00.000Z"
+}

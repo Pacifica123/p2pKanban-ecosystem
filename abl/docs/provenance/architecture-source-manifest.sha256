@@ -1,0 +1,16 @@
+d954bd3707f47a4775bd7b5671fb262db23a1ba6f40cdebc54f42862ca4cc3d3  ./00-executive-architecture.md
+d9b45ad1456316c37a3c016ff6dc0ff3dcdb6f563f70762764bef76caf8f6e00  ./01-current-state-reconstruction.md
+294e6a50ffa8ad280a6a5596e2685b96e0149fa01d5a538e7c1fe0bd8889145b  ./02-requirements-options-adr.md
+3cb0aa93eeecd24eae7a18b045ecb444e93b54321bca4fb9af688ebd1ecacf13  ./03-components-data-storage-sync-security.md
+72f0fea5ef90f60567857e15fb79cf3f7fc5f3f52a28ad99c5aabb37be7d3771  ./04-arch-integration-packaging-update.md
+0e991fd33a3995a06594dbc6aca9f0cf1996b0497e7e2e3a1d821cf92f1274be  ./05-release-diagnostics-performance-risk.md
+acbc117c4bcdc4eaaf17f7f13e24361068e688a0359c69ab31a45907d4fb2d5e  ./06-compatibility-migration.md
+61eb1046da910123012402d16d8bd45d2df9fce762997cbb712cf4a11b8100ea  ./07-roadmap-devctl-tests-experiments-do-not.md
+c48549e8d28c955bc5ee6fe3a210d0d96f5f8c7474d75d81f7bff11803648220  ./19-adr/ADR-001-shell-and-process-model.md
+e4f722ef4ffcb7c741b0f0b2145f986483bdddaa3c045ce99dc01363d46b130f  ./19-adr/ADR-002-storage.md
+db3828d10dd40f7f5ac56e48f9d52bcc4c70f812642171411bd9d63af6eb1200  ./19-adr/ADR-003-packaging-update-and-rollback.md
+c318281c83ef7e34999e014707aa39e71cb12cd0429cfb4e737feecb1a0700ca  ./19-adr/ADR-004-secrets.md
+db7753e8c3a86cfa1b8617faec24c3dd91e171d74d7cf464d8015c62bc924019  ./19-adr/ADR-005-ipc-and-lan-bridge.md
+cfb4b66573fe8f159732107228b4f1cbfe05f43c8f1ca74759bb3d285dfbcacc  ./19-adr/ADR-006-background-lifecycle.md
+e5e9109d5e87ac4b8fb9c11861825c42fbeadcdbadc6a7744875835600063dae  ./20-sources-and-evidence.md
+b54a8c7bc1e6daa0af8e8edc97e4f3cdf9786c452e9a1f011c92f224e12b6725  ./README.md

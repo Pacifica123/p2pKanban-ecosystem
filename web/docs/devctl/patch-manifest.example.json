@@ -1,0 +1,89 @@
+{
+  "formatVersion": 1,
+  "patchId": "2026-04-30-release-workflow-automation",
+  "title": "Add release workflow automation docs",
+  "summary": "Adds project-state/dev-log examples and a technical specification for a pure-Python devctl patch conveyor.",
+  "kind": "chore",
+  "author": "assistant",
+  "createdAt": "2026-04-30T23:15:02+07:00",
+  "base": {
+    "branch": "main",
+    "requiredCleanWorktree": true,
+    "expectedHead": null,
+    "expectedHeadPolicy": "advisory"
+  },
+  "workspace": {
+    "projectDirName": "p2p_planner",
+    "patchesDirName": "patches",
+    "archivesDirName": "archives",
+    "legacyArchivesDirAliases": ["arhives"]
+  },
+  "apply": {
+    "filesRoot": "files",
+    "delete": [
+      {
+        "path": "docs/old-release-workflow-draft.md",
+        "required": false
+      },
+      {
+        "path": "frontend/src/legacy-experiment",
+        "recursive": true,
+        "required": false
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "backend cargo check",
+      "cwd": "backend",
+      "command": "cargo check",
+      "timeoutSeconds": 180,
+      "requiredCommands": ["cargo"]
+    },
+    {
+      "name": "frontend build",
+      "cwd": "frontend",
+      "command": "npm run build",
+      "timeoutSeconds": 300,
+      "requiredCommands": ["npm"]
+    }
+  ],
+  "setup": [],
+  "services": [],
+  "archive": {
+    "nameSlug": "release-workflow-automation",
+    "includeProjectDir": true,
+    "exclude": [
+      ".git/",
+      ".devctl/tmp/",
+      "target/",
+      "node_modules/",
+      "dist/",
+      "build/",
+      "coverage/",
+      "logs/",
+      "tmp/",
+      ".env",
+      ".env.*",
+      "!.env.example",
+      "*.db",
+      "*.sqlite",
+      "*.sqlite3"
+    ]
+  },
+  "commit": {
+    "enabled": true,
+    "message": "chore(dev): add release workflow automation docs",
+    "allowEmpty": false
+  },
+  "push": {
+    "enabled": true,
+    "remote": "origin",
+    "branch": "main"
+  },
+  "notes": [
+    "This example manifest is designed for devctl v0.",
+    "setup and services are intentionally empty in v0 but reserved for future versions.",
+    "delete entries are applied before copying files from filesRoot."
+  ]
+}

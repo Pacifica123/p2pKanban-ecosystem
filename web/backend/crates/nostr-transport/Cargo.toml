@@ -1,0 +1,19 @@
+[package]
+name = "p2p-kanban-nostr-transport"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Encrypted Nostr shadow mirror for p2pKanban sync envelopes"
+
+[dependencies]
+anyhow = "1"
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+hmac = "0.12"
+nostr-sdk = {version="0.44",features=["nip44"]}
+p2p-kanban-sync-core = { path = "../sync-core" }
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tokio = { version = "1", features = ["rt", "time"] }

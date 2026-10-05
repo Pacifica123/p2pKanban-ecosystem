@@ -1,0 +1,209 @@
+{
+  "formatVersion": 1,
+  "capturedAt": "2026-09-12",
+  "logicalSnapshots": {
+    "webBackend": {
+      "archive": "post_kanban_20260911_215622_after_workspace-sync_c36ad4c(3).zip",
+      "fileCount": 543,
+      "sha256": "8b7346397b6135b4f2b7c27f59d32f522ea9eb5b34e3b22530606f1302ce9ce6"
+    },
+    "android": {
+      "archive": "post_kanban_android_20260912_143315_after_workspace-sync_65fea82(3).zip",
+      "fileCount": 137,
+      "sha256": "c463f8fd5a99c1a5214e2ed98044875ba74b78aa0023b0e011eefb205685de5d"
+    },
+    "devctl": {
+      "archive": "devctl(2).zip",
+      "fileCount": 10,
+      "sha256": "c4876b3bd55f8fd996f248d9c18e78c961471e502c6ac578c1c124105c06c9af"
+    },
+    "architecture": {
+      "archive": "p2pkanban-archlinux-native-architecture(1).zip",
+      "fileCount": 17,
+      "sha256": "0d93f7a7703c318def609861248b5a61f8998077080067ebad3431b149b5e906"
+    }
+  },
+  "anchors": [
+    {
+      "source": "web",
+      "path": "VERSION",
+      "sha256": "c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624",
+      "role": "product version"
+    },
+    {
+      "source": "web",
+      "path": "README.md",
+      "sha256": "5ee2b2fcf7b1782151f55d260fbbc868425f33fe18019510efe6edf0015b7f6e",
+      "role": "current browser/Docker runtime description"
+    },
+    {
+      "source": "web",
+      "path": "backend/Cargo.toml",
+      "sha256": "97b8cf0481f90ae1ccfc5fb5633e3dde73c3b05701ed9bdbadf5fb4b21bbfe06",
+      "role": "backend crate/dependency boundary"
+    },
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/lib.rs",
+      "sha256": "8b6b7e20b9ac849b8274adb5488bc062c15315edf98140cf3bbec42b6e00f02f",
+      "role": "sync-core public API"
+    },
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/envelope.rs",
+      "sha256": "94fb11808a0a25a96792521f4919b7afa0db7506af179c8652eacf6467ef6dbd",
+      "role": "sync/1 event and envelope shape"
+    },
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/merge.rs",
+      "sha256": "635f5ad23ecadc184697aa56c4e209a185729e1a076bdb4b186de386f1eee179",
+      "role": "deterministic merge ordering"
+    },
+    {
+      "source": "web",
+      "path": "backend/crates/sync-core/src/validation.rs",
+      "sha256": "dc14c98e41e134d9251a548fc8efc606fd46da20d19819db7e212acc45fd2be3",
+      "role": "sync validation rules"
+    },
+    {
+      "source": "web",
+      "path": "backend/src/auth/device_link.rs",
+      "sha256": "a1a0dc326efeb32fa883d16559e5ebbec3a1e5982019d039e3d42945ca7b29e1",
+      "role": "server device-link implementation"
+    },
+    {
+      "source": "web",
+      "path": "backend/src/modules/integrations/dto.rs",
+      "sha256": "958788ad02ebd741970705fde8e82ec8abdfd25b4a7b5cbdaf0152669f8a73a3",
+      "role": "portable bundle DTO contract"
+    },
+    {
+      "source": "web",
+      "path": "backend/src/modules/integrations/service.rs",
+      "sha256": "3883142c233fc55980a12a76feb9faa53e2a39ce8f34afa0db2f2d76110f7cd1",
+      "role": "portable export/import semantics"
+    },
+    {
+      "source": "web",
+      "path": "docs/sync/roaming-board-protocol-v1.md",
+      "sha256": "f50d1cb334b8f991d89a39794b60f6f931da5302027b31c48ca9850bd9a46841",
+      "role": "roaming/1 contract"
+    },
+    {
+      "source": "web",
+      "path": "docs/architecture/import-export-backup-v1.md",
+      "sha256": "924696575804f06700e1661055cb989fe1cfaab52f9d6ee62897204c280e0383",
+      "role": "portable export/restore contract"
+    },
+    {
+      "source": "web",
+      "path": "docs/architecture/web-node-link-v1.md",
+      "sha256": "fbe0925b3a1fa6877d0277c72e58bb27cb5d0bb1106057657738b39959eb3c19",
+      "role": "legacy Docker-node migration semantics"
+    },
+    {
+      "source": "web",
+      "path": "frontend/src/shared/api/client.ts",
+      "sha256": "6b9f71dd9164c91d3124fb189ee8c14bedd451726a97cff14b4f6de20101c897",
+      "role": "current HTTP frontend boundary"
+    },
+    {
+      "source": "web",
+      "path": "frontend/src/features/integrations/lib/boardBundle.ts",
+      "sha256": "5c6ca9e904101a0699635e2c459a360f285283aa574d664c50a710a805808082",
+      "role": "client portable bundle validation"
+    },
+    {
+      "source": "android",
+      "path": "src/shared/storage/storage.ts",
+      "sha256": "2b68245b7a05efdaa191f4fdc921c101a4860e34d105f2794cadcf85ada49c39",
+      "role": "local storage vs SecureStore split"
+    },
+    {
+      "source": "android",
+      "path": "src/features/auth/AuthProvider.tsx",
+      "sha256": "be6c41f7bfec62c5d9dae2da35988f2ee55252d14920dcd1639c7ee494293845",
+      "role": "access/refresh session handling"
+    },
+    {
+      "source": "android",
+      "path": "src/features/localFirst/model.ts",
+      "sha256": "3ff0129f6430e2909881e2f71e1efe4021f21d7881f96ffff614ab459e869f40",
+      "role": "Android local-first state model"
+    },
+    {
+      "source": "android",
+      "path": "src/features/localFirst/repository.ts",
+      "sha256": "fdc77baf039b619a33ba1f54b2e758d796b2672315511158e521d8c768999b36",
+      "role": "Android local-first repository behavior"
+    },
+    {
+      "source": "android",
+      "path": "src/features/localFirst/snapshot.ts",
+      "sha256": "11f4fa2d200d6d7dda9983b935c9c3273840dc1b7734555c4129890ca64be60a",
+      "role": "Android snapshot semantics"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/types.ts",
+      "sha256": "cfd1004962a38ad07913b7d8de5986d4d28087af4540967989ccf56c4a807665",
+      "role": "roaming/1 Android types"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/codec.ts",
+      "sha256": "6093d9857622c375d83403f467a2ed6e68854603af3bcbb1ea9716ba438cc0fd",
+      "role": "roaming crypto/tag codec"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/merge.ts",
+      "sha256": "4eb262cc3558421f3f86f40d01753a222adb3af6726bca9ffd641eaef1487a14",
+      "role": "roaming merge/tombstone behavior"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/service.ts",
+      "sha256": "282b00bdc89965d8734ce5f697102d10170f3fca6b748ead1b18435ffda9a223",
+      "role": "roaming delivery/capability enforcement"
+    },
+    {
+      "source": "android",
+      "path": "src/features/deviceLink/protocol.ts",
+      "sha256": "3a09b982f866975eeb80d3579258ca6093f2077e911e2012b21e71a074eb4d6b",
+      "role": "device-link/2 chain and payload bounds"
+    },
+    {
+      "source": "android",
+      "path": "src/features/deviceLink/service.ts",
+      "sha256": "4858d8447d90dd0833e6417e7e8e4da6bc6c4ca80b0b2833252ce079d84daa3a",
+      "role": "device-link service flow"
+    },
+    {
+      "source": "android",
+      "path": "src/features/deviceLink/snapshot.ts",
+      "sha256": "e70c73ba2c56fe7399feb34f70885e2db1a7f96e2ac75784271a9ca51a3b9bea",
+      "role": "device-link snapshot semantics"
+    },
+    {
+      "source": "devctl",
+      "path": "devctl.py",
+      "sha256": "3ea3e604d1a0b8b6ea41f02666e3374b014ac3d85ad770432e323cfef402254a",
+      "role": "patch validation/apply/rollback conveyor"
+    },
+    {
+      "source": "devctl",
+      "path": "docs/patch-manifest.example.json",
+      "sha256": "1c7a7d81933e127cfb2e6026693b3dc9c1337e13f96ecafe32ebd2a95a0b0e78",
+      "role": "manifest v1 example"
+    },
+    {
+      "source": "devctl",
+      "path": "docs/patch-intake.md",
+      "sha256": "698b9c0bd392a8f342b1604696460c692eae53a7db34cb224830cea83ddec181",
+      "role": "patch intake/targeting contract"
+    }
+  ],
+  "policy": "Executable source/migrations/tests outrank prose on conflict; hashes freeze evidence but do not make legacy runtime architecture normative."
+}

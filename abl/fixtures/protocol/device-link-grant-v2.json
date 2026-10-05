@@ -1,0 +1,11 @@
+{
+  "protocol": "p2p-kanban-device-link/2",
+  "workspaceId": "018f0000-0000-7000-8000-000000000001",
+  "boardId": "018f0000-0000-7000-8000-000000000002",
+  "userId": "018f0000-0000-7000-8000-000000000004",
+  "epoch": 3,
+  "subject": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "canDelegate": false,
+  "parentId": null,
+  "expiresAt": 2000000000
+}

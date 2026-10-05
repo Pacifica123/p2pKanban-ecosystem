@@ -1,0 +1,95 @@
+{
+  "formatVersion": 1,
+  "stage": "A16",
+  "facts": [
+    "A16 keeps CURRENT_SCHEMA_VERSION at 6 and does not rewrite the A05 migration engine.",
+    "Recovery CLI owns the profile flock through an A16-only guard that does not bind the graphical activation socket.",
+    "A16 snapshots are created with the SQLite/rusqlite Online Backup API and are bound to manifests containing hash, size, schema/app version, integrity/FK result and selected row counts.",
+    "Normal startup runs a read-only recovery preflight before writable repository open and creates a verified A16 snapshot before migrating an older supported schema.",
+    "Confirmed restore verifies the selected point, preserves a healthy pre-restore point when possible, quarantines current DB/WAL/SHM/journal, installs the snapshot and post-verifies integrity/hash.",
+    "Safe logical export excludes operational/session/capability state and is explicitly distinct from p2p_planner_bundle.",
+    "Recovery preflight validates the migration-ledger prefix and profile_meta schema version for older supported schemas before allowing a writable migration.",
+    "Quarantine preparation rolls already-moved profile files back if required directory durability sync fails before snapshot installation."
+  ],
+  "inferences": [
+    "Because the CLI recovery path returns before graphical/runtime composition, it should remain usable when WebView construction itself fails, provided the executable and its dynamic dependencies can enter main.",
+    "Retaining all verified A16 restore points without pruning satisfies the minimum last-good retention requirement until a future retention policy is introduced."
+  ],
+  "proposals": [
+    "Use the canonical A16 UTS Rust tests and real-binary host probe as the acceptance gate before calling A16 host-verified.",
+    "Keep damaged-SQLite best-effort salvage and any future recovery GUI separate from the fail-closed A16 core."
+  ],
+  "unresolved": [
+    "Cargo/rustc/rustfmt are unavailable in the patch-construction environment, so Rust compilation and the real-binary probe are not claimed here.",
+    "The A16 recovery logical export is a salvage artifact and has no direct import contract.",
+    "A loader failure before main cannot be repaired by the application without violating the package-manager privilege boundary."
+  ],
+  "externalReferences": [
+    "docs/architecture/05-release-diagnostics-performance-risk.md#7-crashrecovery-state-machine",
+    "docs/architecture/05-release-diagnostics-performance-risk.md#8-backup-classes",
+    "docs/architecture/05-release-diagnostics-performance-risk.md#9-safe-mode",
+    "docs/architecture/adr/ADR-007-profile-instance-control.md"
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/src/domain/recovery.rs",
+      "sha256": "a6b174fb5b9a3d1c9cd78d3cfdc9fd9fef4e7c287439e8da31c19afe4cd2a9f5"
+    },
+    {
+      "path": "src-tauri/src/application/recovery.rs",
+      "sha256": "c5cc1e3dca23a0a622d6cb164b69e0c65e6cc47fc02514a0a99cc759a00cecb3"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/recovery.rs",
+      "sha256": "54655a9460eec01638066fd27db35bdd7978f0fcbf4b82e77036cc93f69ec332"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/mod.rs",
+      "sha256": "45e9cf78d84e54612125d525317850db2cca7fa221f33d084e8f3dc778bc3728"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/linux/recovery_lock.rs",
+      "sha256": "160f1fdfbb72ebdb55fe4ca18b65f1c2d18eee215ed00d43542d2b1a61e93bd7"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/linux/mod.rs",
+      "sha256": "fe4a53d9df5735b8ec0c6670e980f3d4eec261e4e7bc3830bf7fb513ff915e5f"
+    },
+    {
+      "path": "src-tauri/src/main.rs",
+      "sha256": "dc7438b5a1ca40f90f61dbe72de89e26cfb6c35d70b61f83016ea1c2ea7f0a8c"
+    },
+    {
+      "path": "tools/a16_host_recovery_probe.py",
+      "sha256": "7ec1475dc8f1322e68d0c3174d715080433bcd7105b123a7ea89f7bb0f0a49df"
+    },
+    {
+      "path": "tools/check_a16.py",
+      "sha256": "cc8798a50840f2f89ce15cbaf33d735c440cf69c3d4cf79bf1ef66386df14493"
+    },
+    {
+      "path": "tools/uts_plan.json",
+      "sha256": "da9580c547a43b68449da2450a7eefc3881f32fc3c01eb7754cda7d74cabfa12"
+    },
+    {
+      "path": "docs/A16_RECOVERY.md",
+      "sha256": "9847b8397942afab497c24aab15049c0abc8a0464f0b87c9ba89302dd2645f20"
+    },
+    {
+      "path": "docs/evidence/A16_PROFILE_RECOVERY.md",
+      "sha256": "44fed741caf248062eaa9b184611ce03881e80b51aa6e52b04eb81c5334841c0"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "sha256": "d61eaa6bf218bf7b9af9634ef64d7df53a312e86bca48bf4ddf3c0b5ac8b17b7"
+    },
+    {
+      "path": "docs/NEXT_PATCH_SEQUENCE.md",
+      "sha256": "b8ebfa54090b86e8e562e9861a53209b8df0b49f4e2e8adad493c1830405ef4d"
+    },
+    {
+      "path": "docs/architecture/08-implementation-corrections-and-debt.md",
+      "sha256": "374bcaea3c4d469b256abcd2695d991b5f01e97f20be1a198763e20726cd934b"
+    }
+  ]
+}

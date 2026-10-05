@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "p2p-kanban-edge-coordinator",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-25",
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "BOARD_COORDINATOR",
+        "class_name": "BoardCoordinator"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["BoardCoordinator"]
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

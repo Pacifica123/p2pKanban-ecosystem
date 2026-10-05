@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://p2p-planner.local/docs/sync/schemas/change-event.schema.json",
+  "title": "ChangeEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "replicaId",
+    "entityType",
+    "entityId",
+    "operation",
+    "logicalClock",
+    "createdAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "replicaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "entityType": {
+      "type": "string",
+      "enum": [
+        "workspace",
+        "workspace_member",
+        "board",
+        "board_column",
+        "card",
+        "board_label",
+        "checklist",
+        "checklist_item",
+        "comment",
+        "attachment",
+        "custom_field",
+        "card_custom_field_value",
+        "theme",
+        "wallpaper",
+        "board_appearance_settings",
+        "integration_connection",
+        "integration_link"
+      ]
+    },
+    "entityId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete",
+        "move",
+        "reorder",
+        "archive",
+        "restore",
+        "link",
+        "unlink"
+      ]
+    },
+    "fieldMask": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      }
+    },
+    "payload": {
+      "description": "Операционный payload или patch",
+      "type": ["object", "array", "string", "number", "boolean", "null"]
+    },
+    "logicalClock": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receivedAt": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

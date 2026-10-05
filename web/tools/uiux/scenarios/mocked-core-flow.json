@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "name": "mocked-core-flow",
+  "description": "Create workspace, board, column and card through the UI against a runner-owned mock API.",
+  "requires": {
+    "browser": true,
+    "frontend": true,
+    "backend": false,
+    "safeDatabase": false
+  },
+  "steps": [
+    { "goto": "/auth" },
+    { "assertVisible": "[data-testid='auth-page']" },
+    { "click": "[data-testid='auth-mode-sign-in']" },
+    { "fill": "[data-testid='auth-email']", "valueFrom": "generated.email" },
+    { "fill": "[data-testid='auth-password']", "valueFrom": "generated.password" },
+    { "click": "[data-testid='auth-submit']" },
+    { "assertVisible": "[data-testid='workspace-list-page']" },
+    { "fill": "[data-testid='workspace-name-input']", "valueFrom": "generated.workspaceName" },
+    { "click": "[data-testid='workspace-create-submit']" },
+    { "assertVisible": "[data-testid='workspace-boards-page']" },
+    { "fill": "[data-testid='board-name-input']", "valueFrom": "generated.boardName" },
+    { "click": "[data-testid='board-create-submit']" },
+    { "assertVisible": "[data-testid='board-page']" },
+    { "click": "[data-testid='open-column-composer']" },
+    { "fill": "[data-testid='column-name-input']", "valueFrom": "generated.columnName" },
+    { "click": "[data-testid='column-create-submit']" },
+    { "assertVisibleText": { "selector": "[data-testid='board-column']", "textFrom": "generated.columnName" } },
+    { "fill": "[data-testid='card-create-input']", "valueFrom": "generated.cardTitle" },
+    { "click": "[data-testid='card-create-submit']" },
+    { "assertVisibleText": { "selector": "[data-testid='board-column']", "textFrom": "generated.cardTitle" } },
+    { "assertNetworkSeen": "POST /api/v1/workspaces" },
+    { "assertNetworkSeen": "POST /api/v1/workspaces/*/boards" },
+    { "assertNetworkSeen": "POST /api/v1/boards/*/columns" },
+    { "assertNetworkSeen": "POST /api/v1/boards/*/cards" },
+    { "assertNoFatalConsole": true }
+  ]
+}

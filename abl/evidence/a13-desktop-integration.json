@@ -1,0 +1,117 @@
+{
+  "formatVersion": 1,
+  "stage": "A13",
+  "title": "Linux desktop lifecycle/integration capability detection",
+  "facts": [
+    "A13 keeps the native process foreground-only and leaves tray lifecycle and systemd user service disabled.",
+    "Wayland/X11 session type and sanitized desktop name are exposed as diagnostics without exposing raw display identifiers.",
+    "Session D-Bus is queried only for existing owners of Notifications, StatusNotifierWatcher, and Desktop Portal names; services are not started or claimed.",
+    "Validated p2pkanban deep links reuse the existing A06 mode-0600 Unix datagram activation socket and are bounded/versioned.",
+    "The WebView receives only typed capability summaries and validated deep-link intents; it receives no generic D-Bus, filesystem, shell, or network privilege."
+  ],
+  "inferences": [
+    "A single foreground native process can provide useful desktop-integration diagnostics and safe second-instance routing without introducing a resident daemon.",
+    "StatusNotifier and Notifications availability are host capabilities rather than hard runtime requirements, so missing services can degrade explicitly."
+  ],
+  "proposals": [
+    "Keep actual notification delivery and tray icon lifecycle opt-in/deferred until a later stage has explicit UX and lifecycle acceptance.",
+    "Register the p2pkanban URL scheme only in the packaging stage rather than writing desktop integration files from the running app."
+  ],
+  "unresolved": [
+    "KDE Wayland, GNOME Wayland, and X11 capability behavior still requires multi-host evidence.",
+    "Actual desktop notification delivery and visible tray behavior are not claimed by A13.",
+    "Deep-link intents are surfaced to the UI but automatic repository navigation/lookup is intentionally deferred."
+  ],
+  "externalReferences": [
+    {
+      "title": "Desktop Notifications Specification",
+      "url": "https://specifications.freedesktop.org/notification-spec/latest/"
+    },
+    {
+      "title": "XDG Desktop Portal D-Bus API",
+      "url": "https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Desktop.html"
+    },
+    {
+      "title": "StatusNotifierItem specification",
+      "url": "https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem/"
+    }
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/Cargo.toml",
+      "sha256": "1369aadf15a54206bace5b32d2d97428b6522b5eb931b0260c36af4e307fab24"
+    },
+    {
+      "path": "src-tauri/src/domain/integration.rs",
+      "sha256": "df05b977fcddabbfbdcafc222121292110720cca705b18e3bd47d3ea2eb05adb"
+    },
+    {
+      "path": "src-tauri/src/application/integration.rs",
+      "sha256": "c8605ca6c582fa0329d90e5cba4bcabc144a1c61c87c9b35c914b6e5e90ef5bc"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/linux/integration.rs",
+      "sha256": "46cbbeb989643628efb169256a0f99f3fe7ff49958847e7aa7422009fba75230"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/linux/instance.rs",
+      "sha256": "de68508c5cb25fb04c0b8a53a3557e8de1a3f80f3241f0288b05292d656bbad9"
+    },
+    {
+      "path": "src-tauri/src/main.rs",
+      "sha256": "7de21a3104380d2ac8b437289c24ca7acd8be032d33b2a7b13ace74af1551049"
+    },
+    {
+      "path": "src-tauri/src/desktop_api.rs",
+      "sha256": "93963dc0a59ba60eb8ed05d1499321d980647f88cbd2e56f7c044ad298208d29"
+    },
+    {
+      "path": "src/features/system/api/integration.ts",
+      "sha256": "ee968fd261a46b71838447a68df3331b262678ea9265df78374c31c6dde8ffa3"
+    },
+    {
+      "path": "src/shared/api/types.ts",
+      "sha256": "953f0ae9631226cf3ae6e7b08d75cae55dffd35d2f01f70d0ed7037c7488dce1"
+    },
+    {
+      "path": "src/shared/transport/desktop.ts",
+      "sha256": "6d098351a95cd85f860450ba2f5241ceaaf32d104ec18654539e1456ff5a328f"
+    },
+    {
+      "path": "src/App.tsx",
+      "sha256": "75185de1b81ec8a9e2dbde2975259ad5097aa42bc900e5d524980809436ee654"
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "b07e233a14918e13dfbf380f52a73571aad895f2adbbbfcc512a4be9689bf3a7"
+    },
+    {
+      "path": "tools/a13_host_integration_probe.py",
+      "sha256": "87c4ad8ba9af90738a376257903c518a940fa51e88a35772f93dff728859025d"
+    },
+    {
+      "path": "tools/check_a13.py",
+      "sha256": "ed5998046c68b1792559660b4ad788fa08f9e58ae7143bffcd51f6f86cbe8fd8"
+    },
+    {
+      "path": "tools/uts_plan.json",
+      "sha256": "da9580c547a43b68449da2450a7eefc3881f32fc3c01eb7754cda7d74cabfa12"
+    },
+    {
+      "path": "docs/evidence/A13_DESKTOP_INTEGRATION.md",
+      "sha256": "08c7f014c4de7bcb49938dccd7187bbe9bbd004286f65619989e74484c39ae92"
+    },
+    {
+      "path": "docs/architecture/08-implementation-corrections-and-debt.md",
+      "sha256": "5a71c91f1bfa2a459d30d2c12a3f53a070d0f59b5ccf0397cc1f04a9ab2ce01c"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "sha256": "d61eaa6bf218bf7b9af9634ef64d7df53a312e86bca48bf4ddf3c0b5ac8b17b7"
+    },
+    {
+      "path": "docs/NEXT_PATCH_SEQUENCE.md",
+      "sha256": "b8ebfa54090b86e8e562e9861a53209b8df0b49f4e2e8adad493c1830405ef4d"
+    }
+  ]
+}

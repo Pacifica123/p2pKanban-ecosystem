@@ -1,0 +1,696 @@
+{
+  "manifest.json": {
+    "format": "p2p_planner_bundle",
+    "formatVersion": 1,
+    "bundleKind": "portable_export",
+    "scopeKind": "board",
+    "workspaceId": "01a10d38-f901-746d-92f7-10598bb1cc42",
+    "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+    "includesLocalMetadata": false,
+    "summary": {
+      "scopeKind": "board",
+      "entityCounts": {
+        "workspaces": 1,
+        "boards": 1,
+        "columns": 7,
+        "cards": 20,
+        "comments": 1,
+        "checklists": 4,
+        "attachments": 0
+      },
+      "includesActivityHistory": false,
+      "includesAppearance": false,
+      "includesArchived": false,
+      "includesAttachments": false
+    }
+  },
+  "scope": {
+    "scopeKind": "board",
+    "workspaceId": "01a10d38-f901-746d-92f7-10598bb1cc42",
+    "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
+  },
+  "origin": {
+    "generatedAt": "2026-10-05T18:30:00Z",
+    "selfHosted": true,
+    "boardRevision": 1,
+    "lastPatchId": "2026-10-05-ecosystem-workspace-init",
+    "rules": "docs/ecosystem/development.md"
+  },
+  "includes": {
+    "appearance": false,
+    "activityHistory": false,
+    "archived": false,
+    "attachments": false,
+    "localMetadata": false
+  },
+  "payload": {
+    "workspaces": [
+      {
+        "id": "01a10d38-f901-746d-92f7-10598bb1cc42",
+        "name": "p2pKanban ecosystem"
+      }
+    ],
+    "boards": [
+      {
+        "id": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "workspaceId": "01a10d38-f901-746d-92f7-10598bb1cc42",
+        "name": "Экосистема p2pKanban",
+        "description": "Самоприменимая доска монорепозитория: web, mobile, abl, devctl. Обновляется каждым патчем.",
+        "archivedAt": null
+      }
+    ],
+    "columns": [
+      {
+        "id": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Идеи",
+        "description": "Сырые мысли и наблюдения. Не обязательство; можно спорить и удалять.",
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Обдумать",
+        "description": "Нужна стратегия, ADR или решение владельца, прежде чем писать код.",
+        "position": 2048
+      },
+      {
+        "id": "01a10d38-f905-7498-9234-5378892b360e",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Готово к патчу",
+        "description": "Понятны направление, объём, проверка и критерий готовности.",
+        "position": 3072
+      },
+      {
+        "id": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "В работе",
+        "description": "Делается текущей серией патчей. Узкий фокус: не больше двух карточек.",
+        "position": 4096,
+        "wipLimit": 2
+      },
+      {
+        "id": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Ждёт хоста",
+        "description": "Код и детерминированные проверки есть; нужна приёмка на реальном телефоне, Arch или Docker.",
+        "position": 5120
+      },
+      {
+        "id": "01a10d38-f908-7b4c-984d-17f3db36c31c",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Сделано",
+        "description": "Принято. В комментарии есть patchId, который сделал это истинным.",
+        "position": 6144
+      },
+      {
+        "id": "01a10d38-f909-73a3-809e-e77de27e2794",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Отложено",
+        "description": "Сознательно не делаем сейчас. В описании указано, почему и когда вернуться.",
+        "position": 7168
+      }
+    ],
+    "cards": [
+      {
+        "id": "01a10d38-f912-7b63-9ff0-6512c67e0871",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
+        "title": "Инициирующий патч: единый воркспейс экосистемы",
+        "description": "Зачем: собрать web, mobile, abl и devctl в одно дерево с общей метадокументацией и доской, не меняя направления.\n\nГотово, когда: репозиторий содержит четыре направления, docs/ecosystem, board/board.json, ecosystem.json и проверку доски.",
+        "priority": "high",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f91a-70d8-845b-dd996e797354",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Приёмка: направления работают из подкаталогов монорепозитория",
+        "description": "Зачем: перенос в подкаталоги проверен только детерминированными проверками; реальная сборка зависит от Docker, Android SDK и Arch-хоста.\n\nГотово, когда: каждый пункт чек-листа выполнен на настоящем хосте из свежего клона монорепозитория.",
+        "priority": "high",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "Метабутстрапер: скачать разом, развернуть выборочно и настраиваемо",
+        "description": "Зачем: пользователь хочет одной командой получить нужное: только abl для Linux, только web, или всё вместе, с настройками.\n\nГотово, когда: в корне есть установщик, который по профилю или флагам выбирает направления и для каждого вызывает его собственный bootstrap, не подменяя его.\n\nПринципы: установщик — дирижёр, а не замена. web по-прежнему ставится python bootstrap.py, abl — своим pacman/AppImage-путём, mobile — сборкой или скачиванием APK. Только стандартная библиотека Python, как у devctl.",
+        "priority": "high",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f928-75c4-9188-bba303981dd8",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "devctl не может менять .env.example",
+        "description": "Зачем: devctl запрещает в патче любые .env.* (включая .env.example), а web хранит backend/.env.example и frontend/.env.example. Эти файлы нельзя изменить патчем.\n\nГотово, когда: выбрано и внедрено одно из решений: разрешить в devctl именно *.example, или переименовать файлы в web (env.example) с обновлением документации.",
+        "priority": "medium",
+        "position": 2048,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Канал обновления web-узлов указывает на старый репозиторий",
+        "description": "Зачем: container_bootstrap.py и update_control_plane.py скачивают архив корня Pacifica123/p2p_planner и ждут bootstrap.py в корне. В монорепозитории web лежит в web/.\n\nГотово, когда: принято решение: оставить старый репозиторий как канал выпуска web, научить обновлятор подкаталогу (updateSubdir), или публиковать web-артефакты релизами монорепозитория. Переход не ломает установленные узлы.",
+        "priority": "high",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Вынести контракты в contracts/ с JSON Schema и общими фикстурами",
+        "description": "Зачем: p2p_planner_bundle, roaming/1, sync/1, device-link/2, web-node-link/1 описаны и проверяются в каждом направлении отдельно; abl хранит свои копии фикстур.\n\nГотово, когда: у каждого контракта одно место с версией, схемой и фикстурами; проверки web, mobile и abl читают их оттуда без нарушения автономности (копирование при сборке или ссылка из корня).",
+        "priority": "medium",
+        "position": 2048,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "Измерять дрейф якорей abl относительно web, mobile и devctl",
+        "description": "Зачем: abl/evidence/source-anchors.json заморозил sha256 файлов соседей на 2026-09-12; сейчас изменилась половина (15 из 30). Раньше сравнить было не с чем, теперь соседи в одном дереве.\n\nГотово, когда: корневая проверка выводит, какие якоря разошлись, без изменения замороженных файлов abl; отчёт попадает в лог devctl.",
+        "priority": "medium",
+        "position": 3072,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Устаревшие статические проверки web",
+        "description": "Зачем: на исходном снапшоте web часть tools/check_*.py падает без связи с монорепозиторием: check_zero_config_bootstrap (README became dense again), check_mobile_web_feature_contract (ждёт VERSION 1.0.0), check_cross_client_crud_contract и check_web_customization_part2_contract (v1 versions are not aligned), check_card_deletion_scope_contract, check_release_prep. После переноса результаты те же.\n\nГотово, когда: у каждой проверки решение: обновить под 2.1.0, пометить исторической или удалить; список проверок для манифеста web-патча зелёный.",
+        "priority": "medium",
+        "position": 3072,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f933-71c3-b86b-4879e82ea632",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Импорт доски в Android",
+        "description": "Зачем: доска экосистемы импортируется в web и abl, но mobile пока не умеет импорт/экспорт (README mobile).\n\nГотово, когда: mobile импортирует p2p_planner_bundle v1 хотя бы как новую копию доски, и самоприменимая доска видна на телефоне.",
+        "priority": "medium",
+        "position": 4096,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f934-7acc-9b24-15d3d47764cd",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Живая доска: синхронизация board.json с работающим узлом",
+        "description": "Зачем: сейчас доска — файл, который правит патч. Настоящий dogfooding — работать с ней в самом p2pKanban и возвращать изменения в репозиторий.\n\nГотово, когда: есть инструмент, который нормализует экспорт доски из узла (стабильные ID, порядок, без летучих полей) и превращает его в board/board.json.\n\nСложность: web при импорте создаёт копию с новыми ID, abl сохраняет исходные ID только в пустом профиле.",
+        "priority": "low",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f935-724d-9299-299fd9a58eaa",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "devctl receipts двигают карточки корневой доски",
+        "description": "Зачем: web уже принимает devctl receipts и integrations.p2pKanban.workItems в манифесте. Корневая доска могла бы получать evidence так же.\n\nГотово, когда: патч ссылается на ID карточки доски, а после devctl start появляется receipt, который подтверждает её переход.",
+        "priority": "low",
+        "position": 2048,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f936-7499-a62f-2242506eaccd",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Матрица совместимости и порядок обновления направлений",
+        "description": "Зачем: правило «сначала все web-узлы, потом Android» живёт в PATCH_SUMMARY отдельных патчей. abl добавляет третьего участника протоколов.\n\nГотово, когда: в корне есть машиночитаемая матрица: какие версии web, mobile и abl совместимы по каждому контракту; проверка доски или контрактов её читает.",
+        "priority": "medium",
+        "position": 5120,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f937-7f2c-8998-2d7e32d8f820",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Теги и релизы по направлениям",
+        "description": "Зачем: в одном репозитории нужен способ выпускать направления независимо.\n\nГотово, когда: теги вида web/v2.1.0, mobile/v2.1.0, abl/a17, devctl/v0.8.0; GitHub Releases по направлениям; подписанный APK из CI (идея из README mobile).",
+        "priority": "low",
+        "position": 3072,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f938-78cc-b33f-7ffc93b83a64",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "CI на GitHub с фильтрами по путям",
+        "description": "Зачем: после появления удалённого репозитория нужно, чтобы push в web/ не запускал сборку abl, а проверка доски шла всегда.\n\nГотово, когда: workflows по направлениям с paths-фильтрами и общий job проверки доски и карты направлений.",
+        "priority": "low",
+        "position": 4096,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f939-79eb-a84a-c0de67397162",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Вложенный devctl/.devctl/workspace.json",
+        "description": "Зачем: внутри направления devctl лежит его собственный workspace с устаревшим разделом stage0 (zapret). Поиск workspace вверх от devctl/ находит его раньше корневого.\n\nГотово, когда: решено: оставить как workspace самого devctl с понятным предупреждением, или перенести в пример документации.",
+        "priority": "low",
+        "position": 6144,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f93a-77b6-a292-90d5b43ed2dd",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Старая копия devctl v0.2 в web/tools/devctl.py",
+        "description": "Зачем: канонический devctl теперь лежит рядом; копия в web может запутать нейросеть, готовящую патч.\n\nГотово, когда: копия удалена или явно помечена как историческая, ссылки в web/docs/devctl ведут на devctl/.",
+        "priority": "low",
+        "position": 5120,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f93b-7f2d-8030-2427cb79f624",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Эволюционный архив всей экосистемы с бюджетом по направлениям",
+        "description": "Зачем: devctl zip по монорепозиторию будет делить бюджет между четырьмя проектами случайно.\n\nГотово, когда: devctl zip умеет приоритизировать направление патча и корневой слой, сохраняя краткий контекст соседей.",
+        "priority": "low",
+        "position": 6144,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f93c-7b0c-b701-bed5702fede9",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Автоматизировать признаки удачного воркспейса",
+        "description": "Зачем: критерии из docs/ecosystem/success-criteria.md пока проверяются глазами.\n\nГотово, когда: проверка считает: доля коммитов с изменённой доской, ссылки между направлениями через ../, доска против git log.",
+        "priority": "low",
+        "position": 7168,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f93d-7fe6-936c-a91af3d14a80",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f909-73a3-809e-e77de27e2794",
+        "title": "Перенести историю коммитов исходных репозиториев",
+        "description": "Зачем: инициирующий патч переносит содержимое без истории, чтобы начать с чистого корня.\n\nГотово, когда: если понадобится, история вливается через git filter-repo в подкаталоги отдельным решением.\n\nПочему не сейчас: история доступна в старых репозиториях и в архивах devctl; переписывание истории не даёт пользы до появления удалённого репозитория.",
+        "priority": "low",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10d38-f93e-7dda-b182-d32023c6d573",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f909-73a3-809e-e77de27e2794",
+        "title": "Общий код между web, mobile и abl",
+        "description": "Зачем: TypeScript-модели и Rust-логика синхронизации повторяются в нескольких направлениях.\n\nГотово, когда: общий пакет появляется только для контракта, реализованного трижды и расходящегося.\n\nПочему не сейчас: принцип «связываем контрактами, а не кодом»; сначала ступень contracts/.",
+        "priority": "low",
+        "position": 2048,
+        "archivedAt": null
+      }
+    ],
+    "labels": [
+      {
+        "id": "01a10d38-f90a-7e3f-977a-c94d264b5e5d",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "web",
+        "color": "#2f80ed",
+        "description": "Направление web/"
+      },
+      {
+        "id": "01a10d38-f90b-767e-92c8-3fda5e1c1561",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "mobile",
+        "color": "#27ae60",
+        "description": "Направление mobile/ (Android)"
+      },
+      {
+        "id": "01a10d38-f90c-7600-92f4-91ab461e2ef5",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "abl",
+        "color": "#9b51e0",
+        "description": "Направление abl/ (Arch-based Linux)"
+      },
+      {
+        "id": "01a10d38-f90d-7268-b14d-c1950da233b8",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "devctl",
+        "color": "#f2994a",
+        "description": "Направление devctl/"
+      },
+      {
+        "id": "01a10d38-f90e-737d-b098-e3e4f59f29d1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "экосистема",
+        "color": "#4f4f4f",
+        "description": "Корневой слой: связи, доска, метадокументация"
+      },
+      {
+        "id": "01a10d38-f90f-7280-90b7-fa74f8206796",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "контракт",
+        "color": "#eb5757",
+        "description": "Затрагивает контракт между направлениями"
+      },
+      {
+        "id": "01a10d38-f910-74f8-a779-e200fcd40acc",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "риск",
+        "color": "#f2c94c",
+        "description": "Может сломать что-то у пользователя или в потоке патчей"
+      },
+      {
+        "id": "01a10d38-f911-7b6c-a164-7928c51ddcfd",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "долг",
+        "color": "#828282",
+        "description": "Наследство, которое мешает, но не горит"
+      }
+    ],
+    "cardLabels": [
+      {
+        "cardId": "01a10d38-f912-7b63-9ff0-6512c67e0871",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f928-75c4-9188-bba303981dd8",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10d38-f928-75c4-9188-bba303981dd8",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10d38-f928-75c4-9188-bba303981dd8",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a10d38-f933-71c3-b86b-4879e82ea632",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10d38-f934-7acc-9b24-15d3d47764cd",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f934-7acc-9b24-15d3d47764cd",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10d38-f935-724d-9299-299fd9a58eaa",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10d38-f935-724d-9299-299fd9a58eaa",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10d38-f935-724d-9299-299fd9a58eaa",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f936-7499-a62f-2242506eaccd",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f936-7499-a62f-2242506eaccd",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10d38-f937-7f2c-8998-2d7e32d8f820",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f938-78cc-b33f-7ffc93b83a64",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f939-79eb-a84a-c0de67397162",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10d38-f939-79eb-a84a-c0de67397162",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a10d38-f93a-77b6-a292-90d5b43ed2dd",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10d38-f93a-77b6-a292-90d5b43ed2dd",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10d38-f93a-77b6-a292-90d5b43ed2dd",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a10d38-f93b-7f2d-8030-2427cb79f624",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10d38-f93c-7b0c-b701-bed5702fede9",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f93d-7fe6-936c-a91af3d14a80",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f93e-7dda-b182-d32023c6d573",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      }
+    ],
+    "checklists": [
+      {
+        "id": "01a10d38-f913-73b1-b048-bb53038e59ae",
+        "cardId": "01a10d38-f912-7b63-9ff0-6512c67e0871",
+        "title": "Состав",
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
+        "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
+        "title": "Проверки на хосте",
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f922-7ee0-a493-e79af17199b8",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "title": "Шаги",
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "cardId": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
+        "title": "Контракты",
+        "position": 1024
+      }
+    ],
+    "checklistItems": [
+      {
+        "id": "01a10d38-f914-7be5-a155-1d262c00434b",
+        "checklistId": "01a10d38-f913-73b1-b048-bb53038e59ae",
+        "title": "Направления перенесены без правок: web, mobile, abl, devctl",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f915-7791-88a9-1a749fe8dfeb",
+        "checklistId": "01a10d38-f913-73b1-b048-bb53038e59ae",
+        "title": "Метадокументация: принципы, границы, devctl, разработка, путь интеграции, критерии",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a10d38-f916-76c6-a458-a9bac9720cf5",
+        "checklistId": "01a10d38-f913-73b1-b048-bb53038e59ae",
+        "title": "Самоприменимая доска в формате p2p_planner_bundle v1",
+        "isDone": true,
+        "position": 3072
+      },
+      {
+        "id": "01a10d38-f917-7527-8fbf-38925c82bbd6",
+        "checklistId": "01a10d38-f913-73b1-b048-bb53038e59ae",
+        "title": "Проверка tools/ecosystem/check_board.py",
+        "isDone": true,
+        "position": 4096
+      },
+      {
+        "id": "01a10d38-f918-7422-be61-106b10762e5e",
+        "checklistId": "01a10d38-f913-73b1-b048-bb53038e59ae",
+        "title": "Корень как devctl-workspace",
+        "isDone": true,
+        "position": 5120
+      },
+      {
+        "id": "01a10d38-f91c-76d7-8491-73e2eedc4b30",
+        "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
+        "title": "web: cd web && python bootstrap.py поднимает стек",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f91d-7e7e-8bbf-5f87ab581aaf",
+        "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
+        "title": "mobile: cd mobile && npm ci && npm run apk собирает APK",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10d38-f91e-796a-9fd5-a5cac155a617",
+        "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
+        "title": "abl: cd abl && python3 -B tools/uts_verify.py --allow-network, затем без флага",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10d38-f91f-7c33-bdd6-619c8892d58b",
+        "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
+        "title": "devctl: devctl plan и devctl start из корня на пробном патче",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10d38-f920-711a-aecd-95ff2da5b38c",
+        "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
+        "title": "sparse-checkout одного направления разворачивается без остальных",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a10d38-f923-74df-a523-852c515fcaa1",
+        "checklistId": "01a10d38-f922-7ee0-a493-e79af17199b8",
+        "title": "Формат профиля установки (какие направления, порты, каталоги)",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f924-7ec2-93da-b065f22c20c3",
+        "checklistId": "01a10d38-f922-7ee0-a493-e79af17199b8",
+        "title": "Скачивание: полный клон или sparse/partial по профилю",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10d38-f925-7444-931b-b9aabe659a75",
+        "checklistId": "01a10d38-f922-7ee0-a493-e79af17199b8",
+        "title": "Делегирование bootstrap каждого направления",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10d38-f926-72ac-81a5-661e04d7dc4b",
+        "checklistId": "01a10d38-f922-7ee0-a493-e79af17199b8",
+        "title": "--dry-run и понятный отчёт, что будет сделано",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10d38-f927-7c26-a25b-c00946d4a03e",
+        "checklistId": "01a10d38-f922-7ee0-a493-e79af17199b8",
+        "title": "doctor: проверка предпосылок по направлениям (Docker, JDK/SDK, WebKitGTK)",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a10d38-f92c-7e1f-9007-dd3b3581fb67",
+        "checklistId": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "title": "p2p_planner_bundle v1",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a10d38-f92d-758f-aa21-82754d3af598",
+        "checklistId": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "title": "p2p-kanban-roaming/1",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10d38-f92e-7a8e-b74c-f5f0f1eb7eeb",
+        "checklistId": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "title": "p2p-kanban-sync/1",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10d38-f92f-799a-b99d-283fa693a186",
+        "checklistId": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "title": "p2p-kanban-device-link/2",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10d38-f930-7561-b2eb-1b99b4d9fbb8",
+        "checklistId": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "title": "p2p-kanban-web-node-link/1",
+        "isDone": false,
+        "position": 5120
+      }
+    ],
+    "comments": [
+      {
+        "id": "01a10d38-f919-79c4-a8bb-40160571a72c",
+        "cardId": "01a10d38-f912-7b63-9ff0-6512c67e0871",
+        "body": "patch 2026-10-05-ecosystem-workspace-init: монорепозиторий создан; доска проходит импортёры web (boardBundle.ts) и abl (import.rs).",
+        "createdAt": "2026-10-05T18:30:00Z"
+      }
+    ],
+    "boardAppearanceSettings": [],
+    "activityEntries": []
+  },
+  "restoreHints": {
+    "recommendedStrategy": "create_copy",
+    "requiresManualReview": false,
+    "destructiveRestoreAllowed": false
+  }
+}

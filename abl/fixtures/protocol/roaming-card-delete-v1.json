@@ -1,0 +1,20 @@
+{
+  "protocolVersion": "p2p-kanban-roaming/1",
+  "eventId": "fixture-roaming-delete-001",
+  "workspaceId": "018f0000-0000-7000-8000-000000000001",
+  "boardId": "018f0000-0000-7000-8000-000000000002",
+  "capabilityEpoch": 3,
+  "replicaId": "fixture-replica-linux-a00",
+  "replicaSeq": 12,
+  "logicalClock": 43,
+  "entityType": "card",
+  "entityId": "018f0000-0000-7000-8000-000000000003",
+  "operation": "card.delete",
+  "fieldMask": [
+    "__lifecycle"
+  ],
+  "payload": {
+    "deletedAt": "2026-09-12T00:00:01Z"
+  },
+  "occurredAt": "2026-09-12T00:00:01Z"
+}

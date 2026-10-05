@@ -1,0 +1,45 @@
+{
+  "formatVersion": 1,
+  "stage": "A17",
+  "facts": [
+    "Signed offline kit verification checks a separately trusted primary GPG fingerprint, complete file inventory, SHA-256/size, expected app version and minimum release sequence.",
+    "Launch copies and rehashes the AppImage into a private directory before direct FUSE or explicit extract/run.",
+    "Producer binds AppImage to the immutable A15 source and A17 overlay using a retained build record.",
+    "The frozen signature fixture is public synthetic data, not a compiled AppImage or installable kit.",
+    "Schema remains v6 and no application Rust/IPC/CSP/package-manager behavior is changed."
+  ],
+  "limitations": [
+    "Actual AppImage build, real gpg-agent release signing, FUSE/extract/WebKitGTK runtime and distribution ABI acceptance remain host/release gates.",
+    "A17 does not implement the live ABL Nostr transport orchestration deferred by A10/A11."
+  ],
+  "sources": [
+    {
+      "path": "tools/a17_build_appimage.py",
+      "sha256": "98d0dd84f981047abd4890f7ecd8a6219f6854fa96737b7a3e2f20c630a1f743"
+    },
+    {
+      "path": "tools/a17_release_kit.py",
+      "sha256": "891682372cebca15a147cafb8451c287192f7e3a91d62e136358776f2444acb6"
+    },
+    {
+      "path": "tools/a17_host_appimage_probe.py",
+      "sha256": "16d156d4b65feca8b4ca05eec5022116f7375edf76a946dab82f842fc711761d"
+    },
+    {
+      "path": "tools/check_a17.py",
+      "sha256": "8cb4cfef79760a28cde4045e902cd07f11f86b1936b1a2dbb125dad3880bd53f"
+    },
+    {
+      "path": "packaging/appimage/tauri.appimage.conf.json",
+      "sha256": "f4022a458f0376ba8559a560c5d41b53a288e0dea956728b11f4a2d96dba7428"
+    },
+    {
+      "path": "fixtures/a17-signed-kit.json",
+      "sha256": "5bce6596a9d0d751cf596799831e00d68ec2366b2d4e233a70301bfe25b0566e"
+    },
+    {
+      "path": "docs/A17_OFFLINE_KIT.md",
+      "sha256": "bf8be47a98b164234f68a282fea0aad3e272d1e7e620934e589b173a8f9b5ec6"
+    }
+  ]
+}

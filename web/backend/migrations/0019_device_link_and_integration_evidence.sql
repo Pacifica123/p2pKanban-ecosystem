@@ -1,0 +1,5 @@
+-- Local admission ledger, public proofs and integration evidence; no deployment secrets.
+create table device_link_challenges(id text primary key,request_json jsonb not null,expires_at bigint not null,consumed_at timestamptz,created_at timestamptz not null default now());
+create table roaming_device_grants(board_id uuid primary key references boards(id) on delete cascade,user_id uuid not null references users(id),root_key text not null,chain_json jsonb not null,epoch bigint not null check(epoch>0));
+create table integration_projects(id uuid primary key,workspace_id uuid not null references workspaces(id),name text not null,component_id uuid not null,board_id uuid not null references boards(id),resource_json jsonb not null,created_by uuid not null references users(id),created_at timestamptz not null default now());
+create table integration_receipts(project_id uuid not null references integration_projects(id),receipt_id uuid not null,payload_json jsonb not null,imported_by uuid not null references users(id),created_at timestamptz not null default now(),primary key(project_id,receipt_id));

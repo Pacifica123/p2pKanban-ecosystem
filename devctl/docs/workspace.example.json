@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "projectDir": "project",
+  "patchesDir": "patches",
+  "archivesDir": "archives",
+  "git": {
+    "enabled": true,
+    "autoCommit": true,
+    "autoPush": true,
+    "remote": "origin",
+    "requireClean": true,
+    "requireUpToDate": true
+  },
+  "archive": {
+    "exclude": [
+      ".git",
+      "node_modules",
+      "target",
+      "dist",
+      "build",
+      "coverage",
+      "UserTestSpace",
+      "__pycache__",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache",
+      ".env",
+      ".env.*",
+      "*.db",
+      "*.sqlite",
+      "*.sqlite3",
+      "*.pyc",
+      "*.pyo"
+    ]
+  },
+  "checkProfiles": {
+    "default": []
+  },
+  "userTestSpaceDir": "UserTestSpace"
+}

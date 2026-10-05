@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "name": "real-backend-core-flow",
+  "description": "Create workspace, board, column and card through the real UI and real backend API.",
+  "requires": {
+    "browser": true,
+    "frontend": true,
+    "backend": true,
+    "safeDatabase": true
+  },
+  "steps": [
+    { "goto": "/auth" },
+    { "assertVisible": "[data-testid='auth-page']" },
+    { "click": "[data-testid='auth-mode-sign-up']" },
+    { "fill": "[data-testid='auth-email']", "valueFrom": "generated.email" },
+    { "fill": "[data-testid='auth-password']", "valueFrom": "generated.password" },
+    { "fill": "[data-testid='auth-display-name']", "valueFrom": "generated.displayName" },
+    { "click": "[data-testid='auth-submit']" },
+    { "assertVisible": "[data-testid='workspace-list-page']" },
+    { "fill": "[data-testid='workspace-name-input']", "valueFrom": "generated.workspaceName" },
+    { "fill": "[data-testid='workspace-description-input']", "value": "Created by UIX real backend evidence runner." },
+    { "click": "[data-testid='workspace-create-submit']" },
+    { "assertVisible": "[data-testid='workspace-boards-page']" },
+    { "fill": "[data-testid='board-name-input']", "valueFrom": "generated.boardName" },
+    { "fill": "[data-testid='board-description-input']", "value": "Created by UIX real backend evidence runner." },
+    { "click": "[data-testid='board-create-submit']" },
+    { "assertVisible": "[data-testid='board-page']" },
+    { "fill": "[data-testid='column-name-input']", "valueFrom": "generated.columnName" },
+    { "click": "[data-testid='column-create-submit']" },
+    { "assertVisibleText": { "selector": "[data-testid='board-column']", "textFrom": "generated.columnName" } },
+    { "fill": "[data-testid='card-create-input']", "valueFrom": "generated.cardTitle" },
+    { "click": "[data-testid='card-create-submit']" },
+    { "assertVisibleText": { "selector": "[data-testid='board-column']", "textFrom": "generated.cardTitle" } },
+    { "assertNetworkSeen": "POST /api/v1/auth/sign-up" },
+    { "assertNetworkSeen": "POST /api/v1/workspaces" },
+    { "assertNetworkSeen": "POST /api/v1/workspaces/*/boards" },
+    { "assertNetworkSeen": "POST /api/v1/boards/*/columns" },
+    { "assertNetworkSeen": "POST /api/v1/boards/*/cards" },
+    { "assertNoFatalConsole": true }
+  ]
+}

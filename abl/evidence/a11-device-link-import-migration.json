@@ -1,0 +1,133 @@
+{
+  "externalAnchors": [
+    {
+      "path": "backend/src/auth/device_link.rs",
+      "sha256": "a1a0dc326efeb32fa883d16559e5ebbec3a1e5982019d039e3d42945ca7b29e1",
+      "source": "web"
+    },
+    {
+      "path": "backend/src/modules/integrations/dto.rs",
+      "sha256": "958788ad02ebd741970705fde8e82ec8abdfd25b4a7b5cbdaf0152669f8a73a3",
+      "source": "web"
+    },
+    {
+      "path": "backend/src/modules/integrations/service.rs",
+      "sha256": "3883142c233fc55980a12a76feb9faa53e2a39ce8f34afa0db2f2d76110f7cd1",
+      "source": "web"
+    },
+    {
+      "path": "docs/architecture/import-export-backup-v1.md",
+      "sha256": "924696575804f06700e1661055cb989fe1cfaab52f9d6ee62897204c280e0383",
+      "source": "web"
+    },
+    {
+      "path": "docs/architecture/web-node-link-v1.md",
+      "sha256": "fbe0925b3a1fa6877d0277c72e58bb27cb5d0bb1106057657738b39959eb3c19",
+      "source": "web"
+    },
+    {
+      "path": "src/features/deviceLink/protocol.ts",
+      "sha256": "3a09b982f866975eeb80d3579258ca6093f2077e911e2012b21e71a074eb4d6b",
+      "source": "android"
+    },
+    {
+      "path": "src/features/deviceLink/service.ts",
+      "sha256": "4858d8447d90dd0833e6417e7e8e4da6bc6c4ca80b0b2833252ce079d84daa3a",
+      "source": "android"
+    },
+    {
+      "path": "src/features/deviceLink/snapshot.ts",
+      "sha256": "e70c73ba2c56fe7399feb34f70885e2db1a7f96e2ac75784271a9ca51a3b9bea",
+      "source": "android"
+    }
+  ],
+  "facts": [
+    "A10 UTS deterministic/frontend checks passed and cargo.lock.offline-recheck exposed the host offline serde 1.0.228 cache line against the former direct serde 1.0.229 pin; A11 retains the agreed serde 1.0.228 direct compatibility pin.",
+    "The first A11 UTS (20260915T054436Z) passed deterministic/frontend gates, then online cargo generate-lockfile selected exact serde_json 1.0.151 while the immediate offline recheck exposed only the host-cached serde_json 1.0.149 line for Tauri.",
+    "The A11 verifier previously ran locked cargo fetch only after cargo.lock.offline-recheck; A11 now performs online lock generation plus locked network fetch, deletes that online lock, regenerates Cargo.lock offline, requires byte-equivalence, then continues with locked offline fetch/test/build.",
+    "Host UTS 20260915T073257Z passed the corrected lock/network-fetch/offline-regenerate/fetch chain and reached real offline Rust compilation; cargo build exposed only ambiguous serde_json::Map::entry literal-key conversions, while cargo test additionally exposed a stale A09 VaultStatus test initializer. CORR-A11-003 fixes both inside A11 without schema/protocol/privilege changes.",
+    "Schema v5 stores import receipts, principal identifiers, capability metadata and opaque portable JSON, but no device private key or board key bytes.",
+    "Portable bundle v1 is validated as board-scoped application state, requires an empty/fresh A11 migration destination, preserves stable logical UUIDs plus restoreHints/unknown metadata, and has a deterministic parse-export-parse compatibility test including exact non-null card archivedAt preservation.",
+    "Device-link/2 provisioning binds the grant scope/epoch/subject to a fresh native replica and vault-only board/device secret material.",
+    "Web-node-link v1 destination provisioning requires an empty native profile, binds capability subjects to the fresh native principal public key, and records omissions for deployment/session/device state, shared workspaces and node-local hides.",
+    "Import application uses one SQLite IMMEDIATE transaction and does not insert pending_local_changes.",
+    "The native runtime wires ImportService without adding a Tauri import/file/keyring command; the main WebView permission list stays empty."
+  ],
+  "formatVersion": 1,
+  "inferences": [
+    "A network-only cargo generate-lockfile is index/lock preparation, not sufficient fresh-host crate-cache preparation; pinning direct dependencies to arbitrary historical cache contents would make acceptance host-history dependent.",
+    "Treating imported state as replica seed rather than a local mutation avoids echoing restored content through the A10 outbox path.",
+    "Vault-before-DB ordering plus collision rejection is the safer cross-resource failure direction because a crash can leave only unreachable secret material rather than an active board without its required key.",
+    "Preserving unknown portable sections and entity fields as validated JSON avoids silent data loss before A12 promotes more fields to first-class native entities.",
+    "For A11 migration, preserving stable logical UUIDs in a fresh profile is safer than interpreting restoreHints.create_copy as an ID-remap instruction because coexistence must not fork logical board identity; generic copy/restore UI semantics remain out of scope."
+  ],
+  "proposals": [
+    "A12 should consume the preserved label/comment/activity/appearance sections as first-class native parity data without changing A11 secret or import boundaries.",
+    "A16 recovery/doctor may detect and clean unreachable orphan vault material created by a process crash in the Secret Service-to-SQLite commit window."
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/Cargo.toml",
+      "sha256": "aa0718ae679fc99390fe6369e6a7e7fd91a55cb77bfccc741a72629c5cd06782"
+    },
+    {
+      "path": "src-tauri/migrations/0005_import_link.sql",
+      "sha256": "f32f6c68584c4b43c06fd817bb567cce33064fdceb4dd8452f16249679a62726"
+    },
+    {
+      "path": "src-tauri/src/domain/import.rs",
+      "sha256": "021b53a379093da0ef577bd26696b19f029c0821074b610dfab8ab4cd36e9193"
+    },
+    {
+      "path": "src-tauri/src/application/import.rs",
+      "sha256": "647c74291d0535bdd503797a356c93afc0c13c5248fc5961d7db09f21c4e6699"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/import.rs",
+      "sha256": "71542a73efea6cc0302967b7c008947a00213cf0e0567ec6f1a592d425b4ede1"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/sync.rs",
+      "sha256": "6067ce3feecbe88f16131b0f2ebd864242c9b3e8eeaca656dd084232852c7421"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/migration.rs",
+      "sha256": "699388815aa0fa448240c363cb5fc3903c4d7af0e31f6926d3a3aca9e2941337"
+    },
+    {
+      "path": "src-tauri/src/desktop_api.rs",
+      "sha256": "508597bea0f8f09198d80deb175a5476110f86ee185517fb2345c44b8d9fe7b4"
+    },
+    {
+      "path": "src-tauri/src/main.rs",
+      "sha256": "d453c6218799c119f48bfa67a477c4481b2b0a544ba88dcdf8dbb226e7a7e4f4"
+    },
+    {
+      "path": "tools/check_a11.py",
+      "sha256": "3504a7afc0ae76ed806a01cd1b4f5a40b6abd311cd312bf4518da539b32d068a"
+    },
+    {
+      "path": "tools/uts_plan.json",
+      "sha256": "da9580c547a43b68449da2450a7eefc3881f32fc3c01eb7754cda7d74cabfa12"
+    },
+    {
+      "path": "docs/evidence/A11_DEVICE_LINK_IMPORT_MIGRATION.md",
+      "sha256": "c467a0409527fa7deb24997c4e8406c78701971b29ff30092f03b100bef45f6e"
+    },
+    {
+      "path": "docs/architecture/08-implementation-corrections-and-debt.md",
+      "sha256": "04bff4caf0705d5c819372b1e9b7e5e7d077d47755e4b5168c043bc1d5426bd3"
+    },
+    {
+      "path": "tools/uts_verify.py",
+      "sha256": "b9e215db4b7267ac6ca861ba49c5b0f0035c93cf528ae4b1acb9b8da7e0d718f"
+    }
+  ],
+  "stage": "A11",
+  "title": "device-link/2 + web-node-link/bundle import migration",
+  "unresolved": [
+    "Live Nostr signed-event verification, delegation-chain/chunk transport and relay lifecycle for device-link/2 are not implemented by this destination boundary.",
+    "Legacy web-node-link source HTTP/session acquisition is not implemented and must remain a native bounded adapter rather than WebView networking.",
+    "Final cargo test/build plus A06/A08/A09/A10/A11 host/runtime probes require one more user Arch-family UTS rerun after CORR-A11-003 because this construction environment has no Rust toolchain."
+  ]
+}

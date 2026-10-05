@@ -1,0 +1,9 @@
+{
+  "format": "p2p-kanban-lan-bridge-golden-vector",
+  "version": 1,
+  "token": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYX",
+  "aadUtf8Escaped": "p2p-kanban-lan-bridge/1\\u0000POST\\u0000/v1/p2pkanban/pair",
+  "plaintextUtf8": "{\"kind\":\"golden\",\"version\":1}",
+  "envelopeJson": "{\"protocol\":\"p2p-kanban-lan-bridge/1\",\"nonce\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYX\",\"ciphertext\":\"5eBkFv62r5QRI0mirzfGymdlXsCPpXSEETgFh0CYRZ3IcGCCVqCiuQ-LkYcq\"}"
+}

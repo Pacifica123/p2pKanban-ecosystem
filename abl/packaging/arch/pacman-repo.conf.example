@@ -1,0 +1,6 @@
+# Replace the example.invalid origins with project-controlled HTTPS mirrors.
+# Import and locally verify the release signing public key before enabling this repo.
+[p2pkanban]
+SigLevel = Required TrustedOnly
+Server = https://mirror1.example.invalid/p2pkanban/$arch
+Server = https://mirror2.example.invalid/p2pkanban/$arch

@@ -1,0 +1,84 @@
+{
+  "formatVersion": 1,
+  "stage": "A04",
+  "sources": [
+    {
+      "source": "web",
+      "path": "backend/src/modules/common.rs",
+      "sha256": "7d839dfb22d4a252432968ab583fd127289a6b3c5cface8cfe5c67cdc8bb5e4b",
+      "supports": ["position allocation uses a numeric key", "workspace writes are role-gated", "workspace access epoch is persisted"]
+    },
+    {
+      "source": "web",
+      "path": "backend/src/modules/cards/repo.rs",
+      "sha256": "b69dcbfe0643d78ae1b597a1c9a527cf2e258d4b3232c0a908f886048c8dba8e",
+      "supports": ["position+id ordering", "archive is reversible", "delete writes a tombstone transactionally", "reorder validates column membership and commits atomically"]
+    },
+    {
+      "source": "web",
+      "path": "backend/src/modules/workspaces/repo.rs",
+      "sha256": "574ab20400d99a82f69ed910f16f4edaeecdd75ba453e3f12561f50898d4a184",
+      "supports": ["access epoch advances with membership/capability changes"]
+    },
+    {
+      "source": "web",
+      "path": "backend/src/modules/sync/service.rs",
+      "sha256": "e6c34464f7aadea0ab2d6dac4ee948fdb7d0908b6904a52d300fc3277cf78a37",
+      "supports": ["write/sync access epoch must exactly equal current workspace epoch", "replica sequence is monotonic within a push"]
+    },
+    {
+      "source": "android",
+      "path": "src/features/localFirst/model.ts",
+      "sha256": "3ff0129f6430e2909881e2f71e1efe4021f21d7881f96ffff614ab459e869f40",
+      "supports": ["local operations carry accessEpoch", "archive and delete are distinct operations", "local optimistic positions are numeric"]
+    },
+    {
+      "source": "android",
+      "path": "src/features/localFirst/repository.ts",
+      "sha256": "fdc77baf039b619a33ba1f54b2e758d796b2672315511158e521d8c768999b36",
+      "supports": ["board snapshot and operation queue are one local logical state", "positive accessEpoch migration"]
+    },
+    {
+      "source": "android",
+      "path": "src/features/localFirst/delivery.ts",
+      "sha256": "24ce043e0bd9b5520564f612fd2378b44f9171a586de6a7702b64789aead0ca8",
+      "supports": ["relay acknowledgement is not semantic application", "delete confirmation is absence from coordinator projection"]
+    },
+    {
+      "source": "android",
+      "path": "src/shared/lib/cardOrder.ts",
+      "sha256": "c478d4541b8eddf7532a7336c07df556f66a79be90b39d1f6c610ab7e02e833c",
+      "supports": ["position ordering uses stable id tie-break"]
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/merge.ts",
+      "sha256": "4eb262cc3558421f3f86f40d01753a222adb3af6726bca9ffd641eaef1487a14",
+      "supports": ["delete tombstones survive later snapshots/card.put", "newer delete stamp supersedes older delete stamp", "merge applies deterministic version ordering"]
+    }
+  ],
+  "facts": [
+    "card identity is stable across repositories and sync/export surfaces",
+    "non-deleted card order is numeric position ascending with stable id tie-break where current clients need deterministic ordering",
+    "archive is reversible state and is not equivalent to delete",
+    "delete removes the live projection and records a tombstone",
+    "workspace-scoped write/sync generations reject a stale access epoch rather than silently applying it",
+    "multi-card reorder validates target-column membership before commit and is a transaction boundary",
+    "roaming version comparison is logicalClock then replicaId then eventId"
+  ],
+  "inferences": [
+    "desktop repository APIs should express one atomic semantic commit rather than expose SQL transaction objects",
+    "a tombstoned card id must not be silently recreated by ordinary CRUD; any future explicit restore semantics require a separate protocol decision",
+    "repository reads should return deterministic ordering independent of database row order"
+  ],
+  "proposals": [
+    "A04 uses PlannerRepository plus PlannerTransaction as the storage-independent boundary that A05 SQLite must implement",
+    "A04 contract tests use a pure in-memory reference adapter and are written so a pre-seeded A05 adapter can run the same logical scenario"
+  ],
+  "unresolved": [
+    "legacy web allocates default position gaps at 1024 while Android optimistic local-first allocates at 1000; A04 therefore freezes ordering semantics but not the allocation gap",
+    "field-level merge/version ownership remains A10 sync-core scope; A04 stores tombstone version ordering only",
+    "a native PostgreSQL adapter is intentionally not introduced into this repository; dual-adapter execution against legacy PostgreSQL remains extraction evidence work rather than a desktop runtime dependency",
+    "UUID syntax/generation is not revalidated by A04 value types; exact ID creation policy remains at import/application boundaries"
+  ]
+}

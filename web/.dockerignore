@@ -1,0 +1,17 @@
+.git
+.dev-bootstrap
+.env
+.env.*
+**/.env
+**/.env.*
+**/__pycache__
+**/*.pyc
+backend/target
+frontend/node_modules
+frontend/dist
+frontend/playwright-report
+frontend/test-results
+edge-coordinator/node_modules
+edge-coordinator/.wrangler
+release
+artifacts

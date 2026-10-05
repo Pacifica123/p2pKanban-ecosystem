@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: p2p_planner
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d p2p_planner"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [coordinator]
+
+  tailscale:
+    image: tailscale/tailscale:stable
+    hostname: "${TAILSCALE_HOSTNAME:-p2p-kanban-home}"
+    restart: unless-stopped
+    environment:
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: "false"
+      TS_AUTH_ONCE: "true"
+      TS_AUTHKEY: "${TAILSCALE_AUTHKEY:-}"
+      TS_EXTRA_ARGS: "${TAILSCALE_EXTRA_ARGS:---accept-dns=true}"
+    volumes:
+      - tailscale_state:/var/lib/tailscale
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    networks: [coordinator]
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: deploy/home-coordinator/backend.Dockerfile
+    restart: unless-stopped
+    network_mode: "service:tailscale"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      tailscale:
+        condition: service_started
+    environment:
+      APP__ENV: self_host
+      APP__HOST: 0.0.0.0
+      APP__PORT: 18080
+      APP__LOG_FORMAT: json
+      DATABASE__URL: "postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/p2p_planner"
+      DATABASE__MAX_CONNECTIONS: 10
+      DATABASE__MIN_CONNECTIONS: 1
+      DATABASE__CONNECT_TIMEOUT_SECS: 10
+      HTTP__BODY_LIMIT_MB: 4
+      HTTP__CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:?set CORS_ALLOWED_ORIGINS}"
+      AUTH__JWT_SECRET: "${JWT_SECRET:?set JWT_SECRET}"
+      AUTH__PREVIOUS_JWT_SECRETS: ""
+      AUTH__ACCESS_TOKEN_TTL_MINUTES: 15
+      AUTH__REFRESH_TOKEN_TTL_DAYS: 30
+      AUTH__PUBLIC_SIGNUP_ENABLED: "${PUBLIC_SIGNUP_ENABLED:-false}"
+      AUTH__REFRESH_COOKIE_NAME: p2p_planner_refresh
+      AUTH__DEVICE_COOKIE_NAME: p2p_planner_device
+      AUTH__COOKIE_SAME_SITE: lax
+      AUTH__COOKIE_SECURE: "true"
+      AUTH__ENABLE_DEV_HEADER_AUTH: "false"
+      AUTH__AUTH_RATE_LIMIT_WINDOW_SECS: 60
+      AUTH__AUTH_RATE_LIMIT_MAX_ATTEMPTS: 20
+      AUTH__SENSITIVE_RATE_LIMIT_WINDOW_SECS: 60
+      AUTH__SENSITIVE_RATE_LIMIT_MAX_ATTEMPTS: 60
+      TRANSPORTS__WORKER_POLL_INTERVAL_MS: "${TRANSPORT_WORKER_POLL_INTERVAL_MS:-1000}"
+      TRANSPORTS__BATCH_SIZE: "${TRANSPORT_BATCH_SIZE:-50}"
+      TRANSPORTS__MAX_ATTEMPTS: "${TRANSPORT_MAX_ATTEMPTS:-12}"
+      TRANSPORTS__NOSTR__ENABLED: "${NOSTR_SHADOW_ENABLED:-false}"
+      TRANSPORTS__NOSTR__RELAYS: "${NOSTR_RELAYS:-}"
+      TRANSPORTS__NOSTR__SECRET_KEY: "${NOSTR_SECRET_KEY:-}"
+      TRANSPORTS__NOSTR__MASTER_KEY_BASE64: "${NOSTR_MASTER_KEY_BASE64:-}"
+      TRANSPORTS__NOSTR__EVENT_KIND: "${NOSTR_EVENT_KIND:-1978}"
+      TRANSPORTS__NOSTR__FETCH_TIMEOUT_SECS: "${NOSTR_FETCH_TIMEOUT_SECS:-10}"
+      TRANSPORTS__NOSTR__MIN_RELAY_ACKS: "${NOSTR_MIN_RELAY_ACKS:-3}"
+      TRANSPORTS__NOSTR__BACKFILL_ON_START: "${NOSTR_BACKFILL_ON_START:-false}"
+
+volumes:
+  postgres_data:
+  tailscale_state:
+
+networks:
+  coordinator:

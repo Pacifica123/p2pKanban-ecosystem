@@ -1,0 +1,45 @@
+{
+  "facts": [
+    "A06 provides a single-writer default XDG profile before Tauri startup.",
+    "A05/A05b provide an embedded SQLite profile and a storage-independent repository boundary.",
+    "The architecture forbids refresh tokens, board keys, device private keys and vault roots in plaintext SQLite/localStorage/config.",
+    "The initial SQLite schema already contains stable workspace and board identifiers but no human-readable titles."
+  ],
+  "formatVersion": 1,
+  "inferences": [
+    "The first honest UI vertical slice can persist workspace/board metadata without introducing card semantics scheduled for A08.",
+    "A session-only vault implementation proves the application secret-provider seam without silently claiming production at-rest protection."
+  ],
+  "proposals": [
+    "Schema v2 adds additive workspace/board titles and requires reader/writer version 2 because the A05 binary rejects newer user_version values.",
+    "Typed Tauri IPC exposes workspace/board operations and read-only vault capability status only."
+  ],
+  "sources": [
+    {
+      "path": "docs/architecture/03-components-data-storage-sync-security.md",
+      "sha256": "fce89266e70a17e41cbd981f6bfe42168e14c9eb5da4dd60d1d631962f7be05b"
+    },
+    {
+      "path": "docs/architecture/06-compatibility-migration.md",
+      "sha256": "147fe97b91130ca10a4d99e3b46ad30856f13953f08e14de4dbbf2afc68bbc80"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-004-secrets.md",
+      "sha256": "dae50f458e222ab2db4c00ec0c34b22eea3701c3a259b25f85114449b4973ed1"
+    },
+    {
+      "path": "docs/evidence/A06_XDG_INSTANCE_CONTROL.md",
+      "sha256": "db37042c2763f93017621c17cac91db9086ecc3a298636430a46845a4babd348"
+    },
+    {
+      "path": "src-tauri/migrations/0001_initial.sql",
+      "sha256": "c88155c8d7093f5fe15d076043aebe0359746fadf509fc0acb3883188b103594"
+    }
+  ],
+  "stage": "A07",
+  "unresolved": [
+    "Production Secret Service/KWallet/passphrase providers remain A09.",
+    "Remote HTTP authentication and device-link provisioning are not implemented by A07.",
+    "Cards, ordering, archive/delete, checklists and sync semantics remain A08+."
+  ]
+}

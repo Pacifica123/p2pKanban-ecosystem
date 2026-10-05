@@ -1,0 +1,73 @@
+# Maintainer: p2pKanban project
+# A15 release recipe. tools/a15_prepare_release.py replaces the source checksum
+# marker in a staging copy; do not publish or sign this bootstrap copy directly.
+pkgname=p2pkanban
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Local-first peer-to-peer Kanban desktop client'
+url='https://example.invalid/p2pkanban'
+arch=('x86_64')
+license=('custom')
+depends=(
+  'gcc-libs'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'webkit2gtk-4.1'
+)
+makedepends=(
+  'cargo'
+  'nodejs'
+  'npm'
+  'pkgconf'
+)
+source=(
+  "$pkgname-$pkgver.tar.gz"
+  'p2pkanban.desktop'
+  'LICENSE'
+)
+sha256sums=(
+  '__P2PKANBAN_SOURCE_SHA256__'
+  '506b76fa35fd4afcaed2c6cf2d97c2ec38efc7795a83631669a67e5ef3cbfec3'
+  '1468462c5241a76fc66bd7320ef6ed72cfb3d2506c3c118109a8b72b26f4bee3'
+)
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  # Keep package-manager build state inside $srcdir, never in the builder HOME.
+  npm ci --cache "$srcdir/npm-cache" --ignore-scripts --no-audit --no-fund
+
+  export CARGO_HOME="$srcdir/cargo-home"
+  cargo fetch --locked --manifest-path src-tauri/Cargo.toml
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  npm run build
+
+  export CARGO_HOME="$srcdir/cargo-home"
+  export CARGO_TARGET_DIR="$srcdir/cargo-target"
+  cargo build --frozen --release --manifest-path src-tauri/Cargo.toml
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  export CARGO_HOME="$srcdir/cargo-home"
+  export CARGO_TARGET_DIR="$srcdir/cargo-target"
+  cargo test --frozen --release --manifest-path src-tauri/Cargo.toml
+}
+
+package() {
+  install -Dm0755 \
+    "$srcdir/cargo-target/release/p2pkanban-arch-native" \
+    "$pkgdir/usr/bin/p2pkanban"
+
+  install -Dm0644 "$srcdir/p2pkanban.desktop" \
+    "$pkgdir/usr/share/applications/org.p2pkanban.archnative.desktop"
+  install -Dm0644 "$srcdir/$pkgname-$pkgver/src-tauri/icons/icon.png" \
+    "$pkgdir/usr/share/icons/hicolor/64x64/apps/p2pkanban.png"
+  install -Dm0644 "$srcdir/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

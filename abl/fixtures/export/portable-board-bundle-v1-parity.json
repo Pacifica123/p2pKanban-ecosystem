@@ -1,0 +1,133 @@
+{
+  "manifest.json": {
+    "format": "p2p_planner_bundle",
+    "formatVersion": 1,
+    "bundleKind": "portable_export",
+    "scopeKind": "board",
+    "workspaceId": "018f0000-0000-7000-8000-000000000001",
+    "boardId": "018f0000-0000-7000-8000-000000000002",
+    "includesLocalMetadata": false,
+    "summary": {
+      "scopeKind": "board",
+      "entityCounts": {
+        "workspaces": 1,
+        "boards": 1,
+        "columns": 1,
+        "cards": 1,
+        "comments": 1,
+        "checklists": 0,
+        "attachments": 0
+      },
+      "includesActivityHistory": true,
+      "includesAppearance": true,
+      "includesArchived": false,
+      "includesAttachments": false
+    }
+  },
+  "scope": {
+    "scopeKind": "board",
+    "workspaceId": "018f0000-0000-7000-8000-000000000001",
+    "boardId": "018f0000-0000-7000-8000-000000000002"
+  },
+  "origin": {
+    "exportedByUserId": "018f0000-0000-7000-8000-000000000004",
+    "generatedAt": "2026-09-12T00:00:00Z",
+    "backendVisibleState": true
+  },
+  "includes": {
+    "appearance": true,
+    "activityHistory": true,
+    "archived": false,
+    "attachments": false,
+    "localMetadata": false
+  },
+  "payload": {
+    "workspaces": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000001",
+        "name": "Fixture workspace"
+      }
+    ],
+    "boards": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000002",
+        "name": "Fixture board",
+        "workspaceId": "018f0000-0000-7000-8000-000000000001",
+        "archivedAt": null
+      }
+    ],
+    "columns": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000005",
+        "boardId": "018f0000-0000-7000-8000-000000000002",
+        "name": "Todo",
+        "position": 1000
+      }
+    ],
+    "cards": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000003",
+        "columnId": "018f0000-0000-7000-8000-000000000005",
+        "title": "Fixture card",
+        "priority": "medium",
+        "position": 1000,
+        "archivedAt": null
+      }
+    ],
+    "labels": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000021",
+        "boardId": "018f0000-0000-7000-8000-000000000002",
+        "name": "Urgent",
+        "color": "red",
+        "position": 1000
+      }
+    ],
+    "cardLabels": [
+      {
+        "cardId": "018f0000-0000-7000-8000-000000000003",
+        "labelId": "018f0000-0000-7000-8000-000000000021"
+      }
+    ],
+    "checklists": [],
+    "checklistItems": [],
+    "comments": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000022",
+        "cardId": "018f0000-0000-7000-8000-000000000003",
+        "userId": "018f0000-0000-7000-8000-000000000004",
+        "body": "Parity comment",
+        "createdAt": "2026-09-12T01:00:00Z",
+        "updatedAt": "2026-09-12T01:00:00Z"
+      }
+    ],
+    "boardAppearanceSettings": [
+      {
+        "boardId": "018f0000-0000-7000-8000-000000000002",
+        "accent": "violet",
+        "density": "compact",
+        "updatedAt": "2026-09-12T01:05:00Z"
+      }
+    ],
+    "activityEntries": [
+      {
+        "id": "018f0000-0000-7000-8000-000000000023",
+        "boardId": "018f0000-0000-7000-8000-000000000002",
+        "cardId": "018f0000-0000-7000-8000-000000000003",
+        "userId": "018f0000-0000-7000-8000-000000000004",
+        "kind": "comment.create",
+        "entityType": "comment",
+        "entityId": "018f0000-0000-7000-8000-000000000022",
+        "occurredAt": "2026-09-12T01:00:00Z"
+      }
+    ]
+  },
+  "restoreHints": {
+    "recommendedStrategy": "create_copy",
+    "requiresManualReview": false,
+    "destructiveRestoreAllowed": false,
+    "notes": [
+      "Synthetic A00 fixture; contains no sessions, tokens, board keys or deployment secrets."
+    ]
+  }
+}

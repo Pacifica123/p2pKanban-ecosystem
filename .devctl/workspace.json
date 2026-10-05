@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "p2p-kanban",
+  "name": "p2pKanban ecosystem",
+  "projectDir": ".",
+  "patchesDir": "patches",
+  "archivesDir": "archives",
+  "userTestSpaceDir": "UserTestSpace",
+  "git": {
+    "enabled": true,
+    "autoPush": true,
+    "remote": "origin",
+    "branch": "main"
+  },
+  "archive": {
+    "exclude": [
+      ".git",
+      "node_modules",
+      "target",
+      "dist",
+      "build",
+      "coverage",
+      "UserTestSpace",
+      "patches",
+      "archives",
+      "__pycache__",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache",
+      ".uts-reports",
+      ".dev-bootstrap",
+      ".expo",
+      ".env",
+      ".env.*",
+      "*.sqlite",
+      "*.sqlite3",
+      "*.db",
+      "*.pyc",
+      "*.pyo"
+    ]
+  },
+  "ecosystem": {
+    "rule": "Каждый патч обновляет board/board.json и проходит python -B tools/ecosystem/check_board.py --require-changed.",
+    "metadocs": "docs/ecosystem/README.md"
+  }
+}

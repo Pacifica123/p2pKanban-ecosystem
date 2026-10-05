@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "patchId": "YYYY-MM-DD-направление-короткое-имя",
+  "title": "Короткое название",
+  "summary": "Что меняется и зачем — одним-двумя предложениями. Какое направление владеет изменением.",
+  "kind": "web | mobile | abl | devctl | ecosystem",
+  "createdAt": "YYYY-MM-DDTHH:MM:SSZ",
+  "base": {"branch": "main"},
+  "target": {
+    "projectId": "p2p-kanban",
+    "workspaceId": "p2p-kanban",
+    "projectName": "p2pKanban ecosystem",
+    "expectedFiles": ["ecosystem.json", "board/board.json"]
+  },
+  "apply": {
+    "filesRoot": "files",
+    "delete": []
+  },
+  "checks": [
+    {
+      "name": "Доска экосистемы обновлена и корректна",
+      "cwd": ".",
+      "command": "python -B tools/ecosystem/check_board.py --require-changed",
+      "requiredCommands": ["python", "git"],
+      "timeoutSeconds": 120
+    }
+  ],
+  "commit": {"message": "направление: что сделано"},
+  "archive": {"nameSlug": "короткое-имя"}
+}

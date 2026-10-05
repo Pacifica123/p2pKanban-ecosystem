@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://p2p-planner.local/docs/sync/schemas/sync-envelope.schema.json",
+  "title": "SyncEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocolVersion",
+    "messageId",
+    "messageType",
+    "sourceReplicaId",
+    "sentAt"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "type": "string",
+      "description": "Версия sync-протокола, например 1.0"
+    },
+    "messageId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "messageType": {
+      "type": "string",
+      "enum": [
+        "hello",
+        "pull_request",
+        "push_events",
+        "ack",
+        "snapshot_offer",
+        "snapshot_chunk",
+        "conflict_notice"
+      ]
+    },
+    "sourceReplicaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "targetReplicaId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "sentAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cursor": {
+      "$ref": "#/$defs/SyncCursorRef"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "change-event.schema.json"
+      }
+    },
+    "snapshot": {
+      "$ref": "snapshot-manifest.schema.json"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "error": {
+      "$ref": "#/$defs/ErrorInfo"
+    }
+  },
+  "$defs": {
+    "SyncCursorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceReplicaId"],
+      "properties": {
+        "sourceReplicaId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "lastEventId": {
+          "type": ["string", "null"],
+          "format": "uuid"
+        },
+        "lastLogicalClock": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "ErrorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {}
+      }
+    }
+  }
+}

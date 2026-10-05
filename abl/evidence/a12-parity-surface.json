@@ -1,0 +1,129 @@
+{
+  "formatVersion": 1,
+  "stage": "A12",
+  "title": "labels/comments/activity/appearance parity",
+  "facts": [
+    "A00/A10 roaming evidence includes board.snapshot appearance and the accepted board.appearance.put operation family.",
+    "The frozen roaming/1 operation set does not establish label/comment mutation operations.",
+    "A11 portable import preserves labels, cardLabels, comments, boardAppearanceSettings and activityEntries as opaque sections.",
+    "Canonical A12 UTS 20260915T083858Z passed deterministic/frontend/offline Cargo lock+fetch gates and exposed Rust E0515 in parity portable-section materialization before native build."
+  ],
+  "inferences": [
+    "Labels/comments must use an explicit local unsupported-sync ledger until a compatible roaming operation exists.",
+    "Activity provenance should survive entity deletion and must not be fabricated for legacy history.",
+    "payload.appearance is an Arch-native normalized event mapping over the proven board.appearance.put family, not a claim of unseen byte-identical Android event JSON."
+  ],
+  "proposals": [
+    "Schema v6 materializes parity sections as first-class SQLite state behind domain/application repository contracts.",
+    "Appearance reuses the A10 pending/outbox path while label/comment mutations stay outside pending_local_changes.",
+    "Typed Tauri IPC exposes bounded parity operations without generic filesystem, keyring or network privilege."
+  ],
+  "unresolved": [
+    "A compatible versioned cross-client wire contract for label/comment mutations remains future work.",
+    "Exact legacy Android/web board.appearance.put payload bytes should be rechecked when original source archives are available.",
+    "Canonical A12 Cargo/frontend/runtime UTS must be rerun after CORR-A12-001 before A13."
+  ],
+  "externalAnchors": [
+    {
+      "source": "web",
+      "path": "docs/sync/roaming-board-protocol-v1.md",
+      "sha256": "f50d1cb334b8f991d89a39794b60f6f931da5302027b31c48ca9850bd9a46841"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/types.ts",
+      "sha256": "cfd1004962a38ad07913b7d8de5986d4d28087af4540967989ccf56c4a807665"
+    },
+    {
+      "source": "android",
+      "path": "src/features/roaming/service.ts",
+      "sha256": "282b00bdc89965d8734ce5f697102d10170f3fca6b748ead1b18435ffda9a223"
+    }
+  ],
+  "sources": [
+    {
+      "path": "src-tauri/migrations/0006_parity_surface.sql",
+      "sha256": "b753e298b520e05b493c1e06b3801ea0b528d42635756f8ae0ca2e38e4adac8a"
+    },
+    {
+      "path": "src-tauri/src/domain/parity.rs",
+      "sha256": "c008d6dc0ac71f5894e74a0933cd1dba13be8b370a6b8f6c4b432bffdef419cd"
+    },
+    {
+      "path": "src-tauri/src/application/parity.rs",
+      "sha256": "ed8621986059bf7dc25508b495e96334930dd986ac639ac8085ca5e6dfcdb8ea"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/parity.rs",
+      "sha256": "d9910e5b1e40b3376c38fcfc8bbfc3723995a15209caa866333dcc399cfe7196"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/import.rs",
+      "sha256": "461f7cca742fba82bd8eea45841166ed3e7461209ef170f02f30453427b9b209"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/sync.rs",
+      "sha256": "9d7d1bcdb76e05413755d851fe9203cb497935c409f543a1d6c278fcb4f75f08"
+    },
+    {
+      "path": "src-tauri/src/infrastructure/sqlite/migration.rs",
+      "sha256": "0dfb370f6a246501d07bfcd19c5da8fa54e59899bef5276891f987aa1114f8a5"
+    },
+    {
+      "path": "src-tauri/src/desktop_api.rs",
+      "sha256": "6989d07bc13da7d98c11bb0e1edbcbefd5db90abd1340f6bd59d33f8d110e389"
+    },
+    {
+      "path": "src-tauri/src/main.rs",
+      "sha256": "41ef96be4cc0dce1937e72e2e44bd5faa20e7bbd776c880cef7f05faa27abe19"
+    },
+    {
+      "path": "src/features/parity/api/parity.ts",
+      "sha256": "0a6f89a7ac6fa8e1f56b995dc5a7dacecb640f8dd473c18d83d13a625752a1bd"
+    },
+    {
+      "path": "src/shared/transport/desktop.ts",
+      "sha256": "b629f6c96d271d2559cc574669706b56edfbad26713b1fdfc08122a2b145ed23"
+    },
+    {
+      "path": "src/shared/api/types.ts",
+      "sha256": "234b16bbd8b08a26a6d5a3917ee5b643aba6e029633d0a919a70113a4065f5bd"
+    },
+    {
+      "path": "src/App.tsx",
+      "sha256": "7bde79bc24af96672b8eb5780261209d2a3b28cbc053b89d6cd8303f216cac8b"
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "b54a2ff9959b8ae0a0899384a464f9fc62e410eac6952a8b23a2fa8a7e16e5d5"
+    },
+    {
+      "path": "fixtures/export/portable-board-bundle-v1-parity.json",
+      "sha256": "e820716bd991e9b0047eef66175c833cd9a567a660f14da5052e839429e1246e"
+    },
+    {
+      "path": "tools/check_a12.py",
+      "sha256": "0fc15b80ee65fe735497127d999a0bfc22c5e012adcab6b3e5a99bff8152cdc9"
+    },
+    {
+      "path": "tools/uts_plan.json",
+      "sha256": "da9580c547a43b68449da2450a7eefc3881f32fc3c01eb7754cda7d74cabfa12"
+    },
+    {
+      "path": "docs/evidence/A12_PARITY_SURFACE.md",
+      "sha256": "3b9355f926a9f37effd0b6a3c6cac8f2bdf3fa1bf9e98cb337e9f1b132db2ccb"
+    },
+    {
+      "path": "docs/architecture/06-compatibility-migration.md",
+      "sha256": "c71bb5515dd4c4e2dbb4244c8c742dbbace7bcea90c85e59aa78bc358382205b"
+    },
+    {
+      "path": "docs/architecture/08-implementation-corrections-and-debt.md",
+      "sha256": "fb16398472f5054b706c31ef0ee60eea1cb75ec246526571d802a4103bea793a"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "sha256": "d61eaa6bf218bf7b9af9634ef64d7df53a312e86bca48bf4ddf3c0b5ac8b17b7"
+    }
+  ]
+}

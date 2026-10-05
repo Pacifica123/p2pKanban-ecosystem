@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "p2pKanban",
+    "slug": "p2pkanban-mobile",
+    "version": "2.1.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "scheme": "p2pkanban",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#17151f"
+    },
+    "android": {
+      "package": "dev.p2pkanban.mobile",
+      "versionCode": 23,
+      "allowBackup": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#17151f"
+      },
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.VIBRATE"
+      ],
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-notifications",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "appChannel": "mobile-mvp",
+      "clientVersion": "2.0.0",
+      "eas": {
+        "projectId": "19e01039-73f2-4df3-ac5b-ebe8a587b807"
+      }
+    },
+    "owner": "pacifica123program"
+  }
+}

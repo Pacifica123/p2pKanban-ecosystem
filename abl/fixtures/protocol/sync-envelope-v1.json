@@ -1,0 +1,32 @@
+{
+  "protocolVersion": "p2p-kanban-sync/1",
+  "envelopeId": "018f0000-0000-7000-8000-000000000101",
+  "workspaceId": "018f0000-0000-7000-8000-000000000001",
+  "event": {
+    "eventId": "018f0000-0000-7000-8000-000000000101",
+    "replicaId": "018f0000-0000-7000-8000-000000000201",
+    "replicaSeq": 7,
+    "entityType": "card",
+    "entityId": "018f0000-0000-7000-8000-000000000301",
+    "operation": "update",
+    "fieldMask": [
+      "title",
+      "position"
+    ],
+    "logicalClock": 12,
+    "baseServerOrder": 5,
+    "payload": {
+      "title": "A00 compatibility fixture",
+      "position": 1000
+    },
+    "metadata": {
+      "fixture": true
+    },
+    "serverOrder": 6,
+    "acceptedAt": "2026-09-12T00:00:00Z",
+    "actorUserId": "018f0000-0000-7000-8000-000000000401",
+    "actorDeviceId": "018f0000-0000-7000-8000-000000000501"
+  },
+  "parents": [],
+  "emittedAt": "2026-09-12T00:00:00Z"
+}

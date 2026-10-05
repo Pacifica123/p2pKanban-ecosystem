@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-minimal",
+  "description": "A01 main WebView: packaged presentation only; no Tauri IPC commands are exposed yet.",
+  "local": true,
+  "windows": ["main"],
+  "permissions": []
+}

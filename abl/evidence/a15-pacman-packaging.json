@@ -1,0 +1,84 @@
+{
+  "externalReferences": [
+    {
+      "title": "ArchWiki PKGBUILD",
+      "url": "https://wiki.archlinux.org/title/PKGBUILD"
+    },
+    {
+      "title": "ArchWiki Rust package guidelines",
+      "url": "https://wiki.archlinux.org/title/Rust_package_guidelines"
+    },
+    {
+      "title": "Arch makechrootpkg manual",
+      "url": "https://man.archlinux.org/man/makechrootpkg.1.en"
+    },
+    {
+      "title": "Arch repo-add manual",
+      "url": "https://man.archlinux.org/man/repo-add.8"
+    },
+    {
+      "title": "Tauri v2 prerequisites",
+      "url": "https://v2.tauri.app/start/prerequisites/"
+    }
+  ],
+  "facts": [
+    "A15 installs only pacman-owned immutable files under /usr; package removal has no hook that deletes XDG profile data or secret-provider entries.",
+    "The package desktop entry registers x-scheme-handler/p2pkanban and delegates the URI argument to the A13 bounded native deep-link parser.",
+    "Release preparation creates a deterministic source archive, injects the canonical UTS Cargo.lock, resolves an exact source checksum in the staged PKGBUILD, and records Cargo/npm/migration/protocol digests.",
+    "PKGBUILD prepare fetches the locked Cargo graph while build/check use Cargo --frozen; the application package has no self-updater or pacman/sudo invocation.",
+    "Signed-repository staging uses an external GPG fingerprint/agent to sign both package and repository database and records only public fingerprint plus artifact hashes."
+  ],
+  "formatVersion": 1,
+  "inferences": [
+    "Binding the UTS-accepted Cargo.lock into retained release source is safer than generating a floating Rust graph inside the package build, even though repository ownership of Cargo.lock remains explicit debt.",
+    "Keeping signing outside the build recipe prevents package construction from becoming a secret-bearing or privileged operation."
+  ],
+  "proposals": [
+    "Promote a host-proven Cargo.lock into repository ownership in a later bounded correction so arbitrary source checkouts can reproduce the same Rust graph without first running UTS.",
+    "Replace the packaging-only license notice with the project owner approved software license before any public AUR or public-mirror publication."
+  ],
+  "sources": [
+    {
+      "path": "packaging/arch/PKGBUILD",
+      "sha256": "6970bdc4fb1da8ef2ce415778dd0baeab053f09bc13ae7be01c2a61fb719a485"
+    },
+    {
+      "path": "packaging/arch/p2pkanban.desktop",
+      "sha256": "506b76fa35fd4afcaed2c6cf2d97c2ec38efc7795a83631669a67e5ef3cbfec3"
+    },
+    {
+      "path": "packaging/arch/LICENSE",
+      "sha256": "1468462c5241a76fc66bd7320ef6ed72cfb3d2506c3c118109a8b72b26f4bee3"
+    },
+    {
+      "path": "packaging/arch/pacman-repo.conf.example",
+      "sha256": "b1fc73734ebbda8494beb5a43e9de1831394730a1cc292ef370b68b51e09aec4"
+    },
+    {
+      "path": "tools/a15_prepare_release.py",
+      "sha256": "220d869817fd7964fdc531c3c585d1c48a5af8bcf908997c85c0f41eb140aa6a"
+    },
+    {
+      "path": "tools/a15_stage_signed_repo.py",
+      "sha256": "63604ecbfb6a948af66386c7419ca494fc4fed12419340fb85e344cf4e04ae47"
+    },
+    {
+      "path": "tools/a15_host_packaging_probe.py",
+      "sha256": "cc2dcf87558f02c481a66041f4558e06233698596eb15971f7075f7b63bce58b"
+    },
+    {
+      "path": "docs/evidence/A15_PACMAN_PACKAGING.md",
+      "sha256": "1bac7281cd539f529bee975cacf336cb03f965d8179c55489b314feae8972106"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-003-packaging-update-and-rollback.md",
+      "sha256": "2f73be0579ed1680bcced3cd9a196d43809612c2954d1275ac4f4c68893f1cc2"
+    }
+  ],
+  "stage": "A15",
+  "title": "PKGBUILD and signed pacman repository packaging",
+  "unresolved": [
+    "Clean-chroot package build, namcap on the produced package, pacman -Qkk/install/remove preservation and real release-key repository publication require Arch host/manual evidence.",
+    "Exact direct runtime dependencies should be refined from package namcap/ldd evidence after the first clean-chroot artifact rather than guessed from transitive desktop packages."
+  ]
+}

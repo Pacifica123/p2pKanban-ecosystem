@@ -1,0 +1,42 @@
+{
+  "boardId": "00000000-0000-4000-8000-000000000003",
+  "eventId": "4014e9a0-85d6-484a-83d7-983c657a01a2",
+  "payload": {
+    "card": {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "dueAt": null,
+      "title": "first",
+      "boardId": "00000000-0000-4000-8000-000000000003",
+      "startAt": null,
+      "columnId": "00000000-0000-4000-8000-000000000004",
+      "labelIds": [],
+      "position": 1000,
+      "priority": null,
+      "createdAt": "2026-09-15T08:39:13.187Z",
+      "updatedAt": "2026-09-15T08:39:13.187Z",
+      "archivedAt": null,
+      "isArchived": false,
+      "description": null,
+      "commentCount": 0,
+      "parentCardId": null,
+      "checklistCount": 0,
+      "createdByUserId": null,
+      "checklistItemCount": 0,
+      "checklistCompletedItemCount": 0
+    },
+    "checklists": []
+  },
+  "entityId": "00000000-0000-4000-8000-000000000005",
+  "fieldMask": [
+    "*"
+  ],
+  "operation": "card.put",
+  "replicaId": "8614109f-c335-42bc-af7a-c1dcf98ee0ae",
+  "entityType": "card",
+  "occurredAt": "2026-09-15T08:39:13.197Z",
+  "replicaSeq": 1789461553303000,
+  "workspaceId": "00000000-0000-4000-8000-000000000002",
+  "logicalClock": 1789461553303000,
+  "capabilityEpoch": 1,
+  "protocolVersion": "p2p-kanban-roaming/1"
+}

@@ -1,0 +1,37 @@
+{
+  "protocolVersion": "p2p-kanban-roaming/1",
+  "eventId": "fixture-roaming-event-001",
+  "workspaceId": "018f0000-0000-7000-8000-000000000001",
+  "boardId": "018f0000-0000-7000-8000-000000000002",
+  "capabilityEpoch": 3,
+  "replicaId": "fixture-replica-linux-a00",
+  "replicaSeq": 11,
+  "logicalClock": 42,
+  "entityType": "card",
+  "entityId": "018f0000-0000-7000-8000-000000000003",
+  "operation": "card.put",
+  "fieldMask": [
+    "title",
+    "description"
+  ],
+  "payload": {
+    "card": {
+      "id": "018f0000-0000-7000-8000-000000000003",
+      "boardId": "018f0000-0000-7000-8000-000000000002",
+      "columnId": "018f0000-0000-7000-8000-000000000004",
+      "parentCardId": null,
+      "title": "Portable compatibility fixture",
+      "description": "Synthetic non-secret payload",
+      "priority": null,
+      "position": 1000,
+      "startAt": null,
+      "dueAt": null,
+      "isArchived": false,
+      "labelIds": [],
+      "createdAt": "2026-09-12T00:00:00Z",
+      "updatedAt": "2026-09-12T00:00:00Z",
+      "archivedAt": null
+    }
+  },
+  "occurredAt": "2026-09-12T00:00:00Z"
+}
