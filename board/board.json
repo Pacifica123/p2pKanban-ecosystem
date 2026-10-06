@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 47,
-        "comments": 7,
-        "checklists": 10,
+        "cards": 48,
+        "comments": 11,
+        "checklists": 11,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-06T08:00:00Z",
+    "generatedAt": "2026-10-06T08:30:00Z",
     "selfHosted": true,
-    "boardRevision": 3,
-    "lastPatchId": "2026-10-06-web-utf8-safe-truncation",
+    "boardRevision": 4,
+    "lastPatchId": "2026-10-06-abl-tauri-family-pin",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -588,6 +588,16 @@
         "priority": "urgent",
         "position": 8192,
         "archivedAt": null
+      },
+      {
+        "id": "01a11055-7b41-7a81-81c6-94829531c266",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "abl: UTS снова собирается — семейство Tauri закреплено (CORR-A17-001)",
+        "description": "Зачем: первый UTS abl в монорепозитории упал на cargo.build и cargo.test, а все host-пробы и launch-probe оказались заблокированы: закреплён был только tauri 2.11.5, и свежее разрешение зависимостей подтянуло tauri-runtime 2.12 и tauri-macros 2.7, несовместимые с ним.\n\nГотово, когда: канонический UTS abl на хосте зелёный: cargo.test, cargo.build, host-пробы и runtime.launch-probe.\n\nРазбор: abl/docs/evidence/A17C_TAURI_FAMILY_PIN.md; проверка tools/check_a17c.py.",
+        "priority": "urgent",
+        "position": 9216,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1004,6 +1014,14 @@
       {
         "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
         "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
       }
     ],
     "checklists": [
@@ -1065,6 +1083,12 @@
         "id": "01a1103a-0402-7a56-bb3e-2afa6f84425a",
         "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
         "title": "Приёмка на узле",
+        "position": 1024
+      },
+      {
+        "id": "01a11055-7b42-792a-a56e-1714557754fa",
+        "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
+        "title": "Приёмка на хосте",
         "position": 1024
       }
     ],
@@ -1439,6 +1463,27 @@
         "title": "Длинный русский комментарий сохраняется и виден в активности",
         "isDone": false,
         "position": 3072
+      },
+      {
+        "id": "01a11055-7b43-7d34-a8cc-c83be94c8651",
+        "checklistId": "01a11055-7b42-792a-a56e-1714557754fa",
+        "title": "В облаке: cargo build/test --locked (121 тест), все check_a*.py",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a11055-7b44-70e4-a3c6-2722d9b63ca0",
+        "checklistId": "01a11055-7b42-792a-a56e-1714557754fa",
+        "title": "Канонический UTS: cargo.test и cargo.build",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a11055-7b45-7b25-b8a5-5eb144c904fa",
+        "checklistId": "01a11055-7b42-792a-a56e-1714557754fa",
+        "title": "Канонический UTS: host-пробы и runtime.launch-probe",
+        "isDone": false,
+        "position": 3072
       }
     ],
     "comments": [
@@ -1483,6 +1528,30 @@
         "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
         "body": "patch 2026-10-06-web-utf8-safe-truncation: обрезка текста в журналах активности, аудита и синхронизации больше не режет UTF-8 посреди буквы. Ждёт узла.",
         "createdAt": "2026-10-06T08:00:00Z"
+      },
+      {
+        "id": "01a11055-7b46-7310-8c8b-59ba2c59d221",
+        "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
+        "body": "patch 2026-10-06-abl-tauri-family-pin: Cargo.toml закрепляет всё семейство Tauri на линии 2.11, Cargo.lock пересобран, проверка a17c добавлена в план UTS. Ждёт хоста.",
+        "createdAt": "2026-10-06T08:30:00Z"
+      },
+      {
+        "id": "01a11055-7b47-7876-9043-6931f16b412f",
+        "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
+        "body": "patch 2026-10-06-abl-tauri-family-pin: первый UTS в монорепозитории (20261006T044732Z) не дошёл до проб из-за сборки; после CORR-A17-001 перезапустить UTS.",
+        "createdAt": "2026-10-06T08:30:00Z"
+      },
+      {
+        "id": "01a11055-7b48-70fb-9edb-04781f150451",
+        "cardId": "01a10f95-38a5-745e-9e30-38b702987a07",
+        "body": "patch 2026-10-06-abl-tauri-family-pin: первый UTS в монорепозитории (20261006T044732Z) не дошёл до проб из-за сборки; после CORR-A17-001 перезапустить UTS.",
+        "createdAt": "2026-10-06T08:30:00Z"
+      },
+      {
+        "id": "01a11055-7b49-71c2-be7c-b532f5d427b1",
+        "cardId": "01a10f95-38a6-775e-bfb2-96e1d18fa22c",
+        "body": "patch 2026-10-06-abl-tauri-family-pin: первый UTS в монорепозитории (20261006T044732Z) не дошёл до проб из-за сборки; после CORR-A17-001 перезапустить UTS.",
+        "createdAt": "2026-10-06T08:30:00Z"
       }
     ],
     "boardAppearanceSettings": [],

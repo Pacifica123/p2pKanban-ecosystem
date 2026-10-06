@@ -12,6 +12,11 @@ tauri-build = { version = "=2.6.3", features = [] }
 
 [dependencies]
 tauri = { version = "=2.11.5", features = [] }
+tauri-runtime = "=2.11.3"
+tauri-runtime-wry = "=2.11.4"
+tauri-macros = "=2.6.3"
+tauri-codegen = "=2.6.3"
+tauri-utils = "=2.9.3"
 rusqlite = { version = "=0.40.2", features = ["bundled", "backup"] }
 libc = "=0.2.189"
 uuid = { version = "=1.26.1", features = ["v4"] }

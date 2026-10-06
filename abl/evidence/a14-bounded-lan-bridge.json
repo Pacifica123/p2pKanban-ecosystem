@@ -34,7 +34,7 @@
   "sources": [
     {
       "path": "src-tauri/Cargo.toml",
-      "sha256": "86ab021875244cba18c738882ff329ea0cf09c849a241f55e0f5950b0aaa83b2"
+      "sha256": "774b30ca839d2fd55f12bd48862f8d1a14a471cddd0016247e6da3599f290031"
     },
     {
       "path": "src-tauri/src/domain/lan_bridge.rs",

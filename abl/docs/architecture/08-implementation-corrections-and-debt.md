@@ -273,3 +273,13 @@ The construction environment used for this patch has Python/Node but no `cargo`,
 **Status:** bounded/open for later release diagnostics.
 
 A16 does not run `pacman`, `sudo`, `pkexec`, download replacement WebKit libraries or disable signature/TLS checks. A healthy `p2pkanban doctor` result separates profile health from a later WebView/runtime failure, but a loader failure that prevents the executable itself from entering `main` necessarily remains a package-manager/runtime-support problem. A17/A18 may improve offline runtime diagnostics; they must not turn recovery into a self-updater or privileged repair agent.
+
+## CORR-A17-001 — exact `tauri` pin did not hold the rest of the Tauri family
+
+**Classification:** [FACT] from the canonical UTS run `20261006T044732Z` after the monorepo move (`p2pKanban-ecosystem` 09c164e).
+**Architecture impact:** dependency resolution only; no runtime, IPC, schema or packaging semantics change.
+**Status:** corrected; `tools/check_a17c.py` guards it in the deterministic UTS plan.
+
+`Cargo.toml` pinned only `tauri =2.11.5` and `tauri-build =2.6.3`. `tauri 2.11.5` depends on `tauri-runtime`, `tauri-runtime-wry`, `tauri-macros`, `tauri-codegen` and `tauri-utils` with caret requirements, so the mandatory fresh lock re-resolution selected `tauri-runtime 2.12.1`, `tauri-runtime-wry 2.12.1` and `tauri-macros`/`tauri-codegen 2.7.1`. Those belong to the tauri 2.12 line: `cargo.build` failed inside `tauri-2.11.5/src/app.rs` (`Option<Monitor>` vs `Vec<Monitor>` in `primary_monitor`/`available_monitors`) and generated code failed with `UnexpectedMenuKind`; `cargo.test` failed the same way, and every host probe and the launch probe were BLOCKED behind the build.
+
+The correction keeps the accepted 2.11 line instead of moving to 2.12 and exact-pins the family members to the versions tauri 2.11.5 was released with: `tauri-runtime =2.11.3`, `tauri-runtime-wry =2.11.4`, `tauri-macros =2.6.3`, `tauri-codegen =2.6.3`, `tauri-utils =2.9.3`. Fresh resolution then selects `wry 0.55.1` and `tao 0.35.3`. Verified in a cloud non-Arch Linux build host with WebKitGTK 4.1: `cargo generate-lockfile`, `cargo build --locked` and `cargo test --locked` (121 tests) pass. `evidence/a14-bounded-lan-bridge.json` carries the new `src-tauri/Cargo.toml` digest. Canonical host UTS remains the acceptance gate.
