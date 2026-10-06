@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/device.schema.json",
+  "title": "Устройство в записи genesis или add",
+  "type": "object",
+  "required": [
+    "publicKey",
+    "name",
+    "kind",
+    "role"
+  ],
+  "properties": {
+    "publicKey": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "name": {
+      "$ref": "../../../common/defs.schema.json#/$defs/deviceName"
+    },
+    "kind": {
+      "$ref": "../../../common/defs.schema.json#/$defs/deviceKind"
+    },
+    "role": {
+      "$ref": "../../../common/defs.schema.json#/$defs/role"
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rendezvous/1/schema/message.schema.json",
+  "title": "Расшифрованное сообщение встречи",
+  "type": "object",
+  "required": [
+    "type",
+    "sessionId"
+  ],
+  "properties": {
+    "type": {
+      "enum": [
+        "hello",
+        "welcome",
+        "refuse",
+        "ack"
+      ]
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "hello"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "device",
+          "software",
+          "ring"
+        ],
+        "properties": {
+          "device": {
+            "type": "object",
+            "required": [
+              "publicKey",
+              "name",
+              "kind"
+            ],
+            "properties": {
+              "publicKey": {
+                "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+              },
+              "name": {
+                "$ref": "../../../common/defs.schema.json#/$defs/deviceName"
+              },
+              "kind": {
+                "$ref": "../../../common/defs.schema.json#/$defs/deviceKind"
+              }
+            }
+          },
+          "software": {
+            "$ref": "../../../common/defs.schema.json#/$defs/software"
+          },
+          "ring": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "accountId",
+              "members"
+            ],
+            "properties": {
+              "accountId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "members": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "welcome"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "accountId",
+          "entries",
+          "keyring"
+        ],
+        "properties": {
+          "accountId": {
+            "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+          },
+          "entries": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1024,
+            "items": {
+              "$ref": "../../../account-ring/1/schema/entry.schema.json"
+            }
+          },
+          "keyring": {
+            "$ref": "../../../keyring/1/schema/keyring.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "refuse"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "enum": [
+              "declined",
+              "expired",
+              "contested",
+              "session-used",
+              "ring-merge-unsupported",
+              "key-removed",
+              "sponsor-not-admin",
+              "sponsor-stale",
+              "joiner-outdated",
+              "welcome-invalid"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "ack"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "accountId",
+          "heads"
+        ],
+        "properties": {
+          "accountId": {
+            "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+          },
+          "heads": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 16,
+            "items": {
+              "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

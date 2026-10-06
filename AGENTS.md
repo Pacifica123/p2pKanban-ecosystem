@@ -15,3 +15,6 @@
 6. Не выдавай реализованное в исходниках за принятое на хосте: для этого
    колонка «Ждёт хоста».
 7. Перед работой прочитай доску и `docs/ecosystem/README.md`.
+8. Общие контракты лежат в `contracts/`. Векторы не правятся руками: правится
+   `tools/ecosystem/contract_vectors.py`, затем
+   `python -B tools/ecosystem/contract_ref.py generate`.

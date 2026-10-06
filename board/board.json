@@ -14,8 +14,8 @@
         "boards": 1,
         "columns": 8,
         "cards": 50,
-        "comments": 16,
-        "checklists": 12,
+        "comments": 21,
+        "checklists": 13,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-06T09:00:00Z",
+    "generatedAt": "2026-10-06T11:00:00Z",
     "selfHosted": true,
-    "boardRevision": 5,
-    "lastPatchId": "2026-10-06-ecosystem-ring-decisions",
+    "boardRevision": 6,
+    "lastPatchId": "2026-10-06-ecosystem-ring-contracts-r1",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -352,21 +352,21 @@
       {
         "id": "01a10f95-3897-7abe-855e-7c59b0af61bc",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "R1: контракты кольца, связки ключей и встречи",
-        "description": "Зачем: три новых контракта затрагивают web, mobile и abl; без общих примеров они разойдутся.\n\nГотово, когда: в contracts/ лежат спецификации, JSON Schema и эталонные примеры ring/1, keyring/1, rendezvous/1; проверка каждого направления их читает.\n\nРешения владельца приняты 2026-10-06 (раздел «Решения владельца» в trusted-devices.md). Связана с карточкой «Вынести контракты в contracts/».",
+        "description": "Зачем: три новых контракта затрагивают web, mobile и abl; без общих примеров они разойдутся.\n\nГотово, когда: в contracts/ лежат спецификации, JSON Schema и эталонные векторы ring/1, keyring/1, rendezvous/1, а корневая проверка tools/ecosystem/check_contracts.py сверяет их с эталонной реализацией. Чтение векторов тестами направлений — часть R2 (web), R3 (mobile), R4 (встреча) и R6 (abl).\n\nРешения владельца приняты 2026-10-06 (раздел «Решения владельца» в trusted-devices.md). Связана с карточкой «Вынести контракты в contracts/».",
         "priority": "high",
-        "position": 9216,
+        "position": 4096,
         "archivedAt": null
       },
       {
         "id": "01a10f95-3898-7327-aba2-c788e924ec17",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
         "title": "R2: web: журнал кольца и связка ключей, перенос текущего доверия device-link/2 и web-node-link/1",
-        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R1. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован; тесты web читают contracts/account-ring/1 и contracts/keyring/1 и получают то же состояние кольца, те же id и расшифровки, что в векторах; в contracts/compatibility.json заполнено implementations.web; принято на хосте (Docker).\n\nНачинается после R1. Порядок обновления контрактов: web-узлы → mobile → abl.",
         "priority": "medium",
-        "position": 1024,
+        "position": 9216,
         "archivedAt": null
       },
       {
@@ -374,7 +374,7 @@
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
         "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
         "title": "R3: mobile: кольцо, связка ключей, отметки присутствия, экран «Кольцо устройств»",
-        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R2. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R2. Порядок обновления контрактов: web-узлы → mobile → abl.\n\nПроверка: тесты mobile читают векторы contracts/account-ring/1 и contracts/keyring/1 (в том числе presence.json: отставание версий на экране «Кольцо устройств»).",
         "priority": "medium",
         "position": 2048,
         "archivedAt": null
@@ -384,7 +384,7 @@
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
         "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
         "title": "R4: добавление устройства по QR в двух режимах через relay, затем короткий код",
-        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: телефон входит в кольцо, сканируя QR узла, и добавляет узел в своё кольцо, сканируя его QR; в обоих режимах новое устройство получает всё кольцо и все доски; этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: телефон входит в кольцо, сканируя QR узла, и добавляет узел в своё кольцо, сканируя его QR; в обоих режимах новое устройство получает всё кольцо и все доски; этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.\n\nПроверка: тесты web и mobile читают векторы contracts/rendezvous/1 (invite-mode, join-mode, refuse-ring-merge).",
         "priority": "medium",
         "position": 3072,
         "archivedAt": null
@@ -404,7 +404,7 @@
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
         "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
         "title": "R6: abl: нативные адаптеры кольца, связки и встречи в Rust core",
-        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R5. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R5. Порядок обновления контрактов: web-узлы → mobile → abl.\n\nПроверка: тесты Rust core читают векторы всех трёх контрактов в contracts/.",
         "priority": "medium",
         "position": 5120,
         "archivedAt": null
@@ -1136,6 +1136,12 @@
         "cardId": "01a11070-f286-749a-ad93-73abf3da1f0e",
         "title": "Шаги владельца",
         "position": 1024
+      },
+      {
+        "id": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "cardId": "01a10f95-3897-7abe-855e-7c59b0af61bc",
+        "title": "Состав R1",
+        "position": 1024
       }
     ],
     "checklistItems": [
@@ -1558,6 +1564,62 @@
         "title": "APK встаёт поверх установленного, данные на месте",
         "isDone": false,
         "position": 3072
+      },
+      {
+        "id": "01a110de-cf82-7c92-9316-cfa97409b99c",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "contracts/account-ring/1: журнал кольца, свёртка с заморозкой при удалении, запечатанные записи, отметки присутствия",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a110de-cf83-75ee-ade1-aad6d419400c",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "contracts/keyring/1: связка ключей и слияние копий",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a110de-cf84-7fdd-a802-90515b04f22d",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "contracts/rendezvous/1: QR в двух режимах, почтовый ящик, код подтверждения, причины отказа",
+        "isDone": true,
+        "position": 3072
+      },
+      {
+        "id": "01a110de-cf85-758c-b401-d2ea54b02ad8",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "JSON Schema и 15 эталонных векторов, генерация детерминирована",
+        "isDone": true,
+        "position": 4096
+      },
+      {
+        "id": "01a110de-cf86-77a4-bc05-93eff5f0e793",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "tools/ecosystem/check_contracts.py: только стандартная библиотека, сверка с BIP-340 и NIP-44",
+        "isDone": true,
+        "position": 5120
+      },
+      {
+        "id": "01a110de-cf87-7176-b9a0-9ad14882047b",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "Векторы сверены с nostr-tools 2.24.1 и @noble/ciphers 2.2.0 (как в mobile) и с nostr-sdk 0.44 и chacha20poly1305 0.10 (как в web и abl)",
+        "isDone": true,
+        "position": 6144
+      },
+      {
+        "id": "01a110de-cf88-7939-a600-b1751c6c5f99",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "contracts/compatibility.json: кто что реализует, правила для старых клиентов",
+        "isDone": true,
+        "position": 7168
+      },
+      {
+        "id": "01a110de-cf89-718a-b53f-21cd849d8cdf",
+        "checklistId": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
+        "title": "Разные версии на устройствах видны: версия и протоколы в отметке присутствия, readerOutdated, отказ joiner-outdated",
+        "isDone": true,
+        "position": 8192
       }
     ],
     "comments": [
@@ -1656,6 +1718,36 @@
         "cardId": "01a11070-f286-749a-ad93-73abf3da1f0e",
         "body": "patch 2026-10-06-ecosystem-ring-decisions: причина ошибки EAS — привязка репозитория к другому проекту Expo; кода не требует, нужен шаг владельца на expo.dev.",
         "createdAt": "2026-10-06T09:00:00Z"
+      },
+      {
+        "id": "01a110de-cf8a-779f-bd46-09c366201279",
+        "cardId": "01a10f95-3897-7abe-855e-7c59b0af61bc",
+        "body": "patch 2026-10-06-ecosystem-ring-contracts-r1: контракты account-ring/1, keyring/1 и rendezvous/1 описаны в contracts/ со схемами и векторами; check_contracts.py их проверяет. Ни одно направление их ещё не реализует (compatibility.json). roaming/1 не меняется, device-link/2 читается до R5.",
+        "createdAt": "2026-10-06T11:00:00Z"
+      },
+      {
+        "id": "01a110de-cf8b-75b5-8720-27e8f6e6b158",
+        "cardId": "01a10f95-3898-7327-aba2-c788e924ec17",
+        "body": "patch 2026-10-06-ecosystem-ring-contracts-r1: R1 сделан, контракты в contracts/; этап готов к патчу. Перенос доверия пишет add с via=migration; устройства со старым device-link/2 остаются видны как «вне кольца, старая версия».",
+        "createdAt": "2026-10-06T11:00:00Z"
+      },
+      {
+        "id": "01a110de-cf8c-7da4-998a-2c766ff71054",
+        "cardId": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
+        "body": "patch 2026-10-06-ecosystem-ring-contracts-r1: каталог contracts/ создан и проверяется check_contracts.py; в нём пока только три новых контракта кольца. Прежние (roaming/1, sync/1, device-link/2, web-node-link/1, p2p_planner_bundle) ещё внутри направлений.",
+        "createdAt": "2026-10-06T11:00:00Z"
+      },
+      {
+        "id": "01a110de-cf8d-72a8-89d8-abab6fecfc59",
+        "cardId": "01a10d38-f936-7499-a62f-2242506eaccd",
+        "body": "patch 2026-10-06-ecosystem-ring-contracts-r1: начало положено: contracts/compatibility.json перечисляет для контрактов кольца, кто их реализует и с какой версии, и правила для старых клиентов; check_contracts.py проверяет его форму.",
+        "createdAt": "2026-10-06T11:00:00Z"
+      },
+      {
+        "id": "01a110de-cf8e-7329-8c40-624312dc1883",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "body": "patch 2026-10-06-ecosystem-ring-contracts-r1: R1 сделан: спецификации, схемы и векторы в contracts/. Следующий этап R2 (web) готов к патчу.",
+        "createdAt": "2026-10-06T11:00:00Z"
       }
     ],
     "boardAppearanceSettings": [],

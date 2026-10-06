@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/sealed-record.schema.json",
+  "title": "Запечатанная запись на relay (content событий kind 31990, 31991, 31992)",
+  "type": "object",
+  "required": [
+    "version",
+    "type",
+    "nonce",
+    "ciphertext",
+    "recipients"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "type": {
+      "enum": [
+        "ring-log",
+        "keyring",
+        "presence"
+      ]
+    },
+    "nonce": {
+      "$ref": "../../../common/defs.schema.json#/$defs/b64url24"
+    },
+    "ciphertext": {
+      "$ref": "../../../common/defs.schema.json#/$defs/b64url"
+    },
+    "recipients": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+      }
+    }
+  }
+}

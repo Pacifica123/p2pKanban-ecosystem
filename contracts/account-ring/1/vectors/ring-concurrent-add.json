@@ -1,0 +1,113 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Узел добавляет ноутбук, а телефон в это же время планшет-участник; ноутбук видит обе ветки и сливает их.",
+  "accountId": "04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c",
+  "entries": [
+    {
+      "id": "04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244860,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"o1F47MZGCQWXJyNWXSPWLw\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+      "sig": "c67ebeb383745a115b6287090ccff64a35af4915d5dad9f9541d6f203944a705cd61cbffd0fe3a0977b357a23ec4fd2a7e74ac0650bafef54e8837065cda8a22"
+    },
+    {
+      "id": "6dbdd06cbafc0bf96e8350f83400856b5c223062ecdf396c72eea25399027e06",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244920,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "92cbefccd968cbf972bf09eecd7f8eee62cde876dae0a09b30959ff641f67c63cf6e074f428e8f7ee9fd3e8d824cbb889063eb91a000de163c002bf15527239e"
+    },
+    {
+      "id": "c65fd77ff83fdd6873c082d91777d1b69739e0e1efb2294865245d1fbf014fa3",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244980,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c\",\"device\":{\"kind\":\"arch\",\"name\":\"Ноутбук\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"role\":\"admin\"},\"parents\":[\"6dbdd06cbafc0bf96e8350f83400856b5c223062ecdf396c72eea25399027e06\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "f92b4102c232c95a1153e5f6f13ca3aac9ff512241df712c57246e90c96b9ed8932792f64b3da0e4b648284d1bd3ad195587a4a6f1f98c6e66d6f7b06c706aad"
+    },
+    {
+      "id": "397c39959c129b188d21816f8e86bed3014b93173cef3fd132c3ca30f5d17f47",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791245040,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c\",\"device\":{\"kind\":\"android\",\"name\":\"Планшет гостя\",\"publicKey\":\"b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf\",\"role\":\"member\"},\"parents\":[\"6dbdd06cbafc0bf96e8350f83400856b5c223062ecdf396c72eea25399027e06\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "1e7bb3591ec852ea1b763ba39eaa409d8311d6957eff2125ff1b88bc29cc62fe0af125c7be89e0dc0265b18964775d2d598b7f2424ad11fff70b3102a6e1d748"
+    },
+    {
+      "id": "b225f052566f28e607ed6a98d63890df4882f5bb6b7a20efebf81c8549ffa43b",
+      "pubkey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+      "created_at": 1791245100,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c\",\"name\":\"Планшет (гость)\",\"parents\":[\"397c39959c129b188d21816f8e86bed3014b93173cef3fd132c3ca30f5d17f47\",\"c65fd77ff83fdd6873c082d91777d1b69739e0e1efb2294865245d1fbf014fa3\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf\",\"type\":\"rename\"}",
+      "sig": "d3ade89fb3f486b6c10431859d178c1bedc07f1d0e1f2ad0f12eb955889197b1dceec16ae7438d3bf66163005ab9f6ae8716222bfbb85888c534ffb479c00b17"
+    }
+  ],
+  "expected": {
+    "accountId": "04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c",
+    "accountTag": "i51uRo1ywB7GS13cQIR7AgL_HtEKFqn5ubcGLEagcKc",
+    "members": [
+      {
+        "publicKey": "b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf",
+        "name": "Планшет (гость)",
+        "kind": "android",
+        "role": "member",
+        "addedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "addEntry": "397c39959c129b188d21816f8e86bed3014b93173cef3fd132c3ca30f5d17f47"
+      },
+      {
+        "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+        "name": "Ноутбук",
+        "kind": "arch",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "c65fd77ff83fdd6873c082d91777d1b69739e0e1efb2294865245d1fbf014fa3"
+      },
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "name": "Домашний узел",
+        "kind": "web",
+        "role": "admin",
+        "addedBy": null,
+        "addEntry": "04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c"
+      },
+      {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "name": "Телефон",
+        "kind": "android",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "6dbdd06cbafc0bf96e8350f83400856b5c223062ecdf396c72eea25399027e06"
+      }
+    ],
+    "removed": [],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example"
+      ]
+    },
+    "heads": [
+      "b225f052566f28e607ed6a98d63890df4882f5bb6b7a20efebf81c8549ffa43b"
+    ],
+    "order": [
+      "04f9c7ef869e0cf59313f82b02a44c79d0f9d5e75796e7399d1c8d4bee21129c",
+      "6dbdd06cbafc0bf96e8350f83400856b5c223062ecdf396c72eea25399027e06",
+      "397c39959c129b188d21816f8e86bed3014b93173cef3fd132c3ca30f5d17f47",
+      "c65fd77ff83fdd6873c082d91777d1b69739e0e1efb2294865245d1fbf014fa3",
+      "b225f052566f28e607ed6a98d63890df4882f5bb6b7a20efebf81c8549ffa43b"
+    ],
+    "rejected": [],
+    "pending": [],
+    "unknown": [],
+    "readerOutdated": []
+  }
+}

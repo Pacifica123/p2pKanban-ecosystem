@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/sealed-event.schema.json",
+  "title": "Событие relay с запечатанной записью кольца",
+  "allOf": [
+    {
+      "$ref": "../../../common/defs.schema.json#/$defs/nostrEvent"
+    }
+  ],
+  "properties": {
+    "kind": {
+      "enum": [
+        31990,
+        31991,
+        31992
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "minItems": 3
+    }
+  }
+}

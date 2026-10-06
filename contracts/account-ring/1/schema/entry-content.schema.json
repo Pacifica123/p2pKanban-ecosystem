@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/entry-content.schema.json",
+  "title": "Содержимое записи журнала кольца (поле content события kind 27790, разобранное из JSON)",
+  "description": "Неизвестные поля допустимы: читатель их игнорирует, но не отбрасывает. Неизвестный type допустим на проводе и обрабатывается по правилам SPEC.md.",
+  "type": "object",
+  "required": [
+    "protocol",
+    "type",
+    "parents"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "p2p-kanban-account-ring/1"
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,31}$"
+    },
+    "accountId": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "parents": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "genesis"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "nonce",
+          "device",
+          "relays"
+        ],
+        "not": {
+          "required": [
+            "accountId"
+          ]
+        },
+        "properties": {
+          "parents": {
+            "maxItems": 0
+          },
+          "nonce": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{22,}$"
+          },
+          "device": {
+            "$ref": "device.schema.json"
+          },
+          "relays": {
+            "$ref": "relays.schema.json"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "accountId"
+        ],
+        "properties": {
+          "parents": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "add"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "device",
+          "via"
+        ],
+        "properties": {
+          "device": {
+            "$ref": "device.schema.json"
+          },
+          "via": {
+            "enum": [
+              "rendezvous",
+              "migration"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "remove"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicKey"
+        ],
+        "properties": {
+          "publicKey": {
+            "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+          },
+          "reason": {
+            "enum": [
+              "lost",
+              "replaced",
+              "left",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "rename"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "publicKey",
+          "name"
+        ],
+        "properties": {
+          "publicKey": {
+            "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+          },
+          "name": {
+            "$ref": "../../../common/defs.schema.json#/$defs/deviceName"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "relays"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "relays"
+        ],
+        "properties": {
+          "relays": {
+            "$ref": "relays.schema.json"
+          }
+        }
+      }
+    }
+  ]
+}

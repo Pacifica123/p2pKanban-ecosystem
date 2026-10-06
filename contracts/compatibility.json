@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "updateOrder": ["web", "mobile", "abl"],
+  "note": "implementations.<направление>: null — не реализовано; {since, stage, hostAccepted} — с какой версии направления реализовано и принято ли на хосте. Заполняет патч, который реализует контракт.",
+  "contracts": [
+    {
+      "id": "p2p-kanban-account-ring/1",
+      "dir": "account-ring/1",
+      "status": "specified",
+      "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
+      "requires": [],
+      "implementations": {"web": null, "mobile": null, "abl": null}
+    },
+    {
+      "id": "p2p-kanban-keyring/1",
+      "dir": "keyring/1",
+      "status": "specified",
+      "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
+      "requires": ["p2p-kanban-account-ring/1"],
+      "implementations": {"web": null, "mobile": null, "abl": null}
+    },
+    {
+      "id": "p2p-kanban-rendezvous/1",
+      "dir": "rendezvous/1",
+      "status": "specified",
+      "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
+      "requires": ["p2p-kanban-account-ring/1", "p2p-kanban-keyring/1"],
+      "implementations": {"web": null, "mobile": null, "abl": null}
+    }
+  ],
+  "legacy": [
+    {
+      "id": "p2p-kanban-roaming/1",
+      "rule": "Не меняется. Кольцо только раздаёт ключи досок через keyring/1; события досок идут тем же roaming/1, поэтому устройство без кольца продолжает синхронизировать доски."
+    },
+    {
+      "id": "p2p-kanban-device-link/2",
+      "rule": "Читается до R5 включительно. Web-узел продолжает принимать writer-ключи из действующих цепочек device-link/2 и показывает такие устройства на экране кольца отдельной строкой «вне кольца, старая версия, доступ до <expiresAt>»."
+    },
+    {
+      "id": "p2p-kanban-web-node-link/1",
+      "rule": "Читается до R5 включительно; перенос узла в кольцо делает R2 записью add с via=migration."
+    }
+  ]
+}

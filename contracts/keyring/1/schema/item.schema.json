@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "keyring/1/schema/item.schema.json",
+  "title": "Элемент связки ключей",
+  "description": "Элементы неизвестного kind допустимы и переносятся без изменений.",
+  "type": "object",
+  "required": [
+    "kind",
+    "id",
+    "rev",
+    "updatedBy",
+    "deleted"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,31}$"
+    },
+    "id": {
+      "$ref": "../../../common/defs.schema.json#/$defs/uuid"
+    },
+    "rev": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedBy": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "deleted": {
+      "type": "boolean"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "space"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "board"
+          },
+          "deleted": {
+            "const": false
+          }
+        },
+        "required": [
+          "kind",
+          "deleted"
+        ]
+      },
+      "then": {
+        "required": [
+          "spaceId",
+          "name",
+          "roaming"
+        ],
+        "properties": {
+          "spaceId": {
+            "$ref": "../../../common/defs.schema.json#/$defs/uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "roaming": {
+            "type": "object",
+            "required": [
+              "protocol",
+              "epoch",
+              "boardKey"
+            ],
+            "properties": {
+              "protocol": {
+                "const": "p2p-kanban-roaming/1"
+              },
+              "epoch": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "boardKey": {
+                "$ref": "../../../common/defs.schema.json#/$defs/b64url32"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "deleted": {
+            "const": true
+          }
+        },
+        "required": [
+          "deleted"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "roaming"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "contract": "p2p-kanban-keyring/1",
+  "description": "Слияние копий связки узла и телефона: пустое пространство из поездки доходит, ротированный ключ (эпоха 2) побеждает больший rev старой эпохи, удаление доски необратимо и убирает ключ, элемент неизвестного вида переносится без изменений.",
+  "copies": [
+    {
+      "protocol": "p2p-kanban-keyring/1",
+      "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+      "ringHeads": [
+        "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce"
+      ],
+      "items": [
+        {
+          "kind": "space",
+          "id": "01a11100-0000-7000-8000-000000000001",
+          "name": "Личное",
+          "rev": 1,
+          "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "deleted": false
+        },
+        {
+          "kind": "board",
+          "id": "01a11100-0000-7000-8000-0000000000a1",
+          "spaceId": "01a11100-0000-7000-8000-000000000001",
+          "name": "Планы",
+          "rev": 3,
+          "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "deleted": false,
+          "roaming": {
+            "protocol": "p2p-kanban-roaming/1",
+            "epoch": 1,
+            "boardKey": "IlfZBQy0w_qQvOIxTZGo8RfZzDSl2kVbDxRi8hyzMa8"
+          }
+        },
+        {
+          "kind": "board",
+          "id": "01a11100-0000-7000-8000-0000000000b2",
+          "spaceId": "01a11100-0000-7000-8000-000000000001",
+          "name": "Ремонт",
+          "rev": 1,
+          "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "deleted": false,
+          "roaming": {
+            "protocol": "p2p-kanban-roaming/1",
+            "epoch": 2,
+            "boardKey": "Q2eCXaq6DmG3UlM2yt7nRMocPaavJEhFjJIKa4iK7Cw"
+          }
+        },
+        {
+          "kind": "board",
+          "id": "01a11100-0000-7000-8000-0000000000c3",
+          "spaceId": "01a11100-0000-7000-8000-000000000001",
+          "name": "Старая доска",
+          "rev": 1,
+          "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "deleted": false,
+          "roaming": {
+            "protocol": "p2p-kanban-roaming/1",
+            "epoch": 1,
+            "boardKey": "YoYmZ4McSaYjRnaFsnsD4rqHWlETjos4RkYjSgH4lhM"
+          }
+        }
+      ]
+    },
+    {
+      "protocol": "p2p-kanban-keyring/1",
+      "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+      "ringHeads": [
+        "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce"
+      ],
+      "items": [
+        {
+          "kind": "space",
+          "id": "01a11100-0000-7000-8000-000000000001",
+          "name": "Личное",
+          "rev": 1,
+          "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "deleted": false
+        },
+        {
+          "kind": "space",
+          "id": "01a11100-0000-7000-8000-000000000002",
+          "name": "Поездка",
+          "rev": 1,
+          "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+          "deleted": false
+        },
+        {
+          "kind": "board",
+          "id": "01a11100-0000-7000-8000-0000000000a1",
+          "spaceId": "01a11100-0000-7000-8000-000000000001",
+          "name": "Планы на октябрь",
+          "rev": 4,
+          "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+          "deleted": false,
+          "roaming": {
+            "protocol": "p2p-kanban-roaming/1",
+            "epoch": 1,
+            "boardKey": "IlfZBQy0w_qQvOIxTZGo8RfZzDSl2kVbDxRi8hyzMa8"
+          }
+        },
+        {
+          "kind": "board",
+          "id": "01a11100-0000-7000-8000-0000000000b2",
+          "spaceId": "01a11100-0000-7000-8000-000000000001",
+          "name": "Ремонт",
+          "rev": 7,
+          "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+          "deleted": false,
+          "roaming": {
+            "protocol": "p2p-kanban-roaming/1",
+            "epoch": 1,
+            "boardKey": "jhPxzCL_U73UdleSwkvvG0z8T-u_4518VKVD-oH0lB0"
+          }
+        },
+        {
+          "kind": "board",
+          "id": "01a11100-0000-7000-8000-0000000000c3",
+          "spaceId": "01a11100-0000-7000-8000-000000000001",
+          "name": "Старая доска",
+          "rev": 2,
+          "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+          "deleted": true
+        },
+        {
+          "kind": "calendar",
+          "id": "01a11100-0000-7000-8000-0000000000d4",
+          "rev": 1,
+          "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+          "deleted": false,
+          "futureField": "из новой версии"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "items": [
+      {
+        "kind": "board",
+        "id": "01a11100-0000-7000-8000-0000000000a1",
+        "spaceId": "01a11100-0000-7000-8000-000000000001",
+        "name": "Планы на октябрь",
+        "rev": 4,
+        "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "deleted": false,
+        "roaming": {
+          "protocol": "p2p-kanban-roaming/1",
+          "epoch": 1,
+          "boardKey": "IlfZBQy0w_qQvOIxTZGo8RfZzDSl2kVbDxRi8hyzMa8"
+        }
+      },
+      {
+        "kind": "board",
+        "id": "01a11100-0000-7000-8000-0000000000b2",
+        "spaceId": "01a11100-0000-7000-8000-000000000001",
+        "name": "Ремонт",
+        "rev": 1,
+        "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "deleted": false,
+        "roaming": {
+          "protocol": "p2p-kanban-roaming/1",
+          "epoch": 2,
+          "boardKey": "Q2eCXaq6DmG3UlM2yt7nRMocPaavJEhFjJIKa4iK7Cw"
+        }
+      },
+      {
+        "kind": "board",
+        "id": "01a11100-0000-7000-8000-0000000000c3",
+        "spaceId": "01a11100-0000-7000-8000-000000000001",
+        "name": "Старая доска",
+        "rev": 1,
+        "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "deleted": true
+      },
+      {
+        "kind": "calendar",
+        "id": "01a11100-0000-7000-8000-0000000000d4",
+        "rev": 1,
+        "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "deleted": false,
+        "futureField": "из новой версии"
+      },
+      {
+        "kind": "space",
+        "id": "01a11100-0000-7000-8000-000000000001",
+        "name": "Личное",
+        "rev": 1,
+        "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "deleted": false
+      },
+      {
+        "kind": "space",
+        "id": "01a11100-0000-7000-8000-000000000002",
+        "name": "Поездка",
+        "rev": 1,
+        "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "deleted": false
+      }
+    ],
+    "digest": "fe3c53d06a95e4d4d821a2787bb9f6995ce29a334b127441f42a1349c7a5c7e6",
+    "boards": 2
+  }
+}

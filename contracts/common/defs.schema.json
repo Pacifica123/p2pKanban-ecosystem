@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common/defs.schema.json",
+  "title": "Общие определения контрактов кольца",
+  "$defs": {
+    "hex64": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "32 байта в нижнем hex: id события, x-only публичный ключ secp256k1"
+    },
+    "b64url": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "base64url без '='"
+    },
+    "b64url32": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "32 байта в base64url"
+    },
+    "b64url24": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32}$",
+      "description": "24 байта в base64url (nonce XChaCha20)"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "unixSeconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deviceKind": {
+      "enum": [
+        "web",
+        "android",
+        "arch"
+      ]
+    },
+    "role": {
+      "enum": [
+        "admin",
+        "member"
+      ]
+    },
+    "deviceName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "relayUrl": {
+      "type": "string",
+      "pattern": "^wss://",
+      "maxLength": 256
+    },
+    "protocolId": {
+      "type": "string",
+      "pattern": "^p2p-kanban-[a-z0-9-]+/[1-9][0-9]*$"
+    },
+    "software": {
+      "type": "object",
+      "required": [
+        "direction",
+        "version",
+        "protocols"
+      ],
+      "properties": {
+        "direction": {
+          "enum": [
+            "web",
+            "mobile",
+            "abl"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "protocols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/protocolId"
+          },
+          "uniqueItems": true,
+          "maxItems": 32
+        }
+      }
+    },
+    "nostrEvent": {
+      "type": "object",
+      "required": [
+        "id",
+        "pubkey",
+        "created_at",
+        "kind",
+        "tags",
+        "content",
+        "sig"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/hex64"
+        },
+        "pubkey": {
+          "$ref": "#/$defs/hex64"
+        },
+        "created_at": {
+          "$ref": "#/$defs/unixSeconds"
+        },
+        "kind": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "type": "string"
+        },
+        "sig": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{128}$"
+        }
+      }
+    }
+  }
+}

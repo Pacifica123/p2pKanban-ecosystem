@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/relays.schema.json",
+  "title": "Набор relay кольца",
+  "type": "object",
+  "required": [
+    "urls",
+    "minAcks"
+  ],
+  "properties": {
+    "urls": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../../../common/defs.schema.json#/$defs/relayUrl"
+      }
+    },
+    "minAcks": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16
+    }
+  }
+}

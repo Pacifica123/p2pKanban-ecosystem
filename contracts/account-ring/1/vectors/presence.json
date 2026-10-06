@@ -1,0 +1,147 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Отметки присутствия: ноутбук на свежей версии и телефон, который отстаёт (не знает keyring/1). Экран кольца показывает отставание, а не молчит о нём.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "recipient": {
+    "name": "node",
+    "secretKey": "db5f3a49ec4b3db6d72ba926313eef09bdde11e80f4c3515922057841860bcbd",
+    "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51"
+  },
+  "accountTag": "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI",
+  "events": [
+    {
+      "id": "cb4b530e1d3fed30af98ad06643ec45578cc79e62436cfc7f217af54522fe9c6",
+      "pubkey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+      "created_at": 1791252000,
+      "kind": 31992,
+      "tags": [
+        [
+          "d",
+          "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI"
+        ],
+        [
+          "t",
+          "p2pkanban-ring"
+        ],
+        [
+          "v",
+          "1"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"2-Sp2Aapaxtzv5DUJAIEZBWqXoYYv0AtwjBnpfIAJpKG52ftF0dz_A1lXgsUhwaiF26k_tCt58fZZn3G9lKgAsZtL8CAYYM9WmL-48klWEaQgeYBPt9-I72__YNdwL41V3TBmaq0ERzck5MD7Q1BoRJj5kmOXSZi9xOr6ecAurcqfWY2PPmQoSjqeigXLOIJOp4hjQqdKr0awt6Uf76eoPbBSTPSaSrp72F9uun1-0yx_bxA0D1ua_yUeVp0D57rtnIs3d9mThdMkjakyXpAoS7mFqIssgks5XgsyVAVtQqjwEqdjdguBPIt7DRHyrqvshERAENP1UlhT0NT2UEriypAiIbMwoMW8IXkpw4s1xNMEfAte-kpvDGQOuTCX24EWTdfnhdmgu6B8TxWt0lWXFBnKLA27RYgi6nezZG7saRzd01fKt2tJyMEvSu-7vO8Uh0_m3MzZHRgKJu5ROdsigKszrj2k8em3cCNa33mchBUExR7NaXeNuJZVd8VPdeI2xJPmjS7CmDMFQXIIaETV98iFolNP1vH5TUAwxriUjBxUoDLY_SHrurBLjNE3G5FSKvFpoo_HXctpHj9OOI0xrPqExgf_TlIZSZ7o1dD1I8yhCH0brRkc2RVBrQ9Xi7I525gGlRT_rJK87NpBLyTcPy_oY01KTmTf_TSehmebd_i73ESz7LHUMLpfL68-Tex26EX1UoEu2rx3HSsbWQh_wdgnFfrZRy-YaKW2CWIXHItUxqGrpA3O2kWxT28r85oK9YpSn_aKKumyHVZA0icMgdlhCOzFLpUbPBzjmxep60rsHZjgSaJx74xfI_nYGILtc-tsfXlEsbDGH1-Q6ff-ObKdqUDUf1B-8Pr2GuF7nWIWqNSh5ghg47hcKQ5LLzGQN_8ffkDh0aDYEkCM-RAkRYrarSlZpT9oBHihGdP_QqglF3EbZ5gVcpxp8TvJSxYUdMMxhjsTyZ5mn3fUX_W_-mogmCB8Xq0YUG2lR3ebRaoSMX_E8Ww5E0D6G9rfnGsZ1HgI8RmNscvR57ppfCjFYh5XmWtAj9M2BvwvKJqqCKtkLatp-oF2lcrGTDPilpx7TduHOqe9hU7EwEtMrtgmZG0OSFr2mwcFFiF4JMisbGKszPMrg\",\"nonce\":\"O8bbQYyTVyKkcYjMEsTM32aTb2bR2RUb\",\"recipients\":[\"Aim5r3Ns2h1Nkm86FINt1+TKmrtXiodi+FQ9/DJ9RZIqi7mymJBpxrjkp9RCIgelQ28O8YOAFH6bD8lCeEBGJ0La8kw65TMGNrFIR7d7bt3uLbFDC085QasntI6NPFVKXlFy4Cs/TRzDBt4umad8v8ui3NHYC20jk73n3h08r3ZEETY=\",\"AkShDpFmBRpCGXInbyFBtxFwmydKjABu+DunTIwhBcH8K4JqOB66Rzrtq5ZaeV755cYO1HiVnkN7UaxgsbJYP9NiAII/RrWpa7Sydqh16nzTeGFN7XdPcmDDgQAeE902+ePa1+qYMU3PeuZjlsa0sGyneQmsqGztZhHZyjjZNrU7IqA=\",\"AlG319E24ZItnYpGm3NJT1ZWjE93keqDevWu9BWWqXJu9HK38uXsEgFBnD/7kASgx+7OY4DqJ8psJSsjl6ZYfUo08BgBhnB2etNfSDdG8CtwuA47GHAG1mh1YW1zDIeti0aCQYc+ysqzFBYvSJPoEm7UliOzCvj1RZm4qtMr4Tsd5aI=\"],\"type\":\"presence\",\"version\":1}",
+      "sig": "0d4a4e72b40dbdd120a722a2e064ca9edf4e0e38b11b857db2369aedfde8bcc3badcf9147a69163973defa3a850d70f67c2e05f2f7e7328770f87861c75c0109"
+    },
+    {
+      "id": "40ed5a01f07636fe5e5e139bc21b06cd0a36d25a7a6a37c9ea7a29e65f558d87",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791250200,
+      "kind": 31992,
+      "tags": [
+        [
+          "d",
+          "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI"
+        ],
+        [
+          "t",
+          "p2pkanban-ring"
+        ],
+        [
+          "v",
+          "1"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"67Vd7IofH4f7EYodY0b3VLpd6hINa3x7qZooDLdXKU9t2qXAEgUEqhBJL-Cq8X7nGT4Z-Mwv2WS1JiV913TRoHnKSy1-ML4fpArWlnTZ0o74PuADMI5kDQFZZmr5ASK91JuxIQ_iELMGW8Gkr0TukCjA58efrt1f2ZJMLJZzsRpUQJ_uooj5z2qAhgjyrmMvp4ldZJt1liVQStVpdWbkx3xcf9ugrM1-RKMYzWPHH_jGj1w7tGQO1UKlYO6_CXacYHG8nJHgoapU1R_45ezhOIKMfdoolGwZfKx0Ix9zuKBJ3uc4IDTLweuI5sIavagWv3x-WFWScaxMVeuEWOgkFGVp6l-VG4VPYKEBbAxj_Xrx8S-TuvbrYMN3JMyE7gzl45IcGovkZPv3K3P74IJjPdqAxl_N4U2bI4AWY_rEiH4UEVf_1ECLzau8IiaClT-kt4Zi4W0J3tG-y4xwD4gCZCDKSu0BaqoivWjPJsPwKB1cBCRlkH5JtxDoltq7El9kSFyXQ9VCaVfWeUnvzRYDhi__VY_DOQfVyFq_KqcKU91PRRDK3tHtyS9KDI-L1iy3K70gXTRur0eOBjG73aiU_iUHUDmu7TdTH9ir2IOELP9nL3c4poS6PvOHRiJFIRHh35en6kTx21HDs1izMDsCnf4q5qSKCndFMa2i95zoRK5v4cU17HDrl9ygYI7zNJ1FQkckgRKyYAKuYTEc8ROGeTfYrHBr2dZVTdyDgFiA8k2fJydGprLLkDYumFRqWw\",\"nonce\":\"3anU01Ujjl7NxZ1BtTR16a_HS8-huNE_\",\"recipients\":[\"AnVDVz8RGxEThZJ34CdWr+oN989bv1r15fLsRrKsdjHKX/nqpu4tZ3kfgHny9y/6AJuCr0GNF+XbtpUDb1XdM9N3oj2jMI8mM366JXz35R5wjdNl9h6wDDVbI6xxCm2WLX/jLSrthnf5Z5zqjyVb81LzJdXqeW8v2O4F+PVDT+hmgpc=\",\"ArL0ODMf/qYtFKL9rngfmn7m1BD8ueS7QhzqA8rDAPRn1/8PP4Ie3Wp+3lwYFSjY+HkfrwGaSW2wbbdF6andWoQyEseBp82r5FUB7p5kqLzPYrR7a61mnVlzF33+lzqDm/rslGFPtV1d0wvoOWDuCBPQCNDrgwJ3+CfUiHZiofPvFNw=\",\"AuKztct1kvn56YYhBitYh4hqsXLK7Spx9tPPSJovufOTqVPYTFXjZo5fOpwLOWM5a3pLN4pYfkRlycl76Pi7tifQH9HAC09aPtD/udp1Tjagb3grcUvsyU2TtuSoTtRDx7uo8wwPLXg2HfHIp2JBNfiTFFlHCmU3AfaWYimatJjUYTQ=\"],\"type\":\"presence\",\"version\":1}",
+      "sig": "0b426f5b95068ae2823ce99caa7c723ab6c42f4f772eea5e3bb6dd2f4429da72d82cc34a598507f0616fc470f27f4bd2584d68acca8e03480477fd1b27cbee6e"
+    }
+  ],
+  "expectedPlaintexts": [
+    {
+      "protocol": "p2p-kanban-account-ring/1",
+      "type": "presence",
+      "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+      "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+      "seenAt": 1791252000,
+      "software": {
+        "direction": "abl",
+        "version": "A20",
+        "protocols": [
+          "p2p-kanban-account-ring/1",
+          "p2p-kanban-keyring/1",
+          "p2p-kanban-rendezvous/1",
+          "p2p-kanban-roaming/1"
+        ]
+      },
+      "ringHeads": [
+        "ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086"
+      ],
+      "keyring": {
+        "digest": "ea172e304061556090660c03b99a38d2ba96ebee9b56b334e7efd6cf61f551d7",
+        "items": 4,
+        "boards": 3
+      },
+      "relays": [
+        {
+          "url": "wss://relay-a.example",
+          "reachable": true
+        },
+        {
+          "url": "wss://relay-b.example",
+          "reachable": true
+        },
+        {
+          "url": "wss://relay-c.example",
+          "reachable": false
+        }
+      ],
+      "boards": [
+        {
+          "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+          "keyEpoch": 2,
+          "baseline": true
+        }
+      ]
+    },
+    {
+      "protocol": "p2p-kanban-account-ring/1",
+      "type": "presence",
+      "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+      "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "seenAt": 1791250200,
+      "software": {
+        "direction": "mobile",
+        "version": "2.2.0",
+        "protocols": [
+          "p2p-kanban-account-ring/1",
+          "p2p-kanban-roaming/1"
+        ]
+      },
+      "ringHeads": [
+        "55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2"
+      ],
+      "keyring": null,
+      "relays": [
+        {
+          "url": "wss://relay-a.example",
+          "reachable": true
+        },
+        {
+          "url": "wss://relay-b.example",
+          "reachable": true
+        }
+      ]
+    }
+  ],
+  "ringHeads": [
+    "ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086"
+  ],
+  "expectedSkew": [
+    {
+      "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "missingProtocols": [
+        "p2p-kanban-keyring/1",
+        "p2p-kanban-rendezvous/1"
+      ],
+      "staleRing": true
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "keyring/1/schema/keyring.schema.json",
+  "title": "Связка ключей аккаунта (открытое содержимое записи keyring и поле keyring в welcome)",
+  "type": "object",
+  "required": [
+    "protocol",
+    "accountId",
+    "ringHeads",
+    "items"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "p2p-kanban-keyring/1"
+    },
+    "accountId": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "ringHeads": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {
+        "$ref": "item.schema.json"
+      }
+    }
+  }
+}

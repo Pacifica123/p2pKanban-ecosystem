@@ -15,7 +15,7 @@
 | `mobile/` | Expo-клиент, local-first хранилище, Nostr roaming на Android, сборка APK | backend и миграции |
 | `abl/` | Tauri-оболочка, Rust core, SQLite-профиль, pacman/AppImage-упаковка, UTS-проверки | Docker и localhost-backend |
 | `devctl/` | формат патча, конвейер `start`, приём патчей, эволюционный архив | смысл патчей конкретного продукта |
-| корень | `docs/ecosystem/`, `board/`, `ecosystem.json`, `tools/ecosystem/`, `.devctl/`, `AGENTS.md` | код и документация направлений |
+| корень | `docs/ecosystem/`, `contracts/`, `board/`, `ecosystem.json`, `tools/ecosystem/`, `.devctl/`, `AGENTS.md` | код и документация направлений |
 
 Изменения внутри каталога направления подчиняются его собственным правилам
 (его README, docs, проверкам). Корень их не переопределяет.
@@ -36,13 +36,21 @@
 | Patch manifest и `state.json` | devctl | все направления, `web/tools/devctl_receipt.py` | `devctl/docs/patch-format.md`, `devctl/docs/configuration.md` |
 | devctl receipt и `.p2pkanban/project.json` | `web/tools/devctl_receipt.py` | web API интеграций | `web/docs/integrations/devctl-v2.md` |
 
-### Предложенные контракты
+### Описанные, но ещё не реализованные контракты
 
-Ещё не реализованы; описаны в [trusted-devices.md](trusted-devices.md):
-`p2p-kanban-account-ring/1` (журнал кольца устройств аккаунта),
-`p2p-kanban-keyring/1` (связка ключей аккаунта),
-`p2p-kanban-rendezvous/1` (добавление устройства через relay: QR в двух режимах, позже код; всегда во всё кольцо).
-Производят и потребляют web, mobile и abl.
+Лежат в [`contracts/`](../../contracts/README.md): спецификация, JSON Schema и
+эталонные векторы, проверка `python -B tools/ecosystem/check_contracts.py`.
+Зачем они нужны, рассказывает [trusted-devices.md](trusted-devices.md).
+
+| Контракт | Кто производит | Кто потребляет | Где описан |
+|---|---|---|---|
+| Журнал кольца устройств `p2p-kanban-account-ring/1` | web, mobile, abl | web, mobile, abl | `contracts/account-ring/1/` |
+| Связка ключей `p2p-kanban-keyring/1` | web, mobile, abl | web, mobile, abl | `contracts/keyring/1/` |
+| Встреча по QR `p2p-kanban-rendezvous/1` | web, mobile, abl | web, mobile, abl | `contracts/rendezvous/1/` |
+
+Кто какой контракт уже реализует и с какой версии, записано в
+[`contracts/compatibility.json`](../../contracts/compatibility.json). Порядок
+реализации: web (R2) → mobile (R3) → abl (R6).
 
 ### Правило порядка обновления
 

@@ -1,0 +1,94 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Узел более новой версии пишет запись неизвестного типа «role». Старый читатель хранит её, не применяет и сообщает, что устарел.",
+  "accountId": "6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413",
+  "entries": [
+    {
+      "id": "6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244860,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"e-IJnNbqZsCuisHqn1DkHA\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+      "sig": "58c4500482abdc7e04f90caef19f063ea5364d7dbb0aa4b5e22adaa514de3894a459220809a671c5eb6bb85929d06e229116de06268865f465bbc230cca1cb88"
+    },
+    {
+      "id": "a3535ccdc24c85b0fa0306646a1d4bfacc43652bad89f807612086c0dbae4c94",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244920,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "90071af08dacf09efc388370aaaaab068a0e65ecd9657043e304834ce28cb306b7e5664b3b6e76f0650cdeb3f97d03b7dd5cb36cd101eaf78009978589e7a1dd"
+    },
+    {
+      "id": "50b366e5037e3a9e2caa5f15894ae0192dcf06d63654aba76e145adc81837024",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244980,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413\",\"futureField\":{\"x\":1},\"parents\":[\"a3535ccdc24c85b0fa0306646a1d4bfacc43652bad89f807612086c0dbae4c94\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"member\",\"type\":\"role\"}",
+      "sig": "ca1c854d0a808121cfc98ed5a8fb841a4e87137257cd224ef619b4713cb257d2351345b07777869f4e0bdf6fbe38937f15bd57056147c00e3d3e55f3e2503a3e"
+    },
+    {
+      "id": "58535f8e4a830e166ac16134d01b2ddaeaee8d4407cb30cf2428272dcab8f5e5",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791245040,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413\",\"comment\":\"неизвестное поле игнорируется\",\"name\":\"Телефон 2\",\"parents\":[\"50b366e5037e3a9e2caa5f15894ae0192dcf06d63654aba76e145adc81837024\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"type\":\"rename\"}",
+      "sig": "8c17fe0d3d7883207693df2876fe54dfb9162a1adc3034e86c23cc632b5fecda070b86275a83f7ed18d3566348b7d7ece715f08ebec9f027c6a0e5053bf01f47"
+    }
+  ],
+  "expected": {
+    "accountId": "6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413",
+    "accountTag": "Ak46KeNGgj4YFR4V3b-baPyeZh3sy5iXXUO5sAJiXVo",
+    "members": [
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "name": "Домашний узел",
+        "kind": "web",
+        "role": "admin",
+        "addedBy": null,
+        "addEntry": "6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413"
+      },
+      {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "name": "Телефон 2",
+        "kind": "android",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "a3535ccdc24c85b0fa0306646a1d4bfacc43652bad89f807612086c0dbae4c94"
+      }
+    ],
+    "removed": [],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example"
+      ]
+    },
+    "heads": [
+      "58535f8e4a830e166ac16134d01b2ddaeaee8d4407cb30cf2428272dcab8f5e5"
+    ],
+    "order": [
+      "6c7bba517149d822a7784845b1eca90506326cb8f0d54fdb985aad46f0bf0413",
+      "a3535ccdc24c85b0fa0306646a1d4bfacc43652bad89f807612086c0dbae4c94",
+      "50b366e5037e3a9e2caa5f15894ae0192dcf06d63654aba76e145adc81837024",
+      "58535f8e4a830e166ac16134d01b2ddaeaee8d4407cb30cf2428272dcab8f5e5"
+    ],
+    "rejected": [],
+    "pending": [],
+    "unknown": [
+      {
+        "id": "50b366e5037e3a9e2caa5f15894ae0192dcf06d63654aba76e145adc81837024",
+        "type": "role"
+      }
+    ],
+    "readerOutdated": [
+      "type:role"
+    ]
+  }
+}

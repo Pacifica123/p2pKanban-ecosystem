@@ -1,0 +1,103 @@
+{
+  "contract": "p2p-kanban-keyring/1",
+  "description": "Телефон публикует слитую связку, запечатанную для узла и себя.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "recipient": {
+    "name": "node",
+    "secretKey": "db5f3a49ec4b3db6d72ba926313eef09bdde11e80f4c3515922057841860bcbd",
+    "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51"
+  },
+  "accountTag": "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI",
+  "event": {
+    "id": "39463b22716db2d59a7103d225c09373dcb96fdaa18881d0340174027a865407",
+    "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+    "created_at": 1791248800,
+    "kind": 31991,
+    "tags": [
+      [
+        "d",
+        "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI"
+      ],
+      [
+        "t",
+        "p2pkanban-ring"
+      ],
+      [
+        "v",
+        "1"
+      ]
+    ],
+    "content": "{\"ciphertext\":\"5DGlgXo83XOPJfgbBdVqnlb7GeBFY_Em609AARnXaZhXD85HNUFhMNJHje61QayNksluvUjyHXrdMvAMLwEmoCGJbwXrCTqRVInEHNKbL2--d1RhbARdQ6KxTlJnToQagTxoqmql0dXulBr1Mi7XWN9m62Efzkv4Cx8ohYuM-5Vkdy8YNjduowbWCgs3VoqposKqgMYQVSYtrlfk7nIol0Ct1yqp4uqaqjoHXjWolqfqD5o5YOtBY7WUyuyHG1LxWdeZkmewtN1fDUg9k1oy96lML4Fh4Sf4emiOcItjjCUZdaNxDNbkA9Eu305xbWOg_fvWKxZEPLo4HcTYD8kF062kBvDO90vISabqcI-gTRVczL-qPKySj9mjwoCyyobKFcYmg9F3VRnlHYd1fb1QuD1OQ2wTReKs93aG-YwZBf88FWv0b9wVlobWcn4OsprjgLW-m4UjW5Ap2GqE-n37OqtQB1BZJMtO96SW_72tfaj2gVhXPAX2soWom2T0Uv9GEBmB18T0-cuwO89NmLeItBN3nItyjndfLwJxyf67X-Lb-WYJjKnL1Acz3Zksmjl4sOcqz1q-QJK5DncuRyzu0qBAVvuIyXnoKxnFGIyZMbjafHKsY93jZx1WSQSsU0QvgkPT97y4m4-L_g3gdjHlR8VsHCt1AhQz0Nx6mEBEBJvK7wrmSkEH4yxgdl-Bo6JVooK8DQAh6mZOz5JEf2umcJcmOxHTOLpJ0SK03MH-RANKD2lTb1DXBXanD4JBTEKG-sLdJA7Gmy_TZu0v1ThCmlCSz9Mb72s5bUw7iNtgb02x6An_JqK6YtDwolCDzGpP2p3-qjBaKJtrpWNpLzAlA7mvuTlzUXf6PFRKnFUqIkaslI3UZZF6_vTT-DnSYMtaLJ2IxB2dTuNE22iMUX5CA11unsrkIDQbVe7OaMZz8n1lJlx7PpKiucMZ85tJ1j5k_VALq2Ol2ztv4ZjV7uqdHnuOAzZjo7vKUq-cnhC6lmFdS8iGcVoVtmJDVQ-jJbZYhXKp9syg5dfrRMRXBQTmFpFRLu6i45rXgH-ORloM6vgFYo5uvMref0CfqW1n4J4n7xkAEXvtAE1GUy-d0D5S_28PBAkYtFnTUGU99_hm1elJYeK15_OfLYRqTH-9DeghYqyes6QgVd1wrKVNz3fMMOsGQEuoPOlA-y8Shc6QxlJb_cjax9sy1OkiL9x1QnxEW9-kHykUNtamUcOuCxVPyE9G2DtiB1TB2zTHHccvCazbIJzQWTIJuXeZuoxOr6nuJoMcG90qXlVxzL565clRPbqc6HJMD80_uJuieVdtUSzSTfHqVLFWqV3d6_0OD4nkImrspMklV_-V4MnqZRXL2AlXCCHZhVnNJc3nGmXTJiEAWgtBRyVEWMiCph42CNEiCxJ5Vegm4dzIKQSKvZfUVEmNqeHDlolg7MjQe2QlRXnGGLDkjuMq3E0UK5lHalwRF6UGI3hKgYg3BQbJdm7-YkJozewkJafVZfIDa3eae8op8vGsFAMbzMcv7q5_xEgRsRO2OIEjpJuRL3T421i5aSjuOKSBfYmV2Lilqn_RDueYxF0c5Y45uBGheiXHT6lhgJV517nNy8N60sF7QKG0ENPjhGCvvWgwwJtoFjUWckpEktp1blZ5ov_Oufj814FOB_IyD7r3UcPGcCDSjjttQoive_3Den0oJRoSIqCTiIKTAFvzzwpDeB0k56Qi5MPaxsY65TA_fcKm3NL80b9qNngTG_uOmEFSs24n8pfLlzJvyw8E_IXMxFs4tz4NPY7KkiuTPnG9EYV7VG-U5jYxkZecwITcPT1_wSN4la3Fna-FhQdPoqnoYgXHnxmrF6Xts3ygzmApIOQGQuFENg3bNc37hJOdXdNm-HvXr5CWGIIByvfvg4aXcpi5R_XzHuvTFDEmgYNZ_0mW3CrZwQYQfCoEiBP72_3umGiGUv4RW16LwIUkHQouRwFQWYmTK5Dvnx1pDc_eN5O_23J3T2ZM_vRhiK-FbO_0Dhg5cR9M8Yg2fienWmEd_K5H3Vcmb_XDzWnq_cVYwNYESlfXerrHDXM1vT4f8ltPK4XXKy8gOMyNpT3AVAWG5Dq6znT4N_DlUVyPppURyyZhObewITUNlWaedwXfSdaah-9eZn-g_5YwkRESRdBhseEO3ods8maO6H2ifQxoetnmGAt2f-kNX3KLloz9fjeSrDdPc8UHSYI3fsmHb6kIcHb98kP6nARwCDC2FJPf8H1CiZiyQWstwdYzqsaSL7PVxdlVYGEt8MLZRNHGEbsPpENZM3i0x0HblZjcXTXy8i9uwXNGVNbe3R4o1gy0C9_H9_Z8dTWjeRbZMhDcNLU\",\"nonce\":\"VjdoGul6WzIcvK3aQaKlqM173aEMwz2C\",\"recipients\":[\"AhscwWuBiAxjQNkWUgT+7vQCPha9jk26D6jCKCtP4e5ZSSjWJObBSHL5fHqzYbC6OrfHE+gBJyJR4CFA/psjwWkZ8kcvmfihjraYnxjNhsetLnbznE+s0jRq0rqRlBTlRPFQDpdbzl7rSf25YKT/BbaWkvY0/HjoOdMZUeD2mMd1704=\",\"ArfLOr1uJorsxzAU3QNcknSoNYy4IM9VGxEkng5yU6GK0eek2OUDXmesb4LXMPUzQ1P/BIAavhDXcdby278IW4Qm0AkXAc6C31bLJyQLt0UKvVFcG7q/40f6bFrY0BbKQbe++aVetPVdToiMtq0kDXOptX8SVbZtDaE+WgwQu+XRHfY=\"],\"type\":\"keyring\",\"version\":1}",
+    "sig": "195751f2a5a209e50e3cf4a8f83bb2c87bc3c8ac73eecc3f9bd4225eb087c14c2c63267d32a4b924df30c9fa1b167346236e6e06d767a680254bfb395f89a1d7"
+  },
+  "expectedPlaintext": {
+    "protocol": "p2p-kanban-keyring/1",
+    "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+    "ringHeads": [
+      "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce"
+    ],
+    "items": [
+      {
+        "kind": "board",
+        "id": "01a11100-0000-7000-8000-0000000000a1",
+        "spaceId": "01a11100-0000-7000-8000-000000000001",
+        "name": "Планы на октябрь",
+        "rev": 4,
+        "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "deleted": false,
+        "roaming": {
+          "protocol": "p2p-kanban-roaming/1",
+          "epoch": 1,
+          "boardKey": "IlfZBQy0w_qQvOIxTZGo8RfZzDSl2kVbDxRi8hyzMa8"
+        }
+      },
+      {
+        "kind": "board",
+        "id": "01a11100-0000-7000-8000-0000000000b2",
+        "spaceId": "01a11100-0000-7000-8000-000000000001",
+        "name": "Ремонт",
+        "rev": 1,
+        "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "deleted": false,
+        "roaming": {
+          "protocol": "p2p-kanban-roaming/1",
+          "epoch": 2,
+          "boardKey": "Q2eCXaq6DmG3UlM2yt7nRMocPaavJEhFjJIKa4iK7Cw"
+        }
+      },
+      {
+        "kind": "board",
+        "id": "01a11100-0000-7000-8000-0000000000c3",
+        "spaceId": "01a11100-0000-7000-8000-000000000001",
+        "name": "Старая доска",
+        "rev": 1,
+        "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "deleted": true
+      },
+      {
+        "kind": "calendar",
+        "id": "01a11100-0000-7000-8000-0000000000d4",
+        "rev": 1,
+        "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "deleted": false,
+        "futureField": "из новой версии"
+      },
+      {
+        "kind": "space",
+        "id": "01a11100-0000-7000-8000-000000000001",
+        "name": "Личное",
+        "rev": 1,
+        "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "deleted": false
+      },
+      {
+        "kind": "space",
+        "id": "01a11100-0000-7000-8000-000000000002",
+        "name": "Поездка",
+        "rev": 1,
+        "updatedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "deleted": false
+      }
+    ]
+  }
+}

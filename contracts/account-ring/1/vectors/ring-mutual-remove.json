@@ -1,0 +1,99 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Узел и телефон одновременно удаляют друг друга. Удаление консервативно: оба выходят, кольцо продолжает ноутбук.",
+  "accountId": "1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205",
+  "entries": [
+    {
+      "id": "1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244860,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"jYdS42-rFR1099cCRMKe0Q\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+      "sig": "2505c53d295c5d04023da1d38b5d653a64091cfec52d1bb7165fa375bd6ade582d7faf39eb572b2a4c4ea33d04e400728e8a38dff523efa1b7d8aa163e73754a"
+    },
+    {
+      "id": "a9f18959c3969147f80ee96fba924e78500a54d030c23d3210db13150f66e263",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244920,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "b6fbd32587304a49ceda67c7cf1e7beae505f23fa157982e25191bfcaa948a96745eac794413e9fa014ff216f2b0bf846ee3ce038316fe43e329ea79251f4fd4"
+    },
+    {
+      "id": "d82ee6402d6eb64cce85dfea2ddcd8a92c7536d9b8c3ebe7abac5a09c5aa0d4f",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244980,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205\",\"device\":{\"kind\":\"arch\",\"name\":\"Ноутбук\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"role\":\"admin\"},\"parents\":[\"a9f18959c3969147f80ee96fba924e78500a54d030c23d3210db13150f66e263\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "eaffb9f092eba3964ce279c69d03f441b9b5b58e5f78352cf92096f9076fb1449d5a052bef8f22f3dc3d16092c86dff836fc7b5f558ebc4181b3335978b6195d"
+    },
+    {
+      "id": "85a1ac14f2e78eeb049e349c580e6d3ddc01b3e4eb8d0c8dec6c2a7016463277",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245040,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205\",\"parents\":[\"d82ee6402d6eb64cce85dfea2ddcd8a92c7536d9b8c3ebe7abac5a09c5aa0d4f\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"reason\":\"other\",\"type\":\"remove\"}",
+      "sig": "d1b19a596024ac2b7ba36897dfeaa0e0ce6af2d2621cb208ee13e83c7c308e13876bb4bdfe1c186704f45d2fb3f4a0caef98d81d58b5c359defde22bc862e4e3"
+    },
+    {
+      "id": "4ca8a45d7d2d33f76c88668a45cdd6e0cd3bbf81e770ec9ba690c4d8ffcc044c",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791245100,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205\",\"parents\":[\"d82ee6402d6eb64cce85dfea2ddcd8a92c7536d9b8c3ebe7abac5a09c5aa0d4f\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"reason\":\"other\",\"type\":\"remove\"}",
+      "sig": "cbdca49252e21549c7040b7aab3277ee4a630ed28bdb2429a08ba5c449e75905d517e4779a1d58ffdf7ad672d9a6cd0448160426832d6409345c2a9316e9dad1"
+    }
+  ],
+  "expected": {
+    "accountId": "1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205",
+    "accountTag": "PyVEy-ZsOyEXspez3AtOb80RR8_6BToyadeillEEPZA",
+    "members": [
+      {
+        "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+        "name": "Ноутбук",
+        "kind": "arch",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "d82ee6402d6eb64cce85dfea2ddcd8a92c7536d9b8c3ebe7abac5a09c5aa0d4f"
+      }
+    ],
+    "removed": [
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "removeEntry": "4ca8a45d7d2d33f76c88668a45cdd6e0cd3bbf81e770ec9ba690c4d8ffcc044c"
+      },
+      {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "removeEntry": "85a1ac14f2e78eeb049e349c580e6d3ddc01b3e4eb8d0c8dec6c2a7016463277"
+      }
+    ],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example"
+      ]
+    },
+    "heads": [
+      "4ca8a45d7d2d33f76c88668a45cdd6e0cd3bbf81e770ec9ba690c4d8ffcc044c",
+      "85a1ac14f2e78eeb049e349c580e6d3ddc01b3e4eb8d0c8dec6c2a7016463277"
+    ],
+    "order": [
+      "1b1b7fe74d7a2161fe112b27fb56a8d5e345e3653341ba2c40a6fa161f185205",
+      "a9f18959c3969147f80ee96fba924e78500a54d030c23d3210db13150f66e263",
+      "d82ee6402d6eb64cce85dfea2ddcd8a92c7536d9b8c3ebe7abac5a09c5aa0d4f",
+      "4ca8a45d7d2d33f76c88668a45cdd6e0cd3bbf81e770ec9ba690c4d8ffcc044c",
+      "85a1ac14f2e78eeb049e349c580e6d3ddc01b3e4eb8d0c8dec6c2a7016463277"
+    ],
+    "rejected": [],
+    "pending": [],
+    "unknown": [],
+    "readerOutdated": []
+  }
+}

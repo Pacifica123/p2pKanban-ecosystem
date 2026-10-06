@@ -1,0 +1,117 @@
+{
+  "contract": "p2p-kanban-rendezvous/1",
+  "description": "Телефон сканирует QR рабочего ПК, который уже в другом кольце с другими участниками. Это слияние двух аккаунтов, а не добавление: встреча останавливается с объяснением.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "qrText": "p2pkanban:rv1:eyJrIjoiNDg0MjVjZTVhZDQ5OTA0NWI1ZjU4YmVlMzYxZTNjMjI5ZjQwMDQwZmMwM2I2OWMyZGVjNTg5NjQ2MDNjZDI4ZSIsIm0iOiJqb2luIiwibiI6ItCg0LDQsdC-0YfQuNC5INCf0JoiLCJyIjpbIndzczovL3JlbGF5LWEuZXhhbXBsZSIsIndzczovL3JlbGF5LWIuZXhhbXBsZSIsIndzczovL3JlbGF5LWMuZXhhbXBsZSJdLCJzIjoiVWpkZVVtNGZLS28wWTAxUnhJS3ZsX3BNQUhLY0FkY1ZCWGxjSTFxWXlrWSIsInQiOiJ3ZWIiLCJ2IjoxLCJ4IjoxNzkxMjQ1NDAwfQ",
+  "qr": {
+    "v": 1,
+    "m": "join",
+    "k": "48425ce5ad499045b5f58bee361e3c229f40040fc03b69c2dec58964603cd28e",
+    "s": "UjdeUm4fKKo0Y01RxIKvl_pMAHKcAdcVBXlcI1qYykY",
+    "r": [
+      "wss://relay-a.example",
+      "wss://relay-b.example",
+      "wss://relay-c.example"
+    ],
+    "n": "Рабочий ПК",
+    "t": "web",
+    "x": 1791245400
+  },
+  "derived": {
+    "sessionId": "IVDJeJBwnB0ZBoM4FuuI5pXRdm7kLMvlLaF56w6lsvo",
+    "sessionKey": "5411306afe4539a22e0e83b2567a7bee06d6be93cc5b22821147dba2ff9bef8c",
+    "confirmCode": "132 907"
+  },
+  "roles": {
+    "sponsor": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+    "joiner": "48425ce5ad499045b5f58bee361e3c229f40040fc03b69c2dec58964603cd28e",
+    "scanner": "sponsor"
+  },
+  "events": [
+    {
+      "id": "87d75aeaa26c176e95b6a54ba611176e5ebae12ff1e19aae291fc10ec8bde9ee",
+      "pubkey": "48425ce5ad499045b5f58bee361e3c229f40040fc03b69c2dec58964603cd28e",
+      "created_at": 1791244810,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "IVDJeJBwnB0ZBoM4FuuI5pXRdm7kLMvlLaF56w6lsvo"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"i9SKKG163T2Uikze2S9NI6-b2ywe__FJL1mLRHiOTB2WjVXMh6clpNhc9kWv5rEBL1NdhevV6LcMFOHz04BSvaBZ9cpOKccwo6_ZUSjZipdvxxyXaNhog-NFY5uqO0GEMNH3S8lkoYv0lzAtO00JbDPiNA0LfzdIT0a2WmCHKIDJDzTcbQjvZE4ygdagoaYYYrcL8xOFaWxJ8ilHE5FjVRBfUli6VQTmO8kN9sTQaTe15QqsxnjH3_vxMg_yxcEn5pGNT_eh70orrch_OI7EmxN8BgfLs7OHY8-M7wML2zuQcBiTnMwfxyJ10NTzvkTylLsHMZlAw7YD_WGcDV897qOq-tGWhj7-H3vnayR6SylYz_g7OXU6ZtFMDU_1J42WgBSxC3orrqfw3Dy-JE-tqHKAcXthWiCPMi0J978c5OJqoU_SqkdotP5asFGsk8qQlvVrjYrC6XZTgrw7TClJ_lU4s2xFEv5dA_Y2jKm4Vxonzsc9K49gzOsahyCkBsKVJX-WVA_l1e9TcP2G71bDgXrmtBRISq8c2gicspiwJV9iTicbVnJG_IJsZwzvow2t6ARevGd1BR87AEXU5Fd-eej61HB8y3r0OdLmQ5dscF1XKy_gFS2CRc3KUkmLmLNFSfWdp1o\",\"nonce\":\"vmFiI6QwFv3qQRk5M20MKO7a7oXOuPgi\",\"version\":1}",
+      "sig": "f41a49e54d5a4b369d71824dce6f6372f7f7e274dc27e6f0ce5544c38b2d55cb21fb71214095364ff2d613652d38c8a204b2ad528d96f1bcae39ecda99ff85cf"
+    },
+    {
+      "id": "71a2ace4655e2dddc31913f9ae94320860a464a9fc68b2f55861d9fb5a1a4bec",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791244840,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "IVDJeJBwnB0ZBoM4FuuI5pXRdm7kLMvlLaF56w6lsvo"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"gh7UYb1zjKTFE8MhzycDLRltry_G5Lj7EE1YDJIVL2JcOmdZth_qoPTkc0QgyZDkg-5gd59GPNl6E_ylqCyswsCvubrY7zWrdXf43KCrcqn60cKOwkHKELVbXqfeGD4W63gpYDMUuwaf_99z0BaRSEllWwSoSFqk-hL7OKsU0i6P_rzJ2IFRJ1F0YX9ZrA2IXicLnooQpL_qacC--yuY-tDLWWVLvIms3E7FUadl7J5mGC8vRdqcZR8qeWJRLeQU0FliEYKiLBw8lLn_euemIHPZzl0B6YvAYSgyuqqpISln2TLyFjH61CylrJ-qprg4lGFVjxaGtpd3vEjhYg6NoxlcZnBQML8dRkMa3L2mzVDwcLm9Mb0K8w53YJJTMHo2xAF1RySjbLRlbWOAcNQr4g\",\"nonce\":\"hLID9xnnLJzaQCk3-SFjM7e8Mauqboad\",\"version\":1}",
+      "sig": "5b380783547b92a8cadff0e222aaa308a149e0eb0518d517bd46f7f96b4c90f612d1338b638f62bac8c70114b95ea96e9f24cb808dbb7f96245d9ad424a71f19"
+    }
+  ],
+  "expectedMessages": [
+    {
+      "type": "hello",
+      "sessionId": "IVDJeJBwnB0ZBoM4FuuI5pXRdm7kLMvlLaF56w6lsvo",
+      "device": {
+        "publicKey": "48425ce5ad499045b5f58bee361e3c229f40040fc03b69c2dec58964603cd28e",
+        "name": "Рабочий ПК",
+        "kind": "web"
+      },
+      "software": {
+        "direction": "web",
+        "version": "2.3.0",
+        "protocols": [
+          "p2p-kanban-account-ring/1",
+          "p2p-kanban-keyring/1",
+          "p2p-kanban-rendezvous/1",
+          "p2p-kanban-roaming/1"
+        ]
+      },
+      "ring": {
+        "accountId": "00f81a6fa5d6dc5aa45dff2d967cd2ecf9e5d9846784bd6199fca09923929a77",
+        "members": 3
+      }
+    },
+    {
+      "type": "refuse",
+      "sessionId": "IVDJeJBwnB0ZBoM4FuuI5pXRdm7kLMvlLaF56w6lsvo",
+      "reason": "ring-merge-unsupported",
+      "detail": "Рабочий ПК уже состоит в другом кольце из 3 устройств. Слияние колец пока не поддерживается."
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Телефон публикует свою копию журнала кольца на relay, запечатанную для трёх участников. Любой из них открывает её своим секретом.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "recipient": {
+    "name": "laptop",
+    "secretKey": "c6f961db29055c0eef6edb96c98cf2d082c778e813956f71179164b2d3a4d81d",
+    "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159"
+  },
+  "outsider": {
+    "name": "intruder",
+    "secretKey": "17df94a13f5f8b6a5e83920d675524946402c7ebaefb422f71ffe284387c3346",
+    "publicKey": "0ff5105e70ea89bda6c15789a167706ec87f07e29ad99fba44c6700599fb4fd8"
+  },
+  "accountTag": "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI",
+  "event": {
+    "id": "837f0209ceb067d0a256fdfd50aa36b7d7d32dfdb818dcf4a26e64139c5d645e",
+    "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+    "created_at": 1791248400,
+    "kind": 31990,
+    "tags": [
+      [
+        "d",
+        "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI"
+      ],
+      [
+        "t",
+        "p2pkanban-ring"
+      ],
+      [
+        "v",
+        "1"
+      ]
+    ],
+    "content": "{\"ciphertext\":\"K8lUKU_wvseAMzXbC7NclglfwVEbkbuvP1_4KmW1sEJzxkgUboumgglQWk448U6TCVKY_FSbdFnv3WWd0NXoEK6kLXS8WlD8chuok-ctbfBSpg78FiqHA4TsVXuBJj1z5Gd93CbPNqnWtVYufm6DGEEn0xJxahCuGbj2G4cFr3V-NsI3AQFEl24z2qjTbr92qDK_xxrYSQ6P7h2wGKd6g6kIJymiTjtLlXvbWoZB7xm57_QsLl_GyDgcze6em6U53tpx8p0rPznAu5h871h7pbx4rW6i-ANCsd3Ssola_Nl4VBjJXXNiCBh4BXeVkZ1WjdX6aHw0AsW59lqyzpv7Hi7xlPfTmt_td5abcTpi2U43wmRbLjx8q10l23j6azUlsjnXRYu556Ye2HfvGOquywkxv-NApb-I6RRbWaF1EuP5xClQ2cMv-6E9S0PImEH9fT4RKp_vvZqM49Bubo0erDZnEsz_VFgKVgqtt_bg7UYReo71HOPQQt-x0-Vk6Ik0k7qbRijfxyxeD1LwHyG9kPBD5rU6Z60Ql3TXXBzGdZsFZgAD7pTtn4A_09_QNzxfnf6DHP9g3vSvLDTj64GhyInDgtkB64B8bDIyQZVRaTt4ot0DzzohK8cSioQXhssuAFCwJghRLAQG_nezPJ-Y5W_DQBHBXmcHpG7LwzP9D-9Rnf8CcXb_qK0O8XE9Ttc2rPtjyaIsqulwyo5q3SzDzVkROEH93Cct2mIV-ldya9UizpvjCnaRnReZ6OE6W-ujqivZ2IBexSKDittITfd76ydWZgcvroHT8CuHocZ_XnVZ6Bshj9XCDHWATIaBUdk0PKckukGiky1jCkfwLNmlP52iAbF2u0SlX7HLuJSbNAl-IKJopuPmOCbYDZsAqNd1-ZT-XwBF-eBimr-Kgm02B6hAWbZkqCBJcgS_0uAhkhJ-y6inmioUwI04f7VEJ4VGaYuCr3KvxE6_Mm3CU1w5xb5TOVVxcEP82febTjSJj2z0PI_Uh5WbhZZ792EkazaNGp0IpScVu3tLl9c8lHFMuq_s4I_QsGKf934AP1qbSyk8KlQusbUVGGztueTZjo1JOTG7GkgHxTKXdMipgKt0ZUgu6_-ecFNmf_984IgZfjZwTjxTukow2AtqP4phTY4AjL1asc2gBOQHg73t930gr8QSvJ18LwOzogDKcZY3p1oLiWNcb2P4GG4UuSZmOq16P6uD2nA0YtU8SbIz02D0q-ZAJ1aevMS8fQ2Spt7acDKxcJwN8DcnYGXzLsiFD0SfG2UAdaQOSNfqMLDJLNldD_07Jz-Ahnjks9UEj7mH6CfmyEun_0OIkkHpP1PrZthl1j18V4fpBrp2IPaZGh5ps5VK4509w8UPJoxZrmSZ4K36lA4An7DG4ZFVYM__azxQq2QSNBtN_cw5xo9TUO4yT5kQOW6CrijnJZy215RnfrmFaKT5I9fXIoyA53ojV2EI2URu3sIWzGK9JhRmt-6VfC4z7fBZYoxnsCLNLohWD0wGN8pnj7c8uMVQVBO9OWzhmYc1jDW9ddsx_JQD55kS7-9_I8XxjIOjciklcXi2YtpNsYsriCCjzE3sRsqtl8mT6cUkDfhucQbCNM87RhdepM5UhkbspzA6yWjYlwCej-ZziAdi0hOgJ0Bqxlfs5iKoZ5cLmQQXhls5Lwl2J5Lje6SbaCz-NhsztH7tpZjpBm3RfaHzLcdhGgkLqh3AQy0p1g8cyJgM17mCxBgoiyVhDzlSaAYUr6cFNWYCcaoV4l8hR0a08MfzMrAw6CPITgvgrCz7q7KmqpKgBu2r6xzrPETRgKl70bFW7h8bQ7pcMqdiUluGAOTy7pjNoJlFyTpE5AxiGU_x6N-AcvphSYXGCh_NkT7HjfLIBXPZgfE3DIDjaqimpcDJ_5aIyKy4gwz3XCZDUut8FqCVXOfI7TNw6OrfX0AsnE112bKymtear5rSBuwI-j-Y8AqmD0-NfWxybMbOlqFaQ-3FAjjvu190B5O_n-x4bjgDyjQq0WNJB-YDEji8dqMxTK7PNJc1J0tc22CKTQMxsgzdGZ9GZrnXV3gHX-dcXfGpMmiUqeFUxgbs-COGvFmt3qL8-t9dErhmwlD5MVfK_r3Syh1m5xynQ9Yl6X2f4DcY-9kmLlGJyGg18wCNug7s24hr4LHxj1uagaRx_EkMLhiL2Dp5Zx1Qx8CtsCIcpOHU5DrQriVY5qyH5xvce1KnE_EZB5s_7oZc0LHUQqkn54rGSIXwc4yYEzq5ijmeNlQSHiCgf3-a8qjuMxXn1xOOomuP4HHQLN_3g4ij7v_bMxzLFX-DS47RO8IVteGkNvjKe3ODT5GtNmu1O_Rvn7Ab7P8MhG_p2jSCF47EUBUYnSDykIh9x1dt_IsgF8eLGKMGGB9XUa1-NGDm8OpYBIIUWRjtMB941Dd8urikYc6ZswLLriPmRlp8X07aUoOQ6DI6RHijoEfHCfJNiOEqd4M-6uOm4BRKZzmMzilqQvZR_qVYQvz6hqi78iroxAkOtgkUhWfHGgLMRqi_PWr9p4LwvN-dgB6cIJViiP7_iXDXw8quUK3tKoPaxnJhNTPFpSBAVXgC81hVXwlF6IVcIhggy5qJ0dUu2B9glon-MpubxZp6GSsaf0mxNXtnDLZexZfGxOBwwd3oOYSp-3TP2rylSpfIs1DaTl1p0wUJ0UcMgypnK_Y40gUYk8yr1ulcNiAg0kIFwajCcQ5Zt1XVzNePZ6EbC-5eX50KlmHVO6YFeBBS6dioRHPa1HkCD1aT2cdSJ96Cu1r6UL-gs0nn8hLQeWbRRrfrJgSb-Jr2D_tva5tb6x1uZe-Ml74vbRJZOUS8lC10k1I3ZIx902SyiRpJMF2cbDYKBUxOpUKc6Lk14fO5dNNdeDRsfQjP2AVlpn8DWsG-Xan-vg05tUzNDNZenYb0UWc-dizslOjcH87OciZq5VHdBdJi1N2n3fChjimOJa8RiHtzoHNL5tcxR0QQHEcadhm0ueBPzAhRX8QfvNX64sSaDaNpX6gX8zS39zcuomNNYKgW-LR7VPPhT_gLRjPIsbQ8bOQGr5nqcoVhEFWaTuvqui1Ra30EieCVUTRUvfS0C-jp5YExrg-TcNrjkJXlJRCJGZDWIWHVkDOg3tNtCgz4b9k5o2l6UjX-e9gL8ac4-57IamaY41myb26uf9d5N4DZgUBwuzjFhza88MGpoPQDbWdaW4A\",\"nonce\":\"cgv5nanbBR5AE3IG31LUoZKP5hvfOfBL\",\"recipients\":[\"AhHKaY2GYPROGXXgU1EnSIyddEnWai0JwoseqzSBxvNcifM2b2MSUxvCl+uQadcOW0jWcztZIL0aAeWHy9LreLZGA/o6uvqm+jBzWSS9sb4ePUK08w5EddDXHFuvuWlbKmnp5N5H0V6LomRBaX1FFpXwsCgwtSEurx/wjKLFT2l9puc=\",\"AimCBMr3djybZJvupPGsY1RtsNFtitVK5FzW9zQ20aZ2NijvnvkHfLzOOCuYTjyKUXYUhcWVCw0it5KQHE2RNBYu5NY3vN5+XLMQonwW589JZMeofnVmWpyFQqVP0XSzxYz87bo+c6i9RTNq3xBWQPvrC0Wfqv5CLDuk4ZSjJ0eX8XY=\",\"AjReOSJ5TzRmCZ5ujjSDCjwNdanyCd6V+z89LykkhbUV90PSLXTqu2IfICbtoa8VqnicUtlDlWAslpgmyq885GpfpFTJ+8jDU6zMhBaHArb91OgucRbyaatTJB67Y1LS0kTk0KlFrCct/GMQIqFk4ZIv1w7YRJ3uxL42CFoSA3DIX8s=\"],\"type\":\"ring-log\",\"version\":1}",
+    "sig": "fd6f7bb14d14e25d96671453680623ef5cd87c643d15efbebe02c6007a5b66e1f6764ea5a0e8d27d188352d24145eb81f4189ef3c4e5efe008dd0e6ac3ce8470"
+  },
+  "expectedPlaintext": {
+    "protocol": "p2p-kanban-account-ring/1",
+    "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+    "entries": [
+      {
+        "id": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+        "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "created_at": 1791244860,
+        "kind": 27790,
+        "tags": [],
+        "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"fy_lgO2zUVQEH6PUtB3W0w\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+        "sig": "0ba46dc043078e5e5989c156590a83264e193db5c295697caeccaacc2854e931959270c20f24e4490f6269ec993042a91013c5c9dbd49b27c17ff3199a3a851f"
+      },
+      {
+        "id": "55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2",
+        "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "created_at": 1791244920,
+        "kind": 27790,
+        "tags": [],
+        "content": "{\"accountId\":\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+        "sig": "003cf08df7bf9dec162ddce9978d3939beb124ae6814a92efa0af397e6ffec85bb87ae732eb3b5f23fd7c5be8e9437ff8dec35f4e29203bbbdde19910a2327c8"
+      },
+      {
+        "id": "ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086",
+        "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "created_at": 1791244980,
+        "kind": 27790,
+        "tags": [],
+        "content": "{\"accountId\":\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\",\"device\":{\"kind\":\"arch\",\"name\":\"Ноутбук\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"role\":\"admin\"},\"parents\":[\"55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+        "sig": "b82f70c8a217fbf95907268137a00711393489a0b87ea02ea88f4d7200893248520e88bcc5e00eddf1fcd960784af4e573999cd9dd6e4d5b7f34d8791a0bfeac"
+      }
+    ]
+  }
+}

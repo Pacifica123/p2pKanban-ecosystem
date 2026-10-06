@@ -1,0 +1,106 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Узел создаёт кольцо, добавляет телефон; телефон добавляет ноутбук; ноутбук переименовывает себя; узел расширяет набор relay.",
+  "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+  "entries": [
+    {
+      "id": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244860,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"fy_lgO2zUVQEH6PUtB3W0w\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+      "sig": "0ba46dc043078e5e5989c156590a83264e193db5c295697caeccaacc2854e931959270c20f24e4490f6269ec993042a91013c5c9dbd49b27c17ff3199a3a851f"
+    },
+    {
+      "id": "55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244920,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "003cf08df7bf9dec162ddce9978d3939beb124ae6814a92efa0af397e6ffec85bb87ae732eb3b5f23fd7c5be8e9437ff8dec35f4e29203bbbdde19910a2327c8"
+    },
+    {
+      "id": "ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791244980,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\",\"device\":{\"kind\":\"arch\",\"name\":\"Ноутбук\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"role\":\"admin\"},\"parents\":[\"55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "b82f70c8a217fbf95907268137a00711393489a0b87ea02ea88f4d7200893248520e88bcc5e00eddf1fcd960784af4e573999cd9dd6e4d5b7f34d8791a0bfeac"
+    },
+    {
+      "id": "0c2585d7c218db285dc15cf52967c703ff9a743f9703c8aefcd41331f7e73821",
+      "pubkey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+      "created_at": 1791245040,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\",\"name\":\"Ноутбук в поездке\",\"parents\":[\"ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"type\":\"rename\"}",
+      "sig": "42b361d3a4595370a05ee9b174f5f0dfdf4077c0171eb81f2a94be7c16a141dc765064fd61d6de52d17d004cc1d2ce82966741c990cfd6613953ca772cbd5ef6"
+    },
+    {
+      "id": "4c663cea679a41e6cd5e5a3a05443098e8ab6b5893e3f6a9bc90b81acc1a9c78",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245100,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce\",\"parents\":[\"0c2585d7c218db285dc15cf52967c703ff9a743f9703c8aefcd41331f7e73821\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\",\"wss://relay-d.example\"]},\"type\":\"relays\"}",
+      "sig": "7c03f8d5e03c097b26e1c4c3fdc135dbf93d05b391578072c09751430691d303e904647807cccc71d365d474155bee3c82a1d5237d4a55d24cb8efdf472f22cc"
+    }
+  ],
+  "expected": {
+    "accountId": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+    "accountTag": "lBwtAvftwy0BffbeecRLB1BvmEe7hRSbKKUFI7uOXMI",
+    "members": [
+      {
+        "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+        "name": "Ноутбук в поездке",
+        "kind": "arch",
+        "role": "admin",
+        "addedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "addEntry": "ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086"
+      },
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "name": "Домашний узел",
+        "kind": "web",
+        "role": "admin",
+        "addedBy": null,
+        "addEntry": "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce"
+      },
+      {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "name": "Телефон",
+        "kind": "android",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2"
+      }
+    ],
+    "removed": [],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example",
+        "wss://relay-d.example"
+      ]
+    },
+    "heads": [
+      "4c663cea679a41e6cd5e5a3a05443098e8ab6b5893e3f6a9bc90b81acc1a9c78"
+    ],
+    "order": [
+      "ad0c2572ae5abb2eb300b6160a50eb4eb0b364899e54ed64a978c4de0fb220ce",
+      "55c61c4c28a260a50bd2cdc908f7a2f4af28828b03c5c8994b37dfc873710ba2",
+      "ed3b33450ce8bdf9f707ca2597cf7b1d984a6b1cab767860937ff36392dd8086",
+      "0c2585d7c218db285dc15cf52967c703ff9a743f9703c8aefcd41331f7e73821",
+      "4c663cea679a41e6cd5e5a3a05443098e8ab6b5893e3f6a9bc90b81acc1a9c78"
+    ],
+    "rejected": [],
+    "pending": [],
+    "unknown": [],
+    "readerOutdated": []
+  }
+}

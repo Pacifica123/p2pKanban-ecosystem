@@ -1,0 +1,227 @@
+{
+  "contract": "p2p-kanban-rendezvous/1",
+  "description": "Режим «Войти в кольцо узла»: узел показывает QR, телефон сканирует, оба показывают один код подтверждения, человек подтверждает на узле, узел дописывает add и отдаёт журнал и связку.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "qrText": "p2pkanban:rv1:eyJrIjoiYjk5OWVjNmNkYTkyMjZjMDBmN2UyMTU2ZmJkNjU4NjZiNGJlYzdlMzBmYWQ0Mjc3MzIxNjY4MmRlZWUwMmE1MSIsIm0iOiJpbnZpdGUiLCJuIjoi0JTQvtC80LDRiNC90LjQuSDRg9C30LXQuyIsInIiOlsid3NzOi8vcmVsYXktYS5leGFtcGxlIiwid3NzOi8vcmVsYXktYi5leGFtcGxlIiwid3NzOi8vcmVsYXktYy5leGFtcGxlIl0sInMiOiJReE5qejM3SFhuZURVX05LN005a3IyVEFYM0tlcWRPUElDcW9WaWRjTTEwIiwidCI6IndlYiIsInYiOjEsIngiOjE3OTEyNDU0MDB9",
+  "qr": {
+    "v": 1,
+    "m": "invite",
+    "k": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+    "s": "QxNjz37HXneDU_NK7M9kr2TAX3KeqdOPICqoVidcM10",
+    "r": [
+      "wss://relay-a.example",
+      "wss://relay-b.example",
+      "wss://relay-c.example"
+    ],
+    "n": "Домашний узел",
+    "t": "web",
+    "x": 1791245400
+  },
+  "derived": {
+    "sessionId": "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY",
+    "sessionKey": "b278a9f147de9c418deabedaa66b04e61f7352d1067fce7ba60222b1f3362f81",
+    "confirmCode": "324 647"
+  },
+  "roles": {
+    "sponsor": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+    "joiner": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+    "scanner": "joiner"
+  },
+  "events": [
+    {
+      "id": "44ee0e01c27b47ab70dbc37abf46fcc241667ff96f6275fef81f2727b109f0ec",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791244830,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"fxdQGWAGkAbHuIZ7f4GSQXSNKoAibhcQxUgn_bLBdC88vaGH8Od24uZoirnAccgkT-lOgyQBsI8vc-tEEl6EAjLxgfNnenLRdkh4bHUmzh79ayRtu4MIjceVRWVVVUrpxR56NX6-4hX2kqGYBtkAVSQvlnlkqHLVUsj8BFDvD13Tkp8DnAE84n3thn6QgeYM9huO3zAASpvUGOMLPclCFlQ9T6X0gDrcBuu5dUJTWwGK41jq063mMN16TQX9FbjhZxsbUrzLMVr3Ah_Y7wa1y7_JOMcfhB_obZa6mWnhK6I4UAk6DGI4Te-kOKDAQZNFgb0fsvOT2yNNXHpqg3SVVQIdCMTY5Pbu8jC3g0yErAQsLZw5ELDd09OvIo6kQVanmLT1LznXO6_nKeClU9ZoqkJo4sPh9cpMMBsjXdE5S5dtpE-iXxOF3fyPFBAANPvjN3WM_VxYeltIKqGbXWbrBydKarPSTs6SLiuo3x9wy9mAC59ivzl3EvfCXxXZagdnftApXyU6xn9nGkGu18bf\",\"nonce\":\"lUQg19TM3plrL6PB5LZihpVjUAn0Dyme\",\"version\":1}",
+      "sig": "d00f1c185d48a3f42dc0087388ca1f1a0c190274cc15d17470b5f1ca5afe38c6bbff287592809162f692359d5a6f2a7c5303f9d6919c089d7548d0a02ef79135"
+    },
+    {
+      "id": "c6c69bc75876a9bb974076ef1b9963c2a6f2c5c508e19bdd87982f499e830663",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244890,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"AZmJ0_rIHy0g3sN5xgh8NXLxJCHP_A5R0rOPiommcpZHgdseT6pkh0gdFV2ZAE2QTzyyDaqRJcjVo_bGj9EC1kiOhEGEr9NePIht2-D3-NdzAQSWekQtlO7V2TfolRHAXc1RztyTsn4hmeexyOJfOgmqOJP8o_4aNo4SRnkIjSj_5JepqoKpw_4unaEzsKcXC04S5RDRBI2F3UVHAOK78SO7ggK45YhQXk3gq8eiMU0cTxdo-x21biY7oVm_vsh_kVd3TnkzNY3pUrQ8xF7uVR8jCoKVwvPEB9tyzfnk-iiFIOXEC_cdsDE-y3pJCyu9Z4UqCVXylBcFrGt-zUGFWu8e2CslyO0pIRPtyqQMGIRyTpZ7hubLDjWbfLcv0UvCwPIlvSzNs9RPjiwG3XTjaRRQwUL_EjCsuU6NLAA2pD6-xgQRwS1KPxXablwO3B25ysp5ZRDlJWsaBkSgq539iYY-yNOrPxBKkGPH6MzpACPmHybRLaHnXD8xEtMBz8dj_gj9AX0iIVnzLSbjei5Ek-n0HV4b2lYqnXhRS2UjybrHIfuQkph86TNJ75VHl34KAMR70xu0Xrl3JA6ntGelpJjfS0XvpK1aZ4JstbAx2LYVPUbPMAIeYXx-8TL4jsHSaumbtuauI6Zk130R6HZA3VMBOCOeTyKqwd25JRrkdr66m5i6HR6rSwKTkQyXLJPfRFRixYCXkCleAysSIR4Qk4i8sRQksQj5Vy-huU-Gm6888_7NQeK0jB705sDHZVB9uTGuunWXU9iaeGp-tFjV7G94aoXH2j9SzjfoRWzGyiCDuGccqQrZdHz5tKHvTp_lLzpY1A0KOih1uml4Up0_r9cHQGzeSkkoU4Q-hDi8sn6nKzIyo8WOCdKjMyf5NrLriWGEHiXwEonC0R9ovGJ_En1jrZLvMGLwRH9WyYEZhHZD5XAD2yYRyghzfGFU-Ftluc3JmLEBf_3Avo9El1gUna5DPg8WkhGZ8r_jhggTm3z-LnZw9afXsCEkCscc54Ei3V28euijzgLsyRgYiXuaRMqs0x87amaR1O5t3JwN_T-op53qEAqNDzrI254UwJDZtzTuoZ5UotkpFii3T5vPZZpLb-anoeuuw5u6rtdXGczFgzvTd4u_3Wb3NyFG-ytLn8Tub00Wk8jIGPc8WY7nim_8EcfYEA-DBwZen5VLBt-WFbiI5g-wMzlzSSw1IUjXott4Vfzvp_3A5JQltSCoDN7tlHwPYh6NfoJ2eH0CkouGypMyV_h1WE62bzIPHQAkTvxz3yfVZFJJTSumwJN9td8e3zQ7cqAEAaQzadTTl73oEW5AlBNYE95hXZBqLrpTKl435u5o-HPOVnZGmcstl5ZLEtynjUxmBeJlduBZt9SyiGriAJ71tFXF93U6vaKZSkvetBIlv9vWKMIMLB9rH_t2DrVcRoyeWaqgs2JPDj7SdrAz99Uo5UGs_7VBOG0AibhrB5ZJ5iUIJrd6oVsmUSKdfDZl8P7iAwK0-_k4iKs7srdBynSdJPdLzssIP55oVJK-Fx7nJLtKAf0VVt6kJVfzywzHuvVOgpW_2w1ACitMAFNkhvi2cRypLaUobgIoqxLBuvFf4KeHpLQk7RTEq9pe1MuR7jtL8Vs6AHAhdX6BYD6lylvFkfzGYzO1tB-qwcUyRS4O8BIzpjec3YgMw5iBw9iXMU_Yp7PkDcGBRv2xJuKZeXKNYZ7kNm8FFeuJGeLNl6oR4nIPI1BaluKcOhb9Ja2GvUmXSeaB4T0fHgYVwuuMCdN-nuiScVfV9m__AyNgeGiWpCgJJm13F2YKS0qNj5TOQ2MqfmdrHFxPWVbIUp0KLEr8NrAXuVcYb47ImZGbH7p_9kx3WpPsT6pn69foLg1uVv4ga6AYxKnKIbV-qb7deSe4916oHxPbwytduVj7rIWooYot3foXw2BPAWCPg0HwSiRnnaDpjd0yVa_pwHI3gollbuoY0cy5HjC9bpzic9n61ruPOfqEmIpwwT01FeGZ1wzx4y8pzLMi8LAaCrnSpKdFHJRYT4ZQQkHKUbRuDaqHWzCUN9vpvrSb4xyMIgnZ54G9MNWOyiNCR9kRvpUVnkOXhyO9DC6L1FBdzympJGgvJA-YZAQ3ckrYleZV-mMNM67TngEp2RJR3nWmKoV_4fHTdguls4TFoPf6iBHw6nvtqQFDWgX20fumk93NAYYvbtHkf5MhqBNIIuwon0IKY2OcM2N1ham7KgdCCtFg5eqbOaYWFLrbmp6Jhztrpm1NbMHWxGlaJugYadHGotrLoshKGhoUtInMzIsyg0-QLbKK6cQ1Yb6ksOlaEhaEskbqeDIceUxJojIIl1t1hKc07h4X32LxLNym_yXQTSNEksGNmBxYLFFTptIJTEj45Iw8KOPqGuBMjWjlzYlT3Q8oH-qNUg2W1dAuOZQV4Rk8ELro9BGrfTlVxH5lW6PCyPgq-x5ZWlvQJd382DQA7zldc-pizC3iNiIeIPkvp7OJ-ViFfDW9Uqxpi8XKNmsWxar4Ev8qgqaB6w8582EVZKwLItdwxkMlTZED5bG-X_MERA6JKT9PVKX_Vzvx8AmqakJZtFDrlQZdd_X54o_uIardfdcZNEJPfwvbhEzmB1sIXVpE872Gnc20Ao2eqm6RqOWEzqzKbq50jyyhT8qynq0HyK0RQRP1QnYhI_aTItGS_vjiQ8JY6RKWiwrF54LIpAQvau0PdCOMjtJGMChnbIKVORwgAMbVv59tQRK0Dq7i46mgIzSBbft8tQZ6aGnfEcZqoC9QzC_4kNsJ_4bX\",\"nonce\":\"QD7-YOaBJTp3s1kJ_AuW-s2bdIvHNJbm\",\"version\":1}",
+      "sig": "01c24a9f7623b15d7b76a4deb3126faa37b86bc637c2f0890a19f54b8a39baeebc39992dc07ce92764a2cdab2b5b70940b7dafe4be018a639e29d48ddedfeb84"
+    },
+    {
+      "id": "046c15b9281ae85611118bc9ff378c33cd267d9b43257becde3649687731b4f1",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791244895,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"nWpheLk70rYPwCAxMIyT8AW6FHv4CmHbXjhHUhpU7SPXCRmxfJpY4foALkLxiagDwwmhdgvoQw29NHZ3a-i-2a5Q_hyeYEjC-NJi2uuytJC4Kna7UkCfnSD3E5yOglnVE0uPjc2hfe9ZZz2oW5NeRiolUrzyEY0OguQd8UBepeqwaB5FnRZWQhO37NChURprOPoYX5EIH9IQhlG6NWhir11VaUyKiBi2APgQdq3hnzPLsj6Y2usza593wIbatzg13cWodO5gcpRizPMhnquqvqWg4hyEaGXfAItVTBQOwOdWashMYX37Cp2oVCpLhAltetGb_A\",\"nonce\":\"Tdege7eMZiq71UlEmBUvaVs9YTfeerNf\",\"version\":1}",
+      "sig": "3ee9213f65b0995a98a021bfeb72a79d77626dbc230cd0fe38982cbe76ff3f0780483ec9ad5ba908ed603d7fef9b3478cae9005c167957b5968bbbd41adf2031"
+    }
+  ],
+  "expectedMessages": [
+    {
+      "type": "hello",
+      "sessionId": "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY",
+      "device": {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "name": "Телефон",
+        "kind": "android"
+      },
+      "software": {
+        "direction": "mobile",
+        "version": "2.3.0",
+        "protocols": [
+          "p2p-kanban-account-ring/1",
+          "p2p-kanban-keyring/1",
+          "p2p-kanban-rendezvous/1",
+          "p2p-kanban-roaming/1"
+        ]
+      },
+      "ring": null
+    },
+    {
+      "type": "welcome",
+      "sessionId": "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY",
+      "accountId": "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df",
+      "entries": [
+        {
+          "id": "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df",
+          "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "created_at": 1791244860,
+          "kind": 27790,
+          "tags": [],
+          "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"UBT5rzpoT91kp3XBxMUy7g\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+          "sig": "0b3446e44fbab41c678da12a260c59d495a5632c4d60bd8b13f06d7e6d25b668e86f3225eb40086eb1d92cb2e6728061aad7d693d07701b918d2e5e88574cc98"
+        },
+        {
+          "id": "85d7baac4f5dbda681fa0f5321758064fe3567e369ca45e256d0e03945f0bef7",
+          "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "created_at": 1791244920,
+          "kind": 27790,
+          "tags": [],
+          "content": "{\"accountId\":\"f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+          "sig": "34ef01d44a2ad332f8d1929b871001fb7573ae950ea89c505925517b3477fb55a24b3a2cbec370c4ac29278807224c9a476f72f1437f725620d4b556fc34e942"
+        }
+      ],
+      "keyring": {
+        "protocol": "p2p-kanban-keyring/1",
+        "accountId": "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df",
+        "ringHeads": [
+          "85d7baac4f5dbda681fa0f5321758064fe3567e369ca45e256d0e03945f0bef7"
+        ],
+        "items": [
+          {
+            "kind": "space",
+            "id": "01a11100-0000-7000-8000-000000000001",
+            "name": "Личное",
+            "rev": 1,
+            "updatedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+            "deleted": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "ack",
+      "sessionId": "r_CHGQQKynHyiBZh14MAyN4jI_jFTJnEfhThs4VVLRY",
+      "accountId": "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df",
+      "heads": [
+        "85d7baac4f5dbda681fa0f5321758064fe3567e369ca45e256d0e03945f0bef7"
+      ]
+    }
+  ],
+  "expectedRingAfter": {
+    "accountId": "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df",
+    "accountTag": "42kWDi9CAAsTQv9tR5Vm4DmInU1vMpfX6PUIdweFZII",
+    "members": [
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "name": "Домашний узел",
+        "kind": "web",
+        "role": "admin",
+        "addedBy": null,
+        "addEntry": "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df"
+      },
+      {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "name": "Телефон",
+        "kind": "android",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "85d7baac4f5dbda681fa0f5321758064fe3567e369ca45e256d0e03945f0bef7"
+      }
+    ],
+    "removed": [],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example"
+      ]
+    },
+    "heads": [
+      "85d7baac4f5dbda681fa0f5321758064fe3567e369ca45e256d0e03945f0bef7"
+    ],
+    "order": [
+      "f643a481d8c231017d5f0479f86b7888cfe9b70443ba87197e6333bb7c2e81df",
+      "85d7baac4f5dbda681fa0f5321758064fe3567e369ca45e256d0e03945f0bef7"
+    ],
+    "rejected": [],
+    "pending": [],
+    "unknown": [],
+    "readerOutdated": []
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/presence.schema.json",
+  "title": "Открытое содержимое отметки присутствия",
+  "type": "object",
+  "required": [
+    "protocol",
+    "type",
+    "accountId",
+    "publicKey",
+    "seenAt",
+    "software",
+    "ringHeads",
+    "keyring",
+    "relays"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "p2p-kanban-account-ring/1"
+    },
+    "type": {
+      "const": "presence"
+    },
+    "accountId": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "publicKey": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "seenAt": {
+      "$ref": "../../../common/defs.schema.json#/$defs/unixSeconds"
+    },
+    "software": {
+      "$ref": "../../../common/defs.schema.json#/$defs/software"
+    },
+    "ringHeads": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+      }
+    },
+    "keyring": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "digest",
+        "items",
+        "boards"
+      ],
+      "properties": {
+        "digest": {
+          "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+        },
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "boards": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "relays": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "url",
+          "reachable"
+        ],
+        "properties": {
+          "url": {
+            "$ref": "../../../common/defs.schema.json#/$defs/relayUrl"
+          },
+          "reachable": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "boards": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "required": [
+          "boardId",
+          "keyEpoch",
+          "baseline"
+        ],
+        "properties": {
+          "boardId": {
+            "$ref": "../../../common/defs.schema.json#/$defs/uuid"
+          },
+          "keyEpoch": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "baseline": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

@@ -65,6 +65,8 @@ python -B tools/ecosystem/check_board.py --require-changed
 
 - в `summary` назван контракт и его новая версия;
 - проверки каждого затронутого направления включены;
+- если контракт лежит в `contracts/`, векторы обновлены генератором и в
+  манифесте есть `python -B tools/ecosystem/check_contracts.py`;
 - в `PATCH_SUMMARY.md` указан порядок обновления (web-узлы → mobile → abl);
 - на доске у каждого затронутого направления есть своя карточка или пункт
   чек-листа.

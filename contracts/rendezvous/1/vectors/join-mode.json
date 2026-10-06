@@ -1,0 +1,238 @@
+{
+  "contract": "p2p-kanban-rendezvous/1",
+  "description": "Режим «Добавить узел в своё кольцо»: ноутбук показывает QR и заранее кладёт hello в почтовый ящик; телефон из кольца сканирует, видит имя и код, человек подтверждает на телефоне; ноутбук получает всё кольцо, включая устройства, которых он не видел.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "qrText": "p2pkanban:rv1:eyJrIjoiYjhjZDI2MzMyMTUzNzgyNDVkZTY5NzRlOGZhYWMzOWNjZmZlNDA4ZWQ0ZTE3Yjc1ZjY2MTVjYmZmMmEyYjE1OSIsIm0iOiJqb2luIiwibiI6ItCd0L7Rg9GC0LHRg9C6IiwiciI6WyJ3c3M6Ly9yZWxheS1hLmV4YW1wbGUiLCJ3c3M6Ly9yZWxheS1iLmV4YW1wbGUiXSwicyI6ImV4MGVCZENYRFp1REpqaVlhc3JGcVp1RDlDWVhPZklkQ1BwLVljYXI5UmMiLCJ0IjoiYXJjaCIsInYiOjEsIngiOjE3OTEyNDU0MDB9",
+  "qr": {
+    "v": 1,
+    "m": "join",
+    "k": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+    "s": "ex0eBdCXDZuDJjiYasrFqZuD9CYXOfIdCPp-Ycar9Rc",
+    "r": [
+      "wss://relay-a.example",
+      "wss://relay-b.example"
+    ],
+    "n": "Ноутбук",
+    "t": "arch",
+    "x": 1791245400
+  },
+  "derived": {
+    "sessionId": "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c",
+    "sessionKey": "b07ca29c85dd3afb859e0da8a4c3ab7f2672e0be49623a0926f1e755df0054ad",
+    "confirmCode": "114 746"
+  },
+  "roles": {
+    "sponsor": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+    "joiner": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+    "scanner": "sponsor"
+  },
+  "events": [
+    {
+      "id": "ab607a805a4f9f9619cf80aae9764f54aa6dbd1a1f7abaabcbce819f36380e8a",
+      "pubkey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+      "created_at": 1791244810,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"MukoALX9FWCWUyqUMkhr4jGdsKyyPnczBmADX4clnt0pHWiyaNOeM2PUSAjy1yOksQXJkKMM2uDe6L4ayueZToWAvg-wrQPuZb0hNOeuCG3zq6wCaSNJ7n47HNsv4mZ8c6fEMSPm0DIKNIygZq1FVbHWQZaMacT6YLYTNprhIbMpr3WkoPD3RcM7We05kA1b6ozunOtBdBZc1AS6MB0Z2UeDWKL7x_xYGcGyyfBGd7c1-5CtrikatW-W2RaiccNGYEgSrAF1cGQLsZ0oPAiZ0NR2KIioxv9GzVWT64qfIhED84Nk4bx9xS9L7-ZHi4xuCrMSq0L7pYv5ElkSe2XNIUZu0fJhytmg47ThcjA4NKRun3xlnSw-slgttvYVGiJHsECK4H_CnVJa_adNAIgIy1lg2UHTr9G_w2sK3rqCF6JgIobnFXk1BisNC1qA3KqLbnM7lj9BBJjNlL23KEPAKYQ-BcPUn46uV7Sf-3ItrobiHdq6JL3mEGl3OiefgLg7KV3s0lFrFGuQ0yN9E199WHlmCvFsXvPehwA01aWGI5L8\",\"nonce\":\"5ixeeyUKcgQi7tkZFZf3Z6SLHvbZcW3N\",\"version\":1}",
+      "sig": "8565dfddae2b4d7ae22fbf81b905d06d1928f3237436a37cabb0d10a85b48d2a22024c8ccc001920eb2b48e28d5bec57120475ad8da898486dffecc0f6e5ac19"
+    },
+    {
+      "id": "9de7c3fab4e47b8064f6c954c460377263b8500d67987f9032b5fe1d83050908",
+      "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+      "created_at": 1791244870,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"qITi8-xiWFE2Y5LMxXgntSMyzL52v24RqNQSD0GJciWsjDYiqgQ-nbjmSZMZp8hh5UFrwG6x9QQvP46_Xjd41ia1E1zYFA5z8VwKcw5BX3DLCztknrXx0Ft0FHv1g4J3KeBx7Ju4ZhEhMFXz23VY1ud_CzkuIZ2D5i6biN7eqyTC49uyU1obG_ghyrD2wo3-X0FqD0prmyVeTQHcuFFw5bB10ijlz-4D0cMSaj0HmbzTL2XUONlHp7hhE-TbZtr6B3pmy3tgyhD3A4hARjaE6E9wXKTszVvQZJlArg1CSUMTf93S3ZZpEJwUmCSMZBex8_BFEqVmkmv1p5nB1lqJ347E3u9-vWGEjnKE6JfqCP_65W3VQfQTlqpd0yOFsJXTlPjrwuYrgrmkc-Ee2bLsBGJLv46m3tSX_H1yB1YzWfEEu47Y5dHRBWiXwWny_N6zyt5GYlgO4aZopnexD9ceIfkdrT5ZCABCA6an1xWA8CdyzsrNy58SoZ5jF0CHMwLmNQMug0uC9GIYfSiSqgOUUDpzfjzM9qxuW16Zq3pwZB23fYYgYXHAyiH6Fjcr7hJRMrk_ny7Ur5Z6o3ywNQsX3PketzBXWcZ5BIpcjHEr7gs-uTARoD4IFHnyeU5q5aYny4JlDSbZH8kI2lnLAwldorF-nhni7U2E-Y7t4uc4BdrRvJY5GszDCi_g8TqewTPLU3aIXGqEue8D9VPbegftRnsMJqyr2y2cUDGIszvMb5TaRsHC48Hsgfo0cQ3S5H3lPPPgSt8eHMEDBzuslITRunc7cX5UUJWLTS0jlR7kbdCnKpqs60KcwVQbRCoq-evdSMnGn3_L-i5AAdUZDoKK9kFP6vkM7WBiZgibNc6-DMEh34ivbNvoqykIotmdzMLwPDcmW4AsmitGFKkSH14Bvz7J7C3qxyMvXDmlcCK9EZckc-IrREbB5qkDtvm-JuVEqNCV5KOu7iS6xr4aZde_3fNa8d7KMGHMBMC2Xc97JoQ6pWnglZREMqxTJ8riprhDKsxjXmBOQVKFDNFqGOaWRRLI26jDDEvtEg0eMKQ_R5SxsSRAN_65TzkwJLE1sWq7wNMGqOVoIrdup4weEx6wFao7CvU_PMVlrOR1nWZU8RfQXbsjjnt6NjpCeNVYZ3Blza2d2XBlCB6ual2vx8vV_i5rO0NHVPrgszj_Yu_jwvR-XdTo-r4OjEY_LT11XOFErK62forThz1c7ilI5T3oTcdwHnbINIEYnXrIu_tr_rKLgnNoM-zGiob_XSe6auKTLoOLsHLjdEwsWDQZqWeQduxEI59AgzuzFlV99b8opPqX6vRPn6wBMCKzm1woaM_x8RJc6erImPusSR-z-_wpU2Bh7bbp0GbN60QfUxY6yTMA4l9OPld3kKUHHSNKIkwKab8aEXSph3UedHiUQF2p_ohVp2hLTUWsIRHNSwg2jqgKFpkV1Lz9DzklV_fKU9R1-Y8fFY4UGYKTIkcxlkM3SLvgVsznEfF15sIntZOYn6PW5HTq5DU1mIL4c00LIixwtrlwiSIToj_iLkUxo-Tf3RakmcRDUfzCJpPNaRfDzlnAfKFTw15PuofW2Treg35w_iru6dpO6i0WmRK0Zt7Oc5ySeumXorfidli8oR32KgwSiL-f1p5RdwY9T752gKqCrW3AqkKyuh73Kbwf3x-izOBG2HyLM1xfmAubYit9qz6YPeJHMEbwSrAPz42vXx6g0Y4BW1wmgG94OWOlM5Aq4WuCJkR2eZ8OqmOeCs0VceHeNtsWniAU_6bAw-Py70T65b2rv9oFb3EFxoGAH44rZC6kY5h3-PUSd-11EgxdqetHmpsvxCii5YgGP0WJUrl11vfmxVtAXGdltnEuKA4pND4GzyOjoE-esUnh6Bu7AiXnRPJm1ODGfOKfRc5pYMSMZSTO47IAy4tCkR870n8i3rGIRv-Lq7mWe7FFVlxJN8uGqV5Cv0FXIAYXLhyk2Q8v5J6ZAoF2M8emNo3PmmfgpdmQ3zGI3oXX1z-58ulaKvdHO8h1fsowSz0QJ9GwxgwPiD9-baUCBBLNfIerlnDYIWhKTwDOb6M6c9hXKhGQH00pJkrFx_KzLMiq4S5nyo-VXhDzUm12dRWMos3FooeTG5LKwb7DjaXoPb1c27o30syY_-4hx7xH1qzpHIKecJO-i1O0QIVoNyj9Sv-0Q6L0HEKIqOtXw9kOFBE6kiNU9n3Y3qPibY7diu4zgD1C8uW-o_Jylq0HWcVT-hvH2Kj9CK8qpcVAC3mRTIfFbNBJDoPP4n2vkzrIEUQm2r_0dfoRx-XnVdGI89WDb4Pm2CF7Fgcfq9omxK9J1z2cxTxAs6604sZm3_F7fN-X7W9uGJoCnZZ15xfs4cVcIqFG4flu9LVZ-H7OsOWvOiXFip_l_0BBEmffrd-T0K6WbY-ubtPOAHl6w7M3UtkKsWkcjLHt6_CMc8-KSixEjXGDmcDDmgLlqBty4ibYgGE8-bCN_uDvbtuo4Ky5fwzvdkOmAhYwVVX4XOoQA32XGOONQQdQInl55VeBEsUvzfktgbmyN9CsJjKqqBruZqhj-t2gIC5dgDp-L0ie2GsLZpTnXVoVgMfLmHbe9F8HK9GN8d7odcmcq3QU75dRV1XQF-zIKSjZlzlJSSMrytw2pWhd8Ze7P2-IBPexASJ6MtFIN-jrWsqTPacCFmRuFEh320mtygib-t7TWYeaWLIK9BOaypXdewXeRHpsH5EcAuMOL5rUr7Fo23Z8-KtlzpIo6oet8yoGcN3Hc5EfBC--6qnXawxV8HinqzYoTS9O0o3fO9CJGH0Nd0YOJ75c2OxmZjgAA7D1PnlWR0jSolKYMQlRUjt6jzzu83imGJkYX3wfz9s8_oo2sme0YaP4g79H08WjveXL7SqVycq2pgfei8EGagoegTBGTDSoNQ0qjAP6BY5Ctz3i-9szPbuNp1VWborr0HZdEe4nDyDuUBVPu8HoDoANpTeH9mPNJBqSZV9q8S24UNVU6mMpPBlzHvVwEWHxZgjZMjdfhnGoK7fbPpMhwy5MlEL-5FwcVu3hbyth0YLWwa-fO9nSutaH6Miev9BZQaI__hYujfFsXONjQzZ6HWBkukcSaAACFXFp2rdCRaamvZNE8m6RCD9jWzSsVHz57GOEm-QaloPQ9gMa6qx09s40oGcwZUxjtDqgzzPmpfozyjmvEuVKK5pxWB9nXvCiugEoLnIjh_Be233mapzjDho-0nGJCWls7b2ACDM1hALP7d2J2K1iTXUxSMPytgskKFAIm9SsgoT5iNP2OkvH9KO1ztNlugjXiSeVBbhe6UJh8VO7DPU7ea1ZeHXfRh2Fi0OPgVWPrUcJggyEJ0u5rXd4228XtYbtNYoaV90KznmEl3MqGUqJhD7-c8__NunwiJLlOM02qZKUMrg0a2jokW3kwG2J7bvsqPzzytzGoBhntfiylbboeSDHlpBkhrU4PJHC5EIAN5q-tRATsV-_rXPLF3HZrmkNRLuSNf9plu02qdOq4J0Unk3uIvfgwmsWGrm9-UxWdOONcLNTkF9_wbbA\",\"nonce\":\"7xGJWpQj8ReYR4qngjUql81ifr56lEbf\",\"version\":1}",
+      "sig": "560a0526ae700237e5efecbfd64ca09fd1495cf320f8f98fe884334b891e711585e61436053eea71e59199776a1524f5d191e7ca5c32f5c05388d367c5800c32"
+    },
+    {
+      "id": "b6676148bd3993412ce4bafae0bd0262fcd3829c97ffd6047d0cadda5e2b8d8e",
+      "pubkey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+      "created_at": 1791244875,
+      "kind": 1991,
+      "tags": [
+        [
+          "s",
+          "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c"
+        ],
+        [
+          "t",
+          "p2pkanban-rendezvous"
+        ],
+        [
+          "part",
+          "1",
+          "1"
+        ],
+        [
+          "expiration",
+          "1791245400"
+        ]
+      ],
+      "content": "{\"ciphertext\":\"qVeGojfrd5T2c8OjfRhK0obA6Zv12U9fA4ngefr4j4LMp-8fsYnmJ9KxhXotkXXA5E4-z-K4KVmLVq7eXDfgBJ3Q2VZZsmTF3QrWz-2EHBe5kVqDuZ_D24BSqy1hZ9ioeT-7qXXYrGXtDphL28IXbMxhMtDbSBVGw8AYCCi8LxUXoL2TFlV8e9e5DAcMq7B5J75Y2tfKe9K5UbMumBawOeEHmBjSAd9F_KC-uYUdc_n-r0-JzwNUFiG3sBlP0exyMTxQkOap3g2mCkL5xLhBCbaNOQebe1QwMgXWX9hiyAhPRd_F_gBwPKW-thv-ttglL35dZg\",\"nonce\":\"PcUOGxeTxF3GSFPAoeBo_5y65cJNofi9\",\"version\":1}",
+      "sig": "bb139f78197f354ada973255cb77cf518a30a315c883de2486d62cdbf25bc86b9a9963c7923c7c13107664800668f70f790eb62bab2cedb7c4d8b8ab64273fcb"
+    }
+  ],
+  "expectedMessages": [
+    {
+      "type": "hello",
+      "sessionId": "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c",
+      "device": {
+        "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+        "name": "Ноутбук",
+        "kind": "arch"
+      },
+      "software": {
+        "direction": "abl",
+        "version": "A20",
+        "protocols": [
+          "p2p-kanban-account-ring/1",
+          "p2p-kanban-keyring/1",
+          "p2p-kanban-rendezvous/1",
+          "p2p-kanban-roaming/1"
+        ]
+      },
+      "ring": {
+        "accountId": null,
+        "members": 1
+      }
+    },
+    {
+      "type": "welcome",
+      "sessionId": "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c",
+      "accountId": "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258",
+      "entries": [
+        {
+          "id": "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258",
+          "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "created_at": 1791244860,
+          "kind": 27790,
+          "tags": [],
+          "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"WDkyFgMr5iV3hKwManPvsg\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+          "sig": "16a1c4c96f68eccb7acc6f309a7a93d5a87d6bb426ef048db75660bbf615136bddf2c149b42d21521c8dd15544e43c9083a7270d60da536f4996dc63af69dd47"
+        },
+        {
+          "id": "77738bb86ee7a6a15c25c9bb23a8335c3ac78fc27e56fd994337cceaf6f844f7",
+          "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+          "created_at": 1791244920,
+          "kind": 27790,
+          "tags": [],
+          "content": "{\"accountId\":\"ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258\",\"device\":{\"kind\":\"android\",\"name\":\"Телефон\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\",\"role\":\"admin\"},\"parents\":[\"ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+          "sig": "b329860c7dd0ab0268858744be4c60b627d90e0c8808a399223e471f695667060b760b3162c980a23ba7f95d2a988c57fa828ff5ce9cb891089ed7d4a0146a3d"
+        },
+        {
+          "id": "30cfe2081e8067c88eb8518f0f24c32e4725a82072e73c3b7773c0b6e961747e",
+          "pubkey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+          "created_at": 1791244980,
+          "kind": 27790,
+          "tags": [],
+          "content": "{\"accountId\":\"ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258\",\"device\":{\"kind\":\"arch\",\"name\":\"Ноутбук\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"role\":\"admin\"},\"parents\":[\"77738bb86ee7a6a15c25c9bb23a8335c3ac78fc27e56fd994337cceaf6f844f7\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+          "sig": "7db7f706c61604cb6c570d42dfa0366236f1398c2dae064a312ebb8ef8d4cc672abdf2e2d4081bc77496bd1379a6e913ace043859e5b82241b50f4fc2feee6de"
+        }
+      ],
+      "keyring": {
+        "protocol": "p2p-kanban-keyring/1",
+        "accountId": "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258",
+        "ringHeads": [
+          "30cfe2081e8067c88eb8518f0f24c32e4725a82072e73c3b7773c0b6e961747e"
+        ],
+        "items": []
+      }
+    },
+    {
+      "type": "ack",
+      "sessionId": "aMxp1mZKyNfFHb5isr6Jp7JBkky-le4gAqkUnmgjn5c",
+      "accountId": "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258",
+      "heads": [
+        "30cfe2081e8067c88eb8518f0f24c32e4725a82072e73c3b7773c0b6e961747e"
+      ]
+    }
+  ],
+  "expectedRingAfter": {
+    "accountId": "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258",
+    "accountTag": "J4LMeEDrpI2DSUEeksNYAEMl3Ydl6MWd1ixm2mWji2s",
+    "members": [
+      {
+        "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159",
+        "name": "Ноутбук",
+        "kind": "arch",
+        "role": "admin",
+        "addedBy": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "addEntry": "30cfe2081e8067c88eb8518f0f24c32e4725a82072e73c3b7773c0b6e961747e"
+      },
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "name": "Домашний узел",
+        "kind": "web",
+        "role": "admin",
+        "addedBy": null,
+        "addEntry": "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258"
+      },
+      {
+        "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896",
+        "name": "Телефон",
+        "kind": "android",
+        "role": "admin",
+        "addedBy": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "addEntry": "77738bb86ee7a6a15c25c9bb23a8335c3ac78fc27e56fd994337cceaf6f844f7"
+      }
+    ],
+    "removed": [],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example"
+      ]
+    },
+    "heads": [
+      "30cfe2081e8067c88eb8518f0f24c32e4725a82072e73c3b7773c0b6e961747e"
+    ],
+    "order": [
+      "ffcd769d81a1f8684ac5fee66521a1686a0d2af682ef70cbac5335da4d63e258",
+      "77738bb86ee7a6a15c25c9bb23a8335c3ac78fc27e56fd994337cceaf6f844f7",
+      "30cfe2081e8067c88eb8518f0f24c32e4725a82072e73c3b7773c0b6e961747e"
+    ],
+    "rejected": [],
+    "pending": [],
+    "unknown": [],
+    "readerOutdated": []
+  }
+}

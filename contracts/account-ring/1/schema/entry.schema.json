@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "account-ring/1/schema/entry.schema.json",
+  "title": "Запись журнала кольца: подписанное событие Nostr kind 27790",
+  "description": "content — строка JSON по entry-content.schema.json; id и подпись считаются по этой строке как есть.",
+  "allOf": [
+    {
+      "$ref": "../../../common/defs.schema.json#/$defs/nostrEvent"
+    }
+  ],
+  "properties": {
+    "kind": {
+      "const": 27790
+    },
+    "tags": {
+      "maxItems": 0
+    }
+  }
+}

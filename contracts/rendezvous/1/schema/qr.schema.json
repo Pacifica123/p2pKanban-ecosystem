@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rendezvous/1/schema/qr.schema.json",
+  "title": "Содержимое QR встречи (после p2pkanban:rv1: и base64url)",
+  "type": "object",
+  "required": [
+    "v",
+    "m",
+    "k",
+    "s",
+    "r",
+    "n",
+    "t",
+    "x"
+  ],
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "m": {
+      "enum": [
+        "invite",
+        "join"
+      ]
+    },
+    "k": {
+      "$ref": "../../../common/defs.schema.json#/$defs/hex64"
+    },
+    "s": {
+      "$ref": "../../../common/defs.schema.json#/$defs/b64url32"
+    },
+    "r": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../../../common/defs.schema.json#/$defs/relayUrl"
+      }
+    },
+    "n": {
+      "$ref": "../../../common/defs.schema.json#/$defs/deviceName"
+    },
+    "t": {
+      "$ref": "../../../common/defs.schema.json#/$defs/deviceKind"
+    },
+    "x": {
+      "$ref": "../../../common/defs.schema.json#/$defs/unixSeconds"
+    }
+  }
+}

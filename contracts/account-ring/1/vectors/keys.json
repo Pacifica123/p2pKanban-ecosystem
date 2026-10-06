@@ -1,0 +1,48 @@
+{
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "derivation": "secretKey = sha256(\"p2p-kanban test key: \" + name)",
+  "keys": [
+    {
+      "name": "node",
+      "title": "Домашний узел",
+      "kind": "web",
+      "secretKey": "db5f3a49ec4b3db6d72ba926313eef09bdde11e80f4c3515922057841860bcbd",
+      "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51"
+    },
+    {
+      "name": "phone",
+      "title": "Телефон",
+      "kind": "android",
+      "secretKey": "01af6f20984f55c312a4f25f7f84b8e63231837319888d0e499cba1d7832471f",
+      "publicKey": "df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896"
+    },
+    {
+      "name": "laptop",
+      "title": "Ноутбук",
+      "kind": "arch",
+      "secretKey": "c6f961db29055c0eef6edb96c98cf2d082c778e813956f71179164b2d3a4d81d",
+      "publicKey": "b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159"
+    },
+    {
+      "name": "tablet",
+      "title": "Планшет гостя",
+      "kind": "android",
+      "secretKey": "14d304cba96f49ea2cdd5d95262985d3b8cef0bd59415e3eca74d7e337bc77d9",
+      "publicKey": "b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf"
+    },
+    {
+      "name": "intruder",
+      "title": "Чужое устройство",
+      "kind": "android",
+      "secretKey": "17df94a13f5f8b6a5e83920d675524946402c7ebaefb422f71ffe284387c3346",
+      "publicKey": "0ff5105e70ea89bda6c15789a167706ec87f07e29ad99fba44c6700599fb4fd8"
+    },
+    {
+      "name": "pc2",
+      "title": "Рабочий ПК",
+      "kind": "web",
+      "secretKey": "c4ecea8208394e41cf2d405e076fb46fc61100396ff6bfbf3b3fc2274a57a866",
+      "publicKey": "48425ce5ad499045b5f58bee361e3c229f40040fc03b69c2dec58964603cd28e"
+    }
+  ]
+}

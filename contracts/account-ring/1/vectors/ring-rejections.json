@@ -1,0 +1,206 @@
+{
+  "contract": "p2p-kanban-account-ring/1",
+  "description": "Набор нарушений: участник без прав admin добавляет устройство, последний admin удаляет себя, повторное добавление удалённого ключа, неизвестный способ добавления, поддельная подпись, неизвестный предок, чужой аккаунт, запись протокола /2.",
+  "accountId": "183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca",
+  "entries": [
+    {
+      "id": "183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244860,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"device\":{\"kind\":\"web\",\"name\":\"Домашний узел\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"role\":\"admin\"},\"nonce\":\"nA5EUG2qlMKwoQDyA-dDqg\",\"parents\":[],\"protocol\":\"p2p-kanban-account-ring/1\",\"relays\":{\"minAcks\":2,\"urls\":[\"wss://relay-a.example\",\"wss://relay-b.example\",\"wss://relay-c.example\"]},\"type\":\"genesis\"}",
+      "sig": "a478bf5c9d483324f31591fcbcda9ff4eb381dc6326ad66a17d6081672166035d61bee6f3e4da77b51841f297e338b9ed2fdc10f11de8006ef049c7b63c14d66"
+    },
+    {
+      "id": "28c0591aaac8c0c4064ae59444b91301881ef9bd6f802fa467b2f3e62d93cf8b",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791244920,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"device\":{\"kind\":\"android\",\"name\":\"Планшет гостя\",\"publicKey\":\"b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf\",\"role\":\"member\"},\"parents\":[\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "e2aa5920fe21745867273464794fe127323cdc8b2f7b73ce67c0b20255231f312a802c3f484bcdfe46121633ef4bbf2028d3f4a2ddb88401cf4abb724d01e712"
+    },
+    {
+      "id": "7404744bb7be83f85780f45c8176e1b6dc50e3c49634cb3010faeb5418d0ec51",
+      "pubkey": "b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf",
+      "created_at": 1791244980,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"device\":{\"kind\":\"android\",\"name\":\"Чужое устройство\",\"publicKey\":\"0ff5105e70ea89bda6c15789a167706ec87f07e29ad99fba44c6700599fb4fd8\",\"role\":\"admin\"},\"parents\":[\"28c0591aaac8c0c4064ae59444b91301881ef9bd6f802fa467b2f3e62d93cf8b\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "8b78c0aae334582fec337f948cd1b7896a9bdbe1d4a418851d69e78b7aa882039991e830818b21f4fe871b5422cb43bfbf9658f36d5242777a0ba02c1c8f4df1"
+    },
+    {
+      "id": "8126b0bdaf4f434400e79d5a6e7996835fa5e87a6fb8cf71b84578012bd562ac",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245040,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"parents\":[\"28c0591aaac8c0c4064ae59444b91301881ef9bd6f802fa467b2f3e62d93cf8b\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"reason\":\"left\",\"type\":\"remove\"}",
+      "sig": "b8a8aabf9a3d8463af9e94ca94a367a31b0f0dc4ad32db2ba1b8a4e49767b2ffcfa471bfbec7333b17cf1d016f50cc2fff93d62ffabb0f5b2e02b0fadb7a4397"
+    },
+    {
+      "id": "266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245100,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"parents\":[\"28c0591aaac8c0c4064ae59444b91301881ef9bd6f802fa467b2f3e62d93cf8b\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf\",\"reason\":\"other\",\"type\":\"remove\"}",
+      "sig": "c3387091aff3effc4b74db8e998cb02c41148f60d9998ecc150bbbe50925a97a100d2257eb93fc5f059f25a78d49d56f792979084958fbc73ef4734cfc08f9f7"
+    },
+    {
+      "id": "807e61ff2ad925d199f99f5c69bbe7d497d9b4004c90111acdfaa73e493dc4af",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245160,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"device\":{\"kind\":\"android\",\"name\":\"Планшет гостя\",\"publicKey\":\"b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf\",\"role\":\"admin\"},\"parents\":[\"266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "243d73cae1ed0c6eaf64ca92e295eaa16fb963baa4a01a7d7fac11093bbf513e97c235c1c36da5639e0cd4cf1df878a64e4ba6080ae40d46f970ba9d3ed59d21"
+    },
+    {
+      "id": "486595ccf15194649a626b2ea6d92333a671331b18f3bf8ab4ff25151481eb03",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245220,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"device\":{\"kind\":\"arch\",\"name\":\"Ноутбук\",\"publicKey\":\"b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159\",\"role\":\"admin\"},\"parents\":[\"266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"teleport\"}",
+      "sig": "93607a5e004e88033dc13916f8febcf575d4a323d87bd5604dc9ad1e0c58c12e83d6fe2ead2e619736be5dc01228b83c58118d4648da02e3af1ec9cec2903164"
+    },
+    {
+      "id": "bf92a163a3a84946376919b7bf68c00e62ec30854c32129cbf78e6a34e8c8477",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245280,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"device\":{\"kind\":\"web\",\"name\":\"Рабочий ПК\",\"publicKey\":\"48425ce5ad499045b5f58bee361e3c229f40040fc03b69c2dec58964603cd28e\",\"role\":\"admin\"},\"parents\":[\"266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"type\":\"add\",\"via\":\"rendezvous\"}",
+      "sig": "ba6973fd16a080ae9c2fc9f463bcc4d42aef83a9cd3d7868ca9d3fdf89e1790d3b071c649444d0694813e3187639fece55660db4bcc5b1b3b1ab1e851b2985a9"
+    },
+    {
+      "id": "cf41f143be3ceeeff29ef8e62621e55a9fe03851ad754d737e41d801205c1d54",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245340,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"name\":\"Сирота\",\"parents\":[\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"type\":\"rename\"}",
+      "sig": "b3c6a60bc886ce8b2cd0dc60f0d600ed74d62e7e6a38339b3e9a38b209b21899a2b9d261764697807f29b8e63124a436583c0427723e4e81af334b60ef536de8"
+    },
+    {
+      "id": "e5be31ca611f6d2e23e3c4156fd36e08306a0106aaeff8bc41d6184accedf57e",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245400,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"name\":\"Ребёнок сироты\",\"parents\":[\"cf41f143be3ceeeff29ef8e62621e55a9fe03851ad754d737e41d801205c1d54\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"type\":\"rename\"}",
+      "sig": "d039b59477a97ce2f79081fa839fb8e04c00650ab7b00e4963a36066755e47195d0b891ef74b21b58efdf33a0d7c3476d4d1a81c5ed715fc2486ba754a81444c"
+    },
+    {
+      "id": "09a4021356d129762eefd731b17ee00005b0f75132b6277d46af9f762d46faa4",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245460,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"5acaec974f6ba3db0ade68dbe3ce4386e8cd0df895b5727c2dbb49f46359eb39\",\"name\":\"Не наш аккаунт\",\"parents\":[\"5acaec974f6ba3db0ade68dbe3ce4386e8cd0df895b5727c2dbb49f46359eb39\"],\"protocol\":\"p2p-kanban-account-ring/1\",\"publicKey\":\"b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51\",\"type\":\"rename\"}",
+      "sig": "c6c97e54ce9566d6cc70a8837a2fcb345f11c2edca4376dc0d50ef3059a737f39584bfc13da2a1deea579c697b4359beca202773187cbbe30a9eda802a77fa95"
+    },
+    {
+      "id": "99960172b7a0a530fe8a414fc0a7ead3d45801d40cbb10f6e3be5012c69a571a",
+      "pubkey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+      "created_at": 1791245520,
+      "kind": 27790,
+      "tags": [],
+      "content": "{\"accountId\":\"183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca\",\"parents\":[\"266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa\"],\"protocol\":\"p2p-kanban-account-ring/2\",\"type\":\"add\"}",
+      "sig": "8ff7a5e19e77dd541ad6110b8551ae3edffcc4d91cbd0a75ce903569b32b8366952ff40f8e7291c6200f48f2a6ffe7558af2567839db193845d344419cf05040"
+    }
+  ],
+  "expected": {
+    "accountId": "183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca",
+    "accountTag": "Vcav2pnmH4eidcrdLJ4jL-6wJeERidKLffkERI1yJTw",
+    "members": [
+      {
+        "publicKey": "b999ec6cda9226c00f7e2156fbd65866b4bec7e30fad42773216682deee02a51",
+        "name": "Домашний узел",
+        "kind": "web",
+        "role": "admin",
+        "addedBy": null,
+        "addEntry": "183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca"
+      }
+    ],
+    "removed": [
+      {
+        "publicKey": "b6e5432e70adb1e765f1a9bd1d1988a38927c1275903d28ee2aab70bcac725cf",
+        "removeEntry": "266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa"
+      }
+    ],
+    "relays": {
+      "minAcks": 2,
+      "urls": [
+        "wss://relay-a.example",
+        "wss://relay-b.example",
+        "wss://relay-c.example"
+      ]
+    },
+    "heads": [
+      "486595ccf15194649a626b2ea6d92333a671331b18f3bf8ab4ff25151481eb03",
+      "7404744bb7be83f85780f45c8176e1b6dc50e3c49634cb3010faeb5418d0ec51",
+      "807e61ff2ad925d199f99f5c69bbe7d497d9b4004c90111acdfaa73e493dc4af",
+      "8126b0bdaf4f434400e79d5a6e7996835fa5e87a6fb8cf71b84578012bd562ac"
+    ],
+    "order": [
+      "183590fd521f69e4c918b7fc0bf6ac70b3a604e347e6790de93e7dfa72b3c8ca",
+      "28c0591aaac8c0c4064ae59444b91301881ef9bd6f802fa467b2f3e62d93cf8b",
+      "266d39be59709f67f4598d664fd5202b8957fd8ee19a847343a16f47679892aa",
+      "486595ccf15194649a626b2ea6d92333a671331b18f3bf8ab4ff25151481eb03",
+      "7404744bb7be83f85780f45c8176e1b6dc50e3c49634cb3010faeb5418d0ec51",
+      "807e61ff2ad925d199f99f5c69bbe7d497d9b4004c90111acdfaa73e493dc4af",
+      "8126b0bdaf4f434400e79d5a6e7996835fa5e87a6fb8cf71b84578012bd562ac"
+    ],
+    "rejected": [
+      {
+        "id": "09a4021356d129762eefd731b17ee00005b0f75132b6277d46af9f762d46faa4",
+        "reason": "foreign-account"
+      },
+      {
+        "id": "486595ccf15194649a626b2ea6d92333a671331b18f3bf8ab4ff25151481eb03",
+        "reason": "malformed-content"
+      },
+      {
+        "id": "7404744bb7be83f85780f45c8176e1b6dc50e3c49634cb3010faeb5418d0ec51",
+        "reason": "signer-not-admin"
+      },
+      {
+        "id": "807e61ff2ad925d199f99f5c69bbe7d497d9b4004c90111acdfaa73e493dc4af",
+        "reason": "key-was-removed"
+      },
+      {
+        "id": "8126b0bdaf4f434400e79d5a6e7996835fa5e87a6fb8cf71b84578012bd562ac",
+        "reason": "last-admin"
+      },
+      {
+        "id": "99960172b7a0a530fe8a414fc0a7ead3d45801d40cbb10f6e3be5012c69a571a",
+        "reason": "foreign-protocol"
+      },
+      {
+        "id": "bf92a163a3a84946376919b7bf68c00e62ec30854c32129cbf78e6a34e8c8477",
+        "reason": "bad-id"
+      }
+    ],
+    "pending": [
+      {
+        "id": "cf41f143be3ceeeff29ef8e62621e55a9fe03851ad754d737e41d801205c1d54",
+        "missing": [
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ]
+      },
+      {
+        "id": "e5be31ca611f6d2e23e3c4156fd36e08306a0106aaeff8bc41d6184accedf57e",
+        "missing": [
+          "cf41f143be3ceeeff29ef8e62621e55a9fe03851ad754d737e41d801205c1d54"
+        ]
+      }
+    ],
+    "unknown": [],
+    "readerOutdated": [
+      "protocol:p2p-kanban-account-ring/2"
+    ]
+  }
+}
