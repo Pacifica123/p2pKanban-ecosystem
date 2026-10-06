@@ -27,7 +27,7 @@
     },
     {
       "path": "tools/check_a17.py",
-      "sha256": "8cb4cfef79760a28cde4045e902cd07f11f86b1936b1a2dbb125dad3880bd53f"
+      "sha256": "dcc9e429e99b2dc3ecc2ea53d15191c440e2e49763d9824c09732bebca348427"
     },
     {
       "path": "packaging/appimage/tauri.appimage.conf.json",

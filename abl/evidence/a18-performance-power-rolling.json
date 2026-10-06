@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "stage": "A18",
+  "facts": [
+    "A18 changes no application code, schema (v6), protocol or CSP; it adds host measurement, rolling-release and chaos tooling run by the UTS.",
+    "Budgets cover startup, idle Pss, idle CPU, idle context switches, XDG/profile/backup disk and doctor/backup latency over a 10k-card / 100k-pending-change fixture seeded through the checked-in migration line.",
+    "Invariants always enforced: zero inet sockets while idle and zero processes alive 5 s after SIGTERM to the main process.",
+    "Numeric budgets are proposed and reported, not enforced, until a release-profile run on the reference host calibrates them; debug runs use debugAllowance multipliers and are indicative only.",
+    "The rolling canary baseline is promoted only from a UTS run whose results.json is overall pass; broken loader state is diagnosed, never repaired.",
+    "Chaos covers freeze-thaw (SIGSTOP/SIGCONT), hard kill, second-instance storm, missing session bus and unprivileged offline network namespace; real systemd suspend, clock jumps and relay reconnect are not claimed.",
+    "Cloud Xvfb runs against the real debug and release binaries passed every probe; they are plumbing evidence, not budget evidence."
+  ],
+  "sources": [
+    {
+      "path": "packaging/budgets/a18-budgets.json",
+      "sha256": "d4e0b7bb16625d4319678af8bb3fae47da496947e7f65f0d57d2a978c021c7c1"
+    },
+    {
+      "path": "tools/a18_common.py",
+      "sha256": "16569217934ab612c32024e8580326b1b5a4abe498a715131fa6a938f9876e5a"
+    },
+    {
+      "path": "tools/a18_host_budget_probe.py",
+      "sha256": "21ef1ea9c8abb1e1427e9d7fcdd45bed5b94044cd939e0acdf5b73eacb1bbf2c"
+    },
+    {
+      "path": "tools/a18_host_chaos_probe.py",
+      "sha256": "2b26119e0d0505493c4aca94888538b66db71818b3a7310652dbabb62fa1c473"
+    },
+    {
+      "path": "tools/a18_rolling_canary.py",
+      "sha256": "2502925d043de3804ae21055998f500cd055dde4e22cd97380367fca3c699455"
+    },
+    {
+      "path": "tools/check_a18.py",
+      "sha256": "a6e2ed6a075fad9092ea91a8332a9b4ae28d64167cbc6258b369d7a6efdf8b7f"
+    },
+    {
+      "path": "docs/A18_PERFORMANCE_POWER_ROLLING.md",
+      "sha256": "0a5aca1dd0348a237d2c9d3a47750db7a78eadd93696f486b53315c6e709e41d"
+    }
+  ]
+}

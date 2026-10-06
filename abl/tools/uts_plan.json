@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "stage": "A17",
-  "description": "Canonical UserTestSpace verification through A16. A16 adds a native/CLI recovery plane before WebView startup: read-only doctor/preflight, verified connection-level profile backups with hash/integrity/count manifests, a verified pre-migration restore point before any old-schema writable open, explicit safe mode and logical salvage export, and confirmed restore that quarantines the replaced profile. Recovery holds the profile flock without binding the graphical activation socket and does not start LAN/relay/WebView/update activity. Schema/protocol/CSP remain unchanged at v6. A17 adds signed AppImage/offline-kit build/stage/verify/run tooling; generic UTS checks synthetic signature/tamper cases. Actual AppImage FUSE/extract and GUI acceptance is a separate explicit release gate.",
+  "stage": "A18",
+  "description": "Canonical UserTestSpace verification through A16. A16 adds a native/CLI recovery plane before WebView startup: read-only doctor/preflight, verified connection-level profile backups with hash/integrity/count manifests, a verified pre-migration restore point before any old-schema writable open, explicit safe mode and logical salvage export, and confirmed restore that quarantines the replaced profile. Recovery holds the profile flock without binding the graphical activation socket and does not start LAN/relay/WebView/update activity. Schema/protocol/CSP remain unchanged at v6. A17 adds signed AppImage/offline-kit build/stage/verify/run tooling; generic UTS checks synthetic signature/tamper cases. Actual AppImage FUSE/extract and GUI acceptance is a separate explicit release gate. A18 adds measured startup/memory/CPU/wakeup/disk budgets (packaging/budgets/a18-budgets.json; proposed thresholds are reported, invariants always enforced), a WebKitGTK/GTK/glibc rolling-release canary whose baseline is the last fully green UTS run, and freeze/kill/instance-storm/bus-loss/offline-netns chaos against the real GUI. Real systemd suspend and release-profile budget calibration remain manual evidence.",
   "deterministic": [
     {
       "id": "a00",
@@ -233,6 +233,14 @@
         "python3",
         "-B",
         "tools/check_a17c.py"
+      ]
+    },
+    {
+      "id": "a18",
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_a18.py"
       ]
     }
   ],
@@ -502,6 +510,52 @@
           "--report",
           "{report_dir}/a16-recovery.json"
         ]
+      },
+      {
+        "id": "a18-rolling-canary",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a18_rolling_canary.py",
+          "check",
+          "--in-uts",
+          "--report",
+          "{report_dir}/a18-rolling-canary.json"
+        ]
+      },
+      {
+        "id": "a18-profile-scale",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a18_host_budget_probe.py",
+          "profile-scale",
+          "--report",
+          "{report_dir}/a18-profile-scale.json"
+        ]
+      }
+    ],
+    "runtimeProbes": [
+      {
+        "id": "a18-runtime-budgets",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a18_host_budget_probe.py",
+          "runtime",
+          "--report",
+          "{report_dir}/a18-runtime-budgets.json"
+        ]
+      },
+      {
+        "id": "a18-chaos",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a18_host_chaos_probe.py",
+          "--report",
+          "{report_dir}/a18-chaos.json"
+        ]
       }
     ]
   },
@@ -548,6 +602,10 @@
     "A16 logical salvage: `p2pkanban safe-export <path.json>` is a user-private recovery artifact containing planner content only; it is not `p2p_planner_bundle` and intentionally omits session/capability/sync operational state.",
     "A16 failure containment: corrupt/tampered profile, manifest, backup or interrupted migration journal must enter/refuse through safe recovery paths without deleting the current profile; replaced state is quarantined during confirmed restore.",
     "A17 real image: run tools/a17_host_appimage_probe.py on the signed offline kit, requiring both FUSE and extract/run CLI doctor evidence.",
-    "A17 GUI: on tested Arch/EndeavourOS/Manjaro x86_64 launch offline, edit/reopen, test A16 recovery on a copied profile, record glibc/WebKit baseline and confirm pacman state is untouched."
+    "A17 GUI: on tested Arch/EndeavourOS/Manjaro x86_64 launch offline, edit/reopen, test A16 recovery on a copied profile, record glibc/WebKit baseline and confirm pacman state is untouched.",
+    "A18 release budgets: build `cargo build --release --locked --offline --manifest-path src-tauri/Cargo.toml`, then run `python3 -B tools/a18_host_budget_probe.py all --profile release --report <dir>/a18-release-budgets.json` on the reference laptop, once on AC and once on battery; the report calibrates the proposed budgets before they are marked accepted.",
+    "A18 real suspend: with the app open on a board, make an edit, `systemctl suspend`, resume after at least a minute, confirm the window responds and the edit is present, close the app and confirm `p2pkanban doctor` is healthy.",
+    "A18 rolling canary: after every `pacman -Syu` run `python3 -B tools/a18_rolling_canary.py check`; exit code 3 means rebuild and rerun the UTS before trusting the build, exit code 1 prints a loader diagnosis.",
+    "A18 offline: if the chaos report marks offline-netns unavailable, start the app with networking off and confirm it opens and edits a board offline."
   ]
 }

@@ -368,13 +368,18 @@ def main() -> int:
         else:
             results.append(synthetic(step_id, "BLOCKED", "native binary was not built successfully"))
 
-    if args.no_runtime:
-        results.append(synthetic("runtime.launch-probe", "SKIP", "disabled by --no-runtime"))
-    elif build_ok:
-        runtime = run_command("runtime.launch-probe", expand(host["runtimeProbe"], report_dir), report_dir)
-        results.append(runtime)
-    else:
-        results.append(synthetic("runtime.launch-probe", "BLOCKED", "native binary was not built successfully"))
+    # GUI probes share the launch probe's preconditions: --no-runtime skips all of them.
+    runtime_steps = [("runtime.launch-probe", host["runtimeProbe"])]
+    runtime_steps += [("runtime." + probe["id"], probe["command"]) for probe in host.get("runtimeProbes", [])]
+    for step_id, command in runtime_steps:
+        if args.no_runtime:
+            results.append(synthetic(step_id, "SKIP", "disabled by --no-runtime"))
+        elif build_ok:
+            result = run_command(step_id, expand(command, report_dir), report_dir)
+            results.append(result)
+            print(f"[{result.status}] {result.id}")
+        else:
+            results.append(synthetic(step_id, "BLOCKED", "native binary was not built successfully"))
 
     # Re-run repository contracts after UTS has produced ignored build/runtime artifacts.
     # This makes one invocation prove repeatability instead of discovering state pollution

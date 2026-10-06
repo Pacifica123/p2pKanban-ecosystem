@@ -238,7 +238,9 @@ for token in (
 status = read("docs/IMPLEMENTATION_STATUS.md")
 if "A16 backup/doctor/safe-mode/recovery" not in status:
     fail("A16 implementation ledger missing")
-if "canonical Cargo + real-binary recovery UTS pending" not in status:
+# Acceptance may only be recorded as user-reported host UTS evidence, never as a source claim.
+if ("canonical Cargo + real-binary recovery UTS pending" not in status
+        and "user-reported canonical Cargo + real-binary recovery UTS green" not in status):
     fail("A16 ledger prematurely claims host acceptance")
 sequence = read("docs/NEXT_PATCH_SEQUENCE.md")
 if "A16 implemented boundary" not in sequence or "A17 — AppImage fallback + offline release kit" not in sequence:

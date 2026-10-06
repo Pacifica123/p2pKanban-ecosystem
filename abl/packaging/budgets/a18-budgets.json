@@ -1,0 +1,40 @@
+{
+  "format": "p2pkanban-a18-budgets",
+  "formatVersion": 1,
+  "status": "proposed",
+  "statusNote": "Proposed thresholds for an x86_64 laptop with 8-16 GiB RAM (EX-ARCH-001). Not enforced until the first release-profile measurement on the reference host recalibrates them and status becomes accepted; Gate G then requires every budget within, or an accepted deviation backed by an ADR.",
+  "measurementProfile": "release",
+  "debugAllowance": {
+    "time": 4.0,
+    "cpu": 3.0,
+    "memory": 1.5,
+    "disk": 1.0
+  },
+  "fixture": {
+    "columns": 8,
+    "cards": 10000,
+    "checklists": 2000,
+    "checklistItems": 10000,
+    "pendingLocalChanges": 100000
+  },
+  "idleWindowSeconds": 30,
+  "budgets": [
+    {"id": "startup.empty", "scenario": "runtime-empty", "metric": "startupSettleMs", "max": 3000, "kind": "time", "unit": "ms"},
+    {"id": "startup.fixture", "scenario": "runtime-fixture", "metric": "startupSettleMs", "max": 4000, "kind": "time", "unit": "ms"},
+    {"id": "memory.idle.empty", "scenario": "runtime-empty", "metric": "idlePssMiB", "max": 350, "kind": "memory", "unit": "MiB"},
+    {"id": "memory.idle.fixture", "scenario": "runtime-fixture", "metric": "idlePssMiB", "max": 400, "kind": "memory", "unit": "MiB"},
+    {"id": "cpu.idle.empty", "scenario": "runtime-empty", "metric": "idleCpuPercent", "max": 1.0, "kind": "cpu", "unit": "% of one core"},
+    {"id": "cpu.idle.fixture", "scenario": "runtime-fixture", "metric": "idleCpuPercent", "max": 1.0, "kind": "cpu", "unit": "% of one core"},
+    {"id": "wakeups.idle.empty", "scenario": "runtime-empty", "metric": "idleWakeupsPerSecond", "max": 50, "kind": "cpu", "unit": "context switches/s"},
+    {"id": "disk.xdg.empty", "scenario": "runtime-empty", "metric": "xdgFootprintMiB", "max": 64, "kind": "disk", "unit": "MiB"},
+    {"id": "disk.profile.fixture", "scenario": "profile-scale", "metric": "fixtureProfileMiB", "max": 96, "kind": "disk", "unit": "MiB"},
+    {"id": "disk.backup.fixture", "scenario": "profile-scale", "metric": "backupMiB", "max": 96, "kind": "disk", "unit": "MiB"},
+    {"id": "cli.doctor.fixture", "scenario": "profile-scale", "metric": "doctorMs", "max": 1500, "kind": "time", "unit": "ms"},
+    {"id": "cli.backup.fixture", "scenario": "profile-scale", "metric": "backupMs", "max": 5000, "kind": "time", "unit": "ms"},
+    {"id": "network.idle.empty", "scenario": "runtime-empty", "metric": "idleInetSockets", "max": 0, "kind": "invariant", "unit": "sockets"},
+    {"id": "network.idle.fixture", "scenario": "runtime-fixture", "metric": "idleInetSockets", "max": 0, "kind": "invariant", "unit": "sockets"},
+    {"id": "lifecycle.exit.empty", "scenario": "runtime-empty", "metric": "processesAfterExit", "max": 0, "kind": "invariant", "unit": "processes"},
+    {"id": "lifecycle.exit.fixture", "scenario": "runtime-fixture", "metric": "processesAfterExit", "max": 0, "kind": "invariant", "unit": "processes"}
+  ],
+  "acceptedDeviations": []
+}

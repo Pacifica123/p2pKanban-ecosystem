@@ -37,7 +37,8 @@ overlay = json.loads((ROOT / 'packaging/appimage/tauri.appimage.conf.json').read
 assert base['bundle']['active'] is False
 assert overlay == {'bundle': {'active': True, 'targets': ['appimage'],
     'linux': {'appimage': {'bundleMediaFramework': False}}}}
-assert 'A17' == json.loads((ROOT / 'tools/uts_plan.json').read_text())['stage']
+stage = json.loads((ROOT / 'tools/uts_plan.json').read_text())['stage']
+assert stage[:1] == 'A' and int(stage[1:3]) >= 17, stage  # later stages extend the plan
 with tempfile.TemporaryDirectory(prefix='p2pkanban-a17-check-') as temporary:
     work = Path(temporary)
     # Frozen public-key/signed-manifest fixture. It contains no private key and

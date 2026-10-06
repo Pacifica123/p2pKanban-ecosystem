@@ -69,3 +69,9 @@ CORR-A15-002 corrects the remaining Arch devtools preflight semantic: `makechroo
 A17 adds the optional AppImage packaging overlay, immutable A15-source build wrapper and externally signed offline release kit. The verifier pins a separately trusted full primary fingerprint, expected version and minimum release sequence, checks every file, then supports explicit private extract/run without FUSE. It preserves the A16 XDG/flock/schema recovery boundary and never alters pacman state. Real compiled AppImage FUSE/extract, GUI/offline and distribution baseline evidence remains pending; synthetic signature tests do not close that acceptance gate.
 
 Next architecture implementation: **A18 — performance/power/rolling-release hardening** after A17 real-host acceptance.
+
+## A18 implemented boundary
+
+A18 adds measurement and hardening tooling only; application code, schema v6, protocols and CSP are unchanged. `packaging/budgets/a18-budgets.json` declares startup/memory/CPU/wakeup/disk budgets plus two invariants (no inet socket while idle, nothing left running after exit) over a 10k-card / 100k-pending-change fixture. The UTS runs a real-binary profile-scale probe, a runtime budget probe on empty and fixture profiles, a WebKitGTK/GTK/glib/glibc/OpenSSL rolling-release canary whose baseline is promoted only by an overall-green UTS run, and freeze-thaw / hard-kill / instance-storm / bus-gone / offline-netns chaos. Budgets stay **proposed** (overruns reported, invariants enforced) until a release-profile run on the reference laptop calibrates them; real `systemctl suspend`, clock jumps and relay reconnect remain manual or later evidence. See `docs/A18_PERFORMANCE_POWER_ROLLING.md`.
+
+After A18 host acceptance and budget calibration, the remaining roadmap gate is **Gate G — GA candidate**; A19 stays an optional experiment track.

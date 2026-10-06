@@ -37,6 +37,8 @@ Every stage should be deliverable as one or a small bounded series of devctl pat
 
 **[FACT — implementation status after A09 source gate]** A05/A05b, A06, A07/A07b and A08 are user-reported UTS-green. A09 implements the production secret storage/provider boundary: Secret Service-protected vault root when available/unlocked, versioned Argon2id passphrase provider, AEAD-encrypted typed secret file and fail-closed session-only degradation. Multi-host GNOME/KWallet/minimal-session evidence is still experiment-needed. A08 pending markers are not remote convergence; A10 owns sync.
 
+**[FACT — implementation status after A18 tooling]** A18 budgets, rolling-release canary and suspend/network/lifecycle chaos are executable UTS probes (`docs/A18_PERFORMANCE_POWER_ROLLING.md`). Budget thresholds remain proposed until a release-profile measurement on the reference host; EX-ARCH-001/008/011 are instrumented, not closed.
+
 ## 3. Suggested devctl patch discipline
 
 The provided devctl is v0.7.0 and already gives a suitable safety conveyor: validated manifest/safe paths, pre snapshot, declared checks, commit/push policy from workspace, failed archive/reset and UserTestSpace.
