@@ -13,6 +13,19 @@ export interface ReplicaJournal {
   pending: string[];
   clock: number;
   wire?: Record<string, import("nostr-tools/pure").Event>;
+  /** Nostr ids already verified, decrypted and merged: never verified again. */
+  wireIds?: string[];
+  /** Nostr ids that can never become valid under this epoch (bad ciphertext, other board). */
+  rejectedWireIds?: string[];
+}
+
+/** Every relay id whose content this journal has already accounted for. */
+export function knownWireIds(journal: ReplicaJournal) {
+  return new Set([
+    ...(journal.wireIds || []),
+    ...(journal.rejectedWireIds || []),
+    ...Object.values(journal.wire || {}).map(event => event.id),
+  ]);
 }
 
 let writes = Promise.resolve<unknown>(undefined);
@@ -56,4 +69,18 @@ export function projectJournal(journal: ReplicaJournal) {
 
 export async function saveJournal(boardId: string, journal: ReplicaJournal) {
   await AsyncStorage.setItem(key(boardId), JSON.stringify(journal));
+}
+
+// Small separate record: a pull with nothing new must not rewrite the whole journal.
+function cursorKey(boardId: string) { return sessionStorageKey(`roaming/pull-cursor/${boardId}`); }
+
+export async function loadPullCursor(boardId: string) {
+  try {
+    const value = JSON.parse(await AsyncStorage.getItem(cursorKey(boardId)) || 'null') as {lastPullAt?: number} | null;
+    return Number.isSafeInteger(value?.lastPullAt) ? value!.lastPullAt! : 0;
+  } catch { return 0; }
+}
+
+export async function savePullCursor(boardId: string, lastPullAt: number) {
+  await AsyncStorage.setItem(cursorKey(boardId), JSON.stringify({lastPullAt}));
 }

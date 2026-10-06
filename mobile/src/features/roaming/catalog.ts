@@ -26,12 +26,23 @@ function trustedPublisher(channel: RoamingCatalogChannel, event: Event, entry: C
       && intro.grant.userId === userId && intro.grant.canDelegate;
   } catch { return false; }
 }
+// Catalog entries already applied in this app run. Their content is fixed by the
+// nostr id, so a 30-second poll only verifies and decrypts what is new.
+const settledCatalogEvents = new Map<string, Set<string>>();
+function settled(scope: string) {
+  let ids = settledCatalogEvents.get(scope);
+  if (!ids) settledCatalogEvents.set(scope, ids = new Set());
+  return ids;
+}
+export function resetCatalogProgress() { settledCatalogEvents.clear(); }
+
 /** Recover board metadata and keys without contacting the HTTP node. */
 export async function refreshDeviceCatalog(workspaceId: string, userId?: string) {
   const channel=await loadRoamingCatalogChannel();
   if (!channel?.relays.length || !channel.trustedPublishers.length) return loadCachedBoards(workspaceId);
   const secret=await getOrCreateRoamingDeviceSecret(generateSecretKey), recipient=getPublicKey(secret);
-  const response=await fetchDeviceCatalogEvents({relays:channel.relays,kind:channel.eventKind,recipient});
+  const done=settled(`boards:${workspaceId}:${recipient}`), valid:string[]=[];
+  const response=await fetchDeviceCatalogEvents({relays:channel.relays,kind:channel.eventKind,recipient,knownIds:done});
   const entries=new Map<string,{entry:CatalogEntry; createdAt:number; eventId:string}>();
   for(const event of response.events){
     try{
@@ -45,6 +56,7 @@ export async function refreshDeviceCatalog(workspaceId: string, userId?: string)
         if (delegated.grant.userId !== userId || delegated.grant.boardId !== entry.board.id
           || delegated.grant.workspaceId !== workspaceId || delegated.grant.epoch !== entry.capability.capabilityEpoch) continue;
       }
+      valid.push(event.id);
       const current=entries.get(entry.board.id);
       if(!current || current.entry.capability.capabilityEpoch < entry.capability.capabilityEpoch
         || (current.entry.capability.capabilityEpoch === entry.capability.capabilityEpoch
@@ -61,6 +73,7 @@ export async function refreshDeviceCatalog(workspaceId: string, userId?: string)
   }
   const result=[...boards.values()].sort((a,b)=>a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));
   await saveCachedBoards(workspaceId,result);
+  for(const id of valid)done.add(id);
   return result;
 }
 
@@ -70,7 +83,8 @@ export async function refreshWorkspaceCatalog(userId: string): Promise<Workspace
   const channel = await loadRoamingCatalogChannel();
   if (!channel?.relays.length || !channel.trustedPublishers.length) return cached;
   const secret = await getOrCreateRoamingDeviceSecret(generateSecretKey), recipient = getPublicKey(secret);
-  const response = await fetchDeviceCatalogEvents({relays:channel.relays,kind:channel.eventKind,recipient});
+  const done = settled(`workspaces:${userId}:${recipient}`), valid: string[] = [];
+  const response = await fetchDeviceCatalogEvents({relays:channel.relays,kind:channel.eventKind,recipient,knownIds:done});
   const workspaces = new Map(cached.map(workspace => [workspace.id,workspace]));
   const boards = new Map<string, Map<string,Board>>();
   // Verify before deduplication, then apply only the newest authenticated entry.
@@ -94,6 +108,7 @@ export async function refreshWorkspaceCatalog(userId: string): Promise<Workspace
       if(delegation.grant.userId!==userId || delegation.grant.boardId!==entry.board.id ||
         delegation.grant.workspaceId!==entry.workspaceId ||
         delegation.grant.epoch!==entry.capability.capabilityEpoch) continue;
+      valid.push(event.id);
       const current = entries.get(entry.board.id);
       if (!current || current.entry.capability.capabilityEpoch < entry.capability.capabilityEpoch
         || (current.entry.capability.capabilityEpoch === entry.capability.capabilityEpoch
@@ -123,5 +138,6 @@ export async function refreshWorkspaceCatalog(userId: string): Promise<Workspace
   }
   const result=[...workspaces.values()].sort((a,b)=>a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id));
   await saveCachedWorkspaces(result);
+  for (const id of valid) done.add(id);
   return result;
 }

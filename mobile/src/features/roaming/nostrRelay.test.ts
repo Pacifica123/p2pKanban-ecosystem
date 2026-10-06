@@ -43,5 +43,5 @@ test('a relay cannot inject a valid signed event belonging to a different board'
     socket.receive(['EVENT',frame[1],intended]);
     socket.receive(['EOSE',frame[1]]);
   };
-  await expect(fetchFromRelays({relays:['r1'],kind:1979,boardTag:'board'})).resolves.toEqual({events:[intended],relayCount:1});
+  await expect(fetchFromRelays({relays:['r1'],kind:1979,boardTag:'board'})).resolves.toEqual({events:[intended],relayCount:1,skipped:0});
 });

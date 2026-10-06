@@ -1,6 +1,7 @@
 import { prepareDeviceLink } from '../deviceLink/service';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -52,6 +53,7 @@ export function BoardsScreen({ navigation, route }: Props) {
   const colors = useAppColors();
   const { user } = useAuth();
   const { isOnline, networkType } = useNetwork();
+  const focused = useIsFocused();
   const privateHttpNode = isPrivateNodeOrigin(getApiNodeOrigin());
   const preferReplicaCatalog = networkType === 'cellular' && privateHttpNode;
   const queryClient = useQueryClient();
@@ -125,7 +127,8 @@ export function BoardsScreen({ navigation, route }: Props) {
 
   const items = [...new Map([...(query.data?.items || []), ...cached].map(board => [board.id, board])).values()];
   useEffect(() => {
-    if (!isOnline) return;
+    // A screen under the open board does not poll: the board owns the JS thread.
+    if (!isOnline || !focused) return;
     let active = true;
     let busy = false;
     const refreshCatalog = async () => {
@@ -141,7 +144,7 @@ export function BoardsScreen({ navigation, route }: Props) {
     void refreshCatalog();
     const timer = setInterval(() => { void refreshCatalog(); }, 30_000);
     return () => { active = false; clearInterval(timer); };
-  }, [isOnline, workspaceId, networkType, user?.id]);
+  }, [focused, isOnline, workspaceId, networkType, user?.id]);
   const boardIds = items.map((board) => board.id).join('|');
 
   function openCreate() {

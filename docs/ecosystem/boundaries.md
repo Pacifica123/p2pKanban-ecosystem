@@ -36,6 +36,14 @@
 | Patch manifest и `state.json` | devctl | все направления, `web/tools/devctl_receipt.py` | `devctl/docs/patch-format.md`, `devctl/docs/configuration.md` |
 | devctl receipt и `.p2pkanban/project.json` | `web/tools/devctl_receipt.py` | web API интеграций | `web/docs/integrations/devctl-v2.md` |
 
+### Предложенные контракты
+
+Ещё не реализованы; описаны в [trusted-devices.md](trusted-devices.md):
+`p2p-kanban-account-ring/1` (журнал кольца устройств аккаунта),
+`p2p-kanban-keyring/1` (связка ключей аккаунта),
+`p2p-kanban-rendezvous/1` (добавление устройства через relay по QR или коду).
+Производят и потребляют web, mobile и abl.
+
 ### Правило порядка обновления
 
 Когда патч меняет контракт, который производит web, сначала обновляются все

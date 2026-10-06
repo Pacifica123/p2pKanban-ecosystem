@@ -12,6 +12,7 @@ import {publishToRelays} from './nostrRelay';
 let mockPeer = 'A';
 let mockOnline = true;
 const mockRelay: any[] = [];
+const mockFetches: any[] = [];
 const mockSeeds: Record<string, LocalBoardSnapshot | null> = {};
 const mockKey = new Uint8Array(32).fill(1);
 const mockSecrets = {A: new Uint8Array(32).fill(2), P: new Uint8Array(32).fill(3)};
@@ -38,9 +39,12 @@ jest.mock('./nostrRelay', () => ({
     if (!mockOnline) throw new Error('relay offline');
     mockRelay.push(event); return {acceptedRelays:['r1','r2'],failedRelays:[]};
   }),
-  fetchFromRelays: async () => {
+  fetchFromRelays: async (input: any) => {
     if (!mockOnline) throw new Error('relay offline');
-    return {events:[...mockRelay].reverse(),relayCount:2};
+    mockFetches.push(input);
+    const all=[...mockRelay].reverse();
+    const events=all.filter((event: any) => !input.knownIds?.has(event.id));
+    return {events,relayCount:2,skipped:all.length-events.length};
   },
 }));
 
@@ -56,7 +60,7 @@ function create(title='local'): LocalOperation { const at=new Date().toISOString
   id:require('crypto').randomUUID(),boardId,entityId:'00000000-0000-4000-8000-000000000003',kind:'card.create',status:'pending',accessEpoch:1,createdAt:at,attempts:0,lastError:null,
   payload:{input:{title,columnId:'00000000-0000-4000-8000-000000000004'},tempCard:{id:'00000000-0000-4000-8000-000000000003',boardId,columnId:'00000000-0000-4000-8000-000000000004',title,position:1000,priority:null,isArchived:false,createdAt:at,updatedAt:at}}}; }
 function update(title: string, base: LocalOperation): LocalOperation {return {...base,id:require('crypto').randomUUID(),kind:'card.update',payload:{input:{title}}};}
-beforeEach(async () => {mockPeer='A';mockOnline=true;mockRelay.length=0;mockSeeds.A=seed();mockSeeds.P=seed();await AsyncStorage.clear();jest.clearAllMocks();});
+beforeEach(async () => {mockPeer='A';mockOnline=true;mockRelay.length=0;mockFetches.length=0;mockSeeds.A=seed();mockSeeds.P=seed();await AsyncStorage.clear();jest.clearAllMocks();});
 
 test('P offline: local create survives restart and relay failure, then propagates without HTTP', async () => {
   const op=create(), original=seed(), changed=applyOperation(original,op);
@@ -157,4 +161,32 @@ test('history-first empty journal accepts a later cached board seed',async()=>{
  const op=update('edited card',create());
  await commitLocalOperation(mockCap,op,applyOperation(original,op),original);
  expect((await recoverLocalReplica(mockCap,null))?.cards[0]?.title).toBe('edited card');
+});
+
+test('a poll with nothing new neither re-verifies history nor replays the journal', async () => {
+  const op=create(), changed=applyOperation(seed(),op);
+  await commitLocalOperation(mockCap,op,changed,seed());
+  await flushReplicaJournal(mockCap);
+  mockPeer='P';
+  const first=await pullRoamingBoard(mockCap,seed(),{materialize:'if-changed'});
+  expect(first.changed).toBe(true);
+  expect(first.snapshot?.cards[0]?.title).toBe('local');
+  const second=await pullRoamingBoard(mockCap,seed(),{materialize:'if-changed'});
+  expect(second).toMatchObject({changed:false,snapshot:null,received:0});
+  expect(mockFetches.at(-1).knownIds.size).toBe(1);
+  // The author already knows its own signed event and skips it too.
+  mockPeer='A';
+  expect((await pullRoamingBoard(mockCap,null,{materialize:'if-changed'})).received).toBe(0);
+});
+
+test('incremental pull starts from the saved cursor with an overlap for clock skew', async () => {
+  await pullRoamingBoard(mockCap,seed());
+  expect(mockFetches.at(-1).since).toBeUndefined();
+  const before=Math.floor(Date.now()/1000);
+  await pullRoamingBoard(mockCap,seed(),{mode:'incremental'});
+  const since=mockFetches.at(-1).since;
+  expect(since).toBeGreaterThanOrEqual(before-3600-1);
+  expect(since).toBeLessThanOrEqual(before-3600+1);
+  await pullRoamingBoard(mockCap,seed(),{mode:'full'});
+  expect(mockFetches.at(-1).since).toBeUndefined();
 });

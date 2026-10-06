@@ -66,6 +66,8 @@ export interface RoamingPullResult {
   received: number;
   applied: number;
   relayCount: number;
+  /** New events reached the journal in this pull. */
+  changed?: boolean;
 }
 
 export interface RoamingPublishResult {

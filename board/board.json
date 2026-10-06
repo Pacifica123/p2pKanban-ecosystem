@@ -12,10 +12,10 @@
       "entityCounts": {
         "workspaces": 1,
         "boards": 1,
-        "columns": 7,
-        "cards": 20,
-        "comments": 1,
-        "checklists": 4,
+        "columns": 8,
+        "cards": 46,
+        "comments": 6,
+        "checklists": 9,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-05T18:30:00Z",
+    "generatedAt": "2026-10-06T05:00:00Z",
     "selfHosted": true,
-    "boardRevision": 1,
-    "lastPatchId": "2026-10-05-ecosystem-workspace-init",
+    "boardRevision": 2,
+    "lastPatchId": "2026-10-06-mobile-ui-never-waits",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -109,6 +109,13 @@
         "name": "Отложено",
         "description": "Сознательно не делаем сейчас. В описании указано, почему и когда вернуться.",
         "position": 7168
+      },
+      {
+        "id": "01a10f95-3881-7180-a590-42ae48360f07",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "Запланировано",
+        "description": "Этап из плана направления: объём и порядок известны, начнётся после предшественника, названного в описании.",
+        "position": 2560
       }
     ],
     "cards": [
@@ -311,6 +318,266 @@
         "priority": "low",
         "position": 2048,
         "archivedAt": null
+      },
+      {
+        "id": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Android: интерфейс не ждёт сеть и синхронизацию",
+        "description": "Зачем: из доски нельзя было выйти, пока внутри что-то досчитывалось; прошлое исправление (мгновенный Back) лечило ожидание, а JS-поток был занят проверкой всей истории relay каждые 15 секунд.\n\nГотово, когда: на телефоне с длинной историей и плохой сетью выход из доски, закрытие карточки и окон мгновенны; переключение Wi-Fi/мобильной сети не переоткрывает доску.\n\nРазбор и инварианты: mobile/docs/architecture/ui-responsiveness-20261006.md.",
+        "priority": "urgent",
+        "position": 2048,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-388b-772c-a194-c6e391bef505",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Кольцо устройств: доверенные устройства одного аккаунта в любой сети",
+        "description": "Зачем: сцена «привязали дома — в другом городе доски недоступны — починить можно только дома — всё забылось» повторялась после каждого патча связи; причины разобраны в docs/ecosystem/trusted-devices.md.\n\nГотово, когда: владелец выбрал ответы на три вопроса документа (QR или код первым, роли, свой relay), а спецификации ring/keyring/rendezvous лежат в contracts/ с эталонными примерами.\n\nКонтракты: p2p-kanban-account-ring/1, p2p-kanban-keyring/1, p2p-kanban-rendezvous/1. Порядок обновления: web-узлы → mobile → abl.",
+        "priority": "urgent",
+        "position": 7168,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-3896-737a-8c0e-3324943106e3",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "R0: «Проверка перед поездкой» в Android",
+        "description": "Зачем: сделать сцену «доски недоступны» видимой дома, до отъезда, на текущих механизмах без нового протокола.\n\nГотово, когда: кнопка в настройках отключает пути LAN/HTTP, получает каталог и базовый снимок каждой подготовленной доски только через relay и называет конкретную нехватку (нет снимка, нет общего relay, ключ просрочен).\n\nПервый этап docs/ecosystem/trusted-devices.md. Затем то же в web.",
+        "priority": "high",
+        "position": 4096,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-3897-7abe-855e-7c59b0af61bc",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "R1: контракты кольца, связки ключей и встречи",
+        "description": "Зачем: три новых контракта затрагивают web, mobile и abl; без общих примеров они разойдутся.\n\nГотово, когда: в contracts/ лежат спецификации, JSON Schema и эталонные примеры ring/1, keyring/1, rendezvous/1; проверка каждого направления их читает.\n\nЖдёт решений владельца по карточке «Кольцо устройств». Связана с карточкой «Вынести контракты в contracts/».",
+        "priority": "high",
+        "position": 8192,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-3898-7327-aba2-c788e924ec17",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "R2: web: журнал кольца и связка ключей, перенос текущего доверия device-link/2 и web-node-link/1",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R1. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "priority": "medium",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-3899-7ea3-ac56-f67f0af90da8",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "R3: mobile: кольцо, связка ключей, отметки присутствия, экран «Кольцо устройств»",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R2. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "priority": "medium",
+        "position": 2048,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "R4: добавление устройства по QR и короткому коду через relay, без LAN и файлов",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "priority": "medium",
+        "position": 3072,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-389b-71ee-9b0e-94b5aedecc46",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "R5: удаление устройства из кольца и ротация ключей досок",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R4. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "priority": "medium",
+        "position": 4096,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-389c-79bd-afda-fd40e83dfc1e",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "R6: abl: нативные адаптеры кольца, связки и встречи в Rust core",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R5. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "priority": "medium",
+        "position": 5120,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-389d-7574-bae7-d09e465050e7",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "node-rpc/1: запросы к своему узлу из другой сети",
+        "description": "Зачем: чтение истории и статуса синхронизации с домашнего узла без HTTP-доступа к нему (web/docs/architecture/shared-history-and-node-connectivity.md).\n\nГотово, когда: зашифрованный канал запрос–ответ поверх relay с проверкой прав отвечающим узлом; UI различает прямой, через relay, кэш и недоступно.\n\nНачинается после R3: устройства кольца — список тех, кому узел отвечает.",
+        "priority": "medium",
+        "position": 6144,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-389e-714d-858b-6eaa8db344c1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Компакция журнала реплики и chunked baseline",
+        "description": "Зачем: журнал доски растёт бесконечно; переигрывание после нового события синхронно и растёт с историей; Android AsyncStorage не читает запись больше ~2 МБ.\n\nГотово, когда: журнал компактизируется без потери tombstone и версий полей, baseline делится на части с manifest, переигрывание ограничено по времени.\n\nИсточник: mobile/docs/architecture/replica-recovery-20260915.md, долг 3; mobile/docs/architecture/ui-responsiveness-20261006.md.",
+        "priority": "high",
+        "position": 9216,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Межсетевая приёмка Android: APK, реальные relay, мобильный оператор",
+        "description": "Зачем: acceptance matrix mobile содержит OPEN-сценарии, которые проверяются только на устройствах.\n\nГотово, когда: пройдены: мобильная сеть вместо LAN, нативный APK с несколькими peers и relay, перезапуск, Android background/Doze.\n\nИсточник: mobile/docs/architecture/replica-recovery-20260915.md, раздел 4; mobile/docs/architecture/network-recovery-20261001.md.",
+        "priority": "high",
+        "position": 3072,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38a4-70d2-b8fd-192758ce4465",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "A15: пакет pacman и подписанный репозиторий — приёмка на Arch",
+        "description": "Зачем: упаковка реализована на уровне исходников и детерминированных проверок.\n\nГотово, когда: clean-chroot сборка, namcap, pacman -Qkk, удаление сохраняет XDG-данные, подпись внешним ключом.\n\nИсточник: abl/docs/IMPLEMENTATION_STATUS.md.",
+        "priority": "medium",
+        "position": 4096,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38a5-745e-9e30-38b702987a07",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "A16: backup, doctor, safe-mode, восстановление — приёмка на Arch",
+        "description": "Зачем: восстановление реализовано в исходниках; canonical Cargo и real-binary UTS не пройдены.\n\nГотово, когда: канонический UTS A16 зелёный: испорченная БД, отказ миграции, полный диск, восстановление из резервной копии.\n\nИсточник: abl/docs/IMPLEMENTATION_STATUS.md.",
+        "priority": "medium",
+        "position": 5120,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38a6-775e-bfb2-96e1d18fa22c",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "A17: AppImage и офлайн-комплект выпуска — приёмка на Arch",
+        "description": "Зачем: комплект реализован на уровне инструментов; реальный AppImage не проверен.\n\nГотово, когда: реальный AppImage: FUSE и extract/run, WebKitGTK, офлайн-проверка подписи комплекта.\n\nИсточник: abl/docs/IMPLEMENTATION_STATUS.md.",
+        "priority": "medium",
+        "position": 6144,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "A18: производительность, энергопотребление, rolling-release",
+        "description": "Зачем: следующий архитектурный этап abl после приёмки A17.\n\nГотово, когда: бюджеты запуска, памяти, CPU, пробуждений и диска измерены; канарейка перехода WebKitGTK; хаос suspend/сети.\n\nНачинается после приёмки A17. Источник: abl/docs/NEXT_PATCH_SEQUENCE.md, 07-roadmap.",
+        "priority": "medium",
+        "position": 7168,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38a8-7a94-9e9b-4b3541ec4d0d",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "abl Gate G: кандидат GA",
+        "description": "Зачем: итоговый шлюз дорожной карты abl.\n\nГотово, когда: бюджеты пройдены или приняты ADR, реальная миграция Docker→desktop, офлайн-комплект без исходных источников, восстановление из backup, открытых рисков высокой серьёзности 0.\n\nНачинается после A18. Источник: abl/docs/architecture/07-roadmap-devctl-tests-experiments-do-not.md, Gate G.",
+        "priority": "low",
+        "position": 8192,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38a9-71ae-a31a-a5dd62a95db1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "A19: эксперименты Iroh и Arch ARM",
+        "description": "Зачем: необязательная ветка доказательств из дорожной карты abl.\n\nГотово, когда: есть критерии успеха; неудача не влияет на путь к GA.\n\nИсточник: abl/docs/architecture/07-roadmap-devctl-tests-experiments-do-not.md.",
+        "priority": "low",
+        "position": 8192,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38aa-7562-af7e-abe03d82a331",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "DEBT-A00-001: откат devctl в репозитории без коммитов",
+        "description": "Зачем: devctl откатывает частично применённый патч через git reset --hard HEAD, а у репозитория без коммитов HEAD нет.\n\nГотово, когда: долг закрыт решением: исправить откат в devctl или признать неактуальным для монорепозитория, где HEAD всегда есть.\n\nИсточник: abl/docs/architecture/08-implementation-corrections-and-debt.md.",
+        "priority": "low",
+        "position": 10240,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38ab-7df0-9644-de033caef683",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Полевое подтверждение web v1",
+        "description": "Зачем: обязательные полевые проверки из web/docs/product/v1-remaining-checklist.md не закрыты.\n\nГотово, когда: все пункты чек-листа пройдены на чистом коммите и сохранены как evidence.",
+        "priority": "medium",
+        "position": 7168,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38b4-7bcd-86ba-4a3543a3f1ff",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Выбрать лицензию проекта",
+        "description": "Зачем: без лицензии заблокированы публикация AUR/зеркала abl (A15) и пункт полевого подтверждения web.\n\nГотово, когда: в корне и направлениях лежит выбранная лицензия либо явная запись об её отсутствии.\n\nРешение владельца.",
+        "priority": "medium",
+        "position": 11264,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38b5-7de9-b8f3-babfe42e7c36",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Интеграция с GitHub",
+        "description": "Зачем: следующая карточка дорожной карты web: внешний проверяемый источник изменений для проектов и receipts.\n\nГотово, когда: есть решение по модели Project/ExternalResource и первый провайдер GitHub проверяется на реальном репозитории.\n\nИсточник: web/docs/product/v1-execution-roadmap.md («Далее», высокий), github-devctl-project-integration-concept-v1.md (идейный документ).",
+        "priority": "medium",
+        "position": 12288,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38b6-74ea-befe-60f3b57150e0",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Интеграция с Obsidian",
+        "description": "Зачем: карточка «Потом» дорожной карты web; Android уже передаёт карточку как .md.\n\nГотово, когда: формат двусторонней связи с vault выбран и реализован в web и Android.\n\nНачинается после интеграции с GitHub: формат не закрепляется раньше rich text и внешнего источника.",
+        "priority": "low",
+        "position": 9216,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38b7-72bd-9e19-50d4dacd7032",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Будущие продуктовые срезы web",
+        "description": "Зачем: список из web/docs/product/v1-remaining-checklist.md, чтобы он не терялся.\n\nГотово, когда: каждый срез либо стал своей карточкой, либо отложен с причиной.",
+        "priority": "low",
+        "position": 9216,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38bf-7493-aab9-e7bfaec955d5",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
+        "title": "Мотивация и пресуппозиции экосистемы записаны",
+        "description": "Зачем: причина объединения в одну экосистему (теряется знание о проблеме раньше, чем её можно исправить) жила только в разговорах.\n\nГотово, когда: docs/ecosystem/presuppositions.md есть и связан с принципами.",
+        "priority": "medium",
+        "position": 2048,
+        "archivedAt": null
+      },
+      {
+        "id": "01a10f95-38c1-7bf4-97ac-e3dad107cde5",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
+        "title": "Планы направлений перенесены на доску",
+        "description": "Зачем: дорожные карты abl, web и долги mobile были видны только внутри направлений.\n\nГотово, когда: этапы планов стоят в ближайших колонках, источник указан в описании, сопоставление в board/README.md.\n\nДля этапов, ждущих предшественника, добавлена колонка «Запланировано».",
+        "priority": "medium",
+        "position": 3072,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -507,6 +774,218 @@
       {
         "cardId": "01a10d38-f93e-7dda-b182-d32023c6d573",
         "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-3896-737a-8c0e-3324943106e3",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-3896-737a-8c0e-3324943106e3",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10f95-3897-7abe-855e-7c59b0af61bc",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10f95-3897-7abe-855e-7c59b0af61bc",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-3898-7327-aba2-c788e924ec17",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-3898-7327-aba2-c788e924ec17",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-3899-7ea3-ac56-f67f0af90da8",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-3899-7ea3-ac56-f67f0af90da8",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-389b-71ee-9b0e-94b5aedecc46",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-389b-71ee-9b0e-94b5aedecc46",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-389b-71ee-9b0e-94b5aedecc46",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-389c-79bd-afda-fd40e83dfc1e",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-389c-79bd-afda-fd40e83dfc1e",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-389d-7574-bae7-d09e465050e7",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-389d-7574-bae7-d09e465050e7",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-389d-7574-bae7-d09e465050e7",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a10f95-389e-714d-858b-6eaa8db344c1",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-389e-714d-858b-6eaa8db344c1",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-389e-714d-858b-6eaa8db344c1",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a10f95-389e-714d-858b-6eaa8db344c1",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38a5-745e-9e30-38b702987a07",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38a6-775e-bfb2-96e1d18fa22c",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38a8-7a94-9e9b-4b3541ec4d0d",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38a9-71ae-a31a-a5dd62a95db1",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38aa-7562-af7e-abe03d82a331",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10f95-38aa-7562-af7e-abe03d82a331",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38aa-7562-af7e-abe03d82a331",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a10f95-38ab-7df0-9644-de033caef683",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-38ab-7df0-9644-de033caef683",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-38b4-7bcd-86ba-4a3543a3f1ff",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10f95-38b4-7bcd-86ba-4a3543a3f1ff",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-38b4-7bcd-86ba-4a3543a3f1ff",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10f95-38b5-7de9-b8f3-babfe42e7c36",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-38b5-7de9-b8f3-babfe42e7c36",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a10f95-38b6-74ea-befe-60f3b57150e0",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-38b6-74ea-befe-60f3b57150e0",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a10f95-38b7-72bd-9e19-50d4dacd7032",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a10f95-38bf-7493-aab9-e7bfaec955d5",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10f95-38c1-7bf4-97ac-e3dad107cde5",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
       }
     ],
     "checklists": [
@@ -532,6 +1011,36 @@
         "id": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
         "cardId": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
         "title": "Контракты",
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-3883-720d-b099-f574f18db10f",
+        "cardId": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
+        "title": "Приёмка на телефоне (APK versionCode 24 поверх, без очистки данных)",
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "title": "Этапы",
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-38a0-7248-9986-114aefb16211",
+        "cardId": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
+        "title": "Сценарии",
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "cardId": "01a10f95-38ab-7df0-9644-de033caef683",
+        "title": "Полевые проверки",
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "cardId": "01a10f95-38b7-72bd-9e19-50d4dacd7032",
+        "title": "Срезы",
         "position": 1024
       }
     ],
@@ -675,6 +1184,216 @@
         "title": "p2p-kanban-web-node-link/1",
         "isDone": false,
         "position": 5120
+      },
+      {
+        "id": "01a10f95-3884-7076-8420-1638cf8f10c4",
+        "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
+        "title": "Код, Jest (97), typecheck, contract-check и Android export проходят",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-3885-795a-9ecd-11b4f9b8aeb7",
+        "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
+        "title": "Длинная история: «Назад» сразу после открытия доски",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10f95-3886-7ba0-a360-22e63d1816f5",
+        "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
+        "title": "Авиарежим при открытой доске: вход/выход, карточка открывается и закрывается",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10f95-3887-7af0-a69f-ca783de87f3f",
+        "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
+        "title": "Смена Wi-Fi ↔ мобильная сеть не показывает «Открываем доску»",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10f95-3888-7d81-b2d3-7b90f0d002f9",
+        "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
+        "title": "Карточка, созданная без сети, уходит сама после возврата сети",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a10f95-3889-747b-9a38-e1c54f726243",
+        "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
+        "title": "5 минут прокрутки при нормальной сети без подвисаний на опросах",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a10f95-388d-7f7d-8e7b-f37cb2a65d23",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "Проблема воссоздана и предложено решение (trusted-devices.md)",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-388e-7cdf-b295-d392e39e6b38",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R0 Проверка перед поездкой (mobile, затем web)",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10f95-388f-77d6-8050-09ccb068719e",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R1 Спецификации и эталонные примеры в contracts/",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10f95-3890-7e0c-b794-fdcecb56c427",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R2 web: журнал кольца и связка ключей, перенос текущего доверия",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10f95-3891-7b63-81a6-52b69eb5e58f",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R3 mobile: кольцо, связка, присутствие, экран «Кольцо устройств»",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a10f95-3892-7e3b-b084-e90171d9dd47",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R4 web, mobile: добавление по QR и коду через relay",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a10f95-3893-7606-bc70-8fa55569f666",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R5 web, mobile: удаление устройства и ротация ключей",
+        "isDone": false,
+        "position": 7168
+      },
+      {
+        "id": "01a10f95-3894-7199-8811-a342a822d3f4",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "R6 abl: нативные адаптеры",
+        "isDone": false,
+        "position": 8192
+      },
+      {
+        "id": "01a10f95-38a1-777d-998c-3da7b5a53500",
+        "checklistId": "01a10f95-38a0-7248-9986-114aefb16211",
+        "title": "Подготовленная доска открывается в мобильной сети без ПК",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-38a2-720d-b336-9915b41f3202",
+        "checklistId": "01a10f95-38a0-7248-9986-114aefb16211",
+        "title": "Нативный APK + несколько peers + relay + перезапуск",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10f95-38a3-7757-8dc1-d97467e7e96e",
+        "checklistId": "01a10f95-38a0-7248-9986-114aefb16211",
+        "title": "Работа в фоне и Doze",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10f95-38ad-7c78-a84c-00e50d5b6c47",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "Два прогона release-gates full-local-release на одном коммите",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-38ae-7bca-b366-b2ae83d79d58",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "Release ZIP из тега и проверка на чистой Windows и на Linux",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10f95-38af-7701-8a80-92f004ac79e6",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "Данные переживают stop/start, update и rollback",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10f95-38b0-7259-9592-5716e838b509",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "PostgreSQL backup/restore drill со сверкой counts",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10f95-38b1-7cfd-9c32-1e57c2c35c81",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "Матрица web ↔ Android: create, edit, move, archive, delete, чек-листы",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a10f95-38b2-728a-a71b-d25660b60ff1",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "Матрица web → web через общий relay",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a10f95-38b3-75f6-9b21-957a3836cdb5",
+        "checklistId": "01a10f95-38ac-70a0-a292-e26a2ae30b27",
+        "title": "Import-as-copy smoke и проверка ZIP на секреты",
+        "isDone": false,
+        "position": 7168
+      },
+      {
+        "id": "01a10f95-38b9-74a0-a2cd-ed4fe39f5276",
+        "checklistId": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "title": "Режим без координатора",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a10f95-38ba-7955-8b3f-aea8e7aae4fe",
+        "checklistId": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "title": "Iroh в браузере",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a10f95-38bb-7441-b217-0c54ecd5c101",
+        "checklistId": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "title": "MFA и passkeys",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a10f95-38bc-7adf-bd4d-127db1c8dc48",
+        "checklistId": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "title": "E2EE локальных snapshot",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a10f95-38bd-7c12-be57-589d823a5f4f",
+        "checklistId": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "title": "Merge/destructive import",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a10f95-38be-7495-8b25-5c58292ef435",
+        "checklistId": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
+        "title": "AppImage и отдельный Windows .exe",
+        "isDone": false,
+        "position": 6144
       }
     ],
     "comments": [
@@ -683,6 +1402,36 @@
         "cardId": "01a10d38-f912-7b63-9ff0-6512c67e0871",
         "body": "patch 2026-10-05-ecosystem-workspace-init: монорепозиторий создан; доска проходит импортёры web (boardBundle.ts) и abl (import.rs).",
         "createdAt": "2026-10-05T18:30:00Z"
+      },
+      {
+        "id": "01a10f95-388a-7603-8ccf-75ec1dee5e11",
+        "cardId": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
+        "body": "patch 2026-10-06-mobile-ui-never-waits: проверка подписей relay один раз на новое событие и порциями, инкрементальный опрос, без переигрывания журнала без новых событий, отмена при уходе с экрана, нет бесконечного flush, сеть не держит блокировку хранилища. Ждёт телефона.",
+        "createdAt": "2026-10-06T05:00:00Z"
+      },
+      {
+        "id": "01a10f95-3895-7094-a790-661b8c736387",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "body": "patch 2026-10-06-mobile-ui-never-waits: проблематика восстановлена по документам направлений (шесть причин), предложено кольцо устройств аккаунта. Нужны решения владельца.",
+        "createdAt": "2026-10-06T05:00:00Z"
+      },
+      {
+        "id": "01a10f95-38c0-7531-bc4e-6713743da277",
+        "cardId": "01a10f95-38bf-7493-aab9-e7bfaec955d5",
+        "body": "patch 2026-10-06-mobile-ui-never-waits: добавлен docs/ecosystem/presuppositions.md.",
+        "createdAt": "2026-10-06T05:00:00Z"
+      },
+      {
+        "id": "01a10f95-38c2-78ca-82ad-4004e9fb2007",
+        "cardId": "01a10f95-38c1-7bf4-97ac-e3dad107cde5",
+        "body": "patch 2026-10-06-mobile-ui-never-waits: перенесены A15–A19, Gate G и DEBT-A00-001 abl, полевое подтверждение и roadmap web, долги mobile.",
+        "createdAt": "2026-10-06T05:00:00Z"
+      },
+      {
+        "id": "01a10f95-38c3-7bc3-bf7e-0bc2e130b7a7",
+        "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
+        "createdAt": "2026-10-06T05:00:00Z",
+        "body": "patch 2026-10-06-mobile-ui-never-waits: UserTestSpace пока пуст: воркспейс инициирован копией снимка. Первый plan→start этого патча создаст UTS; карточка двигается следующим патчем после приёмки."
       }
     ],
     "boardAppearanceSettings": [],

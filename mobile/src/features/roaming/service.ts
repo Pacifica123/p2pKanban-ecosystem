@@ -16,7 +16,18 @@ import {
   openRoamingEvent,
   sealRoamingEvent,
 } from './codec';
-import { loadJournal, mergeJournal, projectJournal, saveJournal, serializeReplica } from './journal';
+import { mapInSlices, throwIfCanceled } from '../../shared/lib/uiBudget';
+import {
+  knownWireIds,
+  loadJournal,
+  loadPullCursor,
+  mergeJournal,
+  projectJournal,
+  saveJournal,
+  savePullCursor,
+  serializeReplica,
+} from './journal';
+import { EMPTY_ROAMING_APPLY_STATE } from './merge';
 import {
   createSignedNostrEvent,
   fetchFromRelays,
@@ -376,44 +387,94 @@ export async function flushReplicaJournal(capability: RoamingCapability) {
   }
 }
 
+/** Overlap for clock skew between devices that sign events. */
+export const INCREMENTAL_PULL_OVERLAP_SECONDS = 60 * 60;
+
+export interface PullOptions {
+  signal?: AbortSignal | null;
+  /**
+   * full: every event of the board tag (late-published offline work included).
+   * incremental: only events signed after the last pull, minus the overlap.
+   */
+  mode?: 'full' | 'incremental';
+  /** if-changed: skip journal replay and the snapshot when nothing new arrived. */
+  materialize?: 'always' | 'if-changed';
+}
+
 export async function pullRoamingBoard(
   capability: RoamingCapability,
   currentSnapshot: LocalBoardSnapshot | null,
+  options: PullOptions = {},
 ): Promise<RoamingPullResult> {
   const boardKey = validateCapability(capability);
+  const { signal } = options;
+  const knownIds = await serializeReplica(async () => knownWireIds(await loadJournal(capability, currentSnapshot)));
+  const lastPullAt = options.mode === 'incremental' ? await loadPullCursor(capability.boardId) : 0;
+  const pulledAt = Math.floor(Date.now() / 1000);
   const response = await fetchFromRelays({
     relays: capability.relays,
     kind: capability.eventKind,
     boardTag: capability.boardTag,
+    knownIds,
+    since: lastPullAt ? Math.max(0, lastPullAt - INCREMENTAL_PULL_OVERLAP_SECONDS) : undefined,
+    signal,
   });
-  const events = response.events.flatMap((nostr) => {
+  const rejectedIds: string[] = [];
+  const decoded = await mapInSlices(response.events, (nostr) => {
+    let event: RoamingBoardEvent;
     try {
-      const event = openRoamingEvent(nostr.content, boardKey, capability.boardTag);
-      if (!Number.isSafeInteger(event.logicalClock) || event.logicalClock < 0) return [];
+      event = openRoamingEvent(nostr.content, boardKey, capability.boardTag);
+    } catch { rejectedIds.push(nostr.id); return null; }
+    if (!Number.isSafeInteger(event.logicalClock) || event.logicalClock < 0
+      || event.workspaceId !== capability.workspaceId || event.boardId !== capability.boardId
+      || event.capabilityEpoch !== capability.capabilityEpoch) {
+      rejectedIds.push(nostr.id);
+      return null;
+    }
+    // Authority is not cached as rejected: the trusted writer set may grow.
+    try {
       const knownWriter = capability.writerPublicKeys.includes(nostr.pubkey.toLowerCase());
       const proof = event.payload._deviceDelegation;
       if (!knownWriter && proof) {
         // Validate authority at signing time: a peer may receive stored work later.
         const {root, grant} = verifyReplicationChain(proof as import('nostr-tools/pure').Event[], nostr.pubkey, nostr.created_at);
         if (!capability.delegationRoots?.includes(root) || grant.boardId !== capability.boardId
-          || grant.workspaceId !== capability.workspaceId || grant.epoch !== capability.capabilityEpoch) return [];
-      } else if (!knownWriter && (capability.writerPublicKeys.length || capability.capabilityEpoch > 1)) return [];
-      if (event.workspaceId !== capability.workspaceId || event.boardId !== capability.boardId
-        || event.capabilityEpoch !== capability.capabilityEpoch) return [];
-      return [event];
-    } catch { return []; }
-  });
-  return serializeReplica(async () => {
+          || grant.workspaceId !== capability.workspaceId || grant.epoch !== capability.capabilityEpoch) return null;
+      } else if (!knownWriter && (capability.writerPublicKeys.length || capability.capabilityEpoch > 1)) return null;
+    } catch { return null; }
+    return { event, wireId: nostr.id };
+  }, { signal });
+  const accepted = decoded.filter((item): item is {event: RoamingBoardEvent; wireId: string} => Boolean(item));
+  const events = accepted.map(item => item.event);
+  throwIfCanceled(signal);
+  const result = await serializeReplica(async () => {
     let journal = await loadJournal(capability, currentSnapshot);
-    journal = mergeJournal(journal, events);
+    const before = new Set(journal.events.map(event => event.eventId));
+    const fresh = events.filter(event => !before.has(event.eventId));
+    const recordIds = accepted.length > 0 || rejectedIds.length > 0;
+    if (fresh.length || recordIds) {
+      journal = mergeJournal(journal, events);
+      journal.wireIds = [...new Set([...(journal.wireIds || []), ...accepted.map(item => item.wireId)])];
+      journal.rejectedWireIds = [...new Set([...(journal.rejectedWireIds || []), ...rejectedIds])];
+      await saveJournal(capability.boardId, journal);
+    }
+    if (!fresh.length && options.materialize === 'if-changed') {
+      return {
+        snapshot: null,
+        applyState: { ...EMPTY_ROAMING_APPLY_STATE, lastRelayPullAt: pulledAt },
+        received: events.length, applied: 0, relayCount: response.relayCount, changed: false,
+      };
+    }
     const merged = projectJournal(journal);
-    await saveJournal(capability.boardId, journal);
     return {
       snapshot: merged.snapshot,
-      applyState: { ...merged.state, lastRelayPullAt: Math.floor(Date.now() / 1000) },
+      applyState: { ...merged.state, lastRelayPullAt: pulledAt },
       received: events.length, applied: merged.applied, relayCount: response.relayCount,
+      changed: fresh.length > 0,
     };
   });
+  await savePullCursor(capability.boardId, pulledAt);
+  return result;
 }
 
 export { loadRoamingCapability };

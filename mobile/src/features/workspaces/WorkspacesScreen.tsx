@@ -1,5 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -38,6 +39,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Workspaces'>;
 export function WorkspacesScreen({ navigation }: Props) {
   const colors = useAppColors();
   const { isOnline, networkType } = useNetwork();
+  const focused = useIsFocused();
   const auth = useAuth();
   const queryClient = useQueryClient();
   const [cached, setCached] = useState<Workspace[]>([]);
@@ -62,7 +64,8 @@ export function WorkspacesScreen({ navigation }: Props) {
     enabled: isOnline && !(networkType === 'cellular' && isPrivateNodeOrigin(getApiNodeOrigin())),
   });
   useEffect(() => {
-    if (!isOnline || !auth.user?.id) return;
+    // A screen under the open board does not poll: the board owns the JS thread.
+    if (!isOnline || !focused || !auth.user?.id) return;
     let active = true;
     let busy = false;
     const refreshCatalog = async () => {
@@ -77,7 +80,7 @@ export function WorkspacesScreen({ navigation }: Props) {
     void refreshCatalog();
     const timer = setInterval(() => { void refreshCatalog(); }, 30_000);
     return () => { active = false; clearInterval(timer); };
-  }, [isOnline, networkType, auth.user?.id]);
+  }, [focused, isOnline, networkType, auth.user?.id]);
 
   const saveMutation = useMutation({
     mutationFn: () => editingWorkspace

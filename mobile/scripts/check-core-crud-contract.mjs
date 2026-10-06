@@ -31,7 +31,7 @@ if (
   || packageLock.version !== packageJson.version
   || packageLock.packages?.['']?.version !== packageJson.version
   || appJson.expo.version !== packageJson.version
-  || appJson.expo.android.versionCode !== 23
+  || appJson.expo.android.versionCode !== 24
 ) {
   throw new Error('Версии Android package, lock и Expo не согласованы.');
 }
@@ -92,12 +92,20 @@ requireText('src/features/localFirst/useLocalBoard.ts', [
   'deleteChecklistItemRemote',
   'hideCardOnThisDevice',
   'restoreCardOnThisDevice',
-  'InteractionManager.runAfterInteractions',
-  'initialSyncTaskRef.current?.cancel()',
+  // The board never waits for sync: stored copy first, cancellable work, no busy loop.
+  'setHydrated(true);',
+  'lifecycle.abort()',
+  "materialize: 'if-changed'",
+  'pendingKey(operations)',
+  '!screenActive',
   'relayPendingCount',
   'capabilityEpoch',
   'canEdit',
 ]);
+// Relay history is verified once per distinct new event, in UI-sized slices.
+requireText('src/features/roaming/nostrRelay.ts', ['knownIds', 'mapInSlices(', 'verifyCollected(']);
+requireText('src/features/roaming/journal.ts', ['knownWireIds', 'savePullCursor']);
+forbidText('src/features/localFirst/useLocalBoard.ts', ['InteractionManager']);
 requireText('src/features/roaming/service.ts', [
   "operation: 'board.appearance.put'",
   "return ['checklists']",
@@ -194,7 +202,7 @@ requireText('src/features/sync/syncService.ts', [
   "appVersion: '1.0.0'",
 ]);
 requireText('android/app/build.gradle', [
-  'versionCode 23',
+  'versionCode 24',
   'versionName "2.1.0"',
 ]);
 

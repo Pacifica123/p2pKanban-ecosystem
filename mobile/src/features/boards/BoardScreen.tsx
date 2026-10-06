@@ -1,7 +1,7 @@
 import {orderCards} from '../../shared/lib/cardOrder';
 import {getAdjacentPosition} from './cardDrag';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -247,7 +247,9 @@ export function BoardScreen({ navigation, route }: Props) {
   const resolvedTheme = useResolvedTheme();
   const { width, height } = useWindowDimensions();
   const { isOnline } = useNetwork();
-  const runtime = useLocalBoard(boardId, workspaceId, accessEpoch, canEdit);
+  const focused = useIsFocused();
+  // History and other covering screens pause the periodic sync of this board.
+  const runtime = useLocalBoard(boardId, workspaceId, accessEpoch, canEdit, { active: focused });
   const exitController = useMemo(
     () => createBoardExitController(() => navigation.pop()),
     [navigation],
@@ -387,7 +389,8 @@ export function BoardScreen({ navigation, route }: Props) {
       setEditingColumn(null);
       setNewColumnName('');
       setNewColumnDescription('');
-      await runtime.refresh();
+      // The modal closes now; the board catches up in the background.
+      void runtime.refresh();
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Не удалось сохранить колонку.');
     } finally {
@@ -896,7 +899,8 @@ export function BoardScreen({ navigation, route }: Props) {
         saving={appearanceBusy}
         error={appearanceError}
         onClose={() => {
-          if (!appearanceBusy) setAppearanceModal(false);
+          // Saving is local-first: closing never waits for it.
+          setAppearanceModal(false);
         }}
         onSave={saveAppearance}
       />

@@ -1,6 +1,8 @@
 import type { Event as NostrEvent, Filter } from 'nostr-tools';
 import { finalizeEvent, verifyEvent } from 'nostr-tools/pure';
 
+import { mapInSlices, throwIfCanceled } from '../../shared/lib/uiBudget';
+
 const RELAY_TIMEOUT_MS = 8_000;
 
 function withRelay<T>(
@@ -53,6 +55,19 @@ async function publishOne(url: string, event: NostrEvent) {
   });
 }
 
+function matchesFilter(event: NostrEvent, filter: Filter) {
+  return Boolean(event && typeof event === 'object' && typeof event.id === 'string'
+    && Array.isArray(event.tags)
+    && (!filter.kinds || filter.kinds.includes(event.kind))
+    && (!filter['#d'] || event.tags.some(tag => tag[0] === 'd' && tag[1] !== undefined && filter['#d']!.includes(tag[1])))
+    && (!filter['#p'] || event.tags.some(tag => tag[0] === 'p' && tag[1] !== undefined && filter['#p']!.includes(tag[1]))));
+}
+
+/**
+ * Collects frames only. Signatures are checked later, once per distinct event
+ * and in time slices: verifying inside onmessage blocked the UI thread for the
+ * whole board history on every poll.
+ */
 export async function fetchOne(url: string, filter: Filter) {
   return withRelay<NostrEvent[]>(url, (socket, finish, fail) => {
     const subscriptionId = `p2pk-${Math.random().toString(36).slice(2)}`;
@@ -62,9 +77,7 @@ export async function fetchOne(url: string, filter: Filter) {
         const frame = JSON.parse(String(message.data)) as unknown[];
         if (frame[0] === 'EVENT' && frame[1] === subscriptionId) {
           const event = frame[2] as NostrEvent;
-          if (verifyEvent(event) && (!filter.kinds || filter.kinds.includes(event.kind))
-            && (!filter['#d'] || event.tags.some(tag => tag[0] === 'd' && tag[1] !== undefined && filter['#d']!.includes(tag[1])))
-            && (!filter['#p'] || event.tags.some(tag => tag[0] === 'p' && tag[1] !== undefined && filter['#p']!.includes(tag[1])))) events.push(event);
+          if (matchesFilter(event, filter)) events.push(event);
         }
         if (frame[0] === 'EOSE' && frame[1] === subscriptionId) {
           socket.send(JSON.stringify(['CLOSE', subscriptionId]));
@@ -76,6 +89,37 @@ export async function fetchOne(url: string, filter: Filter) {
     };
     socket.send(JSON.stringify(['REQ', subscriptionId, filter]));
   });
+}
+
+export interface RelayFetchOptions {
+  /** Nostr ids already verified and stored: their content is fixed by the id. */
+  knownIds?: ReadonlySet<string>;
+  /** Unix seconds; omitted for a full pull. */
+  since?: number;
+  signal?: AbortSignal | null;
+}
+
+/** Deduplicates across relays, skips known ids, verifies the rest without freezing the UI. */
+async function verifyCollected(
+  settled: PromiseSettledResult<NostrEvent[]>[],
+  options: RelayFetchOptions,
+) {
+  throwIfCanceled(options.signal);
+  const candidates = new Map<string, NostrEvent[]>();
+  let skipped = 0;
+  for (const result of settled) {
+    if (result.status !== 'fulfilled') continue;
+    for (const event of result.value) {
+      if (options.knownIds?.has(event.id)) { skipped += 1; continue; }
+      const group = candidates.get(event.id);
+      if (!group) candidates.set(event.id, [event]);
+      else if (!group.some(item => item.sig === event.sig && item.content === event.content)) group.push(event);
+    }
+  }
+  // A forged copy under a real id must not hide the genuine copy from another relay.
+  const verified = await mapInSlices([...candidates.values()],
+    group => group.find(event => verifyEvent(event)) || null, { signal: options.signal });
+  return { events: verified.filter((event): event is NonNullable<typeof event> => Boolean(event)) as NostrEvent[], skipped };
 }
 
 export function createSignedNostrEvent(input: {
@@ -122,38 +166,29 @@ export async function fetchFromRelays(input: {
   relays: string[];
   kind: number;
   boardTag: string;
-}) {
+} & RelayFetchOptions) {
   const filter: Filter = {
     kinds: [input.kind],
     '#d': [input.boardTag],
+    ...(input.since ? { since: input.since } : {}),
   };
   const settled = await Promise.allSettled(input.relays.map((relay) => fetchOne(relay, filter)));
-  const eventsById = new Map<string, NostrEvent>();
-  let relayCount = 0;
-  for (const result of settled) {
-    if (result.status !== 'fulfilled') continue;
-    relayCount += 1;
-    for (const event of result.value) eventsById.set(event.id, event);
-  }
+  const relayCount = settled.filter(result => result.status === 'fulfilled').length;
   if (!relayCount) {
     const errors = settled.flatMap((r, i) => r.status === 'rejected' ? [`${input.relays[i]}: ${r.reason instanceof Error ? r.reason.message : 'ошибка WebSocket'}`] : []);
     throw new Error(`Релейная связь недоступна. ${errors.join('; ')}`);
   }
-  return { events: [...eventsById.values()], relayCount };
+  const { events, skipped } = await verifyCollected(settled, input);
+  return { events, relayCount, skipped };
 }
 
 export async function fetchDeviceCatalogEvents(input: {
   relays: string[]; kind: number; recipient: string;
-}) {
+} & RelayFetchOptions) {
   const filter: Filter = { kinds: [input.kind], '#p': [input.recipient] };
   const settled = await Promise.allSettled(input.relays.map(relay => fetchOne(relay, filter)));
-  const events = new Map<string, NostrEvent>();
-  let relayCount = 0;
-  for (const result of settled) {
-    if (result.status !== 'fulfilled') continue;
-    relayCount += 1;
-    for (const event of result.value) events.set(event.id, event);
-  }
+  const relayCount = settled.filter(result => result.status === 'fulfilled').length;
   if (!relayCount) throw new Error('Каталог реплик недоступен через настроенные relay.');
-  return {events:[...events.values()], relayCount};
+  const { events } = await verifyCollected(settled, input);
+  return {events, relayCount};
 }

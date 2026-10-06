@@ -9,12 +9,14 @@
 
 | Документ | Отвечает на вопрос |
 |---|---|
+| [presuppositions.md](presuppositions.md) | Зачем экосистема одна: мотивы и исходные допущения |
 | [principles.md](principles.md) | По каким правилам направления живут вместе |
 | [boundaries.md](boundaries.md) | Что принадлежит направлению, что общему слою, какие контракты их связывают |
 | [devctl.md](devctl.md) | Как devctl ведёт патчи по всей экосистеме |
 | [development.md](development.md) | Как готовить патч; обязательное обновление доски |
 | [integration-path.md](integration-path.md) | Как от «лежат рядом» дойти до «работают как одно целое» |
 | [success-criteria.md](success-criteria.md) | По каким признакам воркспейс удачен |
+| [trusted-devices.md](trusted-devices.md) | Почему связь устройств рвётся в другой сети и как это решить (предложение) |
 | [../../board/README.md](../../board/README.md) | Как устроена самоприменимая доска |
 
 ## Порядок истины

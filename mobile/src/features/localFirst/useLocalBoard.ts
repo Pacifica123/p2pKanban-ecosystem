@@ -1,11 +1,11 @@
 import * as Crypto from 'expo-crypto';
 import {useAuth} from '../auth/AuthProvider';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, InteractionManager } from 'react-native';
+import { AppState } from 'react-native';
 
 import { useNetwork } from '../../app/NetworkProvider';
-import { ApiError, getApiNodeOrigin, isNetworkError } from '../../shared/api/client';
-import { isPrivateNodeOrigin } from '../connection/connection';
+import { ApiError, isNetworkError } from '../../shared/api/client';
+import { isSyncCanceled, throwIfCanceled, yieldToUi } from '../../shared/lib/uiBudget';
 import {
   applyLocalCardVisibility,
   hideCardOnThisDevice,
@@ -214,16 +214,30 @@ function nextCardPosition(snapshot: LocalBoardSnapshot, columnId: string, cardId
     .reduce((highest, card) => Math.max(highest, card.position), 0) + 1000;
 }
 
+/** A full relay pull also collects work that offline peers published late. */
+const FULL_PULL_INTERVAL_MS = 10 * 60_000;
+const SYNC_INTERVAL_MS = 15_000;
+const MAX_RETRY_DELAY_MS = 5 * 60_000;
+
+function pendingKey(operations: LocalOperation[]) {
+  return operations.filter(hasPendingPublication).map((operation) => operation.id).join('|');
+}
+
+export interface LocalBoardOptions {
+  /** False while the screen is covered or the app is in background: no periodic sync. */
+  active?: boolean;
+}
+
 export function useLocalBoard(
   boardId: string,
   workspaceId: string,
   accessEpoch = 1,
   canEdit = true,
+  options: LocalBoardOptions = {},
 ): LocalBoardRuntime {
+  const screenActive = options.active ?? true;
   const { isOnline, networkType } = useNetwork();
   const {user} = useAuth();
-  const preferRoaming = networkType === 'cellular'
-    && isPrivateNodeOrigin(getApiNodeOrigin());
   const [snapshot, setSnapshot] = useState<LocalBoardSnapshot | null>(null);
   const [operations, setOperations] = useState<LocalOperation[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -239,9 +253,13 @@ export function useLocalBoard(
   const flushLock = useRef(false);
   const refreshLock = useRef(false);
   const nodeUnavailableUntilRef = useRef(0);
-  const initialSyncTaskRef = useRef<ReturnType<
-    typeof InteractionManager.runAfterInteractions
-  > | null>(null);
+  const lastFullPullRef = useRef(0);
+  const failuresRef = useRef(0);
+  const retryAtRef = useRef(0);
+  // One controller per opened board: leaving the screen stops its sync between steps.
+  const lifecycleRef = useRef<AbortController>(new AbortController());
+  const isOnlineRef = useRef(isOnline);
+  isOnlineRef.current = isOnline;
 
   const currentAccessEpoch = useCallback(() => Math.max(
     accessEpoch,
@@ -254,420 +272,408 @@ export function useLocalBoard(
     nextSnapshot: LocalBoardSnapshot | null,
     nextOperations: LocalOperation[],
   ) => {
+    if (lifecycleRef.current.signal.aborted) return;
     snapshotRef.current = nextSnapshot;
     operationsRef.current = nextOperations;
     setSnapshot(nextSnapshot);
     setOperations(nextOperations.filter((operation) => operation.boardId === boardId));
   }, [boardId]);
 
-  const refresh = useCallback(async () => {
-    if (!isOnline || refreshLock.current) return;
+  const noteResult = useCallback((error: unknown) => {
+    if (isSyncCanceled(error) || lifecycleRef.current.signal.aborted) return;
+    if (error) {
+      failuresRef.current += 1;
+      retryAtRef.current = Date.now()
+        + Math.min(SYNC_INTERVAL_MS * 2 ** (failuresRef.current - 1), MAX_RETRY_DELAY_MS);
+      setLastError(message(error));
+    } else {
+      failuresRef.current = 0;
+      retryAtRef.current = 0;
+    }
+  }, []);
+
+  const refresh = useCallback(async (request: { full?: boolean } = {}) => {
+    if (!isOnlineRef.current || refreshLock.current) return;
+    const signal = lifecycleRef.current.signal;
     refreshLock.current = true;
     setRefreshing(true);
     setLastError(null);
-    let relaySucceeded = false;
-    let relayReceived = 0;
-    let relayFailure: unknown = null;
-    let relaySnapshot: LocalBoardSnapshot | null = null;
-    let relayApplyState: Awaited<ReturnType<typeof pullRoamingBoard>>['applyState'] | undefined;
+    let failure: unknown = null;
     try {
       const installed = roamingCapabilityRef.current || await loadRoamingCapability(boardId);
       if (installed) {
         roamingCapabilityRef.current = installed;
-        const relay = await pullRoamingBoard(installed, snapshotRef.current);
-        await runSerialized(async () => {
-          const recovered = await recoverLocalReplica(installed, snapshotRef.current);
-          const hidden = await pruneLocallyHiddenCards(boardId, Object.keys(relay.applyState.tombstones || {}));
-          setLocallyHidden(hidden);
-          if (recovered) {
-            const visible = applyLocalCardVisibility(recovered, hidden);
-            const queue = await loadOperationQueue();
-            await persistBoardAndQueue(visible, queue);
-            applyState(visible, queue);
-          }
+        const mode = request.full || Date.now() - lastFullPullRef.current >= FULL_PULL_INTERVAL_MS
+          ? 'full' as const
+          : 'incremental' as const;
+        const relay = await pullRoamingBoard(installed, snapshotRef.current, {
+          signal, mode, materialize: 'if-changed',
         });
+        if (mode === 'full') lastFullPullRef.current = Date.now();
+        throwIfCanceled(signal);
+        if (relay.changed) {
+          await runSerialized(async () => {
+            throwIfCanceled(signal);
+            const recovered = await recoverLocalReplica(installed, snapshotRef.current);
+            const hidden = await pruneLocallyHiddenCards(boardId, Object.keys(relay.applyState.tombstones || {}));
+            setLocallyHidden(hidden);
+            if (recovered) {
+              const visible = applyLocalCardVisibility(recovered, hidden);
+              const queue = await loadOperationQueue();
+              await persistBoardAndQueue(visible, queue);
+              applyState(visible, queue);
+            }
+          });
+        }
         setSyncMode('roaming'); setRelayCount(relay.relayCount);
         return;
       }
-      await runSerialized(async () => {
-        const storedCapability = roamingCapabilityRef.current
-          || await loadRoamingCapability(boardId);
-        if (storedCapability) {
-          roamingCapabilityRef.current = storedCapability;
-          try {
-            const relay = await pullRoamingBoard(storedCapability, snapshotRef.current);
-            relayReceived = relay.received;
-            relaySnapshot = relay.snapshot;
-            relayApplyState = relay.applyState;
-            const nextHidden = await pruneLocallyHiddenCards(
-              boardId,
-              Object.keys(relay.applyState.tombstones || {}),
-            );
-            setLocallyHidden(nextHidden);
-            if (relay.snapshot) {
-              const visibleRelaySnapshot = applyLocalCardVisibility(relay.snapshot, nextHidden);
-              const queued = await loadOperationQueue();
-              await persistBoardAndQueue(visibleRelaySnapshot, queued);
-              applyState(visibleRelaySnapshot, queued);
-              relaySnapshot = visibleRelaySnapshot;
-            }
-            setSyncMode('roaming');
-            setRelayCount(relay.relayCount);
-            relaySucceeded = true;
-          } catch (error) {
-            relayFailure = error;
-          }
-        }
 
-        // A provisioned replica reads the journal. HTTP is only initial enrollment.
-        if (storedCapability) {
-          if (relayFailure) throw relayFailure;
-          return;
+      // Initial enrollment through the HTTP node. Network never runs under the
+      // local storage lock: a slow node must not delay a tap on the board.
+      await touchWorkspaceSync(workspaceId).catch(() => null);
+      const capabilityPromise = getRoamingAuthorPublicKey()
+        .then((authorPublicKey) => provisionRoamingBoard(boardId, authorPublicKey))
+        .catch(() => null);
+      let coordinatorSnapshot: LocalBoardSnapshot;
+      let provisionedCapability: RoamingCapability | null;
+      try {
+        [coordinatorSnapshot, provisionedCapability] = await Promise.all([
+          fetchBoardSnapshot(boardId, workspaceId),
+          capabilityPromise,
+        ]);
+      } catch (error) {
+        if (coordinatorUnavailable(error)) {
+          nodeUnavailableUntilRef.current = Date.now() + 30_000;
         }
-
-        try {
-          await touchWorkspaceSync(workspaceId).catch(() => null);
-          const capabilityPromise = getRoamingAuthorPublicKey()
-            .then((authorPublicKey) => provisionRoamingBoard(boardId, authorPublicKey))
-            .catch(() => null);
-          const [coordinatorSnapshot, allOperations, provisionedCapability] = await Promise.all([
-            fetchBoardSnapshot(boardId, workspaceId),
-            loadOperationQueue(),
-            capabilityPromise,
-          ]);
+        throw error;
+      }
+      throwIfCanceled(signal);
+      const merged = await runSerialized(async () => {
+        if (provisionedCapability) {
           const previousCapability = roamingCapabilityRef.current;
-          if (provisionedCapability) {
-            const rotated = Boolean(previousCapability && (
-              previousCapability.capabilityEpoch !== provisionedCapability.capabilityEpoch
-              || previousCapability.boardTag !== provisionedCapability.boardTag
-            ));
-            if (rotated) {
-              relaySnapshot = null;
-              relayApplyState = undefined;
-              relayReceived = 0;
-              await resetRoamingApplyState(boardId);
-            }
-            await installRoamingCapability(provisionedCapability);
-            roamingCapabilityRef.current = provisionedCapability;
-            setSyncMode('roaming');
-            setRelayCount(provisionedCapability.relays.length);
-            relaySucceeded = true;
-          }
-          const remainingOperations = allOperations;
-          const nextHidden = await reconcileHiddenCardsWithCoordinator(
-            boardId,
-            coordinatorSnapshot.cards.map((card) => card.id),
-          );
-          setLocallyHidden(nextHidden);
-          const seeded = applyLocalCardVisibility(coordinatorSnapshot, nextHidden);
-          nodeUnavailableUntilRef.current = 0;
-          const mergedBase = mergeBoardSnapshots(seeded, relaySnapshot, relayApplyState);
-          const merged = await persistServerSnapshot(mergedBase, remainingOperations);
-          applyState(merged, remainingOperations);
-
-          if (provisionedCapability?.canWrite && relayReceived === 0) {
-            await publishBoardSnapshot(provisionedCapability, merged);
-          }
-        } catch (error) {
-          if (coordinatorUnavailable(error)) {
-            nodeUnavailableUntilRef.current = Date.now() + 30_000;
-          }
-          if (!relaySucceeded) throw error;
+          const rotated = Boolean(previousCapability && (
+            previousCapability.capabilityEpoch !== provisionedCapability.capabilityEpoch
+            || previousCapability.boardTag !== provisionedCapability.boardTag
+          ));
+          if (rotated) await resetRoamingApplyState(boardId);
+          await installRoamingCapability(provisionedCapability);
+          roamingCapabilityRef.current = provisionedCapability;
+          setSyncMode('roaming');
+          setRelayCount(provisionedCapability.relays.length);
         }
+        const allOperations = await loadOperationQueue();
+        const nextHidden = await reconcileHiddenCardsWithCoordinator(
+          boardId,
+          coordinatorSnapshot.cards.map((card) => card.id),
+        );
+        setLocallyHidden(nextHidden);
+        const seeded = applyLocalCardVisibility(coordinatorSnapshot, nextHidden);
+        nodeUnavailableUntilRef.current = 0;
+        const result = await persistServerSnapshot(mergeBoardSnapshots(seeded, null), allOperations);
+        applyState(result, allOperations);
+        return result;
       });
+      if (provisionedCapability?.canWrite) {
+        // A first publication of the baseline; the relay is not awaited by the UI.
+        void publishBoardSnapshot(provisionedCapability, merged).catch(() => undefined);
+      }
     } catch (error) {
-      setLastError(message(relayFailure || error));
+      failure = error;
     } finally {
       refreshLock.current = false;
       setRefreshing(false);
+      noteResult(failure);
     }
-  }, [applyState, boardId, isOnline, preferRoaming, networkType, runSerialized, workspaceId]);
+  }, [applyState, boardId, noteResult, runSerialized, workspaceId]);
+
+  /** HTTP coordinator path for boards without a key yet. One operation per step. */
+  const flushThroughNode = useCallback(async (signal: AbortSignal) => {
+    for (;;) {
+      throwIfCanceled(signal);
+      const next = await runSerialized(async () => {
+        let allOperations = await loadOperationQueue();
+        const currentSnapshot = snapshotRef.current;
+        if (!currentSnapshot) return null;
+        const candidates = allOperations
+          .filter((operation) => operation.boardId === boardId && hasPendingPublication(operation))
+          .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+        for (const current of candidates) {
+          const activeEpoch = currentAccessEpoch();
+          if ((current.accessEpoch || 1) === activeEpoch) return current;
+          const errorText = 'Отложенное изменение относится к отозванному поколению доступа и не будет применено.';
+          allOperations = allOperations.map((candidate) => candidate.id === current.id
+            ? { ...candidate, status: 'failed', attempts: candidate.attempts + 1, lastError: errorText }
+            : candidate);
+          await persistBoardAndQueue(currentSnapshot, allOperations);
+          applyState(currentSnapshot, allOperations);
+          setLastError(errorText);
+        }
+        return null;
+      });
+      if (!next) return;
+      const capability = roamingCapabilityRef.current || await loadRoamingCapability(boardId);
+      if (capability) {
+        roamingCapabilityRef.current = capability;
+        return; // Enrollment raced this REST pass; next flush uses the journal.
+      }
+      if (next.status === 'relay_pending') {
+        setLastError('Для восстановления старой очереди нужен сохранённый ключ доски.');
+        return;
+      }
+
+      // The request runs outside the lock; its result is applied to the latest state.
+      type Applied = (snapshot: LocalBoardSnapshot, operations: LocalOperation[]) => {
+        snapshot: LocalBoardSnapshot; operations: LocalOperation[];
+      };
+      let applyRemote: Applied;
+      try {
+        if (next.kind === 'board.appearance.update') {
+          const saved = await updateBoardAppearanceRemote(boardId, next.payload.input);
+          applyRemote = (snapshot, operations) => ({
+            snapshot: { ...snapshot, appearance: saved, cachedAt: saved.updatedAt || now() },
+            operations,
+          });
+        } else if (next.kind === 'card.create') {
+          const created = await createCardRemote(boardId, next.payload.input);
+          await moveCardReminder(next.entityId, created.id, created.title);
+          applyRemote = (snapshot, operations) => replaceCreatedCard(snapshot, operations, next.entityId, created);
+        } else if (next.kind === 'card.update') {
+          const updated = await updateCardRemote(next.entityId, next.payload.input);
+          applyRemote = (snapshot, operations) => ({ snapshot: replaceCardInSnapshot(snapshot, updated), operations });
+        } else if (next.kind === 'card.move') {
+          const moved = await moveCardRemote(next.entityId, next.payload.input);
+          applyRemote = (snapshot, operations) => ({ snapshot: replaceCardInSnapshot(snapshot, moved), operations });
+        } else if (next.kind === 'card.archive') {
+          const archived = await archiveCardRemote(next.entityId);
+          applyRemote = (snapshot, operations) => ({ snapshot: replaceCardInSnapshot(snapshot, archived), operations });
+        } else if (next.kind === 'card.unarchive') {
+          const restored = await unarchiveCardRemote(next.entityId);
+          applyRemote = (snapshot, operations) => ({ snapshot: replaceCardInSnapshot(snapshot, restored), operations });
+        } else if (next.kind === 'card.delete') {
+          await deleteCardRemote(next.entityId);
+          applyRemote = (snapshot, operations) => ({ snapshot: removeCardFromSnapshot(snapshot, next.entityId), operations });
+        } else if (next.kind === 'checklist.create') {
+          const created = await createChecklistRemote(next.payload.cardId, next.payload.input);
+          applyRemote = (snapshot, operations) => replaceCreatedChecklist(
+            snapshot, operations, next.payload.cardId, next.entityId, created);
+        } else if (next.kind === 'checklist.update') {
+          const updated = await updateChecklistRemote(next.entityId, next.payload.input);
+          applyRemote = (snapshot, operations) => ({
+            snapshot: replaceChecklist(snapshot, next.payload.cardId, updated), operations,
+          });
+        } else if (next.kind === 'checklist.delete') {
+          await deleteChecklistRemote(next.entityId);
+          applyRemote = (snapshot, operations) => ({ snapshot, operations });
+        } else if (next.kind === 'checklist.item.create') {
+          const created = await createChecklistItemRemote(next.payload.checklistId, next.payload.input);
+          applyRemote = (snapshot, operations) => replaceCreatedChecklistItem(
+            snapshot, operations, next.payload.cardId, next.entityId, created);
+        } else if (next.kind === 'checklist.item.update') {
+          const updated = await updateChecklistItemRemote(next.entityId, next.payload.input);
+          applyRemote = (snapshot, operations) => ({
+            snapshot: replaceChecklistItem(snapshot, next.payload.cardId, updated), operations,
+          });
+        } else {
+          await deleteChecklistItemRemote(next.entityId);
+          applyRemote = (snapshot, operations) => ({ snapshot, operations });
+        }
+      } catch (error) {
+        if (coordinatorUnavailable(error)) {
+          nodeUnavailableUntilRef.current = Date.now() + 30_000;
+          throw new Error('Узел недоступен; для relay требуется первоначальная подготовка доски.');
+        }
+        const errorText = error instanceof ApiError && error.status === 403
+          ? 'Изменение больше не разрешено. Проверьте доступ к пространству.'
+          : message(error);
+        await runSerialized(async () => {
+          const currentSnapshot = snapshotRef.current;
+          if (!currentSnapshot) return;
+          const allOperations = (await loadOperationQueue()).map((candidate) => candidate.id === next.id
+            ? { ...candidate, status: 'failed' as const, attempts: candidate.attempts + 1, lastError: errorText }
+            : candidate);
+          await persistBoardAndQueue(currentSnapshot, allOperations);
+          applyState(currentSnapshot, allOperations);
+        });
+        setLastError(errorText);
+        continue;
+      }
+
+      nodeUnavailableUntilRef.current = 0;
+      await runSerialized(async () => {
+        const currentSnapshot = snapshotRef.current;
+        if (!currentSnapshot) return;
+        const applied = applyRemote(currentSnapshot, await loadOperationQueue());
+        const remaining = applied.operations.filter((candidate) => candidate.id !== next.id);
+        const nextSnapshot = applyOperations(
+          applied.snapshot,
+          remaining.filter((operation) => operation.boardId === boardId),
+        );
+        await persistBoardAndQueue(nextSnapshot, remaining);
+        applyState(nextSnapshot, remaining);
+      });
+    }
+  }, [applyState, boardId, currentAccessEpoch, runSerialized]);
 
   const flush = useCallback(async () => {
-    if (!isOnline || flushLock.current) return;
+    if (!isOnlineRef.current || flushLock.current) return;
+    const signal = lifecycleRef.current.signal;
     flushLock.current = true;
     setFlushing(true);
     setLastError(null);
+    let failure: unknown = null;
 
     try {
       const installed = roamingCapabilityRef.current || await loadRoamingCapability(boardId);
-      if (installed) {
-        roamingCapabilityRef.current = installed;
-        // Commit legacy pending intentions locally; transport never holds the UI storage lock.
-        await runSerialized(async () => {
-          let local = snapshotRef.current;
-          if (!local) return;
-          let queue = await loadOperationQueue();
-          for (const initial of queue.filter(op => op.boardId === boardId && op.status !== 'failed')) {
-            let operation = queue.find(op => op.id === initial.id)!;
-            if ((operation.accessEpoch || 1) !== installed.capabilityEpoch) {
-              queue = queue.map(op => op.id === operation.id ? {...op, status:'failed',lastError:'Изменилось поколение доступа; требуется обновлённый capability.'} : op);
-              continue;
-            }
-            let replacement: {snapshot: LocalBoardSnapshot; operations: LocalOperation[]} | null = null;
-            if (operation.kind === 'card.create' && isTemporaryCardId(operation.entityId)) {
-              replacement = replaceCreatedCard(local, queue, operation.entityId,
-                {...(local.cards.find(card => card.id === operation.entityId) || operation.payload.tempCard),id:Crypto.randomUUID()});
-            } else if (operation.kind === 'checklist.create' && isTemporaryChecklistId(operation.entityId)) {
-              replacement = replaceCreatedChecklist(local, queue, operation.payload.cardId, operation.entityId,
-                {...operation.payload.tempChecklist,id:Crypto.randomUUID()});
-            } else if (operation.kind === 'checklist.item.create' && isTemporaryChecklistItemId(operation.entityId)) {
-              replacement = replaceCreatedChecklistItem(local, queue, operation.payload.cardId, operation.entityId,
-                {...operation.payload.tempItem,id:Crypto.randomUUID()});
-            }
-            if (replacement) {
-              local = replacement.snapshot; queue = replacement.operations;
-              operation = queue.find(op => op.id === initial.id)!;
-            }
-            if (canPublishThroughRoaming(operation)) await commitLocalOperation(installed, operation, local, local, true);
-          }
-          await persistBoardAndQueue(local, queue);
-          applyState(local, queue);
-        });
-        try { await flushReplicaJournal(installed); }
-        catch (error) { setLastError(message(error)); }
-        await runSerialized(async () => {
-          const local = snapshotRef.current;
-          if (!local) return;
-          const delivered = await publishedOperationIds(installed);
-          const queue = (await loadOperationQueue()).filter(op => op.boardId !== boardId || !delivered.has(op.id));
-          await persistBoardAndQueue(local, queue);
-          applyState(local, queue);
-        });
-        setSyncMode('roaming'); setRelayCount(installed.relays.length);
+      if (!installed) {
+        await flushThroughNode(signal);
         return;
       }
+      roamingCapabilityRef.current = installed;
+      // Commit legacy pending intentions locally; transport never holds the UI storage lock.
       await runSerialized(async () => {
-        let allOperations = await loadOperationQueue();
-        const initialSnapshot = snapshotRef.current;
-        if (!initialSnapshot) return;
-        let currentSnapshot: LocalBoardSnapshot = initialSnapshot;
-        const boardOperations = allOperations
-          .filter((operation) => operation.boardId === boardId
-            && hasPendingPublication(operation))
-          .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
-
-        for (const queuedOperation of boardOperations) {
-          const current = allOperations.find((candidate) => candidate.id === queuedOperation.id);
-          if (!current || !hasPendingPublication(current)) continue;
-
-          const capability = roamingCapabilityRef.current
-            || await loadRoamingCapability(boardId);
-          if (capability) roamingCapabilityRef.current = capability;
-          const activeEpoch = currentAccessEpoch();
-          if ((current.accessEpoch || 1) !== activeEpoch) {
-            const errorText = 'Отложенное изменение относится к отозванному поколению доступа и не будет применено.';
-            allOperations = allOperations.map((candidate) => candidate.id === current.id
-              ? {
-                ...candidate,
-                status: 'failed',
-                attempts: candidate.attempts + 1,
-                lastError: errorText,
-              }
-              : candidate);
-            await persistBoardAndQueue(currentSnapshot, allOperations);
-            applyState(currentSnapshot, allOperations);
-            setLastError(errorText);
+        let local = snapshotRef.current;
+        if (!local) return;
+        let queue = await loadOperationQueue();
+        let changed = false;
+        for (const initial of queue.filter(op => op.boardId === boardId && op.status !== 'failed')) {
+          throwIfCanceled(signal);
+          let operation = queue.find(op => op.id === initial.id)!;
+          if ((operation.accessEpoch || 1) !== installed.capabilityEpoch) {
+            queue = queue.map(op => op.id === operation.id ? {...op, status:'failed',lastError:'Изменилось поколение доступа; требуется обновлённый capability.'} : op);
+            changed = true;
             continue;
           }
-
-          if (capability) break; // Enrollment raced this REST pass; next flush uses the journal.
-          if (current.status === 'relay_pending') {
-            setLastError('Для восстановления старой очереди нужен сохранённый ключ доски.');
-            break;
+          let replacement: {snapshot: LocalBoardSnapshot; operations: LocalOperation[]} | null = null;
+          if (operation.kind === 'card.create' && isTemporaryCardId(operation.entityId)) {
+            replacement = replaceCreatedCard(local, queue, operation.entityId,
+              {...(local.cards.find(card => card.id === operation.entityId) || operation.payload.tempCard),id:Crypto.randomUUID()});
+          } else if (operation.kind === 'checklist.create' && isTemporaryChecklistId(operation.entityId)) {
+            replacement = replaceCreatedChecklist(local, queue, operation.payload.cardId, operation.entityId,
+              {...operation.payload.tempChecklist,id:Crypto.randomUUID()});
+          } else if (operation.kind === 'checklist.item.create' && isTemporaryChecklistItemId(operation.entityId)) {
+            replacement = replaceCreatedChecklistItem(local, queue, operation.payload.cardId, operation.entityId,
+              {...operation.payload.tempItem,id:Crypto.randomUUID()});
           }
-
-          try {
-            let nextSnapshot: LocalBoardSnapshot = currentSnapshot;
-            let nextOperations = allOperations;
-
-            if (current.kind === 'board.appearance.update') {
-              const saved = await updateBoardAppearanceRemote(
-                boardId,
-                current.payload.input,
-              );
-              nextSnapshot = {
-                ...nextSnapshot,
-                appearance: saved,
-                cachedAt: saved.updatedAt || now(),
-              };
-            } else if (current.kind === 'card.create') {
-              const created = await createCardRemote(boardId, current.payload.input);
-              const replaced = replaceCreatedCard(
-                nextSnapshot,
-                nextOperations,
-                current.entityId,
-                created,
-              );
-              nextSnapshot = replaced.snapshot;
-              nextOperations = replaced.operations;
-              await moveCardReminder(current.entityId, created.id, created.title);
-            } else if (current.kind === 'card.update') {
-              const updated = await updateCardRemote(current.entityId, current.payload.input);
-              nextSnapshot = replaceCardInSnapshot(nextSnapshot, updated);
-            } else if (current.kind === 'card.move') {
-              const moved = await moveCardRemote(current.entityId, current.payload.input);
-              nextSnapshot = replaceCardInSnapshot(nextSnapshot, moved);
-            } else if (current.kind === 'card.archive') {
-              const archived = await archiveCardRemote(current.entityId);
-              nextSnapshot = replaceCardInSnapshot(nextSnapshot, archived);
-            } else if (current.kind === 'card.unarchive') {
-              const restored = await unarchiveCardRemote(current.entityId);
-              nextSnapshot = replaceCardInSnapshot(nextSnapshot, restored);
-            } else if (current.kind === 'card.delete') {
-              await deleteCardRemote(current.entityId);
-              nextSnapshot = removeCardFromSnapshot(nextSnapshot, current.entityId);
-            } else if (current.kind === 'checklist.create') {
-              const created = await createChecklistRemote(
-                current.payload.cardId,
-                current.payload.input,
-              );
-              const replaced = replaceCreatedChecklist(
-                nextSnapshot,
-                nextOperations,
-                current.payload.cardId,
-                current.entityId,
-                created,
-              );
-              nextSnapshot = replaced.snapshot;
-              nextOperations = replaced.operations;
-            } else if (current.kind === 'checklist.update') {
-              const updated = await updateChecklistRemote(
-                current.entityId,
-                current.payload.input,
-              );
-              nextSnapshot = replaceChecklist(nextSnapshot, current.payload.cardId, updated);
-            } else if (current.kind === 'checklist.delete') {
-              await deleteChecklistRemote(current.entityId);
-            } else if (current.kind === 'checklist.item.create') {
-              const created = await createChecklistItemRemote(
-                current.payload.checklistId,
-                current.payload.input,
-              );
-              const replaced = replaceCreatedChecklistItem(
-                nextSnapshot,
-                nextOperations,
-                current.payload.cardId,
-                current.entityId,
-                created,
-              );
-              nextSnapshot = replaced.snapshot;
-              nextOperations = replaced.operations;
-            } else if (current.kind === 'checklist.item.update') {
-              const updated = await updateChecklistItemRemote(
-                current.entityId,
-                current.payload.input,
-              );
-              nextSnapshot = replaceChecklistItem(
-                nextSnapshot,
-                current.payload.cardId,
-                updated,
-              );
-            } else {
-              await deleteChecklistItemRemote(current.entityId);
-            }
-
-            nodeUnavailableUntilRef.current = 0;
-            nextOperations = nextOperations.filter((candidate) => candidate.id !== current.id);
-            nextSnapshot = applyOperations(
-              nextSnapshot,
-              nextOperations.filter((operation) => operation.boardId === boardId),
-            );
-            currentSnapshot = nextSnapshot;
-            allOperations = nextOperations;
-            await persistBoardAndQueue(currentSnapshot, allOperations);
-            applyState(currentSnapshot, allOperations);
-
-          } catch (error) {
-            if (coordinatorUnavailable(error)) {
-              nodeUnavailableUntilRef.current = Date.now() + 30_000;
-              setLastError('Узел недоступен; для relay требуется первоначальная подготовка доски.');
-              break;
-            }
-
-            const errorText = error instanceof ApiError && error.status === 403
-              ? 'Изменение больше не разрешено. Проверьте доступ к пространству.'
-              : message(error);
-            allOperations = allOperations.map((candidate) => candidate.id === current.id
-              ? {
-                ...candidate,
-                status: 'failed',
-                attempts: candidate.attempts + 1,
-                lastError: errorText,
-              }
-              : candidate);
-            await persistBoardAndQueue(currentSnapshot, allOperations);
-            applyState(currentSnapshot, allOperations);
-            setLastError(errorText);
+          if (replacement) {
+            local = replacement.snapshot; queue = replacement.operations; changed = true;
+            operation = queue.find(op => op.id === initial.id)!;
           }
+          if (canPublishThroughRoaming(operation)) await commitLocalOperation(installed, operation, local, local, true);
+        }
+        if (changed) {
+          await persistBoardAndQueue(local, queue);
+          applyState(local, queue);
         }
       });
+      try { await flushReplicaJournal(installed); }
+      catch (error) { failure = error; }
+      throwIfCanceled(signal);
+      await runSerialized(async () => {
+        const local = snapshotRef.current;
+        if (!local) return;
+        const delivered = await publishedOperationIds(installed);
+        const before = await loadOperationQueue();
+        const queue = before.filter(op => op.boardId !== boardId || !delivered.has(op.id));
+        if (queue.length === before.length) return;
+        await persistBoardAndQueue(local, queue);
+        applyState(local, queue);
+      });
+      setSyncMode('roaming'); setRelayCount(installed.relays.length);
+    } catch (error) {
+      failure = error;
     } finally {
       flushLock.current = false;
       setFlushing(false);
+      noteResult(failure);
     }
-  }, [applyState, boardId, currentAccessEpoch, isOnline, preferRoaming, runSerialized]);
+  }, [applyState, boardId, flushThroughNode, noteResult, runSerialized]);
 
+  const flushRef = useRef(flush);
+  flushRef.current = flush;
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
+
+  // Opening a board shows the stored copy at once. Journal recovery and the
+  // network never stand between the user and the board, and a change of the
+  // network type no longer re-opens the board.
   useEffect(() => {
-    let active = true;
+    const lifecycle = new AbortController();
+    lifecycleRef.current = lifecycle;
+    lastFullPullRef.current = 0;
+    failuresRef.current = 0;
+    retryAtRef.current = 0;
     setHydrated(false);
+    snapshotRef.current = null;
+    setSnapshot(null);
     void Promise.all([
       loadLocalBoardState(boardId),
       loadRoamingCapability(boardId),
       loadLocallyHiddenCards(boardId),
     ]).then(async ([local, capability, hidden]) => {
-      if (capability) local.snapshot = await recoverLocalReplica(capability, local.snapshot);
-      if (!active) return;
+      if (lifecycle.signal.aborted) return;
       setLocallyHidden(hidden);
       roamingCapabilityRef.current = capability;
       if (capability) {
         setSyncMode('roaming');
         setRelayCount(capability.relays.length);
       }
-      applyState(
-        local.snapshot ? applyLocalCardVisibility(local.snapshot, hidden) : null,
-        local.operations,
-      );
+      const stored = local.snapshot ? applyLocalCardVisibility(local.snapshot, hidden) : null;
+      applyState(stored, local.operations);
       setHydrated(true);
-      if (isOnline) {
-        const hasPending = local.operations.some(hasPendingPublication);
-        initialSyncTaskRef.current = InteractionManager.runAfterInteractions(() => {
-          initialSyncTaskRef.current = null;
-          if (!active) return;
-          if (hasPending) {
-            void flush().then(() => active ? refresh() : undefined);
-          } else {
-            void refresh();
-          }
+
+      if (capability) {
+        // A crash between journal commit and snapshot write is repaired after the board is visible.
+        await yieldToUi();
+        await runSerialized(async () => {
+          if (lifecycle.signal.aborted || snapshotRef.current !== stored) return;
+          const recovered = await recoverLocalReplica(capability, local.snapshot);
+          if (!recovered || lifecycle.signal.aborted || snapshotRef.current !== stored) return;
+          applyState(applyLocalCardVisibility(recovered, hidden), operationsRef.current);
         });
       }
+      if (!isOnlineRef.current || lifecycle.signal.aborted) return;
+      const hasPending = local.operations.some(hasPendingPublication);
+      if (hasPending) await flushRef.current();
+      if (!lifecycle.signal.aborted) await refreshRef.current({ full: true });
+    }).catch((error) => {
+      if (lifecycle.signal.aborted) return;
+      setLastError(message(error));
+      setHydrated(true);
     });
     return () => {
-      active = false;
-      initialSyncTaskRef.current?.cancel();
-      initialSyncTaskRef.current = null;
+      lifecycle.abort();
     };
-  }, [applyState, boardId, flush, isOnline, refresh]);
+  }, [applyState, boardId, runSerialized]);
+
+  // New local work is sent once; a failed attempt waits for the timer and backoff.
+  const pending = pendingKey(operations);
+  useEffect(() => {
+    if (isOnline && hydrated && pending) void flushRef.current();
+  }, [hydrated, isOnline, pending]);
 
   useEffect(() => {
-    if (isOnline && operations.some(hasPendingPublication)) {
-      void flush();
-    }
-  }, [flush, isOnline, operations]);
-
-  useEffect(() => {
-    if (!isOnline || !hydrated) return;
-    let active = AppState.currentState === 'active';
-    const synchronize = () => {
-      if (active) void flush().then(() => refresh()).catch(error => setLastError(message(error)));
+    if (!isOnline || !hydrated || !screenActive) return;
+    let foreground = AppState.currentState === 'active';
+    let running = false;
+    const synchronize = async (full: boolean) => {
+      if (!foreground || running || lifecycleRef.current.signal.aborted) return;
+      if (!full && Date.now() < retryAtRef.current) return;
+      running = true;
+      try {
+        await flushRef.current();
+        await refreshRef.current({ full });
+      } finally {
+        running = false;
+      }
     };
-    const timer = setInterval(synchronize, 15_000);
+    const timer = setInterval(() => { void synchronize(false); }, SYNC_INTERVAL_MS);
     const subscription = AppState.addEventListener('change', state => {
-      active = state === 'active';
-      if (active) synchronize();
+      foreground = state === 'active';
+      if (foreground) void synchronize(true);
     });
     return () => { clearInterval(timer); subscription.remove(); };
-  }, [flush, refresh, hydrated, isOnline]);
+  }, [hydrated, isOnline, screenActive, networkType]);
 
   const enqueue = useCallback(async (operation: LocalOperation) => {
     operation = {...operation,actor:{userId:user?.id || null,displayName:user?.displayName || null}};
@@ -685,8 +691,8 @@ export function useLocalBoard(
       await persistBoardAndQueue(nextSnapshot, nextOperations);
       applyState(nextSnapshot, nextOperations);
     });
-    if (isOnline) void flush();
-  }, [applyState, canEdit, flush, isOnline, runSerialized, user]);
+    retryAtRef.current = 0;
+  }, [applyState, boardId, canEdit, runSerialized, user]);
 
   const retryFailed = useCallback(async () => {
     const currentSnapshot = snapshotRef.current;
@@ -702,8 +708,14 @@ export function useLocalBoard(
       applyState(latestSnapshot, next);
     });
     nodeUnavailableUntilRef.current = 0;
+    retryAtRef.current = 0;
     await flush();
   }, [applyState, boardId, flush, runSerialized]);
+
+  const manualRefresh = useCallback(async () => {
+    retryAtRef.current = 0;
+    await refresh({ full: true });
+  }, [refresh]);
 
   const pendingCount = operations.filter((operation) => operation.status === 'pending').length;
   const relayPendingCount = operations
@@ -722,7 +734,7 @@ export function useLocalBoard(
     syncMode,
     relayCount,
     lastError,
-    refresh,
+    refresh: manualRefresh,
     retryFailed,
     createCard: async (input) => {
       if (!snapshotRef.current) throw new Error('Доска ещё не загружена.');
@@ -977,6 +989,7 @@ export function useLocalBoard(
     isOnline,
     lastError,
     locallyHidden,
+    manualRefresh,
     operations,
     pendingCount,
     relayPendingCount,
