@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 46,
-        "comments": 6,
-        "checklists": 9,
+        "cards": 47,
+        "comments": 7,
+        "checklists": 10,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-06T05:00:00Z",
+    "generatedAt": "2026-10-06T08:00:00Z",
     "selfHosted": true,
-    "boardRevision": 2,
-    "lastPatchId": "2026-10-06-mobile-ui-never-waits",
+    "boardRevision": 3,
+    "lastPatchId": "2026-10-06-web-utf8-safe-truncation",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -578,6 +578,16 @@
         "priority": "medium",
         "position": 3072,
         "archivedAt": null
+      },
+      {
+        "id": "01a1103a-0401-7752-a7fc-3e9994b34fec",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "web: длинный русский текст обрывал запрос (502 при копии доски)",
+        "description": "Зачем: копия доски остановилась на «создание комментария 2/6» с ответом 502: журнал активности и аудита обрезал текст по байтам и падал внутри кириллической буквы, Axum обрывал соединение, шлюз отвечал 502. Ломался не только импорт, а любой длинный русский комментарий, описание или payload синхронизации.\n\nГотово, когда: на обновлённом web-узле «Создать копию» этой же доски проходит до конца, а комментарий длиннее 128 русских букв сохраняется.\n\nИсправлено в web/backend/src/modules/common.rs (truncate_utf8) и в журналах activity, audit и sync.",
+        "priority": "urgent",
+        "position": 8192,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -986,6 +996,14 @@
       {
         "cardId": "01a10f95-38c1-7bf4-97ac-e3dad107cde5",
         "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
+        "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
       }
     ],
     "checklists": [
@@ -1041,6 +1059,12 @@
         "id": "01a10f95-38b8-7fc0-8b11-c5b9601339f6",
         "cardId": "01a10f95-38b7-72bd-9e19-50d4dacd7032",
         "title": "Срезы",
+        "position": 1024
+      },
+      {
+        "id": "01a1103a-0402-7a56-bb3e-2afa6f84425a",
+        "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
+        "title": "Приёмка на узле",
         "position": 1024
       }
     ],
@@ -1394,6 +1418,27 @@
         "title": "AppImage и отдельный Windows .exe",
         "isDone": false,
         "position": 6144
+      },
+      {
+        "id": "01a1103a-0403-73d5-8adb-029831309fd9",
+        "checklistId": "01a1103a-0402-7a56-bb3e-2afa6f84425a",
+        "title": "cargo test --locked --lib проходит, новые тесты на кириллицу",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a1103a-0404-7a94-ad8a-7abc57343aa3",
+        "checklistId": "01a1103a-0402-7a56-bb3e-2afa6f84425a",
+        "title": "Копия доски экосистемы создаётся без 502",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a1103a-0405-77ed-9ecb-861bd72210a6",
+        "checklistId": "01a1103a-0402-7a56-bb3e-2afa6f84425a",
+        "title": "Длинный русский комментарий сохраняется и виден в активности",
+        "isDone": false,
+        "position": 3072
       }
     ],
     "comments": [
@@ -1432,6 +1477,12 @@
         "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
         "createdAt": "2026-10-06T05:00:00Z",
         "body": "patch 2026-10-06-mobile-ui-never-waits: UserTestSpace пока пуст: воркспейс инициирован копией снимка. Первый plan→start этого патча создаст UTS; карточка двигается следующим патчем после приёмки."
+      },
+      {
+        "id": "01a1103a-0406-7d56-99d1-90b1349ab335",
+        "cardId": "01a1103a-0401-7752-a7fc-3e9994b34fec",
+        "body": "patch 2026-10-06-web-utf8-safe-truncation: обрезка текста в журналах активности, аудита и синхронизации больше не режет UTF-8 посреди буквы. Ждёт узла.",
+        "createdAt": "2026-10-06T08:00:00Z"
       }
     ],
     "boardAppearanceSettings": [],

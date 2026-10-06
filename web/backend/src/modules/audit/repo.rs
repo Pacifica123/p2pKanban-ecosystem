@@ -56,7 +56,7 @@ fn parse_uuid_filter(value: Option<String>, field_name: &str) -> AppResult<Optio
 
 fn redact_string(value: &str) -> Value {
     if value.len() > 256 {
-        Value::String(format!("{}…", &value[..256]))
+        Value::String(format!("{}…", crate::modules::common::truncate_utf8(value, 256)))
     } else {
         Value::String(value.to_string())
     }
@@ -222,4 +222,23 @@ pub async fn list_workspace_audit_log(
     });
 
     Ok(AuditLogListResponse { items, next_cursor })
+}
+
+#[cfg(test)]
+mod utf8_truncation_tests {
+    use super::sanitize_json_value;
+    use serde_json::{json, Value};
+
+    #[test]
+    fn long_cyrillic_text_is_shortened_without_panic() {
+        // Odd ASCII prefix puts byte 256 inside a two-byte Cyrillic letter.
+        let body = format!("x{}", "ж".repeat(400));
+        assert!(!body.is_char_boundary(256));
+        let Value::Object(map) = sanitize_json_value(&json!({"body": body})) else {
+            panic!("object expected");
+        };
+        let short = map["body"].as_str().unwrap();
+        assert!(short.ends_with('…'));
+        assert!(short.len() <= 256 + '…'.len_utf8());
+    }
 }

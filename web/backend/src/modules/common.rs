@@ -11,6 +11,20 @@ use crate::{
 
 pub const POSITION_GAP: f64 = 1024.0;
 
+/// Cuts `value` to at most `max_bytes` bytes without splitting a UTF-8 character.
+/// A plain `&value[..n]` panics inside a multi-byte character: a long Cyrillic
+/// comment then dropped the request and the gateway answered 502.
+pub fn truncate_utf8(value: &str, max_bytes: usize) -> &str {
+    if value.len() <= max_bytes {
+        return value;
+    }
+    let mut end = max_bytes;
+    while !value.is_char_boundary(end) {
+        end -= 1;
+    }
+    &value[..end]
+}
+
 #[derive(Debug, Clone)]
 pub struct AuthContext {
     pub user_id: Uuid,
@@ -298,4 +312,20 @@ pub async fn next_position_for_card(
     .await?;
 
     Ok(max_position.unwrap_or(0.0) + POSITION_GAP)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::truncate_utf8;
+
+    #[test]
+    fn truncate_utf8_never_splits_a_character() {
+        let text = "a".repeat(255) + "журнал";
+        // Byte 256 falls inside «ж» (2 bytes): a byte slice would panic here.
+        assert!(!text.is_char_boundary(256));
+        assert_eq!(truncate_utf8(&text, 256), "a".repeat(255));
+        assert_eq!(truncate_utf8(&text, 257), "a".repeat(255) + "ж");
+        assert_eq!(truncate_utf8("короткий", 256), "короткий");
+        assert_eq!(truncate_utf8("🙂", 2), "");
+    }
 }
