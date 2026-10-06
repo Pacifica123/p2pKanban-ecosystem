@@ -16,7 +16,7 @@
 | [development.md](development.md) | Как готовить патч; обязательное обновление доски |
 | [integration-path.md](integration-path.md) | Как от «лежат рядом» дойти до «работают как одно целое» |
 | [success-criteria.md](success-criteria.md) | По каким признакам воркспейс удачен |
-| [trusted-devices.md](trusted-devices.md) | Почему связь устройств рвётся в другой сети и как это решить (предложение) |
+| [trusted-devices.md](trusted-devices.md) | Почему связь устройств рвётся в другой сети и как это решить (концепция принята, решения владельца записаны) |
 | [../../board/README.md](../../board/README.md) | Как устроена самоприменимая доска |
 
 ## Порядок истины

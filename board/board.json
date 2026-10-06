@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 48,
-        "comments": 11,
-        "checklists": 11,
+        "cards": 50,
+        "comments": 16,
+        "checklists": 12,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-06T08:30:00Z",
+    "generatedAt": "2026-10-06T09:00:00Z",
     "selfHosted": true,
-    "boardRevision": 4,
-    "lastPatchId": "2026-10-06-abl-tauri-family-pin",
+    "boardRevision": 5,
+    "lastPatchId": "2026-10-06-ecosystem-ring-decisions",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -332,11 +332,11 @@
       {
         "id": "01a10f95-388b-772c-a194-c6e391bef505",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
         "title": "Кольцо устройств: доверенные устройства одного аккаунта в любой сети",
-        "description": "Зачем: сцена «привязали дома — в другом городе доски недоступны — починить можно только дома — всё забылось» повторялась после каждого патча связи; причины разобраны в docs/ecosystem/trusted-devices.md.\n\nГотово, когда: владелец выбрал ответы на три вопроса документа (QR или код первым, роли, свой relay), а спецификации ring/keyring/rendezvous лежат в contracts/ с эталонными примерами.\n\nКонтракты: p2p-kanban-account-ring/1, p2p-kanban-keyring/1, p2p-kanban-rendezvous/1. Порядок обновления: web-узлы → mobile → abl.",
+        "description": "Зачем: сцена «привязали дома — в другом городе доски недоступны — починить можно только дома — всё забылось» повторялась после каждого патча связи; причины разобраны в docs/ecosystem/trusted-devices.md.\n\nГотово, когда: этапы R0–R6 приняты на хостах; первый рубеж — спецификации ring/keyring/rendezvous лежат в contracts/ с эталонными примерами.\n\nКонтракты: p2p-kanban-account-ring/1, p2p-kanban-keyring/1, p2p-kanban-rendezvous/1. Порядок обновления: web-узлы → mobile → abl.",
         "priority": "urgent",
-        "position": 7168,
+        "position": 10240,
         "archivedAt": null
       },
       {
@@ -352,11 +352,11 @@
       {
         "id": "01a10f95-3897-7abe-855e-7c59b0af61bc",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
         "title": "R1: контракты кольца, связки ключей и встречи",
-        "description": "Зачем: три новых контракта затрагивают web, mobile и abl; без общих примеров они разойдутся.\n\nГотово, когда: в contracts/ лежат спецификации, JSON Schema и эталонные примеры ring/1, keyring/1, rendezvous/1; проверка каждого направления их читает.\n\nЖдёт решений владельца по карточке «Кольцо устройств». Связана с карточкой «Вынести контракты в contracts/».",
+        "description": "Зачем: три новых контракта затрагивают web, mobile и abl; без общих примеров они разойдутся.\n\nГотово, когда: в contracts/ лежат спецификации, JSON Schema и эталонные примеры ring/1, keyring/1, rendezvous/1; проверка каждого направления их читает.\n\nРешения владельца приняты 2026-10-06 (раздел «Решения владельца» в trusted-devices.md). Связана с карточкой «Вынести контракты в contracts/».",
         "priority": "high",
-        "position": 8192,
+        "position": 9216,
         "archivedAt": null
       },
       {
@@ -383,8 +383,8 @@
         "id": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
         "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
-        "title": "R4: добавление устройства по QR и короткому коду через relay, без LAN и файлов",
-        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.",
+        "title": "R4: добавление устройства по QR в двух режимах через relay, затем короткий код",
+        "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: телефон входит в кольцо, сканируя QR узла, и добавляет узел в своё кольцо, сканируя его QR; в обоих режимах новое устройство получает всё кольцо и все доски; этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.",
         "priority": "medium",
         "position": 3072,
         "archivedAt": null
@@ -597,6 +597,26 @@
         "description": "Зачем: первый UTS abl в монорепозитории упал на cargo.build и cargo.test, а все host-пробы и launch-probe оказались заблокированы: закреплён был только tauri 2.11.5, и свежее разрешение зависимостей подтянуло tauri-runtime 2.12 и tauri-macros 2.7, несовместимые с ним.\n\nГотово, когда: канонический UTS abl на хосте зелёный: cargo.test, cargo.build, host-пробы и runtime.launch-probe.\n\nРазбор: abl/docs/evidence/A17C_TAURI_FAMILY_PIN.md; проверка tools/check_a17c.py.",
         "priority": "urgent",
         "position": 9216,
+        "archivedAt": null
+      },
+      {
+        "id": "01a11070-f286-749a-ad93-73abf3da1f0e",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "EAS: связать сборку из монорепозитория с проектом Expo приложения",
+        "description": "Зачем: облачная сборка из github.com/Pacifica123/p2pKanban-ecosystem (папка mobile) упала: в mobile/app.json extra.eas.projectId = 19e01039-73f2-4df3-ac5b-ebe8a587b807 (owner pacifica123program, slug p2pkanban-mobile), а сборку запустил другой проект Expo c0b2361e-ed0f-4b93-826f-37e119119d0a. Код тут ни при чём: репозиторий привязан не к тому проекту Expo.\n\nГотово, когда: облачная сборка EAS из монорепозитория собирает APK, который ставится поверх текущего приложения без удаления данных.\n\nРекомендуется: на expo.dev отвязать GitHub от проекта c0b2361e и в существующем проекте pacifica123program/p2pkanban-mobile (19e01039) подключить этот репозиторий с базовой папкой mobile. Так сохраняются ключи подписи Android проекта. Перейти на c0b2361e (поменять projectId в app.json) можно только сознательно: у нового проекта будут свои ключи подписи, и APK из EAS не встанет поверх уже установленного.",
+        "priority": "high",
+        "position": 10240,
+        "archivedAt": null
+      },
+      {
+        "id": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Сборщик логов: копировать подробности любой ошибки в web, abl и mobile",
+        "description": "Зачем: ошибка вроде «Импорт остановлен… Request failed with 502» не содержит ничего, что можно передать дальше: ни стадии, ни ответа сервера, ни строки лога. Владелец предложил «сборщик логов» по аналогии со сборщиком мусора: механизм, который всегда держит под рукой подробности последней ошибки.\n\nГотово, когда: у каждой ошибки, показанной человеку в web, abl и mobile, есть кнопка «Скопировать подробности»; текст одинаковой формы во всех направлениях достаточен, чтобы разобрать ошибку без доступа к устройству.\n\nНабросок формы: направление, версия и коммит, время, экран и стадия операции, id запроса, HTTP-статус и тело ответа, последние строки кольцевого буфера логов клиента, секреты вырезаны. На web-узле: паника обработчика превращается в ответ 500 с id ошибки вместо обрыва соединения (502 у шлюза), строка лога сервера с тем же id попадает в подробности. Формат — кандидат в общий contracts/.",
+        "priority": "medium",
+        "position": 10240,
         "archivedAt": null
       }
     ],
@@ -1022,6 +1042,26 @@
       {
         "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
         "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a11070-f286-749a-ad93-73abf3da1f0e",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
       }
     ],
     "checklists": [
@@ -1090,6 +1130,12 @@
         "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
         "title": "Приёмка на хосте",
         "position": 1024
+      },
+      {
+        "id": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
+        "cardId": "01a11070-f286-749a-ad93-73abf3da1f0e",
+        "title": "Шаги владельца",
+        "position": 1024
       }
     ],
     "checklistItems": [
@@ -1132,7 +1178,7 @@
         "id": "01a10d38-f91c-76d7-8491-73e2eedc4b30",
         "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
         "title": "web: cd web && python bootstrap.py поднимает стек",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
@@ -1153,7 +1199,7 @@
         "id": "01a10d38-f91f-7c33-bdd6-619c8892d58b",
         "checklistId": "01a10d38-f91b-70e3-a8bf-103dd2c29091",
         "title": "devctl: devctl plan и devctl start из корня на пробном патче",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -1484,6 +1530,34 @@
         "title": "Канонический UTS: host-пробы и runtime.launch-probe",
         "isDone": false,
         "position": 3072
+      },
+      {
+        "id": "01a11070-f281-73bd-876b-f25eef334c75",
+        "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
+        "title": "Решения владельца: QR в двух режимах, все устройства admin, три публичных relay",
+        "isDone": true,
+        "position": 9216
+      },
+      {
+        "id": "01a11070-f288-791c-b4e3-0415209271cc",
+        "checklistId": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
+        "title": "expo.dev: GitHub подключён к проекту 19e01039, base directory = mobile",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a11070-f289-7e98-b46d-ca51d4c90691",
+        "checklistId": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
+        "title": "Сборка preview (APK) из main проходит",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a11070-f28a-733c-823f-7af92ed8237e",
+        "checklistId": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
+        "title": "APK встаёт поверх установленного, данные на месте",
+        "isDone": false,
+        "position": 3072
       }
     ],
     "comments": [
@@ -1552,6 +1626,36 @@
         "cardId": "01a10f95-38a6-775e-bfb2-96e1d18fa22c",
         "body": "patch 2026-10-06-abl-tauri-family-pin: первый UTS в монорепозитории (20261006T044732Z) не дошёл до проб из-за сборки; после CORR-A17-001 перезапустить UTS.",
         "createdAt": "2026-10-06T08:30:00Z"
+      },
+      {
+        "id": "01a11070-f282-7af3-b9a4-62ba77652761",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "body": "patch 2026-10-06-ecosystem-ring-decisions: владелец принял концепцию целиком. QR первым, в двух режимах: телефон входит в кольцо узла и телефон добавляет узел в своё кольцо; в обоих случаях новое устройство входит во всё кольцо, частичного доступа нет. Роли admin по умолчанию, свой relay не сейчас.",
+        "createdAt": "2026-10-06T09:00:00Z"
+      },
+      {
+        "id": "01a11070-f283-7485-8823-d1c5aed377c9",
+        "cardId": "01a10f95-3897-7abe-855e-7c59b0af61bc",
+        "body": "patch 2026-10-06-ecosystem-ring-decisions: решения владельца приняты, этап готов к патчу.",
+        "createdAt": "2026-10-06T09:00:00Z"
+      },
+      {
+        "id": "01a11070-f284-748f-8bff-20598d1d6db3",
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "body": "patch 2026-10-06-ecosystem-ring-decisions: уточнено по решению владельца: два режима QR, всегда вход во всё кольцо.",
+        "createdAt": "2026-10-06T09:00:00Z"
+      },
+      {
+        "id": "01a11070-f285-7b91-bde1-cadfe001b516",
+        "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
+        "body": "patch 2026-10-06-ecosystem-ring-decisions: первые результаты на хосте после 09c164e. web: стек поднялся. devctl: plan/start из корня применили патч. abl: UTS FAIL на cargo.build/test из-за дрейфа семейства Tauri, исправлено патчем 2026-10-06-abl-tauri-family-pin. mobile: облачная сборка EAS не связана с проектом Expo, см. карточку EAS. Копия доски в web давала 502, исправлено патчем 2026-10-06-web-utf8-safe-truncation.",
+        "createdAt": "2026-10-06T09:00:00Z"
+      },
+      {
+        "id": "01a11070-f28b-7552-bd32-a93621148f3a",
+        "cardId": "01a11070-f286-749a-ad93-73abf3da1f0e",
+        "body": "patch 2026-10-06-ecosystem-ring-decisions: причина ошибки EAS — привязка репозитория к другому проекту Expo; кода не требует, нужен шаг владельца на expo.dev.",
+        "createdAt": "2026-10-06T09:00:00Z"
       }
     ],
     "boardAppearanceSettings": [],

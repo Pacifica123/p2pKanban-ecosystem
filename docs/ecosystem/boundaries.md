@@ -41,7 +41,7 @@
 Ещё не реализованы; описаны в [trusted-devices.md](trusted-devices.md):
 `p2p-kanban-account-ring/1` (журнал кольца устройств аккаунта),
 `p2p-kanban-keyring/1` (связка ключей аккаунта),
-`p2p-kanban-rendezvous/1` (добавление устройства через relay по QR или коду).
+`p2p-kanban-rendezvous/1` (добавление устройства через relay: QR в двух режимах, позже код; всегда во всё кольцо).
 Производят и потребляют web, mobile и abl.
 
 ### Правило порядка обновления
