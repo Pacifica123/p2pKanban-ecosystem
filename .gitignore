@@ -8,6 +8,9 @@
 /.devctl/state.json
 /*_evolution_*.zip
 
+# UTS экосистемы: прогоны tools/ecosystem/uts.py (папки и zip)
+/.uts/
+
 # Python bytecode корневых инструментов
 __pycache__/
 *.py[cod]

@@ -1,0 +1,519 @@
+{
+  "schemaVersion": 1,
+  "about": "План UTS экосистемы: что проверяет tools/ecosystem/uts.py на хосте. Раздел направления — его договор с общим тестером: проверки вызывают только собственные команды направления. Формат и правила: docs/ecosystem/uts.md.",
+  "boardColumn": "Ждёт хоста",
+  "directions": [
+    {
+      "id": "ecosystem",
+      "title": "экосистема",
+      "dir": ".",
+      "checks": [
+        {
+          "id": "board",
+          "title": "Доска и карта направлений корректны",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/ecosystem/check_board.py"
+          ]
+        },
+        {
+          "id": "contracts",
+          "title": "Общие контракты: схемы, векторы, эталонная криптография",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/ecosystem/check_contracts.py"
+          ]
+        },
+        {
+          "id": "uts-self-test",
+          "title": "Сам тестер UTS исправен",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/ecosystem/uts.py",
+            "--self-test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "title": "web",
+      "dir": "web",
+      "checks": [
+        {
+          "id": "test-devctl-receipt",
+          "title": "Квитанции devctl",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_devctl_receipt.py"
+          ]
+        },
+        {
+          "id": "test-network-recovery",
+          "title": "Восстановление после сетевых сбоев",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_network_recovery.py"
+          ]
+        },
+        {
+          "id": "test-portable-startup",
+          "title": "Переносимый запуск",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_portable_startup.py"
+          ]
+        },
+        {
+          "id": "test-resilient-bootstrap",
+          "title": "Устойчивый bootstrap",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_resilient_bootstrap.py"
+          ]
+        },
+        {
+          "id": "test-runtime-adoption",
+          "title": "Подхват работающего стека",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_runtime_adoption.py"
+          ]
+        },
+        {
+          "id": "test-runtime-bundle",
+          "title": "Офлайн-комплект стека",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_runtime_bundle.py"
+          ]
+        },
+        {
+          "id": "test-update-control-plane",
+          "title": "Обновление узла из UI",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_update_control_plane.py"
+          ]
+        },
+        {
+          "id": "test-windows-bootstrap",
+          "title": "Bootstrap под Windows",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_windows_bootstrap.py"
+          ]
+        },
+        {
+          "id": "contract-replica-catalog",
+          "title": "Контракт каталога реплик",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_replica_catalog_contract.py"
+          ]
+        },
+        {
+          "id": "contract-web-node-link",
+          "title": "Контракт web-node-link/1",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_web_node_link_contract.py"
+          ]
+        },
+        {
+          "id": "contract-workspace-access",
+          "title": "Контракт доступа к workspace",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_workspace_access_contract.py"
+          ]
+        },
+        {
+          "id": "stale-android-native-auth",
+          "title": "Паритет native auth с Android",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_android_native_auth_contract.py"
+          ]
+        },
+        {
+          "id": "stale-card-deletion-scope",
+          "title": "Область удаления карточек",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_card_deletion_scope_contract.py"
+          ]
+        },
+        {
+          "id": "stale-cross-client-crud",
+          "title": "CRUD между клиентами",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_cross_client_crud_contract.py"
+          ]
+        },
+        {
+          "id": "stale-mobile-web-feature",
+          "title": "Функции web и Android",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_mobile_web_feature_contract.py"
+          ]
+        },
+        {
+          "id": "stale-customization-part2",
+          "title": "Настройки внешнего вида, часть 2",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_web_customization_part2_contract.py"
+          ]
+        },
+        {
+          "id": "stale-zero-config-bootstrap",
+          "title": "Zero-config bootstrap",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_zero_config_bootstrap.py"
+          ]
+        },
+        {
+          "id": "stale-release-prep",
+          "title": "Подготовка релиза",
+          "level": "static",
+          "gate": false,
+          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_release_prep.py"
+          ]
+        },
+        {
+          "id": "images",
+          "title": "Образы backend и web собираются в Docker",
+          "level": "build",
+          "requires": [
+            "docker"
+          ],
+          "timeout": 3600,
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_production_images.py"
+          ]
+        },
+        {
+          "id": "migrations",
+          "title": "Миграции PostgreSQL в одноразовом контейнере",
+          "level": "build",
+          "requires": [
+            "docker"
+          ],
+          "timeout": 3600,
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_portable_migrations.py"
+          ]
+        },
+        {
+          "id": "backend-cargo",
+          "title": "cargo test backend на хосте",
+          "level": "build",
+          "gate": false,
+          "requires": [
+            "cargo"
+          ],
+          "timeout": 3600,
+          "note": "web не требует Rust на хосте; это дополнительное свидетельство",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/check_transport_patch.py"
+          ]
+        },
+        {
+          "id": "node",
+          "title": "Узел запущен и отвечает",
+          "level": "host",
+          "probe": "web-node"
+        },
+        {
+          "id": "node-build",
+          "title": "Узел собран из проверяемого дерева web",
+          "level": "host",
+          "probe": "web-node-build",
+          "needs": [
+            "node"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mobile",
+      "title": "mobile",
+      "dir": "mobile",
+      "checks": [
+        {
+          "id": "versions",
+          "title": "Версия и versionCode согласованы в package.json, app.json и build.gradle",
+          "level": "static",
+          "probe": "mobile-versions"
+        },
+        {
+          "id": "replica-catalog",
+          "title": "Контракт каталога реплик",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "scripts/check-replica-catalog-contract.py"
+          ]
+        },
+        {
+          "id": "deps",
+          "title": "npm ci",
+          "level": "build",
+          "requires": [
+            "npm"
+          ],
+          "timeout": 1800,
+          "run": [
+            "npm",
+            "ci",
+            "--offline",
+            "--no-audit",
+            "--no-fund"
+          ],
+          "runOnline": [
+            "npm",
+            "ci",
+            "--prefer-offline",
+            "--no-audit",
+            "--no-fund"
+          ],
+          "note": "без кэша npm запустите с --allow-network"
+        },
+        {
+          "id": "contract-core-crud",
+          "title": "Контракт CRUD, напоминаний и roaming",
+          "level": "static",
+          "requires": [
+            "node"
+          ],
+          "run": [
+            "node",
+            "scripts/check-core-crud-contract.mjs"
+          ]
+        },
+        {
+          "id": "network-recovery",
+          "title": "Восстановление сети (исходники)",
+          "level": "static",
+          "requires": [
+            "node"
+          ],
+          "run": [
+            "node",
+            "scripts/check-network-recovery.mjs"
+          ]
+        },
+        {
+          "id": "apk-commands",
+          "title": "Команды сборки APK",
+          "level": "static",
+          "requires": [
+            "node"
+          ],
+          "run": [
+            "node",
+            "--test",
+            "scripts/apk-commands.test.mjs"
+          ]
+        },
+        {
+          "id": "typecheck",
+          "title": "TypeScript",
+          "level": "build",
+          "requires": [
+            "npm"
+          ],
+          "needs": [
+            "deps"
+          ],
+          "timeout": 1200,
+          "run": [
+            "npm",
+            "run",
+            "typecheck"
+          ]
+        },
+        {
+          "id": "jest",
+          "title": "Jest",
+          "level": "build",
+          "requires": [
+            "npm"
+          ],
+          "needs": [
+            "deps"
+          ],
+          "timeout": 1800,
+          "run": [
+            "npm",
+            "test"
+          ]
+        },
+        {
+          "id": "device",
+          "title": "На телефоне стоит сборка из этого дерева",
+          "level": "device",
+          "probe": "mobile-device"
+        }
+      ]
+    },
+    {
+      "id": "abl",
+      "title": "abl",
+      "dir": "abl",
+      "checks": [
+        {
+          "id": "uts-verify",
+          "title": "Собственный UTS abl (tools/uts_verify.py)",
+          "level": "host",
+          "probe": "abl-uts",
+          "requires": [
+            "python3"
+          ],
+          "timeout": 7200,
+          "run": [
+            "{python}",
+            "-B",
+            "tools/uts_verify.py",
+            "--report-dir",
+            "{artifacts}"
+          ],
+          "flagArgs": {
+            "allowNetwork": [
+              "--allow-network"
+            ],
+            "noRuntime": [
+              "--no-runtime"
+            ]
+          }
+        },
+        {
+          "id": "installed",
+          "title": "Установленный пакет pacman совпадает с исходниками",
+          "level": "host",
+          "gate": false,
+          "probe": "abl-installed"
+        }
+      ]
+    },
+    {
+      "id": "devctl",
+      "title": "devctl",
+      "dir": "devctl",
+      "checks": [
+        {
+          "id": "compile",
+          "title": "devctl.py компилируется",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "-c",
+            "import ast,sys; ast.parse(open('devctl.py',encoding='utf-8').read())"
+          ]
+        },
+        {
+          "id": "version",
+          "title": "devctl.py --version",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "devctl.py",
+            "--version"
+          ]
+        },
+        {
+          "id": "unittest",
+          "title": "Тесты devctl",
+          "level": "build",
+          "timeout": 1200,
+          "run": [
+            "{python}",
+            "-B",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v"
+          ]
+        },
+        {
+          "id": "installed",
+          "title": "Установленный devctl совпадает с исходниками",
+          "level": "host",
+          "gate": false,
+          "probe": "devctl-installed"
+        }
+      ]
+    }
+  ]
+}

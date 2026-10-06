@@ -37,7 +37,7 @@ cd abl
 | [`docs/ecosystem/`](docs/ecosystem/README.md) | Метадокументация: принципы координации, границы, devctl, разработка, путь интеграции, критерии успеха |
 | [`board/board.json`](board/README.md) | Самоприменимая доска экосистемы: импортируется в сам p2pKanban и обновляется каждым патчем |
 | [`ecosystem.json`](ecosystem.json) | Машиночитаемая карта направлений |
-| [`tools/ecosystem/`](tools/ecosystem/check_board.py) | Проверка доски и карты направлений |
+| [`tools/ecosystem/`](tools/ecosystem/check_board.py) | Проверка доски и карты направлений; [общий тестер приёмки UTS](docs/ecosystem/uts.md) |
 | [`AGENTS.md`](AGENTS.md) | Короткие правила для нейросети, готовящей патч |
 | `.devctl/workspace.json` | Корень как devctl-workspace: один поток патчей на всю экосистему |
 
@@ -46,3 +46,17 @@ cd abl
 Каждый патч обновляет `board/board.json`. Без этого патч не считается готовым:
 проверка `python -B tools/ecosystem/check_board.py --require-changed` его
 остановит. Подробности — [docs/ecosystem/development.md](docs/ecosystem/development.md).
+
+## Приёмка на хосте
+
+Исходники в репозитории — ещё не принятое. Приёмку на машине владельца
+проводит одна команда из корня (или из копии в `UserTestSpace`):
+
+```bash
+python3 -B tools/ecosystem/uts.py
+```
+
+Она проверяет все направления, даёт каждому PASS или FAIL, считает общую
+готовность и показывает, если на хосте или телефоне стоит не та версия.
+Логи — в `.uts/` папкой и таким же zip. Подробности —
+[docs/ecosystem/uts.md](docs/ecosystem/uts.md).

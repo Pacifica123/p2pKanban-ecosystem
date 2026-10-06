@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 50,
-        "comments": 21,
-        "checklists": 13,
+        "cards": 53,
+        "comments": 22,
+        "checklists": 14,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-06T11:00:00Z",
+    "generatedAt": "2026-10-06T11:15:00Z",
     "selfHosted": true,
-    "boardRevision": 6,
-    "lastPatchId": "2026-10-06-ecosystem-ring-contracts-r1",
+    "boardRevision": 7,
+    "lastPatchId": "2026-10-06-ecosystem-uts-acceptance",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -618,6 +618,36 @@
         "priority": "medium",
         "position": 10240,
         "archivedAt": null
+      },
+      {
+        "id": "01a110ec-8b21-70e1-91e8-6be8c2fea1e3",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "UTS экосистемы: одна команда принимает все направления на хосте",
+        "description": "Зачем: приёмка на хосте шла по направлениям разными способами, а итог «готово или нет» собирался в голове. Владелец попросил универсальный тестер: проверяет все направления сразу, оценивает общую готовность комплексно, а каждое направление бинарно, и складывает логи в папку и такой же архив.\n\nЧто есть: python3 -B tools/ecosystem/uts.py из корня или из копии UserTestSpace. План — tools/ecosystem/uts_plan.json (раздел направления вызывает только его собственные команды; abl — свой tools/uts_verify.py). Вердикт PASS/FAIL по гейтам направления; готовность в процентах по уровням исходники → сборка → хост → устройство → вручную; блок «Смешанные версии», если узел, APK, пакет abl или devctl не из проверяемого дерева. Карточки этой колонки — ручная приёмка (--interactive). Отчёт: .uts/<прогон>/SUMMARY.md, report.json, logs/ и идентичный zip. Описание: docs/ecosystem/uts.md.\n\nГотово, когда: первый полный прогон на хосте владельца прошёл до конца и zip прогона прислан в проект.",
+        "priority": "high",
+        "position": 11264,
+        "archivedAt": null
+      },
+      {
+        "id": "01a110ec-8b29-724b-8058-69fc42d97094",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "mobile: записывать коммит сборки в APK",
+        "description": "Зачем: UTS экосистемы сверяет APK на телефоне с деревом только по versionCode. Две сборки с одним versionCode неразличимы, а приёмка mobile часто отстаёт, и старый APK может встретиться с новым web.\n\nГотово, когда: APK несёт коммит или отпечаток исходников (например, в versionName или в ресурсе, который читается через dumpsys или adb), и UTS отличает «тот же versionCode, другая сборка».",
+        "priority": "medium",
+        "position": 11264,
+        "archivedAt": null
+      },
+      {
+        "id": "01a110ec-8b2a-7a09-ae76-58d5dbe63179",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "devctl: исключить .uts из снимков workspace",
+        "description": "Зачем: прогон UTS из корня репозитория кладёт отчёты в .uts/. В git они не попадают (.gitignore), но pre/post-снимки devctl смотрят на archive.exclude из .devctl/workspace.json, где .uts нет. Патч не может поправить .devctl (devctl inbox отклоняет такие пути).\n\nГотово, когда: в .devctl/workspace.json в archive.exclude есть \".uts\" (одна строка руками) или devctl умеет исключать каталоги из .gitignore. Пока обход — запускать UTS в копии UserTestSpace.",
+        "priority": "low",
+        "position": 12288,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1062,6 +1092,22 @@
       {
         "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
         "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a110ec-8b21-70e1-91e8-6be8c2fea1e3",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a110ec-8b29-724b-8058-69fc42d97094",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a110ec-8b2a-7a09-ae76-58d5dbe63179",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
+      },
+      {
+        "cardId": "01a110ec-8b2a-7a09-ae76-58d5dbe63179",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
       }
     ],
     "checklists": [
@@ -1141,6 +1187,12 @@
         "id": "01a110de-cf81-7d2d-ae16-26a1c2b4568e",
         "cardId": "01a10f95-3897-7abe-855e-7c59b0af61bc",
         "title": "Состав R1",
+        "position": 1024
+      },
+      {
+        "id": "01a110ec-8b22-7018-a2fe-4d8f0f1739b6",
+        "cardId": "01a110ec-8b21-70e1-91e8-6be8c2fea1e3",
+        "title": "Приёмка тестера",
         "position": 1024
       }
     ],
@@ -1620,6 +1672,41 @@
         "title": "Разные версии на устройствах видны: версия и протоколы в отметке присутствия, readerOutdated, отказ joiner-outdated",
         "isDone": true,
         "position": 8192
+      },
+      {
+        "id": "01a110ec-8b23-7452-bc82-01e2f6d7d94b",
+        "checklistId": "01a110ec-8b22-7018-a2fe-4d8f0f1739b6",
+        "title": "Вердикт по направлению, общая готовность, смесь версий",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a110ec-8b24-7350-aa97-122dac28f9ac",
+        "checklistId": "01a110ec-8b22-7018-a2fe-4d8f0f1739b6",
+        "title": "Папка логов и идентичный zip; SUMMARY.md и report.json",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a110ec-8b25-787d-a5a1-7bb9ca932b2c",
+        "checklistId": "01a110ec-8b22-7018-a2fe-4d8f0f1739b6",
+        "title": "Карточки «Ждёт хоста» как ручная приёмка (--interactive)",
+        "isDone": true,
+        "position": 3072
+      },
+      {
+        "id": "01a110ec-8b26-736a-af93-aa5843cceb70",
+        "checklistId": "01a110ec-8b22-7018-a2fe-4d8f0f1739b6",
+        "title": "Первый прогон на хосте: Arch, Docker с узлом, телефон по adb",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a110ec-8b27-7b0f-8dea-ca2e8be55f30",
+        "checklistId": "01a110ec-8b22-7018-a2fe-4d8f0f1739b6",
+        "title": "Zip прогона прислан в проект",
+        "isDone": false,
+        "position": 5120
       }
     ],
     "comments": [
@@ -1748,6 +1835,12 @@
         "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
         "body": "patch 2026-10-06-ecosystem-ring-contracts-r1: R1 сделан: спецификации, схемы и векторы в contracts/. Следующий этап R2 (web) готов к патчу.",
         "createdAt": "2026-10-06T11:00:00Z"
+      },
+      {
+        "id": "01a110ec-8b28-70d9-a40f-636f695d8be3",
+        "cardId": "01a110ec-8b21-70e1-91e8-6be8c2fea1e3",
+        "body": "patch 2026-10-06-ecosystem-uts-acceptance: общий тестер приёмки tools/ecosystem/uts.py и план uts_plan.json; проверен здесь детерминированно и с поддельными docker/adb/pacman/devctl; на хосте владельца ещё не запускался.",
+        "createdAt": "2026-10-06T11:15:00Z"
       }
     ],
     "boardAppearanceSettings": [],
