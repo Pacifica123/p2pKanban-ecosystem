@@ -1,3 +1,4 @@
+import { ErrorDetails } from '@/shared/ui/ErrorDetails';
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/shared/api/client';
@@ -64,7 +65,8 @@ export function RingPanel() {
   const view = query.data;
   const title = 'Кольцо устройств';
   if (query.isLoading) return <Panel title={title}><p className="muted">Загружаем кольцо…</p></Panel>;
-  if (query.error || !view) return <Panel title={title}><p role="alert">{String(query.error ?? 'Нет ответа узла')}</p></Panel>;
+  if (query.error || !view) return <Panel title={title}><p role="alert">{String(query.error ?? 'Нет ответа узла')}</p>
+    <ErrorDetails message={String(query.error ?? 'Нет ответа узла')} error={query.error ?? undefined} operation="Кольцо устройств" /></Panel>;
   if (!view.enabled) return <Panel title={title}><p>Кольцу нужен включённый Nostr-роуминг этого узла (TRANSPORTS__NOSTR__ENABLED).</p></Panel>;
   const draft = (key: string) => drafts[key] ?? { name: '', kind: 'android' as DeviceKind };
   const setDraft = (key: string, next: Partial<{ name: string; kind: DeviceKind }>) =>
@@ -95,7 +97,7 @@ export function RingPanel() {
       <Button disabled={busy || !view.relays || !nodeName.trim()} onClick={() => void run('/ring/genesis', { name: nodeName })}>
         Создать кольцо</Button>
       {legacy}
-      {error && <p role="alert">{error}</p>}
+      {error && <><p role="alert">{error}</p><ErrorDetails message={error} operation="Кольцо устройств" /></>}
     </Panel>;
   }
   const ring = view.ring;
@@ -138,10 +140,11 @@ export function RingPanel() {
         <p>Последний обмен: {when(sync.at)} · {sync.quorum ? 'кворум relay собран' : 'кворум relay не собран'} · получено записей: {sync.fetched},
           новых записей журнала: {sync.newEntries}, связок: {sync.keyringCopies}, отметок: {sync.presences}.</p>
         {sync.published.map((p) => <p key={p.recordType} className="muted">{p.recordType}: приняли {p.accepted.length ? p.accepted.join(', ') : 'никто'}{p.failed.length ? `; отказ: ${p.failed.join(', ')}` : ''}</p>)}
-        {sync.errors.length > 0 && <p role="alert">Ошибки обмена: {sync.errors.join('; ')}</p>}
+        {sync.errors.length > 0 && <><p role="alert">Ошибки обмена: {sync.errors.join('; ')}</p>
+          <ErrorDetails message={`Ошибки обмена с relay: ${sync.errors.join('; ')}`} operation="Кольцо устройств" stage="обмен с relay" /></>}
       </div>
       : <p className="muted">Обмена с relay ещё не было.</p>}
     {(ring.rejected.length > 0 || ring.pending.length > 0) && <p className="muted">Отклонено записей журнала: {ring.rejected.length}; ждут предков: {ring.pending.length}.</p>}
-    {error && <p role="alert">{error}</p>}
+    {error && <><p role="alert">{error}</p><ErrorDetails message={error} operation="Кольцо устройств" /></>}
   </Panel>;
 }

@@ -17,6 +17,7 @@ use tower_http::{
 
 use crate::{
     http::{
+        error_report::{error_report_middleware, ERROR_ID_HEADER, NODE_HEADER},
         middleware::rate_limit_middleware,
         router::{api_router, root_health},
     },
@@ -50,7 +51,8 @@ pub fn build_app(state: AppState) -> Router {
             Method::DELETE,
             Method::OPTIONS,
         ])
-        .allow_headers(allowed_headers);
+        .allow_headers(allowed_headers)
+        .expose_headers([HeaderName::from_static(ERROR_ID_HEADER), HeaderName::from_static(NODE_HEADER)]);
 
     let middleware_stack = ServiceBuilder::new()
         .layer(RequestBodyLimitLayer::new(body_limit_bytes))
@@ -74,5 +76,6 @@ pub fn build_app(state: AppState) -> Router {
             rate_limit_middleware,
         ))
         .layer(middleware_stack)
+        .layer(middleware::from_fn(error_report_middleware))
         .with_state(state)
 }

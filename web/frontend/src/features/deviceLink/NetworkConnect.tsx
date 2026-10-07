@@ -1,3 +1,4 @@
+import { ErrorDetails } from '@/shared/ui/ErrorDetails';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthSession } from '@/app/providers/AuthSessionProvider';
@@ -88,6 +89,6 @@ export function NetworkConnect({ first = false }: { first?: boolean }) {
         else { await cache.invalidateQueries(); setNotice(`Добавлено досок: ${result.addedBoards ?? 0}`); }
       })}>{first ? 'Подключить и сохранить реплику' : 'Получить новые доски'}</Button>
     </>}
-    {notice && <p role="status">{notice}</p>}{error && <p role="alert">{error}</p>}
+    {notice && <p role="status">{notice}</p>}{error && <><p role="alert">{error}</p><ErrorDetails message={error} operation="Подключение устройства" /></>}
   </Panel>;
 }

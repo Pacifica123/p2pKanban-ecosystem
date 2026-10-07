@@ -1,5 +1,7 @@
 import { env } from '@/shared/config/env';
 import { ApiError } from '@/shared/api/errors';
+import { logLine, noteApiFailure, notePeer } from '@/shared/errorReport/journal';
+import { ERROR_ID_HEADER } from '@/shared/errorReport/report';
 
 interface ApiEnvelope<T> {
   data: T;
@@ -54,11 +56,11 @@ function expireSession() {
 
 async function parseJson(response: Response) {
   const text = await response.text();
-  if (!text) return null;
+  if (!text) return { text, payload: null };
   try {
-    return JSON.parse(text) as unknown;
+    return { text, payload: JSON.parse(text) as unknown };
   } catch {
-    return text;
+    return { text, payload: text as unknown };
   }
 }
 
@@ -85,6 +87,8 @@ export async function apiRequest<T>(
     headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
+  const method = (init.method ?? 'GET').toUpperCase();
+  const requestPath = `${env.apiBaseUrl}${path}`;
   let response: Response;
   try {
     response = await fetch(`${env.apiBaseUrl}${path}`, {
@@ -94,12 +98,16 @@ export async function apiRequest<T>(
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Network request failed';
+    logLine('error', 'api', `${method} ${requestPath} → нет ответа: ${message}`);
+    noteApiFailure({ method, path: requestPath, status: 0, requestId: null, errorId: null, body: null });
     throw new ApiError(`Не удалось связаться с backend: ${message}. Проверь CORS, адрес API и запущен ли сервер.`, {
       status: 0,
       code: 'NETWORK_ERROR',
       details: error,
+      http: { method, path: requestPath, body: null, errorId: null },
     });
   }
+  notePeer(response.headers);
 
   if (response.status === 401 && !options.skipAuthRefresh && refreshHandler) {
     refreshInFlight ??= refreshHandler()
@@ -120,19 +128,25 @@ export async function apiRequest<T>(
     expireSession();
   }
 
-  const payload = await parseJson(response);
+  const { text, payload } = await parseJson(response);
 
   if (!response.ok) {
     const error = (payload as ErrorEnvelope | null)?.error;
     if (response.status === 401 && !options.skipAuthRefresh) {
       expireSession();
     }
+    const errorId = response.headers?.get(ERROR_ID_HEADER) ?? null;
+    logLine(response.status >= 500 ? 'error' : 'warn', 'api',
+      `${method} ${requestPath} → ${response.status}${errorId ? ` (ошибка узла ${errorId})` : ''}`);
+    noteApiFailure({ method, path: requestPath, status: response.status, requestId: null, errorId, body: text || null });
     throw new ApiError(error?.message || `Request failed with ${response.status}`, {
       status: response.status,
       code: error?.code,
       details: error?.details,
+      http: { method, path: requestPath, body: text || null, errorId },
     });
   }
+  logLine('debug', 'api', `${method} ${requestPath} → ${response.status}`);
 
   if (payload && typeof payload === 'object' && 'data' in (payload as Record<string, unknown>)) {
     return (payload as ApiEnvelope<T>).data;

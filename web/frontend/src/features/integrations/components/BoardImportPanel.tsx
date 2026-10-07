@@ -36,6 +36,7 @@ export function BoardImportPanel({
   const [targetName, setTargetName] = useState('');
   const [readError, setReadError] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [importFailure, setImportFailure] = useState<unknown>(undefined);
   const [progress, setProgress] = useState<BoardImportProgress | null>(null);
   const [isImporting, setIsImporting] = useState(false);
 
@@ -74,6 +75,7 @@ export function BoardImportPanel({
       await onImported(result.boardId);
     } catch (error) {
       setImportError(error instanceof Error ? error.message : 'Не удалось импортировать доску.');
+      setImportFailure(error);
     } finally {
       setIsImporting(false);
     }
@@ -117,6 +119,7 @@ export function BoardImportPanel({
           compact
           title="Файл не прошёл проверку"
           description={readError}
+          operation="Импорт доски: проверка файла"
           onRetry={() => inputRef.current?.click()}
         />
       ) : null}
@@ -187,7 +190,7 @@ export function BoardImportPanel({
           ) : null}
 
           {importError ? (
-            <ErrorState compact title="Импорт не завершён" description={importError} />
+            <ErrorState compact title="Импорт не завершён" description={importError} error={importFailure} operation="Создать копию доски" />
           ) : null}
 
           <div className="inline-actions">

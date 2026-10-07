@@ -61,16 +61,19 @@ export class BoardImportExecutionError extends Error {
   readonly createdBoardId?: string;
   readonly rollbackSucceeded?: boolean;
   readonly originalCause?: unknown;
+  /** Step the import stopped at, for the error report («создание комментария 2/6»). */
+  readonly stage?: string;
 
   constructor(
     message: string,
-    options: { cause?: unknown; createdBoardId?: string; rollbackSucceeded?: boolean } = {},
+    options: { cause?: unknown; createdBoardId?: string; rollbackSucceeded?: boolean; stage?: string } = {},
   ) {
     super(message);
     this.name = 'BoardImportExecutionError';
     this.createdBoardId = options.createdBoardId;
     this.rollbackSucceeded = options.rollbackSucceeded;
     this.originalCause = options.cause;
+    this.stage = options.stage;
   }
 }
 
@@ -264,7 +267,7 @@ export async function importBoardCopy({
     if (!createdBoardId) {
       throw new BoardImportExecutionError(
         `Импорт остановлен на этапе «${currentStage}»: ${messageFromError(error)}.`,
-        { cause: error },
+        { cause: error, stage: currentStage },
       );
     }
 
@@ -272,13 +275,13 @@ export async function importBoardCopy({
       await api.deleteBoard(createdBoardId);
       throw new BoardImportExecutionError(
         `Импорт остановлен на этапе «${currentStage}»: ${messageFromError(error)}. Недособранная копия удалена.`,
-        { cause: error, createdBoardId, rollbackSucceeded: true },
+        { cause: error, createdBoardId, rollbackSucceeded: true, stage: currentStage },
       );
     } catch (rollbackError) {
       if (rollbackError instanceof BoardImportExecutionError) throw rollbackError;
       throw new BoardImportExecutionError(
         `Импорт остановлен на этапе «${currentStage}»: ${messageFromError(error)}. Автоматически удалить недособранную доску ${createdBoardId} не удалось: ${messageFromError(rollbackError)}.`,
-        { cause: error, createdBoardId, rollbackSucceeded: false },
+        { cause: error, createdBoardId, rollbackSucceeded: false, stage: currentStage },
       );
     }
   }

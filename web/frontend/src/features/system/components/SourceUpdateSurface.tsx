@@ -1,3 +1,4 @@
+import { ErrorDetails } from '@/shared/ui/ErrorDetails';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   checkForSourceUpdate,
@@ -123,7 +124,7 @@ export function SourceUpdateSurface() {
             <Button type="button" variant="ghost" onClick={dismiss}>До следующего commit</Button>
             <Button type="button" variant="primary" onClick={() => void startUpdate()}>Обновить</Button>
           </div>
-          {actionError ? <p className="form-error" role="alert">{actionError}</p> : null}
+          {actionError ? <><p className="form-error" role="alert">{actionError}</p><ErrorDetails message={actionError} operation="Обновление узла" /></> : null}
         </aside>
       ) : null}
 
@@ -148,7 +149,8 @@ export function SourceUpdateSurface() {
               <span>{state.job.phase}</span>
               <strong>{state.job.progress}%</strong>
             </div>
-            {state.job.error ? <p className="form-error" role="alert">{state.job.error}</p> : null}
+            {state.job.error ? <><p className="form-error" role="alert">{state.job.error}</p>
+              <ErrorDetails message={state.job.error} operation="Обновление узла" stage={state.job.phase} /></> : null}
             {state.job.status === 'succeeded' ? (
               <Button
                 type="button"

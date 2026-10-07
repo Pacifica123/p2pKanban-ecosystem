@@ -120,6 +120,9 @@ services:
       TRANSPORTS__NOSTR__MIN_RELAY_ACKS: "${P2PKANBAN_NOSTR_MIN_RELAY_ACKS:-2}"
       TRANSPORTS__NOSTR__BACKFILL_ON_START: "true"
       TRANSPORTS__IROH__ENABLED: "false"
+      # contracts/error-report/1: x-p2p-kanban-node and /health name the exact build.
+      P2PKANBAN_BUILD: ${P2PKANBAN_IMAGE_TAG:-local}
+      P2PKANBAN_SOURCE_REVISION: ${P2PKANBAN_SOURCE_REVISION:-unknown}
     volumes:
       - bootstrap_secrets:/run/p2pkanban-secrets:ro
     healthcheck:
@@ -139,6 +142,7 @@ services:
       args:
         VITE_API_BASE_URL: /api/v1
         VITE_SOURCE_REVISION: ${P2PKANBAN_SOURCE_REVISION:-unknown}
+        VITE_BUILD_ID: ${P2PKANBAN_IMAGE_TAG:-local}
     restart: unless-stopped
     depends_on:
       backend:

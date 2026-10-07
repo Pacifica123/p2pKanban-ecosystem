@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 56,
-        "comments": 36,
+        "comments": 38,
         "checklists": 19,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-07T07:20:00Z",
+    "generatedAt": "2026-10-07T07:30:00Z",
     "selfHosted": true,
-    "boardRevision": 11,
-    "lastPatchId": "2026-10-07-web-ring-r2",
+    "boardRevision": 12,
+    "lastPatchId": "2026-10-07-web-error-details",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -1859,14 +1859,14 @@
         "id": "01a11500-4075-7003-ae52-c54588a91d14",
         "checklistId": "01a11500-4075-7001-9a4f-ac4687852187",
         "title": "web-узел: errorId у 5xx и паник, заголовок версии узла",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a11500-4075-7004-bcd7-c195c311e5c2",
         "checklistId": "01a11500-4075-7001-9a4f-ac4687852187",
         "title": "web UI: «Скопировать подробности» у ошибок, буфер журнала",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -2177,6 +2177,18 @@
         "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
         "createdAt": "2026-10-07T07:20:00Z",
         "body": "patch 2026-10-07-web-ring-r2: R2 (web) реализован и ждёт хоста; R1 отмечен сделанным (карточка R1 в «Сделано» с 2026-10-06)."
+      },
+      {
+        "id": "01a11521-92bf-7001-ae9e-5bc6c4ea6b45",
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "createdAt": "2026-10-07T07:30:00Z",
+        "body": "patch 2026-10-07-web-error-details: web-узел отдаёт errorId (UUID v7) в теле и заголовке x-p2p-error-id у каждого 5xx, паника обработчика стала 500 с errorId вместо обрыва (обрыв шлюз показывал как 502 без тела), каждый ответ несёт x-p2p-kanban-node с версией, сборкой и коммитом; /health тоже. В web UI кнопка «Скопировать подробности» есть в каждом ErrorState и у сообщений об ошибке на экранах сети, кольца, обновления узла и напоминаний; отчёт собирается по контракту (векторы contracts/error-report/1 проходят), буфер журнала 200 строк только в памяти. По http в локальной сети буфер обмена браузера закрыт: тогда текст показывается для ручного выделения. На хосте проверить: импорт с ошибкой → кнопка → в тексте есть стадия, ответ узла и «Узел: web …»."
+      },
+      {
+        "id": "01a11521-92bf-7002-a9f1-32c95e0a112b",
+        "cardId": "01a11517-bfdf-7009-8ee0-86f13f7098bc",
+        "createdAt": "2026-10-07T07:30:00Z",
+        "body": "patch 2026-10-07-web-error-details: та же картина и с этим патчем; ещё web/tools/check_zero_config_bootstrap.py падает на 520e41c с «README became dense again» (проверка плотности README), к патчам не относится."
       }
     ],
     "boardAppearanceSettings": [],

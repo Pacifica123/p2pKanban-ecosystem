@@ -42,6 +42,8 @@
   — почему одинаковая почта не связывает self-hosted узлы и как перенести данные;
 - [`architecture/device-ring-r2.md`](architecture/device-ring-r2.md)
   — кольцо устройств на узле (R2): журнал, перенос доверия, связка ключей, обмен с relay;
+- [`architecture/error-details-v1.md`](architecture/error-details-v1.md)
+  — «Скопировать подробности»: errorId узла, заголовок версии, буфер журнала UI;
 - [`dev-bootstrap/devbootstrap-v1-operations.md`](dev-bootstrap/devbootstrap-v1-operations.md)
   — расширенная локальная диагностика.
 

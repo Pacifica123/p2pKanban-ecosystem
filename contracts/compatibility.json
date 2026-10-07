@@ -33,7 +33,7 @@
       "status": "specified",
       "specifiedBy": "2026-10-07-ecosystem-error-report-contract",
       "requires": [],
-      "implementations": {"web": null, "mobile": null, "abl": null}
+      "implementations": {"web": {"since": "2.1.0+2026-10-07-web-error-details", "stage": "узел и web UI", "hostAccepted": false}, "mobile": null, "abl": null}
     }
   ],
   "legacy": [

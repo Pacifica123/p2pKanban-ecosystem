@@ -1,3 +1,4 @@
+import { ErrorDetails } from '@/shared/ui/ErrorDetails';
 import {MarkdownEditor} from '@/shared/markdown/MarkdownEditor';
 import {PriorityStars} from '@/shared/ui/PriorityStars';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
@@ -466,7 +467,7 @@ export function CardDetailsDrawer({
                   <Button type="button" variant="ghost" onClick={handleRemoveReminder}>Отключить</Button>
                 ) : null}
               </div>
-              {reminderError ? <p className="form-error" role="alert">{reminderError}</p> : null}
+              {reminderError ? <><p className="form-error" role="alert">{reminderError}</p><ErrorDetails message={reminderError} operation="Напоминание карточки" /></> : null}
               {reminderNotice ? <p className="muted">{reminderNotice}</p> : null}
               <p className="muted reminder-panel__limit">
                 Web показывает напоминание, пока вкладка открыта. Android-клиент использует системное уведомление и не требует открытой вкладки.
