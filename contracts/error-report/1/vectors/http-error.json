@@ -1,0 +1,59 @@
+{
+  "contract": "p2p-kanban-error-report/1",
+  "description": "Ответы web-узла с ошибкой: id ошибки в теле и заголовке для 5xx, заголовок версии узла на каждом ответе; у старого узла заголовков нет.",
+  "cases": [
+    {
+      "name": "internal-with-id",
+      "status": 500,
+      "headers": {
+        "x-p2p-error-id": "01a11200-0000-7000-8000-00000000e500",
+        "x-p2p-kanban-node": "2.2.0; build=3f1c9a2b7d10; commit=unknown"
+      },
+      "body": {
+        "error": {
+          "code": "internal_error",
+          "message": "Internal server error",
+          "details": null,
+          "errorId": "01a11200-0000-7000-8000-00000000e500"
+        }
+      },
+      "expectedNode": {
+        "version": "2.2.0",
+        "build": "3f1c9a2b7d10",
+        "commit": null
+      }
+    },
+    {
+      "name": "conflict-without-id",
+      "status": 409,
+      "headers": {
+        "x-p2p-kanban-node": "2.2.0; build=3f1c9a2b7d10; commit=9d0c6e1b2a3f4c5d6e7f8091a2b3c4d5e6f70819"
+      },
+      "body": {
+        "error": {
+          "code": "conflict",
+          "message": "Нет досок владельца для подключения",
+          "details": null
+        }
+      },
+      "expectedNode": {
+        "version": "2.2.0",
+        "build": "3f1c9a2b7d10",
+        "commit": "9d0c6e1b2a3f4c5d6e7f8091a2b3c4d5e6f70819"
+      }
+    },
+    {
+      "name": "old-node-no-headers",
+      "status": 500,
+      "headers": {},
+      "body": {
+        "error": {
+          "code": "internal_error",
+          "message": "Internal server error",
+          "details": null
+        }
+      },
+      "expectedNode": null
+    }
+  ]
+}

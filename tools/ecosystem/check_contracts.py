@@ -9,7 +9,8 @@
 2. каждый контракт в contracts/compatibility.json имеет SPEC.md, schema/ и vectors/;
 3. векторы проходят свои JSON Schema;
 4. векторы проверяются заново: подписи, свёртка журнала, слияние связки,
-   расшифровка конвертов и сообщений встречи, отставание версий;
+   расшифровка конвертов и сообщений встречи, отставание версий, вырезание
+   секретов и текст отчёта об ошибке;
 5. векторы в репозитории байт-в-байт равны тому, что даёт
    tools/ecosystem/contract_vectors.py: правка руками без генератора видна сразу.
 """
@@ -311,6 +312,47 @@ def check_rendezvous(name: str, data: dict) -> None:
                 fail(f"{name}: кольцо после встречи расходится с ожиданием")
 
 
+def check_redact(name: str, data: dict) -> None:
+    for case in data["cases"]:
+        got, count = c.redact(case["input"])
+        if (got, count) != (case["expected"], case["redactions"]):
+            fail(f"{name}: случай {case['name']} вырезается иначе")
+        if c.redact(got) != (got, 0):
+            fail(f"{name}: случай {case['name']}: повторное вырезание меняет текст")
+    for case in data["truncate"]:
+        if c.truncate(case["input"], case["limit"]) != case["expected"] or len(case["expected"]) > case["limit"]:
+            fail(f"{name}: обрезка «{case['input']}» до {case['limit']} расходится")
+
+
+def check_reports(name: str, data: dict) -> None:
+    for case in data["cases"]:
+        report = c.build_report(case["input"])
+        if report != case["expectedReport"]:
+            fail(f"{name}: {case['name']}: нормализация расходится с ожиданием")
+        require_schema(report, "error-report/1/schema/report.schema.json", f"{name}: {case['name']}")
+        if c.build_report(report) != report:
+            fail(f"{name}: {case['name']}: повторная нормализация меняет отчёт")
+        if c.render_report(report) != case["expectedText"]:
+            fail(f"{name}: {case['name']}: текст кнопки расходится с ожиданием")
+        if c.parse_report_text(case["expectedText"]) != report:
+            fail(f"{name}: {case['name']}: JSON в конце текста не равен отчёту")
+        if any(secret in case["expectedText"] for secret in ("nsec1q", "Bearer tok", "abc123", "hunter2")):
+            fail(f"{name}: {case['name']}: секрет попал в текст")
+
+
+def check_http_errors(name: str, data: dict) -> None:
+    for case in data["cases"]:
+        require_schema(case["body"], "error-report/1/schema/http-error.schema.json", f"{name}: {case['name']}")
+        error_id = case["body"]["error"].get("errorId")
+        if case["status"] >= 500 and c.NODE_HEADER in case["headers"] and not error_id:
+            fail(f"{name}: {case['name']}: 5xx узла нового формата без errorId")
+        if error_id and case["headers"].get(c.ERROR_ID_HEADER) != error_id:
+            fail(f"{name}: {case['name']}: errorId в теле и заголовке различаются")
+        header = case["headers"].get(c.NODE_HEADER)
+        if (c.parse_node_header(header) if header else None) != case["expectedNode"]:
+            fail(f"{name}: {case['name']}: заголовок узла разбирается иначе")
+
+
 def check_vectors() -> int:
     generated = contract_vectors.build()
     on_disk = {p.relative_to(CONTRACTS).as_posix() for p in CONTRACTS.glob("*/*/vectors/*.json")}
@@ -330,6 +372,12 @@ def check_vectors() -> int:
             check_keyring_merge(rel, stored)
         elif "qr" in stored:
             check_rendezvous(rel, stored)
+        elif name == "redact.json":
+            check_redact(rel, stored)
+        elif name == "reports.json":
+            check_reports(rel, stored)
+        elif name == "http-error.json":
+            check_http_errors(rel, stored)
         elif name == "keys.json":
             for key in stored["keys"]:
                 if c.public_key(key["secretKey"]) != key["publicKey"]:
@@ -347,7 +395,7 @@ def main() -> int:
     except CheckError as error:
         print(f"contracts: ОШИБКА: {error}", file=sys.stderr)
         return 1
-    print(f"contracts: OK: {len(compat['contracts'])} контракта, {count} векторов, криптография сходится с BIP-340 и NIP-44")
+    print(f"contracts: OK: контрактов {len(compat['contracts'])}, векторов {count}, криптография сходится с BIP-340 и NIP-44")
     return 0
 
 

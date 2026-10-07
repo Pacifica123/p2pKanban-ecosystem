@@ -1,0 +1,84 @@
+{
+  "contract": "p2p-kanban-error-report/1",
+  "description": "Вырезание секретов из строк отчёта и обрезка по кодовым точкам. Публичные ключи, русский текст и уже вырезанное не трогаются.",
+  "note": "ТОЛЬКО ДЛЯ ТЕСТОВ: секреты опубликованы, настоящие устройства их не используют.",
+  "cases": [
+    {
+      "name": "bearer",
+      "input": "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnbmF0dXJl",
+      "expected": "Authorization: Bearer [скрыто]",
+      "redactions": 1
+    },
+    {
+      "name": "json-body",
+      "input": "{\"email\":\"john@example.com\",\"password\":\"пароль с пробелом\",\"accessToken\":\"abc.def\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\"}",
+      "expected": "{\"email\":\"john@example.com\",\"password\":\"[скрыто]\",\"accessToken\":\"[скрыто]\",\"publicKey\":\"df53cdd4693df19cd9e2b2931013244b1e67c569f6ff5ed217a62e968dec1896\"}",
+      "redactions": 2
+    },
+    {
+      "name": "escaped-json",
+      "input": "payload=\"{\\\"refreshToken\\\":\\\"r-123\\\",\\\"name\\\":\\\"Доска\\\"}\"",
+      "expected": "payload=\"{\\\"refreshToken\\\":\\\"[скрыто]\\\",\\\"name\\\":\\\"Доска\\\"}\"",
+      "redactions": 1
+    },
+    {
+      "name": "url",
+      "input": "GET https://user:hunter2@relay.example/api?token=t-1&board=42&api_key=k9 failed",
+      "expected": "GET https://[скрыто]@relay.example/api?token=[скрыто]&board=42&api_key=[скрыто] failed",
+      "redactions": 3
+    },
+    {
+      "name": "nsec-jwt",
+      "input": "ключ nsec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsx3dfc и jwt eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjF9.sig-part",
+      "expected": "ключ [скрыто:nsec] и jwt [скрыто:jwt]",
+      "redactions": 2
+    },
+    {
+      "name": "cookie",
+      "input": "Cookie: p2p_kanban_refresh=r3fr35h; theme=dark",
+      "expected": "Cookie: [скрыто]; theme=dark",
+      "redactions": 1
+    },
+    {
+      "name": "env-style",
+      "input": "NOSTR_SECRET_KEY=17df94a13f5f8b6a5e83920d675524946402c7ebaefb422f71ffe284387c3346\nAPP__PORT=18080\nboard_key: \"b64key==\"",
+      "expected": "NOSTR_SECRET_KEY=[скрыто]\nAPP__PORT=18080\nboard_key: \"[скрыто]\"",
+      "redactions": 2
+    },
+    {
+      "name": "untouched",
+      "input": "vault secret service ready; device b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159; токен истёк; secretKey не задан",
+      "expected": "vault secret service ready; device b8cd2633215378245de6974e8faac39ccffe408ed4e17b75f6615cbff2a2b159; токен истёк; secretKey не задан",
+      "redactions": 0
+    },
+    {
+      "name": "false-positive",
+      "input": "tokens: 3 of 5",
+      "expected": "tokens: [скрыто] of 5",
+      "redactions": 1
+    },
+    {
+      "name": "idempotent",
+      "input": "password=[скрыто] \"token\":\"[скрыто]\" Authorization: Bearer [скрыто]",
+      "expected": "password=[скрыто] \"token\":\"[скрыто]\" Authorization: Bearer [скрыто]",
+      "redactions": 0
+    }
+  ],
+  "truncate": [
+    {
+      "input": "Импорт остановлен",
+      "limit": 8,
+      "expected": "Импорт …"
+    },
+    {
+      "input": "ab🙂cd",
+      "limit": 4,
+      "expected": "ab🙂…"
+    },
+    {
+      "input": "ровно",
+      "limit": 5,
+      "expected": "ровно"
+    }
+  ]
+}

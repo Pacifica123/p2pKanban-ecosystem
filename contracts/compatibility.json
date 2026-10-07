@@ -26,6 +26,14 @@
       "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
       "requires": ["p2p-kanban-account-ring/1", "p2p-kanban-keyring/1"],
       "implementations": {"web": null, "mobile": null, "abl": null}
+    },
+    {
+      "id": "p2p-kanban-error-report/1",
+      "dir": "error-report/1",
+      "status": "specified",
+      "specifiedBy": "2026-10-07-ecosystem-error-report-contract",
+      "requires": [],
+      "implementations": {"web": null, "mobile": null, "abl": null}
     }
   ],
   "legacy": [

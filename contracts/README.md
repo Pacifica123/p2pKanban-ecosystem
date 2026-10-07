@@ -19,8 +19,10 @@ contracts/
 | `p2p-kanban-account-ring/1` | [account-ring/1](account-ring/1/SPEC.md) | журнал кольца устройств аккаунта, запечатанные записи на relay, отметки присутствия | описан (R1), не реализован |
 | `p2p-kanban-keyring/1` | [keyring/1](keyring/1/SPEC.md) | связка ключей аккаунта: пространства и доски с ключами | описан (R1), не реализован |
 | `p2p-kanban-rendezvous/1` | [rendezvous/1](rendezvous/1/SPEC.md) | добавление устройства по QR в двух режимах через почтовый ящик на relay | описан (R1), не реализован |
+| `p2p-kanban-error-report/1` | [error-report/1](error-report/1/SPEC.md) | «Скопировать подробности» у любой ошибки в web, mobile и abl: форма отчёта, вырезание секретов, id ошибки и версия в ответах web-узла | описан, не реализован |
 
-Зачем это всё, рассказывает [docs/ecosystem/trusted-devices.md](../docs/ecosystem/trusted-devices.md).
+Зачем кольцо, рассказывает [docs/ecosystem/trusted-devices.md](../docs/ecosystem/trusted-devices.md);
+зачем отчёт об ошибке — его [SPEC](error-report/1/SPEC.md) и карточка «Сборщик логов» на доске.
 Прежние контракты (`roaming/1`, `sync/1`, `device-link/2`, `web-node-link/1`,
 `p2p_planner_bundle` v1) пока описаны внутри направлений; их перенос сюда —
 карточка «Вынести контракты в contracts/».

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Эталонная реализация контрактов кольца устройств (только стандартная библиотека).
+"""Эталонная реализация общих контрактов (только стандартная библиотека).
 
-Покрывает `p2p-kanban-account-ring/1`, `p2p-kanban-keyring/1` и
-`p2p-kanban-rendezvous/1` из `contracts/`. Это не продуктовый код: она медленная
+Покрывает `p2p-kanban-account-ring/1`, `p2p-kanban-keyring/1`,
+`p2p-kanban-rendezvous/1` и `p2p-kanban-error-report/1` из `contracts/`. Это не продуктовый код: она медленная
 и нужна, чтобы у web, mobile и abl был один исполняемый ответ на вопрос «как
 правильно». Направления реализуют контракты своими библиотеками и сверяются с
 векторами в `contracts/*/1/vectors/`, которые эта же реализация производит.
@@ -19,6 +19,7 @@ import base64
 import hashlib
 import hmac
 import json
+import re
 import struct
 import sys
 from pathlib import Path
@@ -30,6 +31,7 @@ RING = "p2p-kanban-account-ring/1"
 KEYRING = "p2p-kanban-keyring/1"
 RENDEZVOUS = "p2p-kanban-rendezvous/1"
 ROAMING = "p2p-kanban-roaming/1"
+ERROR_REPORT = "p2p-kanban-error-report/1"
 
 KIND_RING_ENTRY = 27790
 KIND_RENDEZVOUS = 1991
@@ -790,6 +792,181 @@ def rendezvous_open(event: dict, secret: bytes) -> dict:
     body = json.loads(event["content"])
     plain = xchacha_open(session_key(secret), unb64url(body["nonce"]), unb64url(body["ciphertext"]), rendezvous_aad(sid, event["pubkey"], part, parts))
     return json.loads(plain.decode())
+
+
+# ---------------------------------------------------------------- отчёт об ошибке
+
+HIDDEN = "[скрыто]"
+REPORT_LIMITS = {
+    "message": 1000, "screen": 200, "operation": 200, "stage": 200, "platform": 200,
+    "error.name": 200, "error.detail": 2000, "http.path": 500, "http.body": 4000, "log": 500,
+}
+MAX_LOG_LINES = 50
+REDACTED_FIELDS = ("message", "stage", "error.detail", "http.path", "http.body")
+
+_BEARER = re.compile(r"bearer\s+[A-Za-z0-9._~+/=-]+", re.IGNORECASE)
+_JWT = re.compile(r"eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]*")
+_NSEC = re.compile(r"nsec1[02-9ac-hj-np-z]{20,}")
+_URL_CREDENTIALS = re.compile(r"://[^/\s:@]+:[^/\s@]+@")
+_KEY_VALUE = re.compile(
+    r'(^|[^A-Za-z0-9])'
+    r'([A-Za-z0-9_-]*(?:password|passwd|secret|token|apikey|api_key|api-key|privatekey|private_key|'
+    r'passphrase|mnemonic|boardkey|board_key|masterkey|master_key|cookie)[A-Za-z0-9_-]*)'
+    r'(\\?"?[ \t]*[:=][ \t]*)'
+    r'(\\"(?:[^\\]|\\[^"])*?\\"|"(?:[^"\\]|\\[\s\S])*"|[^\s,;&}"\\]+)',
+    re.IGNORECASE,
+)
+
+
+def redact(text: str) -> tuple[str, int]:
+    """Вырезать секреты из строки. Возвращает (текст, число замен)."""
+    count = 0
+
+    def plain(replacement: str):
+        def sub(match: re.Match) -> str:
+            nonlocal count
+            count += 1
+            return replacement
+        return sub
+
+    text = _BEARER.sub(plain("Bearer " + HIDDEN), text)
+    text = _JWT.sub(plain("[скрыто:jwt]"), text)
+    text = _NSEC.sub(plain("[скрыто:nsec]"), text)
+    text = _URL_CREDENTIALS.sub(plain("://" + HIDDEN + "@"), text)
+
+    def key_value(match: re.Match) -> str:
+        nonlocal count
+        lead, key, sep, value = match.groups()
+        if value.startswith('\\"'):
+            hidden = '\\"' + HIDDEN + '\\"'
+        elif value.startswith('"'):
+            hidden = '"' + HIDDEN + '"'
+        else:
+            hidden = HIDDEN
+        if value == hidden or value.startswith("Bearer") or value.startswith("[скрыто"):
+            return match.group(0)
+        count += 1
+        return lead + key + sep + hidden
+
+    text = _KEY_VALUE.sub(key_value, text)
+    return text, count
+
+
+def truncate(text: str, limit: int) -> str:
+    """Обрезка по кодовым точкам Unicode (не по байтам и не по UTF-16)."""
+    return text if len(text) <= limit else text[:limit - 1] + "…"
+
+
+def _newlines(text: str) -> str:
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def build_report(raw: dict) -> dict:
+    """Нормализовать сырой отчёт: переводы строк, вырезание секретов, пределы длины.
+
+    Вход — те же поля, что в report.schema.json, с любыми длинами; `redacted`
+    входа (если есть) прибавляется к новым заменам, поэтому повторная
+    нормализация ничего не меняет.
+    """
+    report = json.loads(json.dumps(raw))
+    report["protocol"] = ERROR_REPORT
+    count = report.get("redacted", 0) if isinstance(report.get("redacted"), int) else 0
+
+    def field(path: str):
+        node = report
+        parts = path.split(".")
+        for part in parts[:-1]:
+            node = node.get(part) if isinstance(node, dict) else None
+            if not isinstance(node, dict):
+                return None, None
+        return node, parts[-1]
+
+    for path in ("message", "screen", "operation", "stage", "platform", "error.name", "error.detail", "http.path", "http.body"):
+        node, key = field(path)
+        if node is None or not isinstance(node.get(key), str):
+            continue
+        value = _newlines(node[key])
+        if path in REDACTED_FIELDS:
+            value, n = redact(value)
+            count += n
+        node[key] = truncate(value, REPORT_LIMITS[path])
+    lines = []
+    for line in (report.get("logs") or [])[-MAX_LOG_LINES:]:
+        value, n = redact(_newlines(line).replace("\n", " "))
+        count += n
+        lines.append(truncate(value, REPORT_LIMITS["log"]))
+    report["logs"] = lines
+    report["redacted"] = count
+    return report
+
+
+def _continued(text: str) -> str:
+    return text.replace("\n", "\n  ")
+
+
+def render_report(report: dict) -> str:
+    """Текст кнопки «Скопировать подробности»: сначала для человека, в конце JSON для машины."""
+    sw = report["software"]
+    lines = [
+        "p2pKanban: подробности ошибки",
+        f"Отчёт: {report['reportId']} · {report['at']}",
+        f"Программа: {sw['direction']} {sw['version']} · сборка {sw.get('build') or 'неизвестна'} · коммит {sw.get('commit') or 'неизвестен'}",
+    ]
+    if report.get("platform"):
+        lines.append(f"Платформа: {report['platform']}")
+    where = [report[k] for k in ("screen", "operation", "stage") if report.get(k)]
+    if where:
+        lines.append("Где: " + " → ".join(where))
+    lines.append(f"Сообщение: {_continued(report['message'])}")
+    error = report["error"]
+    lines.append("Ошибка: " + " · ".join(_continued(x) for x in (error["kind"], error.get("name"), error.get("detail")) if x))
+    http = report.get("http")
+    if http:
+        status = str(http["status"]) if http.get("status") else "нет ответа"
+        line = f"HTTP: {http['method']} {http['path']} → {status}"
+        if http.get("requestId"):
+            line += f" · запрос {http['requestId']}"
+        if http.get("errorId"):
+            line += f" · ошибка узла {http['errorId']}"
+        lines.append(line)
+    peer = report.get("peer")
+    if peer:
+        lines.append(f"Узел: {peer['direction']} {peer.get('version') or '?'} · сборка {peer.get('build') or 'неизвестна'} · коммит {peer.get('commit') or 'неизвестен'}")
+    if http and http.get("body"):
+        lines.append("Ответ узла:")
+        lines.extend("  " + row for row in http["body"].split("\n"))
+    if report.get("redacted"):
+        lines.append(f"Скрыто значений: {report['redacted']}")
+    if report.get("logs"):
+        lines.append(f"Журнал ({len(report['logs'])} последних строк):")
+        lines.extend("  " + row for row in report["logs"])
+    lines.append(f"--- {ERROR_REPORT} ---")
+    lines.append(canonical(report))
+    return "\n".join(lines) + "\n"
+
+
+def parse_report_text(text: str) -> dict:
+    """Обратное чтение: JSON после разделителя — источник истины, текст выше — для человека."""
+    marker = f"--- {ERROR_REPORT} ---\n"
+    head, sep, tail = text.partition(marker)
+    if not sep:
+        raise ValueError("в тексте нет отчёта p2p-kanban-error-report/1")
+    return json.loads(tail)
+
+
+NODE_HEADER = "x-p2p-kanban-node"
+ERROR_ID_HEADER = "x-p2p-error-id"
+
+
+def parse_node_header(value: str) -> dict:
+    """`2.1.0; build=8087da08253b; commit=<40 hex>` → {version, build, commit}; unknown → null."""
+    parts = [p.strip() for p in value.split(";")]
+    out = {"version": parts[0] or None, "build": None, "commit": None}
+    for part in parts[1:]:
+        key, _, val = part.partition("=")
+        if key in ("build", "commit"):
+            out[key] = None if val in ("", "unknown") else val
+    return out
 
 
 # ---------------------------------------------------------------- генерация векторов

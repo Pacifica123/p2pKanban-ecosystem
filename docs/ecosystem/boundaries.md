@@ -47,6 +47,7 @@
 | Журнал кольца устройств `p2p-kanban-account-ring/1` | web, mobile, abl | web, mobile, abl | `contracts/account-ring/1/` |
 | Связка ключей `p2p-kanban-keyring/1` | web, mobile, abl | web, mobile, abl | `contracts/keyring/1/` |
 | Встреча по QR `p2p-kanban-rendezvous/1` | web, mobile, abl | web, mobile, abl | `contracts/rendezvous/1/` |
+| Подробности ошибки `p2p-kanban-error-report/1` | web UI, mobile, abl (отчёт); web-узел (`errorId`, заголовок версии) | человек и нейросеть, разбирающие ошибку | `contracts/error-report/1/` |
 
 Кто какой контракт уже реализует и с какой версии, записано в
 [`contracts/compatibility.json`](../../contracts/compatibility.json). Порядок

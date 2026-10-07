@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "error-report/1/schema/report.schema.json",
+  "title": "Отчёт об ошибке: то, что копирует кнопка «Скопировать подробности» (JSON после разделителя)",
+  "type": "object",
+  "required": [
+    "protocol",
+    "reportId",
+    "at",
+    "software",
+    "message",
+    "error",
+    "http",
+    "peer",
+    "logs",
+    "redacted"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "p2p-kanban-error-report/1"
+    },
+    "reportId": {
+      "type": "string",
+      "pattern": "^er-[0-9a-f]{16}$",
+      "description": "случайный id отчёта, создаёт клиент"
+    },
+    "at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{3})?Z$",
+      "description": "время ошибки, UTC"
+    },
+    "software": {
+      "type": "object",
+      "required": [
+        "direction",
+        "version",
+        "build",
+        "commit"
+      ],
+      "properties": {
+        "direction": {
+          "enum": [
+            "web",
+            "mobile",
+            "abl"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "build": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64,
+          "description": "web: отпечаток образа; mobile: versionCode; abl: версия пакета. null — неизвестна"
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{7,40}$",
+          "description": "коммит монорепозитория, из которого собрано; null — неизвестен"
+        }
+      }
+    },
+    "platform": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "screen": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "operation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "stage": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "http",
+            "network",
+            "timeout",
+            "native",
+            "storage",
+            "validation",
+            "internal",
+            "unknown"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        }
+      }
+    },
+    "http": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "method",
+            "path",
+            "status"
+          ],
+          "properties": {
+            "method": {
+              "type": "string",
+              "pattern": "^[A-Z]{3,7}$"
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "status": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 599,
+              "description": "0 — ответа не было"
+            },
+            "requestId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 128
+            },
+            "errorId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 128
+            },
+            "body": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 4000
+            }
+          }
+        }
+      ]
+    },
+    "peer": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "direction",
+            "version",
+            "build",
+            "commit"
+          ],
+          "properties": {
+            "direction": {
+              "const": "web"
+            },
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 64
+            },
+            "build": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 64
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{7,40}$"
+            }
+          }
+        }
+      ]
+    },
+    "logs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      }
+    },
+    "redacted": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

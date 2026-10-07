@@ -1,0 +1,404 @@
+{
+  "contract": "p2p-kanban-error-report/1",
+  "description": "Сырые отчёты четырёх ошибок, их нормализованный вид и текст кнопки «Скопировать подробности» байт в байт.",
+  "cases": [
+    {
+      "name": "web-import-502",
+      "description": "web: «Создать копию» доски получила 502 от шлюза. Узел оборвал соединение, поэтому ни id ошибки, ни заголовка узла нет: это видно, а не скрыто.",
+      "input": {
+        "reportId": "er-0000000000000001",
+        "at": "2026-10-06T07:41:12.204Z",
+        "software": {
+          "direction": "web",
+          "version": "2.1.0",
+          "build": "8087da08253b",
+          "commit": "520e41cf839e7c386bdd3f07288aa4e1c4fb4705"
+        },
+        "platform": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
+        "screen": "Импорт доски",
+        "operation": "Создать копию доски",
+        "stage": "создание комментария 2/6",
+        "message": "Импорт остановлен на шаге «создание комментария 2/6»: Request failed with 502",
+        "error": {
+          "kind": "http",
+          "name": "ApiError",
+          "detail": "Request failed with 502"
+        },
+        "http": {
+          "method": "POST",
+          "path": "/api/v1/cards/01a10d38-f920-7000-8000-000000000001/comments",
+          "status": 502,
+          "requestId": null,
+          "errorId": null,
+          "body": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n"
+        },
+        "peer": null,
+        "logs": [
+          "2026-10-06T07:41:11.950Z INFO import: доска «p2pKanban ecosystem», 53 карточки, 24 комментария",
+          "2026-10-06T07:41:12.180Z INFO import: создание комментария 2/6 (5960 байт)",
+          "2026-10-06T07:41:12.203Z WARN api: POST /api/v1/cards/…/comments → 502"
+        ]
+      },
+      "expectedReport": {
+        "reportId": "er-0000000000000001",
+        "at": "2026-10-06T07:41:12.204Z",
+        "software": {
+          "direction": "web",
+          "version": "2.1.0",
+          "build": "8087da08253b",
+          "commit": "520e41cf839e7c386bdd3f07288aa4e1c4fb4705"
+        },
+        "platform": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0",
+        "screen": "Импорт доски",
+        "operation": "Создать копию доски",
+        "stage": "создание комментария 2/6",
+        "message": "Импорт остановлен на шаге «создание комментария 2/6»: Request failed with 502",
+        "error": {
+          "kind": "http",
+          "name": "ApiError",
+          "detail": "Request failed with 502"
+        },
+        "http": {
+          "method": "POST",
+          "path": "/api/v1/cards/01a10d38-f920-7000-8000-000000000001/comments",
+          "status": 502,
+          "requestId": null,
+          "errorId": null,
+          "body": "<html>\n<head><title>502 Bad Gateway</title></head>\n<body>\n<center><h1>502 Bad Gateway</h1></center>\n<hr><center>nginx</center>\n</body>\n</html>\n"
+        },
+        "peer": null,
+        "logs": [
+          "2026-10-06T07:41:11.950Z INFO import: доска «p2pKanban ecosystem», 53 карточки, 24 комментария",
+          "2026-10-06T07:41:12.180Z INFO import: создание комментария 2/6 (5960 байт)",
+          "2026-10-06T07:41:12.203Z WARN api: POST /api/v1/cards/…/comments → 502"
+        ],
+        "protocol": "p2p-kanban-error-report/1",
+        "redacted": 0
+      },
+      "expectedText": "p2pKanban: подробности ошибки\nОтчёт: er-0000000000000001 · 2026-10-06T07:41:12.204Z\nПрограмма: web 2.1.0 · сборка 8087da08253b · коммит 520e41cf839e7c386bdd3f07288aa4e1c4fb4705\nПлатформа: Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0\nГде: Импорт доски → Создать копию доски → создание комментария 2/6\nСообщение: Импорт остановлен на шаге «создание комментария 2/6»: Request failed with 502\nОшибка: http · ApiError · Request failed with 502\nHTTP: POST /api/v1/cards/01a10d38-f920-7000-8000-000000000001/comments → 502\nОтвет узла:\n  <html>\n  <head><title>502 Bad Gateway</title></head>\n  <body>\n  <center><h1>502 Bad Gateway</h1></center>\n  <hr><center>nginx</center>\n  </body>\n  </html>\n  \nЖурнал (3 последних строк):\n  2026-10-06T07:41:11.950Z INFO import: доска «p2pKanban ecosystem», 53 карточки, 24 комментария\n  2026-10-06T07:41:12.180Z INFO import: создание комментария 2/6 (5960 байт)\n  2026-10-06T07:41:12.203Z WARN api: POST /api/v1/cards/…/comments → 502\n--- p2p-kanban-error-report/1 ---\n{\"at\":\"2026-10-06T07:41:12.204Z\",\"error\":{\"detail\":\"Request failed with 502\",\"kind\":\"http\",\"name\":\"ApiError\"},\"http\":{\"body\":\"<html>\\n<head><title>502 Bad Gateway</title></head>\\n<body>\\n<center><h1>502 Bad Gateway</h1></center>\\n<hr><center>nginx</center>\\n</body>\\n</html>\\n\",\"errorId\":null,\"method\":\"POST\",\"path\":\"/api/v1/cards/01a10d38-f920-7000-8000-000000000001/comments\",\"requestId\":null,\"status\":502},\"logs\":[\"2026-10-06T07:41:11.950Z INFO import: доска «p2pKanban ecosystem», 53 карточки, 24 комментария\",\"2026-10-06T07:41:12.180Z INFO import: создание комментария 2/6 (5960 байт)\",\"2026-10-06T07:41:12.203Z WARN api: POST /api/v1/cards/…/comments → 502\"],\"message\":\"Импорт остановлен на шаге «создание комментария 2/6»: Request failed with 502\",\"operation\":\"Создать копию доски\",\"peer\":null,\"platform\":\"Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0\",\"protocol\":\"p2p-kanban-error-report/1\",\"redacted\":0,\"reportId\":\"er-0000000000000001\",\"screen\":\"Импорт доски\",\"software\":{\"build\":\"8087da08253b\",\"commit\":\"520e41cf839e7c386bdd3f07288aa4e1c4fb4705\",\"direction\":\"web\",\"version\":\"2.1.0\"},\"stage\":\"создание комментария 2/6\"}\n"
+    },
+    {
+      "name": "web-node-500",
+      "description": "web: узел нового формата отвечает 500 с id ошибки и своей версией; строку журнала узла с тем же id можно найти командой bootstrap.py logs.",
+      "input": {
+        "reportId": "er-0000000000000002",
+        "at": "2026-10-07T09:15:00.000Z",
+        "software": {
+          "direction": "web",
+          "version": "2.2.0",
+          "build": "3f1c9a2b7d10",
+          "commit": null
+        },
+        "platform": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36",
+        "screen": "Сеть и устройства",
+        "operation": "Кольцо устройств",
+        "stage": null,
+        "message": "Кольцо не загрузилось: Internal server error",
+        "error": {
+          "kind": "http",
+          "name": "ApiError",
+          "detail": "Internal server error"
+        },
+        "http": {
+          "method": "GET",
+          "path": "/api/v1/ring",
+          "status": 500,
+          "requestId": null,
+          "errorId": "01a11200-0000-7000-8000-00000000e500",
+          "body": "{\"error\":{\"code\":\"internal_error\",\"message\":\"Internal server error\",\"details\":null,\"errorId\":\"01a11200-0000-7000-8000-00000000e500\"}}"
+        },
+        "peer": {
+          "direction": "web",
+          "version": "2.2.0",
+          "build": "3f1c9a2b7d10",
+          "commit": null
+        },
+        "logs": [
+          "2026-10-07T09:14:59.990Z INFO ring: запрос состояния кольца"
+        ]
+      },
+      "expectedReport": {
+        "reportId": "er-0000000000000002",
+        "at": "2026-10-07T09:15:00.000Z",
+        "software": {
+          "direction": "web",
+          "version": "2.2.0",
+          "build": "3f1c9a2b7d10",
+          "commit": null
+        },
+        "platform": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36",
+        "screen": "Сеть и устройства",
+        "operation": "Кольцо устройств",
+        "stage": null,
+        "message": "Кольцо не загрузилось: Internal server error",
+        "error": {
+          "kind": "http",
+          "name": "ApiError",
+          "detail": "Internal server error"
+        },
+        "http": {
+          "method": "GET",
+          "path": "/api/v1/ring",
+          "status": 500,
+          "requestId": null,
+          "errorId": "01a11200-0000-7000-8000-00000000e500",
+          "body": "{\"error\":{\"code\":\"internal_error\",\"message\":\"Internal server error\",\"details\":null,\"errorId\":\"01a11200-0000-7000-8000-00000000e500\"}}"
+        },
+        "peer": {
+          "direction": "web",
+          "version": "2.2.0",
+          "build": "3f1c9a2b7d10",
+          "commit": null
+        },
+        "logs": [
+          "2026-10-07T09:14:59.990Z INFO ring: запрос состояния кольца"
+        ],
+        "protocol": "p2p-kanban-error-report/1",
+        "redacted": 0
+      },
+      "expectedText": "p2pKanban: подробности ошибки\nОтчёт: er-0000000000000002 · 2026-10-07T09:15:00.000Z\nПрограмма: web 2.2.0 · сборка 3f1c9a2b7d10 · коммит неизвестен\nПлатформа: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36\nГде: Сеть и устройства → Кольцо устройств\nСообщение: Кольцо не загрузилось: Internal server error\nОшибка: http · ApiError · Internal server error\nHTTP: GET /api/v1/ring → 500 · ошибка узла 01a11200-0000-7000-8000-00000000e500\nУзел: web 2.2.0 · сборка 3f1c9a2b7d10 · коммит неизвестен\nОтвет узла:\n  {\"error\":{\"code\":\"internal_error\",\"message\":\"Internal server error\",\"details\":null,\"errorId\":\"01a11200-0000-7000-8000-00000000e500\"}}\nЖурнал (1 последних строк):\n  2026-10-07T09:14:59.990Z INFO ring: запрос состояния кольца\n--- p2p-kanban-error-report/1 ---\n{\"at\":\"2026-10-07T09:15:00.000Z\",\"error\":{\"detail\":\"Internal server error\",\"kind\":\"http\",\"name\":\"ApiError\"},\"http\":{\"body\":\"{\\\"error\\\":{\\\"code\\\":\\\"internal_error\\\",\\\"message\\\":\\\"Internal server error\\\",\\\"details\\\":null,\\\"errorId\\\":\\\"01a11200-0000-7000-8000-00000000e500\\\"}}\",\"errorId\":\"01a11200-0000-7000-8000-00000000e500\",\"method\":\"GET\",\"path\":\"/api/v1/ring\",\"requestId\":null,\"status\":500},\"logs\":[\"2026-10-07T09:14:59.990Z INFO ring: запрос состояния кольца\"],\"message\":\"Кольцо не загрузилось: Internal server error\",\"operation\":\"Кольцо устройств\",\"peer\":{\"build\":\"3f1c9a2b7d10\",\"commit\":null,\"direction\":\"web\",\"version\":\"2.2.0\"},\"platform\":\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36\",\"protocol\":\"p2p-kanban-error-report/1\",\"redacted\":0,\"reportId\":\"er-0000000000000002\",\"screen\":\"Сеть и устройства\",\"software\":{\"build\":\"3f1c9a2b7d10\",\"commit\":null,\"direction\":\"web\",\"version\":\"2.2.0\"},\"stage\":null}\n"
+    },
+    {
+      "name": "mobile-network",
+      "description": "mobile: старый телефон без сети к узлу. Токен в журнале и nsec в тексте ошибки вырезаны; узел известен по последнему ответу, и видно, что телефон отстаёт от узла.",
+      "input": {
+        "reportId": "er-0000000000000003",
+        "at": "2026-10-07T10:02:33.517Z",
+        "software": {
+          "direction": "mobile",
+          "version": "2.1.0",
+          "build": "24",
+          "commit": null
+        },
+        "platform": "Android 14 (API 34)",
+        "screen": "Доска",
+        "operation": "Синхронизация",
+        "stage": "получение событий relay",
+        "message": "Не удалось связаться с узлом",
+        "error": {
+          "kind": "network",
+          "name": "TypeError",
+          "detail": "Network request failed\nimport key nsec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsx3dfc"
+        },
+        "http": {
+          "method": "POST",
+          "path": "/api/v1/sync/push?token=abc123",
+          "status": 0,
+          "requestId": null,
+          "errorId": null,
+          "body": null
+        },
+        "peer": {
+          "direction": "web",
+          "version": "2.2.0",
+          "build": "3f1c9a2b7d10",
+          "commit": "9d0c6e1b2a3f4c5d6e7f8091a2b3c4d5e6f70819"
+        },
+        "logs": [
+          "2026-10-07T10:02:00.000Z DEBUG http: Authorization: Bearer tok-0",
+          "2026-10-07T10:02:01.000Z DEBUG http: Authorization: Bearer tok-1",
+          "2026-10-07T10:02:02.000Z DEBUG http: Authorization: Bearer tok-2",
+          "2026-10-07T10:02:03.000Z DEBUG http: Authorization: Bearer tok-3",
+          "2026-10-07T10:02:04.000Z DEBUG http: Authorization: Bearer tok-4",
+          "2026-10-07T10:02:05.000Z DEBUG http: Authorization: Bearer tok-5",
+          "2026-10-07T10:02:06.000Z DEBUG http: Authorization: Bearer tok-6",
+          "2026-10-07T10:02:07.000Z DEBUG http: Authorization: Bearer tok-7",
+          "2026-10-07T10:02:08.000Z DEBUG http: Authorization: Bearer tok-8",
+          "2026-10-07T10:02:09.000Z DEBUG http: Authorization: Bearer tok-9",
+          "2026-10-07T10:02:10.000Z DEBUG http: Authorization: Bearer tok-10",
+          "2026-10-07T10:02:11.000Z DEBUG http: Authorization: Bearer tok-11",
+          "2026-10-07T10:02:12.000Z DEBUG http: Authorization: Bearer tok-12",
+          "2026-10-07T10:02:13.000Z DEBUG http: Authorization: Bearer tok-13",
+          "2026-10-07T10:02:14.000Z DEBUG http: Authorization: Bearer tok-14",
+          "2026-10-07T10:02:15.000Z DEBUG http: Authorization: Bearer tok-15",
+          "2026-10-07T10:02:16.000Z DEBUG http: Authorization: Bearer tok-16",
+          "2026-10-07T10:02:17.000Z DEBUG http: Authorization: Bearer tok-17",
+          "2026-10-07T10:02:18.000Z DEBUG http: Authorization: Bearer tok-18",
+          "2026-10-07T10:02:19.000Z DEBUG http: Authorization: Bearer tok-19",
+          "2026-10-07T10:02:20.000Z DEBUG http: Authorization: Bearer tok-20",
+          "2026-10-07T10:02:21.000Z DEBUG http: Authorization: Bearer tok-21",
+          "2026-10-07T10:02:22.000Z DEBUG http: Authorization: Bearer tok-22",
+          "2026-10-07T10:02:23.000Z DEBUG http: Authorization: Bearer tok-23",
+          "2026-10-07T10:02:24.000Z DEBUG http: Authorization: Bearer tok-24",
+          "2026-10-07T10:02:25.000Z DEBUG http: Authorization: Bearer tok-25",
+          "2026-10-07T10:02:26.000Z DEBUG http: Authorization: Bearer tok-26",
+          "2026-10-07T10:02:27.000Z DEBUG http: Authorization: Bearer tok-27",
+          "2026-10-07T10:02:28.000Z DEBUG http: Authorization: Bearer tok-28",
+          "2026-10-07T10:02:29.000Z DEBUG http: Authorization: Bearer tok-29",
+          "2026-10-07T10:02:30.000Z DEBUG http: Authorization: Bearer tok-30",
+          "2026-10-07T10:02:31.000Z DEBUG http: Authorization: Bearer tok-31",
+          "2026-10-07T10:02:32.000Z DEBUG http: Authorization: Bearer tok-32",
+          "2026-10-07T10:02:33.000Z DEBUG http: Authorization: Bearer tok-33",
+          "2026-10-07T10:02:34.000Z DEBUG http: Authorization: Bearer tok-34",
+          "2026-10-07T10:02:35.000Z DEBUG http: Authorization: Bearer tok-35",
+          "2026-10-07T10:02:36.000Z DEBUG http: Authorization: Bearer tok-36",
+          "2026-10-07T10:02:37.000Z DEBUG http: Authorization: Bearer tok-37",
+          "2026-10-07T10:02:38.000Z DEBUG http: Authorization: Bearer tok-38",
+          "2026-10-07T10:02:39.000Z DEBUG http: Authorization: Bearer tok-39",
+          "2026-10-07T10:02:40.000Z DEBUG http: Authorization: Bearer tok-40",
+          "2026-10-07T10:02:41.000Z DEBUG http: Authorization: Bearer tok-41",
+          "2026-10-07T10:02:42.000Z DEBUG http: Authorization: Bearer tok-42",
+          "2026-10-07T10:02:43.000Z DEBUG http: Authorization: Bearer tok-43",
+          "2026-10-07T10:02:44.000Z DEBUG http: Authorization: Bearer tok-44",
+          "2026-10-07T10:02:45.000Z DEBUG http: Authorization: Bearer tok-45",
+          "2026-10-07T10:02:46.000Z DEBUG http: Authorization: Bearer tok-46",
+          "2026-10-07T10:02:47.000Z DEBUG http: Authorization: Bearer tok-47",
+          "2026-10-07T10:02:48.000Z DEBUG http: Authorization: Bearer tok-48",
+          "2026-10-07T10:02:49.000Z DEBUG http: Authorization: Bearer tok-49",
+          "2026-10-07T10:02:50.000Z DEBUG http: Authorization: Bearer tok-50",
+          "2026-10-07T10:02:51.000Z DEBUG http: Authorization: Bearer tok-51",
+          "2026-10-07T10:02:52.000Z DEBUG http: Authorization: Bearer tok-52",
+          "2026-10-07T10:02:53.000Z DEBUG http: Authorization: Bearer tok-53",
+          "2026-10-07T10:02:54.000Z DEBUG http: Authorization: Bearer tok-54",
+          "2026-10-07T10:02:55.000Z DEBUG http: Authorization: Bearer tok-55",
+          "2026-10-07T10:02:56.000Z DEBUG http: Authorization: Bearer tok-56",
+          "2026-10-07T10:02:57.000Z DEBUG http: Authorization: Bearer tok-57",
+          "2026-10-07T10:02:58.000Z DEBUG http: Authorization: Bearer tok-58",
+          "2026-10-07T10:02:59.000Z DEBUG http: Authorization: Bearer tok-59"
+        ]
+      },
+      "expectedReport": {
+        "reportId": "er-0000000000000003",
+        "at": "2026-10-07T10:02:33.517Z",
+        "software": {
+          "direction": "mobile",
+          "version": "2.1.0",
+          "build": "24",
+          "commit": null
+        },
+        "platform": "Android 14 (API 34)",
+        "screen": "Доска",
+        "operation": "Синхронизация",
+        "stage": "получение событий relay",
+        "message": "Не удалось связаться с узлом",
+        "error": {
+          "kind": "network",
+          "name": "TypeError",
+          "detail": "Network request failed\nimport key [скрыто:nsec]"
+        },
+        "http": {
+          "method": "POST",
+          "path": "/api/v1/sync/push?token=[скрыто]",
+          "status": 0,
+          "requestId": null,
+          "errorId": null,
+          "body": null
+        },
+        "peer": {
+          "direction": "web",
+          "version": "2.2.0",
+          "build": "3f1c9a2b7d10",
+          "commit": "9d0c6e1b2a3f4c5d6e7f8091a2b3c4d5e6f70819"
+        },
+        "logs": [
+          "2026-10-07T10:02:10.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:11.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:12.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:13.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:14.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:15.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:16.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:17.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:18.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:19.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:20.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:21.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:22.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:23.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:24.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:25.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:26.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:27.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:28.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:29.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:30.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:31.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:32.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:33.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:34.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:35.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:36.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:37.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:38.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:39.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:40.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:41.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:42.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:43.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:44.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:45.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:46.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:47.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:48.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:49.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:50.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:51.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:52.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:53.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:54.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:55.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:56.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:57.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:58.000Z DEBUG http: Authorization: Bearer [скрыто]",
+          "2026-10-07T10:02:59.000Z DEBUG http: Authorization: Bearer [скрыто]"
+        ],
+        "protocol": "p2p-kanban-error-report/1",
+        "redacted": 52
+      },
+      "expectedText": "p2pKanban: подробности ошибки\nОтчёт: er-0000000000000003 · 2026-10-07T10:02:33.517Z\nПрограмма: mobile 2.1.0 · сборка 24 · коммит неизвестен\nПлатформа: Android 14 (API 34)\nГде: Доска → Синхронизация → получение событий relay\nСообщение: Не удалось связаться с узлом\nОшибка: network · TypeError · Network request failed\n  import key [скрыто:nsec]\nHTTP: POST /api/v1/sync/push?token=[скрыто] → нет ответа\nУзел: web 2.2.0 · сборка 3f1c9a2b7d10 · коммит 9d0c6e1b2a3f4c5d6e7f8091a2b3c4d5e6f70819\nСкрыто значений: 52\nЖурнал (50 последних строк):\n  2026-10-07T10:02:10.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:11.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:12.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:13.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:14.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:15.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:16.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:17.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:18.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:19.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:20.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:21.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:22.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:23.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:24.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:25.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:26.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:27.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:28.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:29.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:30.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:31.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:32.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:33.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:34.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:35.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:36.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:37.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:38.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:39.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:40.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:41.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:42.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:43.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:44.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:45.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:46.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:47.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:48.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:49.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:50.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:51.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:52.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:53.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:54.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:55.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:56.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:57.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:58.000Z DEBUG http: Authorization: Bearer [скрыто]\n  2026-10-07T10:02:59.000Z DEBUG http: Authorization: Bearer [скрыто]\n--- p2p-kanban-error-report/1 ---\n{\"at\":\"2026-10-07T10:02:33.517Z\",\"error\":{\"detail\":\"Network request failed\\nimport key [скрыто:nsec]\",\"kind\":\"network\",\"name\":\"TypeError\"},\"http\":{\"body\":null,\"errorId\":null,\"method\":\"POST\",\"path\":\"/api/v1/sync/push?token=[скрыто]\",\"requestId\":null,\"status\":0},\"logs\":[\"2026-10-07T10:02:10.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:11.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:12.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:13.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:14.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:15.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:16.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:17.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:18.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:19.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:20.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:21.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:22.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:23.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:24.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:25.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:26.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:27.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:28.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:29.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:30.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:31.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:32.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:33.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:34.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:35.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:36.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:37.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:38.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:39.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:40.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:41.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:42.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:43.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:44.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:45.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:46.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:47.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:48.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:49.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:50.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:51.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:52.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:53.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:54.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:55.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:56.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:57.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:58.000Z DEBUG http: Authorization: Bearer [скрыто]\",\"2026-10-07T10:02:59.000Z DEBUG http: Authorization: Bearer [скрыто]\"],\"message\":\"Не удалось связаться с узлом\",\"operation\":\"Синхронизация\",\"peer\":{\"build\":\"3f1c9a2b7d10\",\"commit\":\"9d0c6e1b2a3f4c5d6e7f8091a2b3c4d5e6f70819\",\"direction\":\"web\",\"version\":\"2.2.0\"},\"platform\":\"Android 14 (API 34)\",\"protocol\":\"p2p-kanban-error-report/1\",\"redacted\":52,\"reportId\":\"er-0000000000000003\",\"screen\":\"Доска\",\"software\":{\"build\":\"24\",\"commit\":null,\"direction\":\"mobile\",\"version\":\"2.1.0\"},\"stage\":\"получение событий relay\"}\n"
+    },
+    {
+      "name": "abl-native",
+      "description": "abl: ошибка нативной команды без HTTP. Коммит сборки неизвестен и так и написано; длинная деталь обрезана по буквам, а не по байтам.",
+      "input": {
+        "reportId": "er-0000000000000004",
+        "at": "2026-10-07T11:00:00.000Z",
+        "software": {
+          "direction": "abl",
+          "version": "A18",
+          "build": "0.1.0-1",
+          "commit": null
+        },
+        "platform": "EndeavourOS · WebKitGTK 2.52.6",
+        "screen": "Импорт доски",
+        "operation": "import_portable_bundle",
+        "stage": null,
+        "message": "Не удалось импортировать доску",
+        "error": {
+          "kind": "native",
+          "name": "ImportError",
+          "detail": "Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. "
+        },
+        "http": null,
+        "peer": null,
+        "logs": []
+      },
+      "expectedReport": {
+        "reportId": "er-0000000000000004",
+        "at": "2026-10-07T11:00:00.000Z",
+        "software": {
+          "direction": "abl",
+          "version": "A18",
+          "build": "0.1.0-1",
+          "commit": null
+        },
+        "platform": "EndeavourOS · WebKitGTK 2.52.6",
+        "screen": "Импорт доски",
+        "operation": "import_portable_bundle",
+        "stage": null,
+        "message": "Не удалось импортировать доску",
+        "error": {
+          "kind": "native",
+          "name": "ImportError",
+          "detail": "Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, к…"
+        },
+        "http": null,
+        "peer": null,
+        "logs": [],
+        "protocol": "p2p-kanban-error-report/1",
+        "redacted": 0
+      },
+      "expectedText": "p2pKanban: подробности ошибки\nОтчёт: er-0000000000000004 · 2026-10-07T11:00:00.000Z\nПрограмма: abl A18 · сборка 0.1.0-1 · коммит неизвестен\nПлатформа: EndeavourOS · WebKitGTK 2.52.6\nГде: Импорт доски → import_portable_bundle\nСообщение: Не удалось импортировать доску\nОшибка: native · ImportError · Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, к…\n--- p2p-kanban-error-report/1 ---\n{\"at\":\"2026-10-07T11:00:00.000Z\",\"error\":{\"detail\":\"Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, который раньше ронял узел. Комментарий длиннее ста двадцати восьми русских букв, к…\",\"kind\":\"native\",\"name\":\"ImportError\"},\"http\":null,\"logs\":[],\"message\":\"Не удалось импортировать доску\",\"operation\":\"import_portable_bundle\",\"peer\":null,\"platform\":\"EndeavourOS · WebKitGTK 2.52.6\",\"protocol\":\"p2p-kanban-error-report/1\",\"redacted\":0,\"reportId\":\"er-0000000000000004\",\"screen\":\"Импорт доски\",\"software\":{\"build\":\"0.1.0-1\",\"commit\":null,\"direction\":\"abl\",\"version\":\"A18\"},\"stage\":null}\n"
+    }
+  ]
+}
