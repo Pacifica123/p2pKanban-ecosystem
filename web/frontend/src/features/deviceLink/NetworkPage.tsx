@@ -1,9 +1,11 @@
 import { DeviceLinkPanel } from './DeviceLinkPanel';
 import { NetworkConnect } from './NetworkConnect';
+import { RingPanel } from './RingPanel';
 
 export function NetworkPage() {
   return <div className="page-shell">
     <header className="page-header"><h2>Сеть и доверенные устройства</h2></header>
+    <RingPanel />
     <p>В одной локальной сети укажите IP:порт другого web-узла. После подтверждения
       устройства самостоятельно обмениваются изменениями через настроенные relay.</p>
     <NetworkConnect />

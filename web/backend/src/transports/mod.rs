@@ -13,7 +13,8 @@ pub use repo::transport_queue_status;
 
 pub fn spawn_workers(settings: Arc<Settings>, db: PgPool) {
     worker::spawn_nostr_worker(settings.clone(), db.clone());
-    worker::spawn_roaming_worker(settings, db);
+    worker::spawn_roaming_worker(settings.clone(), db.clone());
+    worker::spawn_ring_worker(settings, db);
 }
 
 #[cfg(feature = "nostr-shadow")]

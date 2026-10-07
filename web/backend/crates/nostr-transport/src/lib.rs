@@ -1,4 +1,5 @@
 pub mod device_link;
+pub mod ring;
 use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};

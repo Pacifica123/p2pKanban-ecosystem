@@ -12,12 +12,17 @@ pub mod comments;
 pub mod common;
 pub mod integrations;
 pub mod labels;
+#[cfg(feature = "nostr-shadow")]
+pub mod ring;
 pub mod sync;
 pub mod users;
 pub mod workspaces;
 
 pub fn router() -> Router<AppState> {
-    Router::new()
+    let router = Router::new();
+    #[cfg(feature = "nostr-shadow")]
+    let router = router.merge(ring::router());
+    router
         .merge(activity::router())
         .merge(appearance::router())
         .merge(audit::router())

@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 55,
-        "comments": 34,
-        "checklists": 18,
+        "cards": 56,
+        "comments": 36,
+        "checklists": 19,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-07T07:10:00Z",
+    "generatedAt": "2026-10-07T07:20:00Z",
     "selfHosted": true,
-    "boardRevision": 10,
-    "lastPatchId": "2026-10-07-ecosystem-error-report-contract",
+    "boardRevision": 11,
+    "lastPatchId": "2026-10-07-web-ring-r2",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -362,11 +362,11 @@
       {
         "id": "01a10f95-3898-7327-aba2-c788e924ec17",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "R2: web: журнал кольца и связка ключей, перенос текущего доверия device-link/2 и web-node-link/1",
         "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован; тесты web читают contracts/account-ring/1 и contracts/keyring/1 и получают то же состояние кольца, те же id и расшифровки, что в векторах; в contracts/compatibility.json заполнено implementations.web; принято на хосте (Docker).\n\nНачинается после R1. Порядок обновления контрактов: web-узлы → mobile → abl.",
         "priority": "medium",
-        "position": 9216,
+        "position": 14336,
         "archivedAt": null
       },
       {
@@ -667,6 +667,16 @@
         "description": "Зачем: UTS uts_20261006T110629Z_r8_520e41c на ноутбуке владельца (debug-бинарник, настоящий WebKitGTK): в хаос-сценариях bus-gone и offline-netns простой 11–12% одного ядра, а обычный простой даёт 194 переключения контекста в секунду при пороге proposed 150. В облаке под Xvfb те же пробы давали 0% и 4,5/с, поэтому это свойство настоящей графики или опроса, а не шум измерения.\n\nГотово, когда: release-прогон A18 на ноутбуке показал, сохраняется ли это без debug; если да — найден источник (WebKit-композитор, повторные попытки D-Bus/Secret Service, таймеры) и простой без сети ≤ 3% CPU, пробуждения в пределах бюджета или ADR о другом пороге.",
         "priority": "medium",
         "position": 13312,
+        "archivedAt": null
+      },
+      {
+        "id": "01a11517-bfdf-7009-8ee0-86f13f7098bc",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "web: два smoke-теста backend падают и до R2",
+        "description": "Зачем: cargo test --include-ignored на чистом Postgres красный не из-за новых изменений, и это маскирует настоящие поломки.\n\nЧто видно (проверено на 520e41c и на патче R2 одинаково):\n- core_crud_smoke::workspace_members_smoke_flow — 400 «Workspace member role must be member or guest»: тест добавляет участника с ролью, которую API больше не принимает;\n- appearance_smoke::appearance_validation_and_permissions_are_enforced — падает в том же помощнике json_response (строка 101).\n\nГотово, когда: тесты отражают текущие правила ролей и внешнего вида и снова зелёные на Postgres.",
+        "priority": "low",
+        "position": 14336,
         "archivedAt": null
       }
     ],
@@ -1144,6 +1154,14 @@
       {
         "cardId": "01a11500-4075-7014-84d0-172d4a4e2652",
         "labelId": "01a10d38-f910-74f8-a779-e200fcd40acc"
+      },
+      {
+        "cardId": "01a11517-bfdf-7009-8ee0-86f13f7098bc",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a11517-bfdf-7009-8ee0-86f13f7098bc",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
       }
     ],
     "checklists": [
@@ -1253,6 +1271,12 @@
         "id": "01a11500-4075-700c-b617-4b01ee752b4b",
         "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
         "title": "Приёмка на Arch",
+        "position": 1024
+      },
+      {
+        "id": "01a11517-bfdf-7001-898b-829fad5cc264",
+        "cardId": "01a10f95-3898-7327-aba2-c788e924ec17",
+        "title": "Приёмка",
         "position": 1024
       }
     ],
@@ -1457,7 +1481,7 @@
         "id": "01a10f95-388f-77d6-8050-09ccb068719e",
         "checklistId": "01a10f95-388c-7e60-a21b-fb8425c95b3a",
         "title": "R1 Спецификации и эталонные примеры в contracts/",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -1900,6 +1924,41 @@
         "title": "Подпись пакета и репозитория внешним ключом",
         "isDone": false,
         "position": 5120
+      },
+      {
+        "id": "01a11517-bfdf-7002-b2db-8affe261b60e",
+        "checklistId": "01a11517-bfdf-7001-898b-829fad5cc264",
+        "title": "Тесты web читают contracts/account-ring/1 и keyring/1: свёртка, id, расшифровки совпадают с векторами",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a11517-bfdf-7003-b904-c733cf04f4d8",
+        "checklistId": "01a11517-bfdf-7001-898b-829fad5cc264",
+        "title": "implementations.web заполнено в contracts/compatibility.json",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a11517-bfdf-7004-9b93-cf5b8f96138c",
+        "checklistId": "01a11517-bfdf-7001-898b-829fad5cc264",
+        "title": "Хост (Docker): миграция 0024 проходит, экран «Сеть и устройства» показывает кольцо",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a11517-bfdf-7005-812e-8ab542ec9259",
+        "checklistId": "01a11517-bfdf-7001-898b-829fad5cc264",
+        "title": "Хост: создать кольцо, перенести телефон из «доверены по-старому»",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a11517-bfdf-7006-a8c1-de4e32a60260",
+        "checklistId": "01a11517-bfdf-7001-898b-829fad5cc264",
+        "title": "Хост: «Синхронизировать сейчас» — кворум relay собран, ошибок обмена нет",
+        "isDone": false,
+        "position": 5120
       }
     ],
     "comments": [
@@ -2106,6 +2165,18 @@
         "cardId": "01a10d38-f91a-70d8-845b-dd996e797354",
         "createdAt": "2026-10-07T07:10:00Z",
         "body": "patch 2026-10-07-ecosystem-error-report-contract: UTS uts_20261006T110629Z_r8_520e41c собрал и проверил из подкаталогов монорепозитория (копия UserTestSpace): web — образы, миграции, cargo test, узел из этого дерева; mobile — npm ci, typecheck, jest; abl — tools/uts_verify.py с подготовкой сети, 91 PASS; devctl — тесты. Не закрыто: APK (npm run apk), abl uts_verify без флага сети, sparse-checkout одного направления."
+      },
+      {
+        "id": "01a11517-bfdf-7007-a424-96d440b726ab",
+        "cardId": "01a10f95-3898-7327-aba2-c788e924ec17",
+        "createdAt": "2026-10-07T07:20:00Z",
+        "body": "patch 2026-10-07-web-ring-r2: узел пишет журнал кольца (genesis, add via migration, rename), держит свою связку ключей и обменивается запечатанными копиями и отметками присутствия с relay кольца (кнопкой, после записи и раз в 10 минут). Перенести можно только устройства из trusted_device_peers; новое устройство — по QR в R4. Доски из чужих связок видны, но не импортируются (R3/R4). Версия web не поднималась (2.1.0: ей управляет релиз), в compatibility.json since = 2.1.0+2026-10-07-web-ring-r2. Проверено: 6 тестов векторов, интеграционный тест на Postgres, 3 теста экрана; все тесты backend и frontend зелёные, кроме двух старых smoke-тестов, падающих и на 520e41c (отдельная карточка)."
+      },
+      {
+        "id": "01a11517-bfdf-7008-a223-908f0a239d4a",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "createdAt": "2026-10-07T07:20:00Z",
+        "body": "patch 2026-10-07-web-ring-r2: R2 (web) реализован и ждёт хоста; R1 отмечен сделанным (карточка R1 в «Сделано» с 2026-10-06)."
       }
     ],
     "boardAppearanceSettings": [],

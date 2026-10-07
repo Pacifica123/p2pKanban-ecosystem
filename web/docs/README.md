@@ -40,6 +40,8 @@
   — floating-local контракт напоминаний web и Android;
 - [`architecture/web-node-link-v1.md`](architecture/web-node-link-v1.md)
   — почему одинаковая почта не связывает self-hosted узлы и как перенести данные;
+- [`architecture/device-ring-r2.md`](architecture/device-ring-r2.md)
+  — кольцо устройств на узле (R2): журнал, перенос доверия, связка ключей, обмен с relay;
 - [`dev-bootstrap/devbootstrap-v1-operations.md`](dev-bootstrap/devbootstrap-v1-operations.md)
   — расширенная локальная диагностика.
 

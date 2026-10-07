@@ -41,6 +41,23 @@ pub fn spawn_roaming_worker(settings: Arc<Settings>, db: PgPool) {
     });
 }
 
+/// Device ring (R2): re-publish sealed copies and presence, take in the others'.
+#[cfg(feature = "nostr-shadow")]
+pub fn spawn_ring_worker(settings: Arc<Settings>, db: PgPool) {
+    if !settings.transports.nostr.enabled {
+        return;
+    }
+    tokio::spawn(async move {
+        loop {
+            tokio::time::sleep(crate::modules::ring::SYNC_INTERVAL).await;
+            crate::modules::ring::sync_all(settings.clone(), db.clone()).await;
+        }
+    });
+}
+
+#[cfg(not(feature = "nostr-shadow"))]
+pub fn spawn_ring_worker(_settings: Arc<Settings>, _db: PgPool) {}
+
 #[cfg(not(feature = "nostr-shadow"))]
 pub fn spawn_roaming_worker(_settings: Arc<Settings>, _db: PgPool) {}
 
