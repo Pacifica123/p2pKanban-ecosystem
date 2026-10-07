@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { expoCommand, gradleCommand } from './apk-commands.mjs';
+import { sourceRevision } from './source-revision.mjs';
 
 const mobileRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packageVersion = JSON.parse(
@@ -55,6 +56,11 @@ if (javaProbe.error || javaProbe.status !== 0 || javaMajor < 17) {
   console.error('Не найден совместимый JDK. Рекомендуется JDK 17; проверьте JAVA_HOME и java -version.');
   process.exit(2);
 }
+
+// The bundler inlines it into the APK; reports then name the exact commit.
+const revision = sourceRevision(mobileRoot);
+if (revision) process.env.EXPO_PUBLIC_SOURCE_REVISION = revision;
+console.log(`Коммит сборки: ${revision ?? 'неизвестен (нет git и P2PKANBAN_SOURCE_REVISION)'}`);
 
 run(...expoCommand(process.execPath, expoCli), mobileRoot);
 run(...gradleCommand(process.platform), join(mobileRoot, 'android'));

@@ -582,6 +582,7 @@ export function BoardScreen({ navigation, route }: Props) {
           description={isOnline
             ? runtime.lastError || 'Не удалось получить локальную или relay-копию доски.'
             : 'Подключитесь к интернету или откройте доску после первичной привязки.'}
+          failed
           action={isOnline ? <Button label="Повторить" onPress={() => void runtime.refresh()} /> : undefined}
         />
       </Screen>

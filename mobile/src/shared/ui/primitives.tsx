@@ -16,7 +16,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import * as Clipboard from 'expo-clipboard';
+import { useState } from 'react';
 import { radius, spacing, useAppColors } from '../../app/theme';
+import { collectReport, type ReportContext } from '../errorReport/collect';
+import { renderReport } from '../errorReport/report';
 import { useAppearance } from '../../features/appearance/AppearanceProvider';
 
 export function Screen({
@@ -239,16 +243,43 @@ export function Panel({
   );
 }
 
+/** «Скопировать подробности» under any error the person sees (contracts/error-report/1). */
+export function ErrorDetails(props: ReportContext) {
+  const colors = useAppColors();
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  async function copy() {
+    try {
+      await Clipboard.setStringAsync(renderReport(collectReport(props)));
+      setState('copied');
+    } catch {
+      setState('failed');
+    }
+  }
+  return (
+    <View style={styles.errorDetails}>
+      <Button label="Скопировать подробности" variant="ghost" compact onPress={() => void copy()} />
+      {state === 'copied' ? <Text style={{ color: colors.muted }}>Скопировано: вставьте в сообщение.</Text> : null}
+      {state === 'failed' ? <Text style={{ color: colors.danger }}>Не удалось скопировать.</Text> : null}
+    </View>
+  );
+}
+
 export function StateView({
   title,
   description,
   busy = false,
   action,
+  error,
+  failed = false,
 }: {
   title: string;
   description?: string;
   busy?: boolean;
   action?: ReactNode;
+  /** The error behind a failure state; without one the report takes the last failed request. */
+  error?: unknown;
+  /** Show «Скопировать подробности» (a failure, not an empty or loading state). */
+  failed?: boolean;
 }) {
   const colors = useAppColors();
   return (
@@ -259,6 +290,7 @@ export function StateView({
         <Text style={[styles.stateDescription, { color: colors.muted }]}>{description}</Text>
       ) : null}
       {action}
+      {failed ? <ErrorDetails message={description ? `${title}. ${description}` : title} error={error} /> : null}
     </View>
   );
 }
@@ -281,6 +313,7 @@ export function InlineNotice({
   return (
     <View style={[styles.notice, { backgroundColor: palette.background }]}>
       <Text style={[styles.noticeText, { color: palette.text }]}>{text}</Text>
+      {tone === 'danger' ? <ErrorDetails message={text} /> : null}
     </View>
   );
 }
@@ -344,6 +377,7 @@ export function SectionTitle({
 }
 
 const styles = StyleSheet.create({
+  errorDetails: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm },
   safeArea: {
     flex: 1,
   },

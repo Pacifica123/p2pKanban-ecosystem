@@ -1,3 +1,6 @@
+import { logLine, noteApiFailure, notePeer } from '../errorReport/journal';
+import { ERROR_ID_HEADER } from '../errorReport/report';
+
 interface ApiEnvelope<T> {
   data: T;
 }
@@ -10,17 +13,28 @@ interface ErrorEnvelope {
   };
 }
 
+export interface ApiErrorHttp {
+  method: string;
+  path: string;
+  /** Raw response text (redacted only when a report is built). */
+  body: string | null;
+  /** `errorId` of a 5xx answered by the node (contracts/error-report/1). */
+  errorId: string | null;
+}
+
 export class ApiError extends Error {
   readonly status: number;
   readonly code?: string;
   readonly details?: unknown;
+  readonly http?: ApiErrorHttp;
 
-  constructor(message: string, input: { status: number; code?: string; details?: unknown }) {
+  constructor(message: string, input: { status: number; code?: string; details?: unknown; http?: ApiErrorHttp }) {
     super(message);
     this.name = 'ApiError';
     this.status = input.status;
     this.code = input.code;
     this.details = input.details;
+    this.http = input.http;
   }
 }
 
@@ -51,11 +65,11 @@ export function setRefreshHandler(handler: (() => Promise<string | null>) | null
 
 async function parsePayload(response: Response) {
   const body = await response.text();
-  if (!body) return null;
+  if (!body) return { text: body, payload: null as unknown };
   try {
-    return JSON.parse(body) as unknown;
+    return { text: body, payload: JSON.parse(body) as unknown };
   } catch {
-    return body;
+    return { text: body, payload: body as unknown };
   }
 }
 
@@ -90,8 +104,11 @@ async function performRequest<T>(
   if (init.signal?.aborted) abort();
   else init.signal?.addEventListener('abort', abort, { once: true });
 
+  const method = (init.method ?? 'GET').toUpperCase();
+  const requestPath = `/api/v1${path}`;
   let response: Response;
   let payload: unknown;
+  let text = '';
   try {
     response = await fetch(`${nodeOrigin}/api/v1${path}`, {
       ...init,
@@ -99,15 +116,21 @@ async function performRequest<T>(
       signal: controller.signal,
     });
     // Reading the body is part of the request deadline too (RN may cancel here).
-    payload = await parsePayload(response);
+    ({ text, payload } = await parsePayload(response));
   } catch (error) {
     const aborted = controller.signal.aborted;
+    const code = timedOut ? 'TIMEOUT' : aborted ? 'CANCELED' : 'NETWORK_ERROR';
+    if (code !== 'CANCELED') {
+      logLine('error', 'api', `${method} ${nodeOrigin}${requestPath} → нет ответа (${code}): ${errorMessage(error)}`);
+      noteApiFailure({ method, path: requestPath, status: 0, requestId: null, errorId: null, body: null });
+    }
     throw new ApiError(
       timedOut ? 'Узел не ответил вовремя.' : aborted ? 'Запрос отменён вызывающим экраном.' : `Не удалось связаться с узлом: ${errorMessage(error)}.`,
       {
         status: 0,
-        code: timedOut ? 'TIMEOUT' : aborted ? 'CANCELED' : 'NETWORK_ERROR',
+        code,
         details: error,
+        http: { method, path: requestPath, body: null, errorId: null },
       },
     );
   } finally {
@@ -115,6 +138,7 @@ async function performRequest<T>(
     init.signal?.removeEventListener('abort', abort);
   }
 
+  notePeer(response.headers);
   if (response.status === 401 && !options.skipRefresh && refreshHandler) {
     refreshInFlight ??= refreshHandler().finally(() => {
       refreshInFlight = null;
@@ -128,12 +152,18 @@ async function performRequest<T>(
 
   if (!response.ok) {
     const apiError = (payload as ErrorEnvelope | null)?.error;
+    const errorId = response.headers?.get?.(ERROR_ID_HEADER) ?? null;
+    logLine(response.status >= 500 ? 'error' : 'warn', 'api',
+      `${method} ${nodeOrigin}${requestPath} → ${response.status}${errorId ? ` (ошибка узла ${errorId})` : ''}`);
+    noteApiFailure({ method, path: requestPath, status: response.status, requestId: null, errorId, body: text || null });
     throw new ApiError(apiError?.message || `Узел вернул HTTP ${response.status}.`, {
       status: response.status,
       code: apiError?.code,
       details: apiError?.details,
+      http: { method, path: requestPath, body: text || null, errorId },
     });
   }
+  logLine('debug', 'api', `${method} ${requestPath} → ${response.status}`);
 
   if (payload && typeof payload === 'object' && 'data' in (payload as Record<string, unknown>)) {
     return (payload as ApiEnvelope<T>).data;

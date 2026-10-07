@@ -12,7 +12,8 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "export:android": "expo export --platform android --output-dir dist/android-bundle",
-    "apk": "node scripts/build-apk.mjs"
+    "apk": "node scripts/build-apk.mjs",
+    "eas-build-post-install": "node scripts/source-revision.mjs --env-file"
   },
   "dependencies": {
     "@noble/ciphers": "2.2.0",
@@ -24,6 +25,7 @@
     "@tanstack/react-query": "5.101.4",
     "expo": "~57.0.8",
     "expo-build-properties": "~57.0.7",
+    "expo-clipboard": "~57.0.1",
     "expo-crypto": "~57.0.1",
     "expo-file-system": "57.0.6",
     "expo-notifications": "~57.0.8",

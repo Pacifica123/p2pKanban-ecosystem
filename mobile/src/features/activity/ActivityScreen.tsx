@@ -52,6 +52,8 @@ export function ActivityScreen({ navigation, route }: Props) {
         <StateView
           title="История недоступна"
           description={query.error instanceof Error ? query.error.message : undefined}
+          failed
+          error={query.error}
           action={<Button label="Повторить" onPress={() => void query.refetch()} />}
         />
       ) : null}

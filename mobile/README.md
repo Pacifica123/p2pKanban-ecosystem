@@ -2,6 +2,9 @@
 
 Изменения v2.0.0 и границы автономной синхронизации: [описание релиза](docs/product/v2.0.0-release-notes.md).
 
+«Скопировать подробности» у любой ошибки, коммит сборки в APK —
+[error-details-20261007](docs/architecture/error-details-20261007.md).
+
 Интерфейс не ждёт сеть и синхронизацию: почему доска зависала и какие инварианты
 это предотвращают — [ui-responsiveness-20261006](docs/architecture/ui-responsiveness-20261006.md).
 

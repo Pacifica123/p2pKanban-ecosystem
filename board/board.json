@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 56,
-        "comments": 38,
+        "comments": 40,
         "checklists": 19,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-07T07:30:00Z",
+    "generatedAt": "2026-10-07T07:40:00Z",
     "selfHosted": true,
-    "boardRevision": 12,
-    "lastPatchId": "2026-10-07-web-error-details",
+    "boardRevision": 13,
+    "lastPatchId": "2026-10-07-mobile-error-details",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -632,11 +632,11 @@
       {
         "id": "01a110ec-8b29-724b-8058-69fc42d97094",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "mobile: записывать коммит сборки в APK",
         "description": "Зачем: UTS экосистемы сверяет APK на телефоне с деревом только по versionCode. Две сборки с одним versionCode неразличимы, а приёмка mobile часто отстаёт, и старый APK может встретиться с новым web.\n\nГотово, когда: APK несёт коммит или отпечаток исходников (например, в versionName или в ресурсе, который читается через dumpsys или adb), и UTS отличает «тот же versionCode, другая сборка».",
         "priority": "medium",
-        "position": 11264,
+        "position": 15360,
         "archivedAt": null
       },
       {
@@ -1873,7 +1873,7 @@
         "id": "01a11500-4075-7005-a233-2c5ba159d66d",
         "checklistId": "01a11500-4075-7001-9a4f-ac4687852187",
         "title": "mobile: кнопка, буфер журнала, коммит сборки в APK",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -2189,6 +2189,18 @@
         "cardId": "01a11517-bfdf-7009-8ee0-86f13f7098bc",
         "createdAt": "2026-10-07T07:30:00Z",
         "body": "patch 2026-10-07-web-error-details: та же картина и с этим патчем; ещё web/tools/check_zero_config_bootstrap.py падает на 520e41c с «README became dense again» (проверка плотности README), к патчам не относится."
+      },
+      {
+        "id": "01a11527-f64a-7001-bc80-b43032dde66e",
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "createdAt": "2026-10-07T07:40:00Z",
+        "body": "patch 2026-10-07-mobile-error-details: в Android кнопка «Скопировать подробности» у каждого InlineNotice с ошибкой, у экранов «… недоступны», «Доска не сохранена на устройстве» и у ошибок подключения устройства; копирует expo-clipboard (новая зависимость ~57.0.1, нужен новый APK). В отчёте: mobile 2.1.0 · сборка 25 · коммит, узел по x-p2p-kanban-node, последний неудачный запрос с errorId, 50 строк журнала из памяти. versionCode 24 → 25."
+      },
+      {
+        "id": "01a11527-f64a-7002-9c30-e31c81bf456e",
+        "cardId": "01a110ec-8b29-724b-8058-69fc42d97094",
+        "createdAt": "2026-10-07T07:40:00Z",
+        "body": "patch 2026-10-07-mobile-error-details: npm run apk передаёт git rev-parse HEAD (или P2PKANBAN_SOURCE_REVISION) как EXPO_PUBLIC_SOURCE_REVISION, Expo вписывает его в бандл; для EAS то же делает eas-build-post-install. Коммит виден в «Скопировать подробности» («Программа: mobile … · коммит …»). Проверить на хосте: собрать APK, скопировать подробности любой ошибки, коммит совпадает с HEAD воркспейса."
       }
     ],
     "boardAppearanceSettings": [],

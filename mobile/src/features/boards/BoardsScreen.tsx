@@ -265,6 +265,8 @@ export function BoardsScreen({ navigation, route }: Props) {
         <StateView
           title="Доски недоступны"
           description={query.error instanceof Error ? query.error.message : 'Не удалось получить данные.'}
+          failed
+          error={query.error}
           action={<Button label="Повторить" onPress={() => void query.refetch()} />}
         />
       ) : null}

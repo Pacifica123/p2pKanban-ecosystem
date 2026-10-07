@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { useAppColors } from '../../app/theme';
-import { Button, Field, InlineNotice, Panel } from '../../shared/ui/primitives';
+import { Button, ErrorDetails, Field, InlineNotice, Panel } from '../../shared/ui/primitives';
 import { useAuth } from '../auth/AuthProvider';
 import {
   approveDevice,
@@ -21,6 +21,7 @@ export function DeviceLinkPanel() {
     [nearbyAddress, setNearbyAddress] = useState(''),
     [busy, setBusy] = useState(false),
     [status, setStatus] = useState(''),
+    [failure, setFailure] = useState<unknown>(undefined),
     [fingerprint, setFingerprint] = useState('');
   async function refresh() {
     setFingerprint(await deviceFingerprint());
@@ -32,15 +33,17 @@ export function DeviceLinkPanel() {
     );
   }
   useEffect(() => {
-    if (expanded) void refresh().catch((e) => setStatus(String(e)));
+    if (expanded) void refresh().catch((e) => { setStatus(String(e)); setFailure(e); });
   }, [expanded]);
   async function run(action: () => Promise<unknown>) {
     if (busy) return;
     setBusy(true);
+    setFailure(undefined);
     try {
       await action();
     } catch (e) {
       setStatus(e instanceof Error ? e.message : String(e));
+      setFailure(e);
     } finally {
       setBusy(false);
     }
@@ -99,6 +102,7 @@ export function DeviceLinkPanel() {
           <Button label="Проверить relay без ПК" disabled={busy}
             onPress={() => { void run(async () => { setStatus(await probePreparedRelays()); }); }} />
           <InlineNotice text={status} tone="neutral" />
+          {failure !== undefined ? <ErrorDetails message={status} error={failure} operation="Подключение устройства" /> : null}
           <Text selectable style={{ color: colors.text }}>
             Ключ этого устройства — сверьте на ноутбуке:\n{fingerprint}
           </Text>
