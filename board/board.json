@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 53,
-        "comments": 24,
-        "checklists": 15,
+        "cards": 54,
+        "comments": 27,
+        "checklists": 16,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-06T11:30:00Z",
+    "generatedAt": "2026-10-07T07:00:00Z",
     "selfHosted": true,
-    "boardRevision": 8,
-    "lastPatchId": "2026-10-06-abl-a18-budgets-canary-chaos",
+    "boardRevision": 9,
+    "lastPatchId": "2026-10-07-devctl-upstream-0.9.0",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -152,11 +152,11 @@
       {
         "id": "01a10d38-f928-75c4-9188-bba303981dd8",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "devctl не может менять .env.example",
         "description": "Зачем: devctl запрещает в патче любые .env.* (включая .env.example), а web хранит backend/.env.example и frontend/.env.example. Эти файлы нельзя изменить патчем.\n\nГотово, когда: выбрано и внедрено одно из решений: разрешить в devctl именно *.example, или переименовать файлы в web (env.example) с обновлением документации.",
         "priority": "medium",
-        "position": 2048,
+        "position": 11264,
         "archivedAt": null
       },
       {
@@ -648,6 +648,16 @@
         "priority": "low",
         "position": 12288,
         "archivedAt": null
+      },
+      {
+        "id": "01a114f8-cc77-7001-b7e7-09884e7db90f",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "devctl 0.9.0 в монорепозитории: пачки патчей",
+        "description": "Зачем: владелец поставил devctl 0.9.0 из devctl-universal (50f4324): пачки патчей, реестр workspace машины, проверка base.expectedHead и base.after. Гостевая копия devctl/ оставалась на 0.8.0, поэтому UTS показал бы расхождение «установлено ≠ исходники», а devctl/docs/patch-format.md, на который ссылаются правила проекта, не знал expectedHead/after.\n\nГотово, когда: первая пачка экосистемы применена на хосте через devctl batch start, а следующий UTS показывает devctl 0.9.0 «совпадает» с установленным.",
+        "priority": "high",
+        "position": 13312,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1108,6 +1118,10 @@
       {
         "cardId": "01a110ec-8b2a-7a09-ae76-58d5dbe63179",
         "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a114f8-cc77-7001-b7e7-09884e7db90f",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
       }
     ],
     "checklists": [
@@ -1199,6 +1213,12 @@
         "id": "01a11120-7a01-72b7-8f68-b39aed41a291",
         "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
         "title": "Приёмка A18",
+        "position": 1024
+      },
+      {
+        "id": "01a114f8-cc78-7002-833c-268d84049f95",
+        "cardId": "01a114f8-cc77-7001-b7e7-09884e7db90f",
+        "title": "Приёмка",
         "position": 1024
       }
     ],
@@ -1748,6 +1768,27 @@
         "title": "Ручной systemctl suspend: правка до сна на месте, doctor здоров",
         "isDone": false,
         "position": 5120
+      },
+      {
+        "id": "01a114f8-cc78-7003-9eca-d3a2d6651e30",
+        "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
+        "title": "devctl/ = upstream 50f4324 байт в байт, тесты devctl зелёные",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a114f8-cc78-7004-adcc-281a2b2a9fba",
+        "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
+        "title": "devctl batch plan и batch start прошли на хосте владельца",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a114f8-cc78-7005-b40a-1fed64ca30c7",
+        "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
+        "title": "UTS: devctl.installed совпадает с исходниками",
+        "isDone": false,
+        "position": 3072
       }
     ],
     "comments": [
@@ -1894,6 +1935,24 @@
         "cardId": "01a11055-7b41-7a81-81c6-94829531c266",
         "createdAt": "2026-10-06T11:30:00Z",
         "body": "patch 2026-10-06-abl-a18-budgets-canary-chaos: John сообщил, что UTS abl на хосте прошёл целиком (A17 overall: PASS, 2026-10-06): cargo.test, cargo.build, host-пробы и launch-probe зелёные."
+      },
+      {
+        "id": "01a114f8-cc78-7006-af6e-e563cdfd76ff",
+        "cardId": "01a114f8-cc77-7001-b7e7-09884e7db90f",
+        "createdAt": "2026-10-07T07:00:00Z",
+        "body": "patch 2026-10-07-devctl-upstream-0.9.0: devctl/ скопирован из devctl-universal 50f4324 без изменений (10 файлов, новые docs/batch.md и tests/test_batch_and_queue.py); docs/ecosystem/devctl.md описывает гостевую копию и пачки."
+      },
+      {
+        "id": "01a114f8-cc78-7007-a623-3fdd664bc1f9",
+        "cardId": "01a10d38-f928-75c4-9188-bba303981dd8",
+        "createdAt": "2026-10-07T07:00:00Z",
+        "body": "patch 2026-10-07-devctl-upstream-0.9.0: devctl 0.9.0 (upstream 50f4324, установлен у владельца) разрешает шаблоны .env.example/.env.sample/.env.template/.env.dist; настоящие .env по-прежнему запрещены."
+      },
+      {
+        "id": "01a114f8-cc78-7008-9a66-88514bf98e66",
+        "cardId": "01a10d38-f939-79eb-a84a-c0de67397162",
+        "createdAt": "2026-10-07T07:00:00Z",
+        "body": "patch 2026-10-07-devctl-upstream-0.9.0: в 0.9.0 реестр машины различает вложенные workspace по пути (workspace scan/list), а пачка называет workspace по id, так что путаница «первый найденный вверх» пачку не затрагивает. Сам stage0 в devctl/.devctl остаётся: это upstream."
       }
     ],
     "boardAppearanceSettings": [],
