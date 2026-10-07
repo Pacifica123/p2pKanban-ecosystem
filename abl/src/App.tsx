@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ErrorDetails } from './shared/errorReport/ErrorDetails';
+import { notePlatform } from './shared/errorReport/journal';
 import type { FormEvent } from 'react';
 import {
   createBoard,
@@ -130,6 +132,7 @@ export default function App() {
         setVault(vaultValue);
         setWorkspaces(workspaceValues);
         setIntegration(integrationValue);
+        notePlatform(`${integrationValue.desktop} · ${integrationValue.sessionType}`);
         setDeepLinkIntents(intents.slice(-5));
         setLanBridgeAddresses(bridgeAddresses);
         setLanBridgeAddress((current) => current || bridgeAddresses[0] || '');
@@ -501,7 +504,7 @@ export default function App() {
         </div>
       </header>
 
-      {error ? <div className="error-banner" role="alert">{error}</div> : null}
+      {error ? <div className="error-banner" role="alert">{error}<ErrorDetails message={error} /></div> : null}
 
       <section className="integration-strip" aria-label="Desktop integration capabilities">
         <div>

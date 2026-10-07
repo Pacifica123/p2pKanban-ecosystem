@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 56,
-        "comments": 40,
+        "comments": 41,
         "checklists": 19,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-07T07:40:00Z",
+    "generatedAt": "2026-10-07T07:50:00Z",
     "selfHosted": true,
-    "boardRevision": 13,
-    "lastPatchId": "2026-10-07-mobile-error-details",
+    "boardRevision": 14,
+    "lastPatchId": "2026-10-07-abl-error-details",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -612,11 +612,11 @@
       {
         "id": "01a11070-f28c-7792-b21a-f96b2924fb4d",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Сборщик логов: копировать подробности любой ошибки в web, abl и mobile",
         "description": "Зачем: ошибка вроде «Импорт остановлен… Request failed with 502» не содержит ничего, что можно передать дальше: ни стадии, ни ответа сервера, ни строки лога. Владелец предложил «сборщик логов» по аналогии со сборщиком мусора: механизм, который всегда держит под рукой подробности последней ошибки.\n\nГотово, когда: у каждой ошибки, показанной человеку в web, abl и mobile, есть кнопка «Скопировать подробности»; текст одинаковой формы во всех направлениях достаточен, чтобы разобрать ошибку без доступа к устройству; принято на Docker, телефоне и Arch.\n\nФорма — общий контракт p2p-kanban-error-report/1 (contracts/error-report/1/SPEC.md): направление, версия, сборка и коммит, время, экран и стадия, HTTP-статус, id запроса и id ошибки узла, тело ответа, версия узла, последние строки журнала клиента; секреты вырезаны. Web-узел: паника обработчика → 500 с errorId вместо обрыва (502 у шлюза), заголовок x-p2p-kanban-node на каждом ответе. Порядок: web-узлы → mobile → abl.",
         "priority": "medium",
-        "position": 11264,
+        "position": 16384,
         "archivedAt": null
       },
       {
@@ -1880,7 +1880,7 @@
         "id": "01a11500-4075-7006-bb06-d286a8681ed7",
         "checklistId": "01a11500-4075-7001-9a4f-ac4687852187",
         "title": "abl: кнопка, буфер журнала",
-        "isDone": false,
+        "isDone": true,
         "position": 5120
       },
       {
@@ -2201,6 +2201,12 @@
         "cardId": "01a110ec-8b29-724b-8058-69fc42d97094",
         "createdAt": "2026-10-07T07:40:00Z",
         "body": "patch 2026-10-07-mobile-error-details: npm run apk передаёт git rev-parse HEAD (или P2PKANBAN_SOURCE_REVISION) как EXPO_PUBLIC_SOURCE_REVISION, Expo вписывает его в бандл; для EAS то же делает eas-build-post-install. Коммит виден в «Скопировать подробности» («Программа: mobile … · коммит …»). Проверить на хосте: собрать APK, скопировать подробности любой ошибки, коммит совпадает с HEAD воркспейса."
+      },
+      {
+        "id": "01a1152d-7086-7001-a114-5c1be85b2f93",
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "createdAt": "2026-10-07T07:50:00Z",
+        "body": "patch 2026-10-07-abl-error-details: в abl кнопка «Скопировать подробности» под полосой ошибки; ошибки нативных команд Tauri приходят как вид native (код NATIVE_ERROR), журнал 200 строк в памяти WebView, в отчёт 50 после вычистки секретов. Коммит сборки берётся из P2PKANBAN_SOURCE_REVISION или git HEAD при vite build; в пакете PKGBUILD сборка и, без git, коммит будут «неизвестны». Код готов во всех трёх направлениях; осталась приёмка на хосте: Docker (errorId у 5xx, заголовок узла), новый APK (versionCode 25), Arch."
       }
     ],
     "boardAppearanceSettings": [],
