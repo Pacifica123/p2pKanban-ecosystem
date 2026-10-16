@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 63,
-        "comments": 53,
+        "comments": 54,
         "checklists": 24,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T07:10:00Z",
+    "generatedAt": "2026-10-16T07:20:00Z",
     "selfHosted": true,
-    "boardRevision": 21,
-    "lastPatchId": "2026-10-16-web-ui-themes",
+    "boardRevision": 22,
+    "lastPatchId": "2026-10-16-mobile-ui-themes",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2644,6 +2644,12 @@
         "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "createdAt": "2026-10-16T07:10:00Z",
         "body": "patch 2026-10-16-web-ui-themes: web UI красится из frontend/src/app/styles/themes.css (--ui-*), выбор темы — карточки на странице «Вид приложения», применяется сразу и хранится в localStorage (p2p-kanban.ui-theme). Прежняя тёмно-синяя и старая светлая палитры удалены, бледные цвета статусов заменены токенами (в светлых темах текст ошибок и бейджей стал читаемым). Пресет доски System теперь берёт цвета темы приложения; остальные пресеты досок не тронуты. API, БД и appTheme не меняются. Проверено: vitest 79/79, tsc, vite build, скриншоты Playwright всех четырёх тем."
+      },
+      {
+        "id": "01a14394-fd00-7442-b802-b9c6848b7668",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "createdAt": "2026-10-16T07:20:00Z",
+        "body": "patch 2026-10-16-mobile-ui-themes: mobile красится из src/app/uiThemes.ts (копия словаря), выбор — четыре кнопки в «Настройках», сразу и без сети, хранится в AsyncStorage (p2p-kanban.ui-theme), не зависит от сеанса и узла. appTheme на узле больше не читается и не меняется. В AppColors появились accentText и onAccent: акцент как заливка и акцент как текст разведены, иначе жёлтый Лимон был бы нечитаем. Пресет доски System следует теме приложения. versionCode 26 общий с mobile-ui-freeze, новый APK один на оба. Проверено: jest 129/129, tsc, check-core-crud-contract; на телефоне не смотрел."
       }
     ],
     "boardAppearanceSettings": [],

@@ -1,16 +1,21 @@
-import { useColorScheme } from 'react-native';
-
-import { useAppearance } from '../features/appearance/AppearanceProvider';
+import { useUiTheme } from './UiThemeProvider';
 import { useColorOverride } from './ColorOverrideProvider';
+import { getUiTheme, mixHex } from './uiThemes';
+import type { UiScheme, UiThemeId } from './uiThemes';
 
 export interface AppColors {
   background: string;
   surface: string;
   surfaceMuted: string;
+  surfaceRaised: string;
   border: string;
   text: string;
   muted: string;
+  /** Заливка главной кнопки, отметки, индикатора. Текст на ней — onAccent. */
   accent: string;
+  /** Ссылки, выбранный пункт, индикатор загрузки на surface. */
+  accentText: string;
+  onAccent: string;
   accentSoft: string;
   danger: string;
   dangerSoft: string;
@@ -19,48 +24,49 @@ export interface AppColors {
   overlay: string;
 }
 
-export const lightColors: AppColors = {
-  background: '#f2f2ee',
-  surface: '#ffffff',
-  surfaceMuted: '#e9e9e4',
-  border: '#d5d5ce',
-  text: '#202329',
-  muted: '#687078',
-  accent: '#6255d9',
-  accentSoft: '#e9e6ff',
-  danger: '#b33d4b',
-  dangerSoft: '#f8e4e7',
-  success: '#247a55',
-  warning: '#956b18',
-  overlay: 'rgba(20, 18, 28, 0.58)',
-};
+export function appColorsFor(themeId: UiThemeId): AppColors {
+  const { colors } = getUiTheme(themeId);
+  return {
+    background: colors.background,
+    surface: colors.surface,
+    surfaceMuted: colors.surfaceMuted,
+    surfaceRaised: colors.surfaceRaised,
+    border: colors.border,
+    text: colors.text,
+    muted: colors.textMuted,
+    accent: colors.accentStrong,
+    accentText: colors.accentText,
+    onAccent: colors.onAccent,
+    accentSoft: colors.accentSoft,
+    danger: colors.dangerText,
+    dangerSoft: mixHex(colors.danger, colors.surface, 0.16),
+    success: colors.successText,
+    warning: colors.warningText,
+    overlay: colors.overlay,
+  };
+}
 
-export const darkColors: AppColors = {
-  background: '#17151f',
-  surface: '#211e2b',
-  surfaceMuted: '#2a2635',
-  border: '#3b3548',
-  text: '#f2eff7',
-  muted: '#aaa3b7',
-  accent: '#a697ff',
-  accentSoft: '#342e55',
-  danger: '#ef8290',
-  dangerSoft: '#482a33',
-  success: '#72d1a7',
-  warning: '#dfbd6b',
-  overlay: 'rgba(7, 6, 10, 0.72)',
-};
+/** Цвета темы приложения в форме палитры доски (для пресета «System»). */
+export function boardPaletteFromApp(colors: AppColors) {
+  return {
+    background: colors.background,
+    column: colors.surfaceMuted,
+    card: colors.surfaceRaised,
+    text: colors.text,
+    muted: colors.muted,
+    border: colors.border,
+    accent: colors.accentText,
+  };
+}
 
 export function useAppColors() {
-  const base = useResolvedTheme() === 'dark' ? darkColors : lightColors;
+  const base = appColorsFor(useUiTheme().theme);
   const override = useColorOverride();
   return override ? { ...base, ...override } : base;
 }
 
-export function useResolvedTheme() {
-  const systemTheme = useColorScheme() === 'dark' ? 'dark' : 'light';
-  const { preferences } = useAppearance();
-  return preferences.appTheme === 'system' ? systemTheme : preferences.appTheme;
+export function useResolvedTheme(): UiScheme {
+  return getUiTheme(useUiTheme().theme).scheme;
 }
 
 export const spacing = {

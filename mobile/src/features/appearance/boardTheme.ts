@@ -18,6 +18,9 @@ export interface BoardPalette {
 
 type PresetPalette = Omit<BoardPalette, 'imageUri'>;
 
+/** Палитра текущей темы приложения: ей следует пресет «System». */
+export type AppBoardPalette = PresetPalette;
+
 const palettes: Record<string, Record<ResolvedBoardMode, PresetPalette>> = {
   system: {
     dark: {
@@ -137,8 +140,12 @@ function wallpaperBackground(
 export function resolveBoardPalette(
   appearance: BoardAppearanceSettings,
   mode: ResolvedBoardMode,
+  app?: AppBoardPalette,
 ): BoardPalette {
-  const base = (palettes[appearance.themePreset] || palettes.system)![mode];
+  const named = palettes[appearance.themePreset];
+  const base = app && (!named || appearance.themePreset === 'system')
+    ? app
+    : (named || palettes.system)![mode];
   const accent = customAccent(appearance) || base.accent;
   const imageUri = appearance.wallpaper.kind === 'image'
     && typeof appearance.wallpaper.value === 'string'

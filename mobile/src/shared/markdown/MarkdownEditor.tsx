@@ -66,7 +66,7 @@ export function MarkdownView({ source }: { source: string }) {
                 }
               : {},
             link
-              ? { color: colors.accent, textDecorationLine: 'underline' }
+              ? { color: colors.accentText, textDecorationLine: 'underline' }
               : {},
           ]}
         >
@@ -168,7 +168,7 @@ export function MarkdownEditor({
           accessibilityRole="button"
           onPress={() => setPreview(!preview)}
         >
-          <Text style={{ color: colors.accent }}>
+          <Text style={{ color: colors.accentText }}>
             {preview ? 'Редактировать' : 'Предпросмотр'}
           </Text>
         </Pressable>
@@ -197,7 +197,7 @@ export function MarkdownEditor({
                   input.current?.focus();
                 }}
               >
-                <Text style={{ color: colors.accent }}>{label}</Text>
+                <Text style={{ color: colors.accentText }}>{label}</Text>
               </Pressable>
             ))}
           </View>

@@ -34,7 +34,7 @@ export function ConnectionScreen() {
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.hero}>
-        <Text style={[styles.brand, { color: colors.accent }]}>p2pKanban</Text>
+        <Text style={[styles.brand, { color: colors.accentText }]}>p2pKanban</Text>
         <Text style={[styles.title, { color: colors.text }]}>Подключение к узлу</Text>
         <Text style={[styles.subtitle, { color: colors.muted }]}> 
           Для первой привязки приложение подключается к вашему узлу. Подготовленные доски затем

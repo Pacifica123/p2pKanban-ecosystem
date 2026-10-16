@@ -146,7 +146,7 @@ export function Button({
     primary: {
       background: colors.accent,
       border: colors.accent,
-      text: colors.background,
+      text: colors.onAccent,
     },
     secondary: {
       background: colors.surface,
@@ -205,7 +205,7 @@ export function Field({
         {...props}
         multiline={multiline}
         placeholderTextColor={colors.muted}
-        selectionColor={colors.accent}
+        selectionColor={colors.accentText}
         style={[
           styles.input,
           dense && styles.inputDense,
@@ -284,7 +284,7 @@ export function StateView({
   const colors = useAppColors();
   return (
     <View style={styles.state}>
-      {busy ? <ActivityIndicator color={colors.accent} /> : null}
+      {busy ? <ActivityIndicator color={colors.accentText} /> : null}
       <Text style={[styles.stateTitle, { color: colors.text }]}>{title}</Text>
       {description ? (
         <Text style={[styles.stateDescription, { color: colors.muted }]}>{description}</Text>

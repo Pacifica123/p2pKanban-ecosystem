@@ -69,7 +69,7 @@ function PriorityStars({
     : value === 'high'
       ? colors.warning
       : value === 'medium'
-        ? colors.accent
+        ? colors.accentText
         : colors.muted;
   return (
     <View style={styles.priorityLine} accessibilityRole="radiogroup">
@@ -682,7 +682,7 @@ export function CardDetailsModal({
                       ]}
                     >
                       {item.isDone ? (
-                        <Text style={[styles.checkboxMark, { color: colors.background }]}>✓</Text>
+                        <Text style={[styles.checkboxMark, { color: colors.onAccent }]}>✓</Text>
                       ) : null}
                     </View>
                     <Text

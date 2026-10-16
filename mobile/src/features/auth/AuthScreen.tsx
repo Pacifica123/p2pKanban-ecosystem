@@ -65,7 +65,7 @@ export function AuthScreen() {
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.hero}>
-        <Text style={[styles.brand, { color: colors.accent }]}>p2pKanban</Text>
+        <Text style={[styles.brand, { color: colors.accentText }]}>p2pKanban</Text>
         <Text style={[styles.title, { color: colors.text }]}>
           {mode === 'sign-in' ? 'Вход' : 'Новый аккаунт'}
         </Text>

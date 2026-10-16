@@ -19,6 +19,7 @@ import { useNetwork } from '../../app/NetworkProvider';
 import { ColorOverrideProvider } from '../../app/ColorOverrideProvider';
 import type { RootStackParamList } from '../../app/navigation/types';
 import {
+  boardPaletteFromApp,
   radius,
   spacing,
   type AppColors,
@@ -46,6 +47,7 @@ import { BoardAppearanceModal } from '../appearance/BoardAppearanceModal';
 import {
   defaultBoardAppearance,
   resolveBoardPalette,
+  validHex,
   type BoardPalette,
 } from '../appearance/boardTheme';
 import { useLocalBoard } from '../localFirst/useLocalBoard';
@@ -291,10 +293,12 @@ export function BoardScreen({ navigation, route }: Props) {
   const snapshot = runtime.snapshot;
   const appearance = snapshot?.appearance || defaultBoardAppearance(boardId);
   const boardPalette = useMemo(
-    () => resolveBoardPalette(appearance, resolvedTheme),
-    [appearance, resolvedTheme],
+    () => resolveBoardPalette(appearance, resolvedTheme, boardPaletteFromApp(colors)),
+    [appearance, colors, resolvedTheme],
   );
-  const boardModalColors = useMemo<AppColors>(() => ({
+  const followsAppTheme = appearance.themePreset === 'system'
+    && !validHex(appearance.customProperties?.accentColor);
+  const boardModalColors = useMemo<AppColors>(() => (followsAppTheme ? colors : {
     ...colors,
     background: boardPalette.background,
     surface: boardPalette.card,
@@ -303,10 +307,12 @@ export function BoardScreen({ navigation, route }: Props) {
     text: boardPalette.text,
     muted: boardPalette.muted,
     accent: boardPalette.accent,
+    accentText: boardPalette.accent,
+    onAccent: boardPalette.background,
     accentSoft: /^#[0-9a-f]{6}$/i.test(boardPalette.accent)
       ? `${boardPalette.accent}26`
       : colors.accentSoft,
-  }), [boardPalette, colors]);
+  }), [boardPalette, colors, followsAppTheme]);
   const columns = useMemo(
     () => [...(snapshot?.columns || [])].sort((left, right) => left.position - right.position),
     [snapshot?.columns],
@@ -928,7 +934,7 @@ export function BoardScreen({ navigation, route }: Props) {
             },
           ]}
         >
-          <Text style={[styles.dragOverlayText, { color: colors.background }]}>
+          <Text style={[styles.dragOverlayText, { color: colors.onAccent }]}>
             {columns.find((column) => column.id === dragState.targetColumnId)?.name
               || 'Перемещение'}
           </Text>

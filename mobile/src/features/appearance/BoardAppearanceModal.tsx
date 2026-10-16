@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { radius, spacing, useAppColors, useResolvedTheme } from '../../app/theme';
+import {
+  boardPaletteFromApp,
+  radius,
+  spacing,
+  useAppColors,
+  useResolvedTheme,
+} from '../../app/theme';
 import type {
   BoardAppearanceSettings,
   CardPreviewMode,
@@ -53,7 +59,7 @@ function Choice<T extends string>({
       ]}
     >
       {swatch ? <View style={[styles.swatch, { backgroundColor: swatch }]} /> : null}
-      <Text style={[styles.choiceText, { color: active ? colors.accent : colors.text }]}>
+      <Text style={[styles.choiceText, { color: active ? colors.accentText : colors.text }]}>
         {label}
       </Text>
     </Pressable>
@@ -141,7 +147,10 @@ export function BoardAppearanceModal({
   const accent = typeof draft.customProperties.accentColor === 'string'
     ? draft.customProperties.accentColor
     : '';
-  const preview = useMemo(() => resolveBoardPalette(draft, mode), [draft, mode]);
+  const preview = useMemo(
+    () => resolveBoardPalette(draft, mode, boardPaletteFromApp(colors)),
+    [colors, draft, mode],
+  );
   const wallpaperNeedsValue = !['none', 'accent'].includes(draft.wallpaper.kind);
   const wallpaperValue = draft.wallpaper.value || '';
   const invalidAccent = Boolean(accent && !validHex(accent));
@@ -187,7 +196,11 @@ export function BoardAppearanceModal({
         <SectionTitle title="Цветовая схема" />
         <View style={styles.choices}>
           {boardThemePresets.map((preset) => {
-            const palette = resolveBoardPalette({ ...draft, themePreset: preset.id }, mode);
+            const palette = resolveBoardPalette(
+              { ...draft, themePreset: preset.id },
+              mode,
+              boardPaletteFromApp(colors),
+            );
             return (
               <Choice
                 key={preset.id}

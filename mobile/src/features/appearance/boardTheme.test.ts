@@ -40,3 +40,21 @@ describe('mobile board appearance', () => {
     expect(validHex('#abc')).toBe(false);
   });
 });
+
+describe('System preset and the app theme', () => {
+  const app = {
+    background: '#fff7d6', column: '#fffbea', card: '#ffffff',
+    text: '#333333', muted: '#6b6250', border: '#efe3b5', accent: '#8a6500',
+  };
+
+  it('follows the app palette when the board keeps the System preset', () => {
+    const palette = resolveBoardPalette(defaultBoardAppearance('board-1'), 'light', app);
+    expect(palette.background).toBe('#fff7d6');
+    expect(palette.card).toBe('#ffffff');
+  });
+
+  it('keeps named board presets independent of the app theme', () => {
+    const appearance = { ...defaultBoardAppearance('board-1'), themePreset: 'forest-mint' };
+    expect(resolveBoardPalette(appearance, 'light', app).background).not.toBe('#fff7d6');
+  });
+});

@@ -7,7 +7,9 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNetwork } from '../../app/NetworkProvider';
 import type { RootStackParamList } from '../../app/navigation/types';
 import { spacing, useAppColors } from '../../app/theme';
-import type { AppTheme, Density } from '../../shared/types/api';
+import type { Density } from '../../shared/types/api';
+import { useUiTheme } from '../../app/UiThemeProvider';
+import { UI_THEMES } from '../../app/uiThemes';
 import {
   Button,
   ErrorDetails,
@@ -36,11 +38,13 @@ function SettingChoice<T extends string>({
   value,
   selected,
   onPress,
+  swatch,
 }: {
   label: string;
   value: T;
   selected: T;
   onPress: (value: T) => void;
+  swatch?: { background: string; accent: string };
 }) {
   const colors = useAppColors();
   const active = selected === value;
@@ -58,7 +62,12 @@ function SettingChoice<T extends string>({
         },
       ]}
     >
-      <Text style={[styles.choiceText, { color: active ? colors.accent : colors.text }]}>
+      {swatch ? (
+        <View style={[styles.swatch, { backgroundColor: swatch.background, borderColor: colors.border }]}>
+          <View style={[styles.swatchAccent, { backgroundColor: swatch.accent }]} />
+        </View>
+      ) : null}
+      <Text style={[styles.choiceText, { color: active ? colors.accentText : colors.text }]}>
         {label}
       </Text>
     </Pressable>
@@ -69,6 +78,7 @@ export function SettingsScreen({ navigation }: Props) {
   const colors = useAppColors();
   const auth = useAuth();
   const appearance = useAppearance();
+  const uiTheme = useUiTheme();
   const connection = useConnection();
   const { isOnline } = useNetwork();
   const [busy, setBusy] = useState(false);
@@ -155,19 +165,18 @@ export function SettingsScreen({ navigation }: Props) {
 
       <Panel style={styles.panel}>
         <SectionTitle title="Вид приложения" />
-        <Text style={[styles.caption, { color: colors.muted }]}>Тема</Text>
+        <Text style={[styles.caption, { color: colors.muted }]}>
+          Тема приложения: применяется сразу и хранится на этом телефоне
+        </Text>
         <View style={styles.choices}>
-          {([
-            ['system', 'Как на устройстве'],
-            ['light', 'Светлая'],
-            ['dark', 'Тёмная'],
-          ] as Array<[AppTheme, string]>).map(([value, label]) => (
+          {UI_THEMES.map((theme) => (
             <SettingChoice
-              key={value}
-              label={label}
-              value={value}
-              selected={appearance.preferences.appTheme}
-              onPress={(appTheme) => saveAppearance({ appTheme })}
+              key={theme.id}
+              label={theme.label}
+              value={theme.id}
+              selected={uiTheme.theme}
+              onPress={uiTheme.setTheme}
+              swatch={{ background: theme.colors.background, accent: theme.colors.accentStrong }}
             />
           ))}
         </View>
@@ -201,8 +210,8 @@ export function SettingsScreen({ navigation }: Props) {
           />
         </View>
         <Text style={[styles.caption, { color: colors.muted }]}>
-          Настройки те же, что в веб-клиенте. Без сети изменение остаётся на устройстве и
-          отправится узлу после подключения.
+          Плотность и анимации те же, что в веб-клиенте. Без сети изменение остаётся на
+          устройстве и отправится узлу после подключения. Тема у каждого устройства своя.
         </Text>
         {appearanceError ? <InlineNotice text={appearanceError} tone="danger" /> : null}
         {appearance.saving ? <InlineNotice text="Сохраняем оформление…" /> : null}
@@ -311,8 +320,22 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.xs,
   },
+  swatch: {
+    width: 18,
+    height: 18,
+    borderRadius: 5,
+    borderWidth: 1,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+  },
+  swatchAccent: {
+    height: 6,
+  },
   choice: {
     minHeight: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     justifyContent: 'center',
     paddingHorizontal: spacing.sm,
     borderWidth: 1,

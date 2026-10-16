@@ -8,6 +8,7 @@ import { AppearanceProvider } from '../features/appearance/AppearanceProvider';
 import { ConnectionProvider } from '../features/connection/ConnectionProvider';
 import { ReminderProvider } from '../features/reminders/ReminderProvider';
 import { NetworkProvider } from './NetworkProvider';
+import { UiThemeProvider } from './UiThemeProvider';
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient({
@@ -25,17 +26,19 @@ export function AppProviders({ children }: PropsWithChildren) {
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <QueryClientProvider client={queryClient}>
-        <ConnectionProvider>
-          <NetworkProvider>
-            <AuthProvider>
-              <AppearanceProvider>
-                <ReminderProvider>{children}</ReminderProvider>
-              </AppearanceProvider>
-            </AuthProvider>
-          </NetworkProvider>
-        </ConnectionProvider>
-      </QueryClientProvider>
+      <UiThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ConnectionProvider>
+            <NetworkProvider>
+              <AuthProvider>
+                <AppearanceProvider>
+                  <ReminderProvider>{children}</ReminderProvider>
+                </AppearanceProvider>
+              </AuthProvider>
+            </NetworkProvider>
+          </ConnectionProvider>
+        </QueryClientProvider>
+      </UiThemeProvider>
     </SafeAreaProvider>
   );
 }
