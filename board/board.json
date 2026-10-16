@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 64,
-        "comments": 55,
+        "comments": 56,
         "checklists": 24,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T07:30:00Z",
+    "generatedAt": "2026-10-16T05:40:00Z",
     "selfHosted": true,
-    "boardRevision": 23,
-    "lastPatchId": "2026-10-16-abl-ui-themes",
+    "boardRevision": 24,
+    "lastPatchId": "2026-10-16-mobile-ui-freeze-typecheck",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2674,6 +2674,12 @@
         "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "createdAt": "2026-10-16T07:30:00Z",
         "body": "patch 2026-10-16-abl-ui-themes: abl красится из src/themes.css (копия словаря), styles.css без цветовых литералов, выбор Theme в шапке окна; CSP, Rust core, схема и упаковка не меняются. Выбор пока живёт до перезапуска окна: фронтенду abl запрещены хранилища браузера (A07–A09), запоминание вынесено в отдельную карточку. Код во всех трёх направлениях готов, осталась приёмка: Docker (страница «Вид приложения»), новый APK (versionCode 26, вместе с mobile-ui-freeze), Arch."
+      },
+      {
+        "id": "01a1432e-2c47-736d-972c-0bd6e8b255ce",
+        "cardId": "01a14330-47c0-735a-958d-4b8c66ef8ea5",
+        "createdAt": "2026-10-16T05:40:00Z",
+        "body": "patch 2026-10-16-mobile-ui-freeze-typecheck: тест deviceLink/service.test.ts использует globalThis.fetch вместо global.fetch, `npx tsc --noEmit` в mobile снова чистый. Код приложения не меняется, APK пересобирать не нужно."
       }
     ],
     "boardAppearanceSettings": [],

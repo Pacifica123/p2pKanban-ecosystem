@@ -65,21 +65,21 @@ test('expired proof is not reused', async () => {
   await expect(prepareDeviceLink()).rejects.toThrow('действующего разрешения нет');
 });
 describe('laptop in the local network', () => {
-  const realFetch = global.fetch;
-  afterEach(() => { global.fetch = realFetch; jest.useRealTimers(); });
+  const realFetch = globalThis.fetch;
+  afterEach(() => { globalThis.fetch = realFetch; jest.useRealTimers(); });
   const hanging = () => jest.fn((_url: string, init: RequestInit) => new Promise((_resolve, reject) => {
     init.signal?.addEventListener('abort', () => reject(new Error('Aborted')));
   })) as unknown as typeof fetch;
   test('a silent laptop ends in 10 seconds instead of holding the panel', async () => {
     jest.useFakeTimers();
-    global.fetch = hanging();
+    globalThis.fetch = hanging();
     const pending = fetchNearbyRequest('192.168.1.42:8080');
     const outcome = expect(pending).rejects.toThrow('не ответил за 10 секунд');
     await jest.advanceTimersByTimeAsync(10_000);
     await outcome;
   });
   test('cancel stops the request at once', async () => {
-    global.fetch = hanging();
+    globalThis.fetch = hanging();
     const controller = new AbortController();
     const pending = fetchNearbyRequest('192.168.1.42:8080', controller.signal);
     controller.abort();
