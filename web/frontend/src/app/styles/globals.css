@@ -1657,6 +1657,13 @@ body {
   transition: width 280ms ease;
 }
 
+.source-update-card__error {
+  max-height: 12rem;
+  overflow-y: auto;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
 .source-update-card__facts {
   display: flex;
   justify-content: space-between;

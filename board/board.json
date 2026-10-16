@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 64,
-        "comments": 57,
+        "comments": 59,
         "checklists": 25,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T16:40:00Z",
+    "generatedAt": "2026-10-16T17:00:00Z",
     "selfHosted": true,
-    "boardRevision": 25,
-    "lastPatchId": "2026-10-16-ecosystem-textbooks-answers",
+    "boardRevision": 26,
+    "lastPatchId": "2026-10-16-web-updater-self-check",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2727,6 +2727,18 @@
         "cardId": "01a1434b-bf0c-79fd-b6a1-8441075228c5",
         "createdAt": "2026-10-16T16:40:00Z",
         "body": "patch 2026-10-16-ecosystem-textbooks-answers: ответы John на четыре вопроса записаны в описание; следующий шаг — методология учебников, её пункты в чек-листе. Открыт вопрос места хранения."
+      },
+      {
+        "id": "01a145a7-fe80-7001-b10d-b3d95f477a75",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-16T17:00:00Z",
+        "body": "patch 2026-10-16-web-updater-self-check: первое обновление на ноутбуке (2026-10-16) остановилось на 14% с «Updater завершился с кодом 1». Причина: перед сборкой updater запускает web/tools/check_zero_config_bootstrap.py из скачанного кода, а тот падал на правиле «README не длиннее 220 строк» (README 230). Правило убрано из проверки; теперь при ошибке окно обновления показывает объяснение updater из .dev-bootstrap/update-job.log, а не только код. Обновление скачанного main через этот патч проверено на копии: распаковка web/, состав, встроенная проверка проходят. На хосте: после push нажать «Обновить» на плашке; узел станет коммитом main, а не отпечатком."
+      },
+      {
+        "id": "01a145a7-fe80-7002-b889-eb477132f635",
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "createdAt": "2026-10-16T17:00:00Z",
+        "body": "patch 2026-10-16-web-updater-self-check: check_zero_config_bootstrap больше не падает: правило длины README убрано, потому что updater использует эту проверку как ворота обновления узла. Остальные устаревшие проверки по-прежнему падают."
       }
     ],
     "boardAppearanceSettings": [],

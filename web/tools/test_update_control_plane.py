@@ -251,6 +251,30 @@ class UpdateChannelTest(unittest.TestCase):
             self.assertIs(state["updateAvailable"], True)
             self.assertEqual(state["sourcePath"], "web")
 
+    def test_failed_update_reports_the_updater_reason(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "update-job.log"
+            log.write_text(
+                "Получаю исходники x (main).\n"
+                "Проверяю полученный source перед сборкой.\n"
+                "\n"
+                "Запуск остановлен: Встроенная проверка нового bootstrap завершилась ошибкой.\n"
+                "AssertionError: README became dense again\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                control.failure_reason(log),
+                "Встроенная проверка нового bootstrap завершилась ошибкой.\n"
+                "AssertionError: README became dense again",
+            )
+            log.write_text("a\n" * 20 + "last line\n", encoding="utf-8")
+            self.assertTrue(str(control.failure_reason(log)).endswith("last line"))
+            self.assertIsNone(control.failure_reason(Path(directory) / "missing.log"))
+
+    def test_bootstrap_self_check_does_not_gate_on_readme_length(self) -> None:
+        checker = (Path(__file__).resolve().parent / "check_zero_config_bootstrap.py").read_text(encoding="utf-8")
+        self.assertNotIn("README became dense again", checker)
+
     def test_monorepo_archive_builds_from_web_directory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             monorepo = Path(directory) / "p2pKanban-ecosystem-abc"

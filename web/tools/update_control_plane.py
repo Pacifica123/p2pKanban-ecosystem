@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 
-CONTROL_VERSION = "1.2.0"
+CONTROL_VERSION = "1.3.0"
 DEFAULT_PORT = 8765
 DEFAULT_REPOSITORY = "https://github.com/Pacifica123/p2pKanban-ecosystem"
 # Before the monorepo the node was published from its own repository. Nodes
@@ -39,6 +39,7 @@ JOB_STATE = Path(".dev-bootstrap/update-job.json")
 LATEST_CACHE = Path(".dev-bootstrap/latest-source-commit.json")
 JOB_LOG = Path(".dev-bootstrap/update-job.log")
 MAX_BODY_BYTES = 16 * 1024
+MAX_FAILURE_REASON_CHARS = 1500
 
 
 def iso_now() -> str:
@@ -212,6 +213,26 @@ def installed_revision(project_root: Path) -> str | None:
     # still contains the previous source. Git HEAD is therefore not evidence of
     # the installed web revision.
     return None
+
+
+def failure_reason(log_path: Path) -> str | None:
+    """The updater's own explanation from its log: the text after its last
+    "Запуск остановлен:" line, otherwise the last lines of the log."""
+    try:
+        lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return None
+    marker = "Запуск остановлен:"
+    starts = [index for index, line in enumerate(lines) if line.lstrip().startswith(marker)]
+    if starts:
+        tail = lines[starts[-1]:]
+        tail[0] = tail[0].lstrip().removeprefix(marker).strip()
+    else:
+        tail = lines[-6:]
+    reason = "\n".join(line.rstrip() for line in tail if line.strip()).strip()
+    if len(reason) > MAX_FAILURE_REASON_CHARS:
+        reason = reason[: MAX_FAILURE_REASON_CHARS - 1] + "…"
+    return reason or None
 
 
 def empty_job() -> dict[str, Any]:
@@ -448,14 +469,17 @@ class ControlApplication:
                 verified=True,
             )
             return
+        reason = failure_reason(log_path) if return_code != 0 else None
         self._set_job(
             job,
             status="failed",
             phase="остановлено",
             finishedAt=iso_now(),
             error=(
-                f"Updater завершился с кодом {return_code}. "
-                f"Активный commit: {revision or 'не определён'}."
+                (f"{reason}\n" if reason else "")
+                + f"Updater завершился с кодом {return_code}. "
+                + f"Активный commit: {revision or 'не определён'}. "
+                + f"Журнал: {JOB_LOG.as_posix()}"
             ),
             message="Рабочая версия сохранена либо автоматически возвращена.",
             verified=False,

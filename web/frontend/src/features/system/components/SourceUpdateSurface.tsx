@@ -149,7 +149,7 @@ export function SourceUpdateSurface() {
               <span>{state.job.phase}</span>
               <strong>{state.job.progress}%</strong>
             </div>
-            {state.job.error ? <><p className="form-error" role="alert">{state.job.error}</p>
+            {state.job.error ? <><p className="form-error source-update-card__error" role="alert">{state.job.error}</p>
               <ErrorDetails message={state.job.error} operation="Обновление узла" stage={state.job.phase} /></> : null}
             {state.job.status === 'succeeded' ? (
               <Button
