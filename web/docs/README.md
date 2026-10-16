@@ -59,7 +59,7 @@
 
 | Область | Фактическое решение |
 |---|---|
-| Версия | `v1` (`1.0.0`), единая непрерывная линия без release-каналов |
+| Версия | `v2.1.0` (файл `VERSION`), единая непрерывная линия без release-каналов |
 | Основной запуск | `python bootstrap.py`, весь runtime в Docker |
 | Обновление | Web-плашка или CLI, commit SHA + backup + versioned images + rollback |
 | Канонический путь | React/Vite → Nginx → Rust/Axum → PostgreSQL |
@@ -67,7 +67,7 @@
 | Синхронизация | Backend-координируемая; активный web polling, web-node link и roaming карточек/чек-листов/оформления |
 | P2P | Nostr roaming используется Android; `sync-core`, Iroh и edge coordinator остаются экспериментальными |
 | Edge coordinator | Отдельный совместимый прототип; не заменяет основной backend |
-| Mobile | Android v1 (`versionCode 10`): column-state, local-first, напоминания, оформление и немедленный выход с загружаемой доски |
+| Mobile | Android-клиент — отдельное направление со своей версией; узел выдаёт ему вход и ключи досок |
 | Релиз | Основной артефакт — self-host bootstrap ZIP, а не AppImage и не одинокий `.exe` |
 
 ## Важная граница

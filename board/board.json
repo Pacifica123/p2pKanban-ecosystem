@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 61,
-        "comments": 49,
+        "comments": 50,
         "checklists": 23,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T06:00:00Z",
+    "generatedAt": "2026-10-16T06:10:00Z",
     "selfHosted": true,
-    "boardRevision": 17,
-    "lastPatchId": "2026-10-16-ecosystem-docs-revision",
+    "boardRevision": 18,
+    "lastPatchId": "2026-10-16-web-docs-truth",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2539,6 +2539,12 @@
         "cardId": "01a1434b-bf01-7ec0-8d94-b75ec1294143",
         "createdAt": "2026-10-16T06:00:00Z",
         "body": "patch 2026-10-16-ecosystem-docs-revision: John выбрал «Разрешить» (2026-10-16): E-ADR-001 принят, принцип 3 дополнен — сборка и запуск направления корень не читают, его проверки могут читать contracts/ (или копию, сделанную при сборке). Перенос OpenAPI в contracts/node-api/1 — после того как web догонит узел."
+      },
+      {
+        "id": "01a14354-e6c1-770d-8282-727002bd345e",
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "createdAt": "2026-10-16T06:10:00Z",
+        "body": "patch 2026-10-16-web-docs-truth: у ADR-006 web статус «частично заменён ADR-007» и таблица, что из шести пунктов решения действует на 2026-10-16 (Tailscale-координатор для roaming заменён, Iroh — необязательный crate, Durable Object — прототип в edge-coordinator/, путь к coordinator-free — кольцо устройств). Текст решения не переписан. В web/docs/README.md «Текущее состояние» версия v2.1.0 вместо v1 (1.0.0) и без устаревшего versionCode 10 Android. docs_audit.py больше не находит молча заменённых ADR."
       }
     ],
     "boardAppearanceSettings": [],
