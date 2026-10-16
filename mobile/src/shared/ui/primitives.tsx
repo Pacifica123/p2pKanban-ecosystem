@@ -298,9 +298,12 @@ export function StateView({
 export function InlineNotice({
   text,
   tone = 'neutral',
+  error,
 }: {
   text: string;
   tone?: 'neutral' | 'danger' | 'success' | 'warning';
+  /** The failure behind a danger notice, so «Скопировать подробности» keeps its HTTP status. */
+  error?: unknown;
 }) {
   const colors = useAppColors();
   const palette = {
@@ -313,7 +316,7 @@ export function InlineNotice({
   return (
     <View style={[styles.notice, { backgroundColor: palette.background }]}>
       <Text style={[styles.noticeText, { color: palette.text }]}>{text}</Text>
-      {tone === 'danger' ? <ErrorDetails message={text} /> : null}
+      {tone === 'danger' ? <ErrorDetails message={text} error={error} /> : null}
     </View>
   );
 }

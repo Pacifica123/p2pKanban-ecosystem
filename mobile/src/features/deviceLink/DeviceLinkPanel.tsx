@@ -137,7 +137,7 @@ export function DeviceLinkPanel() {
           <InlineNotice text={status} tone="neutral" />
           {failure !== undefined ? <ErrorDetails message={status} error={failure} operation="Подключение устройства" /> : null}
           <Text selectable style={{ color: colors.text }}>
-            Ключ этого устройства — сверьте на ноутбуке:\n{fingerprint}
+            Ключ этого устройства — сверьте на ноутбуке:{'\n'}{fingerprint}
           </Text>
           <Field label="IP:порт ноутбука в локальной сети" value={nearbyAddress}
             onChangeText={setNearbyAddress} editable={!busy} placeholder="192.168.1.42:8080" />

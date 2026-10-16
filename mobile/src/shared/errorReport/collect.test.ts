@@ -20,7 +20,7 @@ describe('error report on the phone', () => {
     expect(error).toBeInstanceOf(ApiError);
     const report = collectReport({ message: 'Карточка не создана', error, screen: 'Доска' });
     expect(report.software).toEqual(mobileSoftware());
-    expect(report.software.build).toBe('26');
+    expect(report.software.build).toBe('27');
     expect(report.peer).toEqual({ direction: 'web', version: '2.1.0', build: '8087da08253b', commit: null });
     expect(report.http).toMatchObject({ method: 'POST', path: '/api/v1/boards/b1/cards', status: 500, errorId: '01a11200-0000-7000-8000-00000000e500' });
     expect(renderReport(report)).toContain('ошибка узла 01a11200-0000-7000-8000-00000000e500');

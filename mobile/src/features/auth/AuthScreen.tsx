@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { spacing, useAppColors } from '../../app/theme';
-import { ApiError } from '../../shared/api/client';
 import {
   Button,
   Field,
@@ -12,14 +11,7 @@ import {
 } from '../../shared/ui/primitives';
 import { useConnection } from '../connection/ConnectionProvider';
 import { useAuth } from './AuthProvider';
-
-type Mode = 'sign-in' | 'sign-up';
-
-function readableError(error: unknown) {
-  if (!(error instanceof Error)) return 'Не удалось выполнить вход.';
-  if (error instanceof ApiError && error.status === 401) return 'Неверная почта или пароль.';
-  return error.message;
-}
+import { readableError, type Mode } from './signInError';
 
 export function AuthScreen() {
   const colors = useAppColors();
@@ -30,6 +22,7 @@ export function AuthScreen() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<unknown>(undefined);
   const [busy, setBusy] = useState(false);
 
   async function submit() {
@@ -45,6 +38,7 @@ export function AuthScreen() {
 
     setBusy(true);
     setError(null);
+    setFailure(undefined);
     try {
       if (mode === 'sign-in') {
         await auth.signIn({ email: email.trim(), password });
@@ -56,7 +50,8 @@ export function AuthScreen() {
         });
       }
     } catch (reason) {
-      setError(readableError(reason));
+      setError(readableError(reason, mode, connection.nodeOrigin));
+      setFailure(reason);
     } finally {
       setBusy(false);
     }
@@ -124,7 +119,7 @@ export function AuthScreen() {
           onSubmitEditing={() => void submit()}
           placeholder="Не меньше 8 символов"
         />
-        {error ? <InlineNotice text={error} tone="danger" /> : null}
+        {error ? <InlineNotice text={error} tone="danger" error={failure} /> : null}
         <Button
           label={mode === 'sign-in' ? 'Войти' : 'Создать аккаунт'}
           variant="primary"

@@ -31,7 +31,7 @@ if (
   || packageLock.version !== packageJson.version
   || packageLock.packages?.['']?.version !== packageJson.version
   || appJson.expo.version !== packageJson.version
-  || appJson.expo.android.versionCode !== 26
+  || appJson.expo.android.versionCode !== 27
 ) {
   throw new Error('Версии Android package, lock и Expo не согласованы.');
 }
@@ -202,7 +202,7 @@ requireText('src/features/sync/syncService.ts', [
   "appVersion: '1.0.0'",
 ]);
 requireText('android/app/build.gradle', [
-  'versionCode 26',
+  'versionCode 27',
   'versionName "2.1.0"',
 ]);
 

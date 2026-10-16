@@ -26,10 +26,15 @@ function withRelay<T>(
       socket.close();
       reject(reason instanceof Error ? reason : new Error(`Релей ${url} недоступен.`));
     };
-    const timer = setTimeout(() => fail(new Error(`Релей ${url} не ответил вовремя.`)), RELAY_TIMEOUT_MS);
+    let opened = false;
+    // An unopened socket points at the network (blocked or filtered), an opened one at the relay.
+    const timer = setTimeout(() => fail(new Error(opened
+      ? `Релей ${url} открыл соединение, но не ответил за ${RELAY_TIMEOUT_MS / 1000} с.`
+      : `Релей ${url} не открыл соединение за ${RELAY_TIMEOUT_MS / 1000} с: сеть не пускает к нему.`)), RELAY_TIMEOUT_MS);
     socket.onerror = () => fail(new Error(`Не удалось открыть ${url}.`));
     socket.onclose = () => fail(new Error(`Релей ${url} закрыл соединение до ответа.`));
     socket.onopen = () => {
+      opened = true;
       try {
         run(socket, finish, fail);
       } catch (error) {
