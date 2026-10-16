@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 
 use axum::{
     extract::State,
-    http::{HeaderMap, Request, StatusCode},
+    http::{HeaderMap, Method, Request, StatusCode},
     middleware::Next,
     response::{IntoResponse, Response},
     Json,
@@ -68,7 +68,31 @@ fn rate_limit_key(category: &str, headers: &HeaderMap) -> String {
     format!("{category}|{ip}|{origin}")
 }
 
-fn classify_request(path: &str) -> Option<(&'static str, u64, u32)> {
+/// Background polling of device-link answers: authenticated or keyed by a random request id,
+/// never a credential attempt. Several screens and tabs poll every 3.5–5 s, so these reads
+/// get their own bucket instead of exhausting the 20/min `auth` bucket and locking out sign-in.
+const POLL_RATE_LIMIT_MAX_ATTEMPTS: u32 = 240;
+
+fn is_device_link_poll(method: &Method, path: &str) -> bool {
+    if method != Method::GET {
+        return false;
+    }
+    let Some(rest) = path.strip_prefix("/api/v1/auth/device-link/lan/") else {
+        return false;
+    };
+    rest == "inbox"
+        || rest == "pending-request"
+        || ["result/", "poll/", "mobile-poll/"].iter().any(|prefix| {
+            rest.strip_prefix(prefix)
+                .is_some_and(|id| !id.is_empty() && !id.contains('/'))
+        })
+}
+
+fn classify_request(method: &Method, path: &str) -> Option<&'static str> {
+    if is_device_link_poll(method, path) {
+        return Some("poll");
+    }
+
     if path.starts_with("/api/v1/auth/native/")
         || path.starts_with("/api/v1/auth/sign-in")
         || path.starts_with("/api/v1/auth/sign-up")
@@ -79,11 +103,11 @@ fn classify_request(path: &str) -> Option<(&'static str, u64, u32)> {
         || path.starts_with("/api/v1/auth/device-link/")
         || path.starts_with("/api/v1/auth/dev-bootstrap")
     {
-        return Some(("auth", 0, 0));
+        return Some("auth");
     }
 
     if path.starts_with("/api/v1/sync") || path.starts_with("/api/v1/integrations/") {
-        return Some(("sensitive", 0, 0));
+        return Some("sensitive");
     }
 
     None
@@ -97,11 +121,15 @@ pub async fn rate_limit_middleware(
     let path = request.uri().path().to_string();
     let headers = request.headers().clone();
 
-    if let Some((category, _, _)) = classify_request(&path) {
+    if let Some(category) = classify_request(request.method(), &path) {
         let (window_secs, max_attempts) = match category {
             "auth" => (
                 state.settings.auth.auth_rate_limit_window_secs,
                 state.settings.auth.auth_rate_limit_max_attempts,
+            ),
+            "poll" => (
+                state.settings.auth.sensitive_rate_limit_window_secs,
+                POLL_RATE_LIMIT_MAX_ATTEMPTS,
             ),
             _ => (
                 state.settings.auth.sensitive_rate_limit_window_secs,
@@ -152,4 +180,47 @@ pub async fn rate_limit_middleware(
     }
 
     next.run(request).await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn device_link_polling_does_not_spend_the_auth_bucket() {
+        for path in [
+            "/api/v1/auth/device-link/lan/inbox",
+            "/api/v1/auth/device-link/lan/pending-request",
+            "/api/v1/auth/device-link/lan/result/abc",
+            "/api/v1/auth/device-link/lan/poll/abc",
+            "/api/v1/auth/device-link/lan/mobile-poll/abc",
+        ] {
+            assert_eq!(classify_request(&Method::GET, path), Some("poll"), "{path}");
+        }
+    }
+
+    #[test]
+    fn credential_and_link_actions_stay_in_the_auth_bucket() {
+        for (method, path) in [
+            (Method::POST, "/api/v1/auth/native/sign-in"),
+            (Method::POST, "/api/v1/auth/sign-in"),
+            (Method::POST, "/api/v1/auth/refresh"),
+            (Method::POST, "/api/v1/auth/device-link/lan/inbox"),
+            (Method::POST, "/api/v1/auth/device-link/lan/connect"),
+            (Method::POST, "/api/v1/auth/device-link/lan/approve"),
+            (Method::GET, "/api/v1/auth/device-link/lan/poll/"),
+            (Method::GET, "/api/v1/auth/device-link/lan/poll/a/b"),
+        ] {
+            assert_eq!(
+                classify_request(&method, path),
+                Some("auth"),
+                "{method} {path}"
+            );
+        }
+        assert_eq!(
+            classify_request(&Method::GET, "/api/v1/sync/x"),
+            Some("sensitive")
+        );
+        assert_eq!(classify_request(&Method::GET, "/api/v1/workspaces"), None);
+    }
 }

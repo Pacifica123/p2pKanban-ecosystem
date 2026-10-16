@@ -8,7 +8,14 @@ import { Panel } from '@/shared/ui/Panel';
 import { TextField } from '@/shared/ui/Field';
 import { Button } from '@/shared/ui/Button';
 
-function errorMessage(error: unknown) {
+// Accounts are node-local: a correct password from another node is also a 401 here.
+export const SIGN_IN_REJECTED =
+  'Этот узел не принял почту и пароль. Аккаунт хранится только на узле, где его создали: '
+  + 'другой узел его не знает, пока аккаунт не перенесён через «Подключить с другого узла». '
+  + 'Проверьте пароль или откройте узел, на котором регистрировались.';
+
+function errorMessage(error: unknown, mode: 'sign_in' | 'node_link' | 'sign_up') {
+  if (error instanceof ApiError && error.status === 401 && mode === 'sign_in') return SIGN_IN_REJECTED;
   if (error instanceof ApiError) return error.message;
   if (error instanceof Error) return error.message;
   return 'Не удалось связаться с сервером.';
@@ -51,7 +58,7 @@ export function AuthPage() {
         await signUpWithPassword({ email, password, displayName });
       }
     } catch (error) {
-      setSubmitError(errorMessage(error));
+      setSubmitError(errorMessage(error, mode));
     } finally {
       setIsSubmitting(false);
     }

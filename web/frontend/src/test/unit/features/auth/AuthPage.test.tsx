@@ -2,7 +2,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AuthPage } from '@/features/auth/pages/AuthPage';
+import { AuthPage, SIGN_IN_REJECTED } from '@/features/auth/pages/AuthPage';
+import { ApiError } from '@/shared/api/errors';
 
 const auth = vi.hoisted(() => ({
   signInFromAnotherNode: vi.fn(),
@@ -66,5 +67,16 @@ describe('AuthPage web-node link', () => {
     expect(
       screen.getByText(/Совпадающий email на другом узле не связывает аккаунты/),
     ).toBeInTheDocument();
+  });
+
+  it('explains that a rejected sign-in may mean the account lives on another node', async () => {
+    auth.signInWithPassword.mockRejectedValue(new ApiError('Invalid email or password', { status: 401 }));
+    renderPage();
+
+    fireEvent.change(screen.getByTestId('auth-email'), { target: { value: 'owner@example.org' } });
+    fireEvent.change(screen.getByTestId('auth-password'), { target: { value: 'password123' } });
+    fireEvent.click(screen.getByTestId('auth-submit'));
+
+    expect(await screen.findByTestId('auth-error')).toHaveTextContent(SIGN_IN_REJECTED);
   });
 });
