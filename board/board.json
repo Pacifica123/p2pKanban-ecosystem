@@ -13,8 +13,8 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 66,
-        "comments": 63,
+        "cards": 67,
+        "comments": 70,
         "checklists": 25,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T17:40:00Z",
+    "generatedAt": "2026-10-16T17:50:00Z",
     "selfHosted": true,
-    "boardRevision": 30,
-    "lastPatchId": "2026-10-16-web-static-checks",
+    "boardRevision": 31,
+    "lastPatchId": "2026-10-16-ecosystem-host-acceptance-r24",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -632,11 +632,11 @@
       {
         "id": "01a110ec-8b29-724b-8058-69fc42d97094",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "mobile: записывать коммит сборки в APK",
         "description": "Зачем: UTS экосистемы сверяет APK на телефоне с деревом только по versionCode. Две сборки с одним versionCode неразличимы, а приёмка mobile часто отстаёт, и старый APK может встретиться с новым web.\n\nГотово, когда: APK несёт коммит или отпечаток исходников (например, в versionName или в ресурсе, который читается через dumpsys или adb), и UTS отличает «тот же versionCode, другая сборка».",
         "priority": "medium",
-        "position": 15360,
+        "position": 18432,
         "archivedAt": null
       },
       {
@@ -712,11 +712,11 @@
       {
         "id": "01a1434b-bf12-797a-9766-2893bd7d47a7",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
         "title": "Ревизия актуальности документов по направлениям",
         "description": "Зачем: аудит 2026-10-16 (python -B tools/ecosystem/docs_audit.py) показал: web 176 документов, 120 без даты; abl 58, без даты 51 (все 7 ADR abl без даты); mobile 14, без даты 8; ADR-006 web заменён ADR-007 молча. Вручную найдено: web/docs/README.md называет версию 1.0.0 и Android versionCode 10 (сейчас 2.1.0 и 25); mobile/README.md — версию 2.0.0 (сейчас 2.1.0).\n\nГотово, когда: по каждому направлению свой патч: устаревшие факты исправлены, у ADR статус и дата, отчёт аудита разобран (исправить, назвать историческим или сжать в наследие).\n\nНачинается после патча 2026-10-16-ecosystem-docs-revision. devctl не входит.",
         "priority": "medium",
-        "position": 11264,
+        "position": 2048,
         "archivedAt": null
       },
       {
@@ -732,7 +732,7 @@
       {
         "id": "01a14330-47c0-735a-958d-4b8c66ef8ea5",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Android: приложение перестаёт отвечать после сопряжения с ноутбуком и после паузы",
         "description": "Зачем: John на телефоне (2026-10-16): иногда всё перестаёт нажиматься, помогает только выгрузка из недавних. Сценарии: «Получить запрос с ноутбука», передумать и выйти; оставить приложение на несколько минут и вернуться.\n\nПричина (по коду и замеру): JS-поток занимался расшифровкой пакета подключения (мегабайты NIP-44 под одной подписью, синхронно; 12,7 с на 1,5 МБ в Node без JIT, на телефоне дольше). Она запускалась при каждом раскрытии панели подключения и после каждой проверки реплик; проверка реплик перезапускалась под открытой доской при каждой смене сети после паузы. Запросы к ноутбуку в LAN шли без тайм-аута.\n\nГотово, когда: на телефоне с APK versionCode 26 панель подключения раскрывается и сворачивается сразу; «Получить запрос» с неотвечающим IP отменяется кнопкой или «Назад» и сам заканчивается через 10 с; доска после 5–10 минут с погашенным экраном сразу отвечает на нажатия. Если зависание повторится, «Настройки → Скопировать подробности» после перезапуска покажет, какая работа шла.\n\nРазбор: mobile/docs/architecture/ui-freeze-20261016.md.",
         "priority": "urgent",
@@ -742,11 +742,11 @@
       {
         "id": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Темы интерфейса приложения: Графит, Лимон, Лазурь, Серебро во всех направлениях",
         "description": "Зачем: владелец убирает прежнюю тёмно-синюю тему приложения (причина эстетическая) и хочет в каждом приложении экосистемы одинаковый набор тем интерфейса самого приложения, не доски.\n\nТемы (словарь p2p-kanban-ui-themes/1, docs/ecosystem/ui-themes.md): Графит — тёмно-серая рабочая, как KDE Breeze Dark (по умолчанию); Лимон — светло-жёлтая flat, как AppFlowy Lemonade; Лазурь — светло-синяя flat, как Word; Серебро — светло-серая flat, как стандартная тема AppFlowy.\n\nРешения: значения цветов описаны один раз в docs/ecosystem/ui-themes.json, каждое направление держит свою копию; выбор темы — настройка устройства, через узел не синхронизируется; поле appTheme на узле остаётся для старых клиентов. Контракт между направлениями не меняется.\n\nГотово, когда: четыре темы переключаются в web, mobile и abl; тёмно-синей нигде нет; принято на Docker, телефоне и Arch.",
         "priority": "medium",
-        "position": 13312,
+        "position": 21504,
         "archivedAt": null
       },
       {
@@ -777,6 +777,16 @@
         "description": "Зачем: UTS r24 (74f3418) написал про abl «стоит 0.1.0-1 — контракта там нет» для error-report/1, хотя пакет pacman совпадал с деревом. Реализация записана в contracts/compatibility.json как «0.1.0+2026-10-07-abl-error-details», а номер версии abl патчем не рос, поэтому сравнение версий всегда давало «нет».\n\nРешение: если стоит сборка этого дерева (relation match) — контракт есть; если номер тот же, а сборка другая — «по версии не различить»; иначе прежнее сравнение версий.\n\nГотово, когда: следующий UTS на хосте показывает error-report/1 у abl как «есть», а у web-узла, собранного из текущего web, — тоже «есть».",
         "priority": "medium",
         "position": 19456,
+        "archivedAt": null
+      },
+      {
+        "id": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "devctl: пачка привязана к id workspace одной машины",
+        "description": "Зачем: batch.json называет workspace по id из реестра машины, а id у одного и того же репозитория на разных машинах разный: на ноутбуке p2p-ecosystem, на ПК с Manjaro p2pkanban_ecosystem (projectDir p2pKanban_MANJAROHOST). Пачку 2026-10-16-host-fixes пришлось пересобирать под ПК. John давно отмечал эту проблему при работе с workspace на разных машинах и ОС.\n\nВарианты: сопоставлять workspace по remote и ветке (origin + main) или по id из .devctl/workspace.json в самом репозитории, а id реестра оставить псевдонимом; либо разрешить в batch.json список допустимых id; batch plan показывает, какой workspace выбран и почему.\n\nГотово, когда: одна и та же пачка проходит batch plan на ноутбуке и на ПК без правки batch.json. Делается в devctl-universal, затем гостевая копия devctl/ в монорепо.",
+        "priority": "medium",
+        "position": 15360,
         "archivedAt": null
       }
     ],
@@ -1358,6 +1368,10 @@
       {
         "cardId": "01a145a8-c6a6-78d2-bbab-26881f47779c",
         "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
+        "labelId": "01a10d38-f90d-7268-b14d-c1950da233b8"
       }
     ],
     "checklists": [
@@ -2273,7 +2287,7 @@
         "id": "01a1434b-bf14-752b-8d65-335180f86c78",
         "checklistId": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
         "title": "web: ADR-006 со статусом «частично заменён ADR-007»; «Текущее состояние» в docs/README.md",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
@@ -2357,21 +2371,21 @@
         "id": "01a14382-ad80-77b0-8403-017ce3c4a4df",
         "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
         "title": "web: темы и выбор на странице «Вид приложения»",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a14382-ad80-71b0-acc5-b05b3a7d0508",
         "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
         "title": "mobile: темы в «Настройках», новый APK",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
         "id": "01a14382-ad80-7937-a5ce-b824c03ce55c",
         "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
         "title": "abl: темы и выбор в шапке окна",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -2795,6 +2809,48 @@
         "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
         "createdAt": "2026-10-16T17:40:00Z",
         "body": "patch 2026-10-16-web-static-checks: все семь проверок обновлены под 2.1.0 и зелёные; в UTS они больше не «устаревшие» (static-*, гейт web). check_cross_client_crud, check_mobile_web_feature, check_web_customization_part2: вместо номера 1.0.0 сверяется согласованность VERSION и frontend/package.json; события board.appearance.put и поле checklistItemCount с миграции 0020 собирает SQL — проверки смотрят туда. check_card_deletion_scope: tombstone карточки ищется запросом в tombstones. check_release_prep: PATCH_SUMMARY.md — историческая сводка, исключена; docs/architecture/shared-history-and-node-connectivity.md переведён на русский. check_android_native_auth: contract_parity_sweep понимает цепочки .route и get().post(), шаблоны ${…} и query; в OpenAPI добавлены 15 действующих маршрутов (device-link/2, кольцо R2, проекты devctl). check_zero_config_bootstrap починил 2026-10-16-web-updater-self-check. Готово, когда UTS на хосте покажет static-* PASS."
+      },
+      {
+        "id": "01a145a8-5efd-7ee1-9a41-8bf89f39cb20",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: восстановлено: сборщик пачки 2026-10-16 потерял правки web/mobile/abl-ui-themes на этой карточке (пункты направлений и колонка «Ждёт хоста»). Приёмка: John 2026-10-16 — на телефоне темы есть (mobile принят); web на Docker и abl на Arch ещё не подтверждены."
+      },
+      {
+        "id": "01a145a8-e578-7884-8c5d-97c5de607dea",
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: восстановлено: правка 2026-10-16-web-docs-truth (пункт ADR-006 и колонка «В работе») потерялась при сборке пачки 2026-10-16."
+      },
+      {
+        "id": "01a145a8-5a76-716c-b71d-934993d0380f",
+        "cardId": "01a14330-47c0-735a-958d-4b8c66ef8ea5",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: принято John на телефоне 2026-10-16: зависания после сопряжения с ноутбуком и после простоя исправлены (APK versionCode 26)."
+      },
+      {
+        "id": "01a145a8-6393-7f69-b114-fb9f57952182",
+        "cardId": "01a110ec-8b29-724b-8058-69fc42d97094",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: принято на телефоне: отчёты «Скопировать подробности» John 2026-10-16 несут коммит сборки (mobile 2.1.0 · сборка 25 · коммит 6cef464…). Сборка 25 в отчётах — от более ранней установки; сейчас на телефоне 26."
+      },
+      {
+        "id": "01a145a8-554e-7d51-bad6-e9431e60d814",
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: на хосте 2026-10-16: web и mobile — да. Реальные отчёты John по error-report/1 из web (Firefox, узел web 2.1.0 · сборка f5d187667317, тело ответа узла) и из Android (коммит сборки, версия узла из x-p2p-kanban-node). abl на Arch ещё не показан. errorId у 5xx на узле в этих отчётах не встретился (были 401, 409, 429)."
+      },
+      {
+        "id": "01a145a8-e86c-728c-b5a7-5a78bed410d4",
+        "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: UTS r24 (74f3418, ноутбук): abl 90 PASS из 91; runtime.a18-chaos FAIL только на freeze-thaw — догоняющий CPU после разморозки 11,58% при пороге 10% (в r8 проходило). Остальной хаос (hard-kill, шторм экземпляров, без D-Bus, офлайн) PASS. Порог proposed; решить после release-прогона бюджетов, повторить пробу."
+      },
+      {
+        "id": "01a145a8-6b28-7fb2-bf5a-55d3ad9bc470",
+        "cardId": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
+        "createdAt": "2026-10-16T17:50:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance-r24: карточка заведена по просьбе John при пересборке пачки host-fixes под ПК с Manjaro."
       }
     ],
     "boardAppearanceSettings": [],
