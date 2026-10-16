@@ -20,9 +20,7 @@ def require(relative: str, *needles: str) -> None:
 
 
 def main() -> None:
-    version = read("VERSION").strip()
-    if version != "1.0.0":
-        raise SystemExit("FAIL: VERSION must be 1.0.0")
+    version = read("VERSION").strip()  # с 2.1.0 номер не фиксируется, проверяется согласованность ниже
 
     frontend = json.loads(read("frontend/package.json"))
     if frontend.get("version") != version:
@@ -41,8 +39,9 @@ def main() -> None:
         "backend/src/transports/roaming.rs",
         '"checklists"',
         "apply_checklist_bundle",
-        "'checklistItemCount'",
     )
+    # С журнала реплик (миграция 0020) полезную нагрузку карточки собирает SQL.
+    require("backend/migrations/0020_replica_event_journal.sql", "'checklistItemCount'")
     require(
         "backend/migrations/0010_mobile_checklists_productivity_wallpapers.sql",
         "'image'",

@@ -35,7 +35,7 @@ def main() -> None:
         "card.delete",
         "apply_remote_card_delete",
         "tombstone_wins",
-        "left join tombstones",
+        "from tombstones where entity_type = 'card'",
     )
     require(
         "backend/src/auth/dto.rs",

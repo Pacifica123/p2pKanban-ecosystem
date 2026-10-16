@@ -26,6 +26,9 @@ REQUIRED_FILES = (
 MARKDOWN_EXCLUDES = {
     Path("release/p2p-planner-v1.0.0-beta.1-web-win64/README_RELEASE.md"),
     Path(f"release/p2pkanban-v{EXPECTED_VERSION}/README_RELEASE_EN.md"),
+    # Историческая сводка последнего патча до монорепозитория (docs/ecosystem/development.md):
+    # не документация продукта, не переводится.
+    Path("PATCH_SUMMARY.md"),
 }
 MARKDOWN_EXCLUDED_PARTS = {
     ".git",

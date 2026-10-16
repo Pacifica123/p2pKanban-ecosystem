@@ -157,11 +157,9 @@
           ]
         },
         {
-          "id": "stale-android-native-auth",
+          "id": "static-android-native-auth",
           "title": "Паритет native auth с Android",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",
@@ -169,11 +167,9 @@
           ]
         },
         {
-          "id": "stale-card-deletion-scope",
+          "id": "static-card-deletion-scope",
           "title": "Область удаления карточек",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",
@@ -181,11 +177,9 @@
           ]
         },
         {
-          "id": "stale-cross-client-crud",
+          "id": "static-cross-client-crud",
           "title": "CRUD между клиентами",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",
@@ -193,11 +187,9 @@
           ]
         },
         {
-          "id": "stale-mobile-web-feature",
+          "id": "static-mobile-web-feature",
           "title": "Функции web и Android",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",
@@ -205,11 +197,9 @@
           ]
         },
         {
-          "id": "stale-customization-part2",
+          "id": "static-customization-part2",
           "title": "Настройки внешнего вида, часть 2",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",
@@ -217,11 +207,9 @@
           ]
         },
         {
-          "id": "stale-zero-config-bootstrap",
+          "id": "static-zero-config-bootstrap",
           "title": "Zero-config bootstrap",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",
@@ -229,11 +217,9 @@
           ]
         },
         {
-          "id": "stale-release-prep",
+          "id": "static-release-prep",
           "title": "Подготовка релиза",
           "level": "static",
-          "gate": false,
-          "note": "устаревшая проверка: карточка «Устаревшие статические проверки web»",
           "run": [
             "{python}",
             "-B",

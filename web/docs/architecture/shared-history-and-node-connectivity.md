@@ -1,40 +1,102 @@
-# Shared activity and reachable nodes across networks
+# Общая история и доступность узлов из разных сетей
 
-## This correction
+## Что исправлено
 
-Android Activity used HTTP-only `/boards/:id/activity` even after autonomous relay enrollment. A saved board key did not make that endpoint reachable. Both clients now share an encrypted activity feed: `board.activity` carries the same activity id, timestamp, action, entity, field mask and actor; Android mutations carry `payload.activity` inside their existing immutable mutation. Recovery snapshots and retries do not create feed entries.
+Экран «История» в Android ходил только по HTTP в `/boards/:id/activity`, даже после автономной
+регистрации через relay. Сохранённый ключ доски не делал этот адрес доступным. Теперь оба клиента
+читают общую зашифрованную ленту: событие `board.activity` несёт тот же id записи, время, действие,
+сущность, маску полей и автора; мутации Android несут `payload.activity` внутри своей неизменяемой
+мутации. Снимки восстановления и повторы записей в ленте не создают.
 
-The web worker backfills retained original `activity_entries`, freezes delivery per activity and access epoch, and publishes through the board's authenticated encrypted relay channel. This includes comments/labels/columns even where their state has no roaming operation. Receiving a history entry does not apply those unsupported state operations. Canonical history replaces duplicate node-generated mutation activity using `mutationEventId`. Imported common history may be republished once per node/epoch so the creator does not remain the sole historical source. Import does not create another original action.
+Воркер web дозаливает сохранённые исходные `activity_entries`, замораживает доставку по записи и
+эпохе доступа и публикует через аутентифицированный зашифрованный канал доски в relay. Сюда входят
+комментарии, метки и колонки, даже если для их состояния нет операции roaming. Получение записи
+истории не применяет эти неподдерживаемые операции состояния. Каноническая история заменяет
+дубли активности мутаций, созданные узлом, по `mutationEventId`. Импортированную общую историю
+можно переопубликовать один раз на узел и эпоху, чтобы создатель не оставался единственным
+источником истории. Импорт не создаёт ещё одно исходное действие.
 
-Android reads the authenticated feed from all writers and keeps it in its durable journal, with a stale indicator when relays fail. HTTP remains the unenrolled-board fallback. Historic original web entries are recovered by backfill; old Android events lacking activity metadata cannot recover an actor/action record that was never retained on any node. This does not invent missing historical events. Relay retention remains a real dependency; this patch does not guarantee indefinite relay storage.
+Android читает аутентифицированную ленту от всех писателей и хранит её в своём журнале, с
+отметкой «устарело», когда relay недоступны. Для досок без регистрации остаётся HTTP. Исторические
+записи web восстанавливаются дозаливкой; старые события Android без метаданных активности не
+восстановят автора и действие, которые ни один узел не сохранил. Недостающие события не
+придумываются. Хранение в relay остаётся реальной зависимостью: этот патч не обещает бессрочного
+хранения.
 
-Checklist recovery now merges subsequent signed snapshots into an existing cached board, and merges web snapshot fields into existing PostgreSQL rows using their original field versions. Explicit lifecycle stamps apply deletion; absence alone does not delete. Old snapshot publication times never override newer local toggles. Migration 0023 permits field-version origin ids from compacted snapshots before their original event arrives, without marking those unseen events applied.
+Восстановление чек-листов теперь вливает последующие подписанные снимки в уже закешированную
+доску, а поля снимков web — в существующие строки PostgreSQL с их исходными версиями полей.
+Удаление применяют только явные отметки жизненного цикла; одно отсутствие ничего не удаляет.
+Старое время публикации снимка никогда не перекрывает более новые локальные переключения.
+Миграция 0023 разрешает id происхождения версий полей из сжатых снимков раньше, чем придёт само
+исходное событие, не помечая эти невиденные события применёнными.
 
-## Apply and accept
+## Применение и приёмка
 
-Apply this web devctl patch to every participating web node, rebuild/restart them, then apply/build/install the matching Android patch over the existing app. No profile reset or re-pairing is required. New migration 0023 preserves existing migration files/checksums. Backfill and peer discovery can require several polling rounds. Verify on different Wi-Fi/mobile networks: create a checklist and two items, toggle on both clients, rename/delete and reconnect; compare values, deleted items and progress. Open History on both clients and compare canonical action ids and ordering. Test comments as history-only replication; do not mistake a history entry for replicated comment content.
+Применить этот патч web на каждом участвующем web-узле, пересобрать и перезапустить их, затем
+применить, собрать и поставить соответствующий патч Android поверх существующего приложения.
+Сброс профиля и повторное сопряжение не нужны. Новая миграция 0023 сохраняет прежние файлы
+миграций и их контрольные суммы. Дозаливка и поиск пиров могут занять несколько циклов опроса.
+Проверить в разных сетях Wi-Fi и мобильной: создать чек-лист и два пункта, переключать их на обоих
+клиентах, переименовать и удалить, переподключиться; сравнить значения, удалённые пункты и
+прогресс. Открыть «Историю» на обоих клиентах и сравнить канонические id действий и порядок.
+Комментарии проверять как репликацию только истории: запись истории — не реплицированный текст
+комментария.
 
-An older client ignores the new `board.activity` operation. All nodes must be upgraded for the common feed. Source rollback after migration 0023 is not a database rollback: SQLx records the new version, so use a forward correction or a verified matching database backup for a version downgrade.
+Старый клиент игнорирует новую операцию `board.activity`. Для общей ленты обновить нужно все
+узлы. Откат исходников после миграции 0023 — не откат базы: SQLx записывает новую версию, поэтому
+для понижения версии нужна прямая поправка или проверенная копия базы той же версии.
 
-Automated evidence: Android merge/history/replica tests, backend compilation/unit tests, and PostgreSQL-engine migration/snapshot tests. Docker/real devices/ISP relay retention are separate acceptance steps.
+Автоматические доказательства: тесты слияния, истории и реплик Android, компиляция и
+модульные тесты backend, тесты миграций и снимков на движке PostgreSQL. Docker, реальные
+устройства и хранение у relay провайдера — отдельные шаги приёмки.
 
-## Reachability decision and next patch
+## Решение о доступности и следующий патч
 
-The repository contains an optional Iroh crate but the normal worker currently runs Nostr delivery only. `IrohTransport::bind` currently creates an endpoint without a supplied durable identity; it has static peers and no request/response service. It therefore does not make an existing private HTTP node reachable from Android or a browser. We must implement the missing node service and address distribution; changing the saved private IP or increasing HTTP timeouts cannot cross unrelated NATs.
+В репозитории есть необязательный крейт Iroh, но обычный воркер сейчас доставляет только через
+Nostr. `IrohTransport::bind` создаёт endpoint без переданной долговременной идентичности; у него
+статические пиры и нет службы запрос–ответ. Поэтому он не делает существующий частный HTTP-узел
+доступным из Android или браузера. Нужно реализовать недостающую службу узла и раздачу адресов;
+смена сохранённого частного IP или увеличение тайм-аутов HTTP не пересекут несвязанные NAT.
 
-Chosen next implementation: authenticated node RPC with stable node identity and a signed device-scoped endpoint catalog. The catalog advertises EndpointId, supported protocol versions, relay routes, optional LAN/HTTPS addresses and expiry. Address changes do not change identity; key rotation requires the existing trusted introduction/delegation flow. Native nodes attempt Iroh direct connections and retain encrypted relay fallback. The existing board journal remains the offline recovery path when the node is asleep or disconnected.
+Выбранная следующая реализация: аутентифицированный RPC узла со стабильной идентичностью узла и
+подписанным каталогом адресов для конкретного устройства. Каталог объявляет EndpointId,
+поддерживаемые версии протокола, маршруты через relay, необязательные адреса LAN/HTTPS и срок
+действия. Смена адреса не меняет идентичность; смена ключа требует существующего доверенного
+представления или делегирования. Нативные узлы пробуют прямые соединения Iroh и сохраняют
+зашифрованный запасной путь через relay. Журнал доски остаётся путём офлайн-восстановления, когда
+узел спит или отключён.
 
-For immediate feature coverage across current React Native and web clients, add a bounded encrypted `node-rpc/1` request/response channel over existing WebSockets/Nostr. Requests have id, recipient node key, authenticated device grant, board/workspace scope, method from an allowlist, expiry and request nonce. Responses bind id, request digest, responder identity and scope. Start with paged activity read and sync status; enforce authorization on the responder, cursor/size/time bounds and replay/dedup handling. Never transfer HTTP bearer tokens or deployment secrets. Receiving a response does not grant new access. Persist only state-changing requests with explicit idempotency; read requests expire rather than silently retry forever.
+Чтобы сразу покрыть функции текущих клиентов React Native и web, добавить ограниченный
+зашифрованный канал запрос–ответ `node-rpc/1` поверх существующих WebSocket/Nostr. У запроса есть
+id, ключ узла-получателя, аутентифицированный грант устройства, область доски или пространства,
+метод из разрешённого списка, срок действия и nonce. Ответ привязывает id, дайджест запроса,
+идентичность отвечающего и область. Начать с постраничного чтения активности и состояния
+синхронизации; права проверяет отвечающий, курсор, размер и время ограничены, повторы
+отбрасываются. Никогда не передавать bearer-токены HTTP и секреты развёртывания. Получение ответа
+не даёт нового доступа. Сохранять только изменяющие запросы с явной идемпотентностью; запросы на
+чтение истекают, а не повторяются бесконечно.
 
-Then add native Kotlin/React Native and Rust Iroh adapters behind the same RPC interface. Browser transport needs its own compatible gateway/adapter; do not expose the entire backend or promise browsers can use the native crate unchanged. An operator-owned HTTPS reverse tunnel is an alternative deployment path when immediate access to every HTTP endpoint is needed; its domain, TLS, access controls and always-on relay must be selected explicitly, not inserted into user deployments by this patch.
+Затем добавить нативные адаптеры Kotlin/React Native и Rust Iroh за тем же интерфейсом RPC.
+Браузеру нужен свой совместимый шлюз или адаптер; не открывать весь backend и не обещать, что
+браузер может использовать нативный крейт без изменений. Обратный HTTPS-туннель под управлением
+оператора — альтернативный путь развёртывания, когда сразу нужен доступ ко всем HTTP-адресам; его
+домен, TLS, контроль доступа и всегда включённый relay выбираются явно и этим патчем в
+пользовательские развёртывания не встраиваются.
 
-Acceptance matrix for that next patch: foreign Wi-Fi, cellular CGNAT, double NAT, blocked UDP, node restart (same identity), Wi-Fi/cellular switch, relay outage, both peers offline, expired/revoked grant, replayed response, and cursor pagination while new activity is created. UI must distinguish direct, relayed, cached and unreachable, and name the node which answered. A packet ACK alone is not a successfully authorized application response. No transport can make a powered-off node execute a query.
+Матрица приёмки следующего патча: чужой Wi-Fi, мобильный CGNAT, двойной NAT, заблокированный UDP,
+перезапуск узла (та же идентичность), переключение Wi-Fi и мобильной сети, отказ relay, оба пира
+офлайн, истёкший или отозванный грант, повтор ответа, постраничный курсор во время создания новой
+активности. Интерфейс различает «напрямую», «через relay», «из кеша» и «недоступно» и называет
+узел, который ответил. Подтверждение пакета само по себе — не успешный авторизованный ответ
+приложения. Никакой транспорт не заставит выключенный узел выполнить запрос.
 
-Primary references reviewed 2026-10-01:
+Первичные источники, просмотренные 2026-10-01:
 
-- [Iroh endpoint/direct connection model](https://github.com/n0-computer/iroh/blob/main/README.md)
-- [Iroh direct and relay fallback](https://www.iroh.computer/blog/iroh-0-91-0-the-last-relay-break)
-- [Official language/platform bindings](https://www.iroh.computer/blog/iroh-language-support)
-- [Browser gateway constraints](https://github.com/n0-computer/iroh-live/blob/main/docs/guide/browser-relay.md) — illustrative transport constraints, not a ready authenticated p2pKanban gateway.
+- [Модель endpoint и прямых соединений Iroh](https://github.com/n0-computer/iroh/blob/main/README.md)
+- [Прямые соединения и запасной relay в Iroh](https://www.iroh.computer/blog/iroh-0-91-0-the-last-relay-break)
+- [Официальные привязки к языкам и платформам](https://www.iroh.computer/blog/iroh-language-support)
+- [Ограничения браузерного шлюза](https://github.com/n0-computer/iroh-live/blob/main/docs/guide/browser-relay.md) — пример ограничений транспорта, а не готовый аутентифицированный шлюз p2pKanban.
 
-This document is a concrete next-patch design. The reachability/RPC service is not shipped or deployed by this correction.
+Этот документ — конкретный проект следующего патча. Служба доступности и RPC этим исправлением
+не поставляется и не разворачивается. Переведён на русский 2026-10-16 (патч
+`2026-10-16-web-stale-checks`); по сути не менялся.

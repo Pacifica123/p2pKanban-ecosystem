@@ -31,9 +31,11 @@ def forbid(relative: str, *needles: str) -> None:
 def main() -> None:
     version = read("VERSION").strip()
     frontend = json.loads(read("frontend/package.json"))
-    if version != "1.0.0" or frontend.get("version") != version:
-        raise SystemExit("FAIL: v1 versions are not aligned")
+    if frontend.get("version") != version:  # с 2.1.0 проверяется согласованность, а не номер 1.0.0
+        raise SystemExit("FAIL: VERSION and frontend/package.json versions are not aligned")
 
+    # С журнала реплик (миграция 0020) события board.appearance.put собирает триггер в SQL.
+    require("backend/migrations/0020_replica_event_journal.sql", "op := 'board.appearance.put'")
     forbid("backend/src/modules/cards/dto.rs", "pub status:", "pub completed_at:")
     forbid("docs/api/openapi.yaml", "      - name: completed\n        in: query")
     require(
@@ -41,7 +43,6 @@ def main() -> None:
         "tokio::join!(",
         "tokio::task::JoinSet::new()",
         "publish_pending_board_settings",
-        'operation: "board.appearance.put"',
         "insert into checklists",
         "insert into checklist_items",
         "Legacy v1 snapshots only fill missing rows",

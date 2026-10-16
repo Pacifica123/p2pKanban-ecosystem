@@ -24,6 +24,7 @@ tags:
 - name: comments
 - name: sync
 - name: integrations
+- name: ring
 components:
   securitySchemes:
     bearerAuth:
@@ -6175,6 +6176,124 @@ paths:
           $ref: '#/components/responses/NotFound'
       x-v1Status: contract_stub
       x-frontendUsed: true
+  /auth/device-link/request:
+    post:
+      tags: [auth]
+      summary: Запрос нового устройства на привязку (device-link/2)
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /auth/device-link/prepare:
+    post:
+      tags: [auth]
+      summary: Подготовить пакет привязки для устройства
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /auth/device-link/approve:
+    post:
+      tags: [auth]
+      summary: Одобрить привязку устройства на узле
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /auth/device-link/accept:
+    post:
+      tags: [auth]
+      summary: Принять одобренную привязку на новом устройстве
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /auth/device-link/supplement-request:
+    post:
+      tags: [auth]
+      summary: Дополнить доступ уже привязанного устройства новыми досками
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring:
+    get:
+      tags: [ring]
+      summary: Кольцо устройств аккаунта на этом узле (account-ring/1, keyring/1)
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/genesis:
+    post:
+      tags: [ring]
+      summary: "Создать кольцо — запись genesis"
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/migrate:
+    post:
+      tags: [ring]
+      summary: Перенести доверенные устройства device-link/2 и web-node-link/1 в кольцо
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/rename:
+    post:
+      tags: [ring]
+      summary: Переименовать устройство в кольце
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/sync:
+    post:
+      tags: [ring]
+      summary: Обменяться копиями кольца и отметками присутствия с relay
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /integrations/projects:
+    get:
+      tags: [integrations]
+      summary: Проекты devctl, привязанные к доске
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+    post:
+      tags: [integrations]
+      summary: Привязать проект devctl к доске
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /integrations/projects/{projectId}/receipts:
+    get:
+      tags: [integrations]
+      summary: Квитанции devctl проекта
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+    post:
+      tags: [integrations]
+      summary: Принять квитанцию devctl
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /integrations/projects/{projectId}/receipts/preview:
+    post:
+      tags: [integrations]
+      summary: Предпросмотр квитанции devctl без записи
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
 x-contractParitySweep:
   status: complete
   scope: backend routes + frontend api calls + OpenAPI paths

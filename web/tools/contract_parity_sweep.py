@@ -40,16 +40,43 @@ def project_root_from(start: Path) -> Path:
     raise SystemExit("Could not find project root with backend/, frontend/ and docs/.")
 
 
+ANY_TEMPLATE_RE = re.compile(r"\$\{[^}]*\}")
+PARAM_RE = re.compile(r"\{[^}/]*\}")
+
+
 def frontend_template_to_openapi_path(raw: str) -> str:
-    return TEMPLATE_EXPR_RE.sub(lambda match: "{" + match.group(1) + "}", raw)
+    path = TEMPLATE_EXPR_RE.sub(lambda match: "{" + match.group(1) + "}", raw)
+    path = ANY_TEMPLATE_RE.sub("{param}", path)  # ${request.id}, ${encodeURIComponent(token)}
+    return path.split("?", 1)[0]
+
+
+def normalized(routes: set[Route]) -> set[Route]:
+    """Имена параметров у backend, frontend и OpenAPI разные; сравнивается форма пути."""
+    return {Route(route.method, PARAM_RE.sub("{}", route.path)) for route in routes}
+
+
+ROUTE_START_RE = re.compile(r'\.route\(\s*"([^"]+)"\s*,')
+
+
+def route_calls(text: str) -> list[tuple[str, str]]:
+    """.route("путь", выражение): выражение до парной скобки, с цепочками get(..).post(..) и
+    несколькими .route на одной строке."""
+    calls = []
+    for match in ROUTE_START_RE.finditer(text):
+        depth, index = 1, match.end()
+        while index < len(text) and depth:
+            depth += {"(": 1, ")": -1}.get(text[index], 0)
+            index += 1
+        calls.append((match.group(1), text[match.end():index - 1]))
+    return calls
 
 
 def extract_backend_routes(root: Path) -> set[Route]:
-    files = [root / "backend/src/auth/mod.rs"] + sorted((root / "backend/src/modules").glob("*/mod.rs"))
+    files = [root / "backend/src/auth/mod.rs"] + sorted((root / "backend/src/modules").rglob("*.rs"))
     routes: set[Route] = set()
     for file_path in files:
         text = file_path.read_text(encoding="utf-8")
-        for path, expression in ROUTE_RE.findall(text):
+        for path, expression in route_calls(text):
             if path in EXCLUDED_BACKEND_PATHS:
                 continue
             methods = ROUTE_METHOD_RE.findall(expression)
@@ -76,7 +103,10 @@ def extract_frontend_calls(root: Path) -> set[Route]:
             call_tail = text[match.end() : call_end]
             method_match = HTTP_METHOD_RE.search(call_tail)
             method = method_match.group(1).upper() if method_match else "GET"
-            routes.add(Route(method, frontend_template_to_openapi_path(raw_path)))
+            path = frontend_template_to_openapi_path(raw_path)
+            if path in EXCLUDED_BACKEND_PATHS:
+                continue
+            routes.add(Route(method, path))
     return routes
 
 
@@ -124,9 +154,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     root = project_root_from(Path(args.root))
-    backend = extract_backend_routes(root)
-    frontend = extract_frontend_calls(root)
-    openapi = extract_openapi_routes(root)
+    backend = normalized(extract_backend_routes(root))
+    frontend = normalized(extract_frontend_calls(root))
+    openapi = normalized(extract_openapi_routes(root))
 
     backend_missing_in_openapi = backend - openapi
     openapi_without_backend = openapi - backend
