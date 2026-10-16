@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 56,
-        "comments": 44,
+        "comments": 45,
         "checklists": 19,
         "attachments": 0
       },
@@ -32,8 +32,8 @@
   "origin": {
     "generatedAt": "2026-10-16T05:00:00Z",
     "selfHosted": true,
-    "boardRevision": 15,
-    "lastPatchId": "2026-10-16-ecosystem-host-acceptance",
+    "boardRevision": 16,
+    "lastPatchId": "2026-10-16-web-update-channel-monorepo",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -162,11 +162,11 @@
       {
         "id": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
-        "title": "Канал обновления web-узлов указывает на старый репозиторий",
-        "description": "Зачем: container_bootstrap.py и update_control_plane.py скачивают архив корня Pacifica123/p2p_planner и ждут bootstrap.py в корне. В монорепозитории web лежит в web/.\n\nГотово, когда: принято решение: оставить старый репозиторий как канал выпуска web, научить обновлятор подкаталогу (updateSubdir), или публиковать web-артефакты релизами монорепозитория. Переход не ломает установленные узлы.",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Канал обновления web-узлов: монорепозиторий, только коммиты web/",
+        "description": "Зачем: container_bootstrap.py и update_control_plane.py скачивали архив корня Pacifica123/p2p_planner и ждали bootstrap.py в корне. В монорепозитории web лежит в web/, а коммиты идут во все направления.\n\nРешение: канал — main монорепозитория Pacifica123/p2pKanban-ecosystem; обновлением считается последний коммит, менявший web/ (GitHub commits?path=web); из архива берётся web/; узел, собранный из более позднего коммита с тем же web/, плашку не видит (GitHub compare); прежний адрес p2p_planner в состоянии узла переводится на монорепозиторий.\n\nГотово, когда: на Docker-хосте узел после разового update --source-dir <монорепо>/web сам видит следующий коммит в web/, не видит коммиты mobile/abl/board и обновляется из GitHub без потери данных.",
         "priority": "high",
-        "position": 1024,
+        "position": 17408,
         "archivedAt": null
       },
       {
@@ -2232,6 +2232,12 @@
         "cardId": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
         "createdAt": "2026-10-16T05:00:00Z",
         "body": "patch 2026-10-16-ecosystem-host-acceptance: не проверена: на прошлой неделе у John на месте не было интернета. Остаётся в «Ждёт хоста»; сюда добавлен пункт про карточку, созданную без сети."
+      },
+      {
+        "id": "01a14314-d080-7001-a1aa-1c0c9bb48a44",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-16T05:00:00Z",
+        "body": "patch 2026-10-16-web-update-channel-monorepo: web-узел обновляется из main монорепозитория и только по коммитам, менявшим web/ (сборка узла берёт только web/, контекст Compose — web/). Updater берёт web/ из архива коммита; архив прежнего однопроектного репозитория тоже принимается. Плашка не показывается, если узел собран из более позднего коммита с тем же web/. Сохранённый адрес p2p_planner переводится на монорепозиторий сам. Старый updater на узле монорепозиторий читать не умеет: один раз выполнить в каталоге узла python bootstrap.py update --source-dir <checkout>/web. Раздел «Что сознательно не связано» в docs/ecosystem/boundaries.md про канал обновления устарел — поправить патчем экосистемы."
       }
     ],
     "boardAppearanceSettings": [],

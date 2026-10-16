@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any, Iterator, Sequence
 
 
-TOOL_VERSION = "1.5.0"
+TOOL_VERSION = "1.6.0"
 STATE_VERSION = 2
 COMPOSE_PROJECT = "p2pkanban-bootstrap"
 COMPOSE_RELATIVE_PATH = Path("deploy/bootstrap/compose.yaml")
@@ -48,7 +48,13 @@ UPDATE_REPORTS_RELATIVE_PATH = Path(".dev-bootstrap/update-reports")
 DEFAULT_WEB_PORT = 8080
 DEFAULT_TIMEOUT_SECONDS = 900
 DEFAULT_UPDATE_BRANCH = "main"
-DEFAULT_UPDATE_REPOSITORY = "https://github.com/Pacifica123/p2p_planner"
+DEFAULT_UPDATE_REPOSITORY = "https://github.com/Pacifica123/p2pKanban-ecosystem"
+# The pre-monorepo release repository; nodes that remember it follow the
+# monorepo instead.
+LEGACY_UPDATE_REPOSITORIES = frozenset({"https://github.com/pacifica123/p2p_planner"})
+# Directory of web inside the monorepo: only commits touching it are updates,
+# and the node is built from it.
+UPDATE_SOURCE_PATH = "web"
 UPDATE_CONTROL_RELATIVE_PATH = Path("tools/update_control_plane.py")
 UPDATE_CONTROL_STATE_RELATIVE_PATH = Path(".dev-bootstrap/update-control.json")
 DEFAULT_UPDATE_CONTROL_PORT = 8765
@@ -332,6 +338,8 @@ def discover_update_repository(
             continue
         normalized = normalize_github_repository(candidate)
         if normalized:
+            if normalized.lower() in LEGACY_UPDATE_REPOSITORIES:
+                return DEFAULT_UPDATE_REPOSITORY
             return normalized
     return None
 
@@ -359,14 +367,28 @@ def github_commit_archive_url(repository: str, commit_sha: str) -> str:
 
 
 def github_latest_commit(repository: str, branch: str) -> dict[str, Any]:
+    """Latest commit of the branch that changed web/, or the branch head
+    for a repository without web/ (the pre-monorepo layout)."""
     normalized = normalize_github_repository(repository)
     if not normalized:
         raise BootstrapError("Некорректный GitHub-репозиторий обновления.")
     owner_repo = normalized.removeprefix("https://github.com/")
-    url = (
+    query = urllib.parse.urlencode(
+        {"sha": branch, "path": UPDATE_SOURCE_PATH, "per_page": 1}
+    )
+    scoped = github_api_json(
+        f"https://api.github.com/repos/{owner_repo}/commits?{query}"
+    )
+    if isinstance(scoped, list) and scoped:
+        return github_commit_summary(scoped[0], normalized)
+    payload = github_api_json(
         f"https://api.github.com/repos/{owner_repo}/commits/"
         f"{urllib.parse.quote(branch, safe='')}"
     )
+    return github_commit_summary(payload, normalized)
+
+
+def github_api_json(url: str) -> Any:
     request = urllib.request.Request(
         url,
         headers={
@@ -377,9 +399,12 @@ def github_latest_commit(repository: str, branch: str) -> dict[str, Any]:
     )
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+            return json.loads(response.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
         raise BootstrapError(f"Не удалось определить последний commit main: {exc}") from exc
+
+
+def github_commit_summary(payload: Any, normalized: str) -> dict[str, Any]:
     sha = str(payload.get("sha") or "") if isinstance(payload, dict) else ""
     if not re.fullmatch(r"[0-9a-f]{40}", sha):
         raise BootstrapError("GitHub не вернул корректный commit SHA для main.")
@@ -424,6 +449,15 @@ def safe_extract_zip(archive_path: Path, destination: Path) -> Path:
         if nested.is_dir():
             return nested
     return destination
+
+
+def update_source_subdirectory(extracted: Path) -> Path:
+    """The node lives in web/ of the monorepo archive; an archive of the
+    pre-monorepo repository has it at the root."""
+    nested = extracted / UPDATE_SOURCE_PATH
+    if not (extracted / "bootstrap.py").is_file() and (nested / "bootstrap.py").is_file():
+        return nested
+    return extracted
 
 
 def copy_source_tree(source: Path, destination: Path) -> None:
@@ -1778,7 +1812,7 @@ def prepare_update_source(
     target_commit = str(args.target_commit or latest_commit["sha"]).lower()
     if args.target_commit and target_commit != latest_commit["sha"]:
         raise BootstrapError(
-            "main изменился после предложения обновления. "
+            "web в main изменился после предложения обновления. "
             "Повторите проверку и выберите актуальный commit."
         )
     archive_path = staging_parent / "source.zip"
@@ -1788,7 +1822,9 @@ def prepare_update_source(
     )
     extracted_parent = staging_parent / "extracted"
     extracted_parent.mkdir()
-    extracted = safe_extract_zip(archive_path, extracted_parent)
+    extracted = update_source_subdirectory(
+        safe_extract_zip(archive_path, extracted_parent)
+    )
     staging = staging_parent / "source"
     os.replace(extracted, staging)
     print("Проверяю полученный source перед сборкой.")

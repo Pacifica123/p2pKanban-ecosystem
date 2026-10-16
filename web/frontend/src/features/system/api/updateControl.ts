@@ -1,7 +1,11 @@
 const CONTROL_ORIGIN = 'http://127.0.0.1:8765';
-const SOURCE_REPOSITORY = 'https://github.com/Pacifica123/p2p_planner';
+const SOURCE_REPOSITORY = 'https://github.com/Pacifica123/p2pKanban-ecosystem';
 const SOURCE_BRANCH = 'main';
-const GITHUB_LATEST_COMMIT = 'https://api.github.com/repos/Pacifica123/p2p_planner/commits/main';
+// The monorepo also carries mobile, abl and devctl: only commits that touch
+// web/ are node updates.
+const SOURCE_PATH = 'web';
+const GITHUB_API = 'https://api.github.com/repos/Pacifica123/p2pKanban-ecosystem';
+const GITHUB_LATEST_WEB_COMMIT = `${GITHUB_API}/commits?sha=${SOURCE_BRANCH}&path=${SOURCE_PATH}&per_page=1`;
 const EMBEDDED_SOURCE_REVISION = normalizeRevision(import.meta.env.VITE_SOURCE_REVISION);
 
 export interface GitHubCommitInfo {
@@ -31,6 +35,8 @@ export interface UpdateControlState {
   repository: string;
   branch: string;
   installedRevision: string | null;
+  /** Host verdict: the latest web commit is not in the running build yet. */
+  updateAvailable?: boolean;
   latest: GitHubCommitInfo | null;
   job: UpdateJobState;
 }
@@ -60,6 +66,12 @@ export function revisionsMatch(left: string | null, right: string | null) {
   return normalizedLeft === normalizedRight
     || normalizedLeft.startsWith(normalizedRight)
     || normalizedRight.startsWith(normalizedLeft);
+}
+
+export function isUpdateAvailable(state: UpdateControlState) {
+  if (!state.latest) return false;
+  if (typeof state.updateAvailable === 'boolean') return state.updateAvailable;
+  return !revisionsMatch(state.latest.sha, state.installedRevision);
 }
 
 export function isLocalUpdateSurface() {
@@ -110,13 +122,32 @@ interface GitHubCommitPayload {
   } | null;
 }
 
+/** The running build already contains `latest` when it is the same commit or
+ * a later one that changed only other directions of the monorepo. */
+async function runningBuildContains(latest: string, installed: string | null) {
+  if (!installed) return false;
+  if (revisionsMatch(latest, installed)) return true;
+  try {
+    const response = await fetch(`${GITHUB_API}/compare/${latest}...${installed}`, {
+      cache: 'no-store',
+      headers: { Accept: 'application/vnd.github+json' },
+    });
+    if (!response.ok) return false;
+    const payload = await response.json() as { status?: unknown };
+    return payload.status === 'ahead' || payload.status === 'identical';
+  } catch {
+    return false;
+  }
+}
+
 async function getReadOnlySourceUpdateState(): Promise<UpdateControlState> {
-  const response = await fetch(GITHUB_LATEST_COMMIT, {
+  const response = await fetch(GITHUB_LATEST_WEB_COMMIT, {
     cache: 'no-store',
     headers: { Accept: 'application/vnd.github+json' },
   });
   if (!response.ok) throw new Error(`GitHub: HTTP ${response.status}`);
-  const payload = await response.json() as GitHubCommitPayload;
+  const commits = await response.json() as unknown;
+  const payload = (Array.isArray(commits) ? commits[0] ?? {} : {}) as GitHubCommitPayload;
   const sha = normalizeRevision(payload.sha);
   if (!sha || sha.length !== 40) throw new Error('GitHub вернул некорректный commit SHA.');
   const message = typeof payload.commit?.message === 'string'
@@ -134,6 +165,7 @@ async function getReadOnlySourceUpdateState(): Promise<UpdateControlState> {
     repository: SOURCE_REPOSITORY,
     branch: SOURCE_BRANCH,
     installedRevision: EMBEDDED_SOURCE_REVISION,
+    updateAvailable: !(await runningBuildContains(sha, EMBEDDED_SOURCE_REVISION)),
     latest: {
       sha,
       shortSha: sha.slice(0, 12),

@@ -261,7 +261,8 @@ def check_update_control_contract() -> None:
     update_api = (
         ROOT / "frontend/src/features/system/api/updateControl.ts"
     ).read_text(encoding="utf-8")
-    require("api.github.com/repos/Pacifica123/p2p_planner/commits/main" in update_api, "web update fallback is missing")
+    require("api.github.com/repos/Pacifica123/p2pKanban-ecosystem" in update_api, "web update fallback is missing")
+    require("path=${SOURCE_PATH}" in update_api, "web update fallback must follow only web/ commits")
     require("VITE_SOURCE_REVISION" in update_api, "web update fallback lacks running revision identity")
     update_surface = (
         ROOT / "frontend/src/features/system/components/SourceUpdateSurface.tsx"

@@ -4,8 +4,8 @@ import {
   checkForSourceUpdate,
   getUpdateControlState,
   isLocalUpdateSurface,
+  isUpdateAvailable,
   startSourceUpdate,
-  revisionsMatch,
   type UpdateControlState,
 } from '@/features/system/api/updateControl';
 import { Button } from '@/shared/ui/Button';
@@ -74,7 +74,7 @@ export function SourceUpdateSurface() {
   const latest = state.latest;
   const updateAvailable = Boolean(
     latest
-    && !revisionsMatch(latest.sha, state.installedRevision)
+    && isUpdateAvailable(state)
     && latest.sha !== dismissedSha,
   );
   const jobFinished = state.job.status === 'succeeded' || state.job.status === 'failed';
@@ -114,7 +114,7 @@ export function SourceUpdateSurface() {
       {updateAvailable && !showOverlay ? (
         <aside className="source-update-banner" role="status">
           <div className="source-update-banner__copy">
-            <strong>В `main` появился новый commit</strong>
+            <strong>В `main` изменился web</strong>
             <span>{firstCommitLine(latest!.message)}</span>
             <a href={latest!.url} target="_blank" rel="noreferrer">
               {latest!.shortSha}{latest!.committedAt ? ` · ${new Date(latest!.committedAt).toLocaleString()}` : ''}

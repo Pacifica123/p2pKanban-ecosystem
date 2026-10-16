@@ -23,9 +23,15 @@ from pathlib import Path
 from typing import Any
 
 
-CONTROL_VERSION = "1.1.0"
+CONTROL_VERSION = "1.2.0"
 DEFAULT_PORT = 8765
-DEFAULT_REPOSITORY = "https://github.com/Pacifica123/p2p_planner"
+DEFAULT_REPOSITORY = "https://github.com/Pacifica123/p2pKanban-ecosystem"
+# Before the monorepo the node was published from its own repository. Nodes
+# that still remember it follow the monorepo instead.
+LEGACY_REPOSITORIES = frozenset({"https://github.com/pacifica123/p2p_planner"})
+# In the monorepo web lives in web/. Only commits that change this directory
+# are offered as node updates; mobile, abl, devctl and board commits are not.
+SOURCE_PATH = "web"
 DEFAULT_BRANCH = "main"
 CONTROL_STATE = Path(".dev-bootstrap/update-control.json")
 STACK_STATE = Path(".dev-bootstrap/container-stack.json")
@@ -67,7 +73,10 @@ def normalize_repository(value: object) -> str:
     parts = [part for part in parsed.path.split("/") if part]
     if len(parts) != 2:
         return DEFAULT_REPOSITORY
-    return f"https://github.com/{parts[0]}/{parts[1]}"
+    repository = f"https://github.com/{parts[0]}/{parts[1]}"
+    if repository.lower() in LEGACY_REPOSITORIES:
+        return DEFAULT_REPOSITORY
+    return repository
 
 
 def github_api_commit_url(repository: str, branch: str) -> str:
@@ -78,9 +87,20 @@ def github_api_commit_url(repository: str, branch: str) -> str:
     )
 
 
-def fetch_latest_commit(repository: str, branch: str) -> dict[str, Any]:
+def github_api_path_commits_url(repository: str, branch: str, path: str) -> str:
+    owner_repo = normalize_repository(repository).removeprefix("https://github.com/")
+    query = urllib.parse.urlencode({"sha": branch, "path": path, "per_page": 1})
+    return f"https://api.github.com/repos/{owner_repo}/commits?{query}"
+
+
+def github_api_compare_url(repository: str, base: str, head: str) -> str:
+    owner_repo = normalize_repository(repository).removeprefix("https://github.com/")
+    return f"https://api.github.com/repos/{owner_repo}/compare/{base}...{head}"
+
+
+def github_json(url: str) -> Any:
     request = urllib.request.Request(
-        github_api_commit_url(repository, branch),
+        url,
         headers={
             "Accept": "application/vnd.github+json",
             "User-Agent": f"p2pKanban-update-control/{CONTROL_VERSION}",
@@ -89,15 +109,63 @@ def fetch_latest_commit(repository: str, branch: str) -> dict[str, Any]:
     )
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+            return json.loads(response.read().decode("utf-8"))
     except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
         raise RuntimeError(f"GitHub не ответил: {exc}") from exc
+
+
+def is_revision(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{7,40}", value) is not None
+
+
+def revisions_match(left: object, right: object) -> bool:
+    if not is_revision(left) or not is_revision(right):
+        return False
+    return str(left).startswith(str(right)) or str(right).startswith(str(left))
+
+
+def fetch_latest_commit(repository: str, branch: str) -> dict[str, Any]:
+    """Latest commit of the branch that changed web/.
+
+    A repository without web/ (the pre-monorepo layout) has no such commits;
+    then the branch head itself is the update.
+    """
+    scoped = github_json(github_api_path_commits_url(repository, branch, SOURCE_PATH))
+    if isinstance(scoped, list) and scoped:
+        latest = commit_from_payload(scoped[0], repository)
+        latest["sourcePath"] = SOURCE_PATH
+        return latest
+    latest = commit_from_payload(github_json(github_api_commit_url(repository, branch)), repository)
+    latest["sourcePath"] = None
+    return latest
+
+
+def installed_contains(repository: str, latest_sha: str, installed: str | None) -> bool:
+    """True when the running revision already has the web/ of latest_sha.
+
+    The running node may be built from a later commit that only touched other
+    directions. GitHub compare answers "ahead"/"identical" for it. An unknown
+    revision (an old repository, a source fingerprint) is not evidence.
+    """
+    if not is_revision(installed):
+        return False
+    if revisions_match(latest_sha, installed):
+        return True
+    try:
+        payload = github_json(github_api_compare_url(repository, latest_sha, str(installed)))
+    except RuntimeError:
+        return False
+    return isinstance(payload, dict) and payload.get("status") in {"ahead", "identical"}
+
+
+def commit_from_payload(payload: object, repository: str) -> dict[str, Any]:
     commit = payload.get("commit") if isinstance(payload, dict) else None
     if not isinstance(commit, dict):
         raise RuntimeError("GitHub вернул неожиданный ответ для main.")
     sha = str(payload.get("sha") or "")
     if len(sha) != 40 or any(character not in "0123456789abcdef" for character in sha):
         raise RuntimeError("GitHub не вернул корректный commit SHA.")
+    assert isinstance(payload, dict)
     committer = commit.get("committer") if isinstance(commit.get("committer"), dict) else {}
     return {
         "sha": sha,
@@ -105,6 +173,7 @@ def fetch_latest_commit(repository: str, branch: str) -> dict[str, Any]:
         "message": str(commit.get("message") or "Новый commit в main"),
         "committedAt": committer.get("date"),
         "url": str(payload.get("html_url") or f"{repository}/commit/{sha}"),
+        "repository": normalize_repository(repository),
         "checkedAt": iso_now(),
     }
 
@@ -221,6 +290,10 @@ class ControlApplication:
     def latest(self, *, refresh: bool = False) -> dict[str, Any] | None:
         cache_path = self.project_root / LATEST_CACHE
         cached = read_object(cache_path)
+        # A cache written for another repository (the pre-monorepo one) says
+        # nothing about this channel.
+        if cached and not str(cached.get("url") or "").startswith(self.repository + "/"):
+            cached = {}
         if cached and not refresh:
             return cached
         try:
@@ -229,20 +302,36 @@ class ControlApplication:
             if cached:
                 return cached
             raise
+        installed = installed_revision(self.project_root)
+        latest["evaluatedFor"] = installed
+        latest["webUpdateAvailable"] = not installed_contains(
+            self.repository, latest["sha"], installed
+        )
         write_object(cache_path, latest)
         return latest
+
+    def update_available(self, latest: dict[str, Any] | None, installed: str | None) -> bool:
+        if not latest or revisions_match(latest.get("sha"), installed):
+            return False
+        verdict = latest.get("webUpdateAvailable")
+        if latest.get("evaluatedFor") == installed and isinstance(verdict, bool):
+            return verdict
+        return True
 
     def job(self) -> dict[str, Any]:
         return {**empty_job(), **read_object(self.project_root / JOB_STATE)}
 
     def state(self, *, refresh_latest: bool = False) -> dict[str, Any]:
         latest = self.latest(refresh=refresh_latest)
+        installed = installed_revision(self.project_root)
         return {
             "available": True,
             "sessionToken": self.session_token,
             "repository": self.repository,
             "branch": self.branch,
-            "installedRevision": installed_revision(self.project_root),
+            "sourcePath": latest.get("sourcePath") if latest else SOURCE_PATH,
+            "installedRevision": installed,
+            "updateAvailable": self.update_available(latest, installed),
             "latest": latest,
             "job": self.job(),
         }
@@ -260,7 +349,7 @@ class ControlApplication:
                 raise RuntimeError("Обновление уже выполняется.")
             latest = self.latest(refresh=True)
             if not latest or latest.get("sha") != target_sha:
-                raise RuntimeError("main уже изменился. Сначала получите новое предложение обновления.")
+                raise RuntimeError("web в main уже изменился. Сначала получите новое предложение обновления.")
             job = {
                 **empty_job(),
                 "id": f"update-{int(time.time())}",

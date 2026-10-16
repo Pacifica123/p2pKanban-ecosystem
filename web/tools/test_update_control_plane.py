@@ -11,13 +11,19 @@ import unittest
 import urllib.error
 import urllib.request
 from pathlib import Path
+from unittest import mock
 
+import container_bootstrap as bootstrap
+import update_control_plane as control
 from update_control_plane import (
     ControlApplication,
     ControlHandler,
     ThreadingHTTPServer,
     installed_revision,
 )
+
+ECOSYSTEM = "https://github.com/Pacifica123/p2pKanban-ecosystem"
+LEGACY = "https://github.com/Pacifica123/p2p_planner"
 
 
 def write_json(path: Path, value: dict[str, object]) -> None:
@@ -34,7 +40,7 @@ class UpdateControlPlaneTest(unittest.TestCase):
             {
                 "webPort": 18080,
                 "activeRevision": "a" * 40,
-                "updateRepository": "https://github.com/Pacifica123/p2p_planner",
+                "updateRepository": ECOSYSTEM,
                 "updateBranch": "main",
             },
         )
@@ -45,7 +51,7 @@ class UpdateControlPlaneTest(unittest.TestCase):
                 "shortSha": "b" * 12,
                 "message": "test commit",
                 "committedAt": "2032-01-01T10:00:00Z",
-                "url": "https://github.com/Pacifica123/p2p_planner/commit/" + "b" * 40,
+                "url": ECOSYSTEM + "/commit/" + "b" * 40,
                 "checkedAt": "2032-01-01T10:00:00Z",
             },
         )
@@ -142,6 +148,121 @@ class UpdateControlPlaneTest(unittest.TestCase):
     def test_control_state_is_private(self) -> None:
         mode = (self.project_root / ".dev-bootstrap/update-control.json").stat().st_mode
         self.assertEqual(mode & 0o077, 0)
+
+
+    def test_host_verdict_hides_web_commit_already_in_running_build(self) -> None:
+        cache = self.project_root / ".dev-bootstrap/latest-source-commit.json"
+        cached = json.loads(cache.read_text(encoding="utf-8"))
+        write_json(cache, {**cached, "evaluatedFor": "a" * 40, "webUpdateAvailable": False})
+        status, payload, _headers = self.request("/v1/status", origin=self.origin)
+        self.assertEqual(status, 200)
+        self.assertIs(payload["updateAvailable"], False)
+
+        write_json(cache, {**cached, "evaluatedFor": "c" * 40, "webUpdateAvailable": False})
+        _status, payload, _headers = self.request("/v1/status", origin=self.origin)
+        self.assertIs(payload["updateAvailable"], True)
+
+
+def commit_payload(sha: str, repository: str = ECOSYSTEM) -> dict[str, object]:
+    return {
+        "sha": sha,
+        "html_url": f"{repository}/commit/{sha}",
+        "commit": {"message": "web: test", "committer": {"date": "2032-01-01T10:00:00Z"}},
+    }
+
+
+class UpdateChannelTest(unittest.TestCase):
+    """The node follows web/ of the monorepo, not every ecosystem commit."""
+
+    def test_legacy_repository_follows_monorepo(self) -> None:
+        self.assertEqual(control.normalize_repository(LEGACY), ECOSYSTEM)
+        self.assertEqual(control.normalize_repository(LEGACY + ".git"), ECOSYSTEM)
+        self.assertEqual(control.normalize_repository(None), ECOSYSTEM)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.assertEqual(
+                bootstrap.discover_update_repository(root, {"updateRepository": LEGACY}, None),
+                ECOSYSTEM,
+            )
+            self.assertEqual(bootstrap.discover_update_repository(root, {}, None), ECOSYSTEM)
+
+    def test_latest_commit_is_the_last_one_touching_web(self) -> None:
+        calls: list[str] = []
+
+        def github(url: str) -> object:
+            calls.append(url)
+            return [commit_payload("d" * 40)]
+
+        with mock.patch.object(control, "github_json", side_effect=github):
+            latest = control.fetch_latest_commit(ECOSYSTEM, "main")
+        self.assertEqual(latest["sha"], "d" * 40)
+        self.assertEqual(latest["sourcePath"], "web")
+        self.assertEqual(
+            calls,
+            ["https://api.github.com/repos/Pacifica123/p2pKanban-ecosystem/commits?sha=main&path=web&per_page=1"],
+        )
+
+        with mock.patch.object(bootstrap, "github_api_json", side_effect=github):
+            self.assertEqual(bootstrap.github_latest_commit(ECOSYSTEM, "main")["sha"], "d" * 40)
+
+    def test_repository_without_web_directory_uses_branch_head(self) -> None:
+        def github(url: str) -> object:
+            return [] if "path=web" in url else commit_payload("e" * 40)
+
+        with mock.patch.object(control, "github_json", side_effect=github):
+            latest = control.fetch_latest_commit("https://github.com/owner/single", "main")
+        self.assertEqual(latest["sha"], "e" * 40)
+        self.assertIsNone(latest["sourcePath"])
+        with mock.patch.object(bootstrap, "github_api_json", side_effect=github):
+            self.assertEqual(
+                bootstrap.github_latest_commit("https://github.com/owner/single", "main")["sha"],
+                "e" * 40,
+            )
+
+    def test_running_build_after_non_web_commit_contains_latest_web(self) -> None:
+        verdicts = {"ahead": True, "identical": True, "behind": False, "diverged": False}
+        for status, contains in verdicts.items():
+            with mock.patch.object(control, "github_json", return_value={"status": status}):
+                self.assertIs(control.installed_contains(ECOSYSTEM, "d" * 40, "a" * 40), contains)
+        with mock.patch.object(control, "github_json", side_effect=RuntimeError("404")):
+            self.assertFalse(control.installed_contains(ECOSYSTEM, "d" * 40, "301495c0a3f4"))
+        self.assertTrue(control.installed_contains(ECOSYSTEM, "d" * 40, "d" * 12))
+        self.assertFalse(control.installed_contains(ECOSYSTEM, "d" * 40, None))
+
+    def test_cache_from_legacy_repository_is_not_reused(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_json(root / ".dev-bootstrap/container-stack.json", {"activeRevision": "a" * 40})
+            write_json(
+                root / ".dev-bootstrap/latest-source-commit.json",
+                {"sha": "f" * 40, "url": LEGACY + "/commit/" + "f" * 40},
+            )
+            application = ControlApplication(root, 0)
+            self.assertEqual(application.repository, ECOSYSTEM)
+
+            def github(url: str) -> object:
+                if "/compare/" in url:
+                    return {"status": "diverged"}
+                return [commit_payload("d" * 40)]
+
+            with mock.patch.object(control, "github_json", side_effect=github):
+                state = application.state()
+            self.assertEqual(state["latest"]["sha"], "d" * 40)
+            self.assertIs(state["updateAvailable"], True)
+            self.assertEqual(state["sourcePath"], "web")
+
+    def test_monorepo_archive_builds_from_web_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            monorepo = Path(directory) / "p2pKanban-ecosystem-abc"
+            (monorepo / "web").mkdir(parents=True)
+            (monorepo / "web/bootstrap.py").write_text("", encoding="utf-8")
+            (monorepo / "mobile").mkdir()
+            self.assertEqual(bootstrap.update_source_subdirectory(monorepo), monorepo / "web")
+
+            single = Path(directory) / "p2p_planner-abc"
+            (single / "web").mkdir(parents=True)
+            (single / "bootstrap.py").write_text("", encoding="utf-8")
+            self.assertEqual(bootstrap.update_source_subdirectory(single), single)
 
 
 if __name__ == "__main__":

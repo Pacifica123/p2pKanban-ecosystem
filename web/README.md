@@ -61,7 +61,7 @@ python bootstrap.py reset --yes
 
 Подробности: [`docs/deployment/zero-config-bootstrap-v1.md`](docs/deployment/zero-config-bootstrap-v1.md).
 Перенос Windows/Linux: [`portable-startup-v1.md`](docs/deployment/portable-startup-v1.md).
-Web на loopback сам проверяет новый commit в `main` и показывает его сообщение;
+Web на loopback сам проверяет новый коммит `main`, менявший `web/`, и показывает его сообщение;
 read-only проверка работает после перезапуска компьютера, а devctl после push автоматически будит локальный установщик.
 Принятое обновление собирает images отдельно, создаёт PostgreSQL backup, затем
 переключает backend/web за стабильным gateway на прежние volumes. CLI
