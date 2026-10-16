@@ -10,6 +10,7 @@ import { spacing, useAppColors } from '../../app/theme';
 import type { AppTheme, Density } from '../../shared/types/api';
 import {
   Button,
+  ErrorDetails,
   InlineNotice,
   Panel,
   Screen,
@@ -20,9 +21,15 @@ import { useAuth } from '../auth/AuthProvider';
 import { useAppearance } from '../appearance/AppearanceProvider';
 import { useConnection } from '../connection/ConnectionProvider';
 import { getBackendVersion } from '../../shared/api/endpoints';
-import { mobileClientVersion } from '../../shared/version';
+import { mobileSoftware } from '../../shared/errorReport/collect';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+
+/** Version, versionCode and commit: an old APK against a new node is visible at once. */
+function clientBuildLabel() {
+  const { version, build, commit } = mobileSoftware();
+  return [version, build && `сборка ${build}`, commit ? commit.slice(0, 7) : 'коммит неизвестен'].filter(Boolean).join(' · ');
+}
 
 function SettingChoice<T extends string>({
   label,
@@ -249,7 +256,7 @@ export function SettingsScreen({ navigation }: Props) {
         <View style={styles.versionRow}>
           <Text style={[styles.caption, { color: colors.muted }]}>Android-клиент</Text>
           <Text style={[styles.versionValue, { color: colors.text }]} selectable>
-            {mobileClientVersion}
+            {clientBuildLabel()}
           </Text>
         </View>
         <View style={styles.versionRow}>
@@ -260,6 +267,11 @@ export function SettingsScreen({ navigation }: Props) {
               || (backendVersion.isFetching ? 'проверяем…' : 'недоступен')}
           </Text>
         </View>
+        <Text style={[styles.caption, { color: colors.muted }]}>
+          Если приложение подвисало, скопируйте журнал сразу после перезапуска: в нём
+          видно, какая работа шла и сколько JS-поток не отвечал.
+        </Text>
+        <ErrorDetails message="Журнал по запросу из настроек" operation="Диагностика" screen="Настройки" />
       </Panel>
     </Screen>
   );

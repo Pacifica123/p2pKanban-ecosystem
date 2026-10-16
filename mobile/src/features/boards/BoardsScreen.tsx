@@ -1,8 +1,9 @@
 import { prepareDeviceLink } from '../deviceLink/service';
+import { heavyWork } from '../../shared/lib/stallWatch';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useIsFocused } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useNetwork } from '../../app/NetworkProvider';
@@ -195,12 +196,21 @@ export function BoardsScreen({ navigation, route }: Props) {
     ]);
   }
 
+  // Board preparation runs only for the visible list and once per set of boards
+  // and network. It used to restart under an open board on every Wi-Fi flap
+  // (screen off, coming back after a pause) and then opened the whole device-link
+  // pack on the JS thread, so the board stopped answering taps.
+  const primedKey = useRef<string | null>(null);
   useEffect(() => {
-    if (!isOnline || !items.length) return;
+    if (!isOnline || !items.length || !focused) return;
+    const key = `${boardIds}|${networkType}`;
+    if (primedKey.current === key) return;
     let active = true;
     setPrimeState({ status: 'running', result: null });
-    void primeWorkspaceBoards(workspaceId, items, networkType === 'wifi' || networkType === 'ethernet').then((result) => {
+    void heavyWork('проверка реплик досок', () =>
+      primeWorkspaceBoards(workspaceId, items, networkType === 'wifi' || networkType === 'ethernet')).then((result) => {
       if (active) {
+        if (!result.failed) primedKey.current = key;
         setPrimeState({ status: 'done', result });
         if (workspaceRole === 'owner' && result.failed === 0) void prepareDeviceLink().catch(() => undefined);
       }
@@ -208,7 +218,7 @@ export function BoardsScreen({ navigation, route }: Props) {
     return () => {
       active = false;
     };
-  }, [boardIds, isOnline, networkType, workspaceId]);
+  }, [boardIds, focused, isOnline, networkType, workspaceId]);
 
   return (
     <Screen scroll contentStyle={styles.screen}>

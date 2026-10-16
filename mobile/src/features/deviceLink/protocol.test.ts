@@ -1,4 +1,4 @@
-import { finalizeEvent, getPublicKey } from 'nostr-tools/pure';
+import { finalizeEvent, getPublicKey, verifyEvent } from 'nostr-tools/pure';
 import {
   LINK_PROTOCOL,
   GRANT_KIND,
@@ -8,6 +8,9 @@ import {
   extendChain,
   encryptPack,
   decryptPack,
+  decryptPackSliced,
+  encryptPackSliced,
+  finalizeEventSliced,
   checkRequest,
   REQUEST_KIND,
 } from './protocol';
@@ -105,4 +108,29 @@ test('enrolled membership survives invitation expiry, while new delegation remai
   expect(() => verifyChain(chain,getPublicKey(c),now()+1000)).toThrow();
   expect(verifyReplicationChain(chain,getPublicKey(c),now()+1000).root).toBe(getPublicKey(a));
   expect(() => verifyReplicationChain(chain,getPublicKey(c),0)).toThrow();
+});
+test('sliced pack opening matches the one-pass result and yields to taps', async () => {
+  const data = { text: 'Текст 🐈\n'.repeat(8000) },
+    parts = await encryptPackSliced(a, getPublicKey(b), data),
+    reply = await finalizeEventSliced(
+      {
+        kind: RESPONSE_KIND,
+        created_at: now(),
+        tags: [],
+        content: JSON.stringify({ protocol: LINK_PROTOCOL, recipient: getPublicKey(b), parts }),
+      },
+      a,
+    );
+  expect(verifyEvent(JSON.parse(JSON.stringify(reply)))).toBe(true);
+  expect(decryptPack(b, reply)).toEqual(data);
+  let tapped = false;
+  setTimeout(() => { tapped = true; }, 0);
+  await expect(decryptPackSliced(b, reply)).resolves.toEqual(data);
+  expect(tapped).toBe(true);
+  await expect(decryptPackSliced(c, reply)).rejects.toThrow();
+  const tampered = { ...reply, content: reply.content + ' ' };
+  await expect(decryptPackSliced(b, tampered)).rejects.toThrow('Неверная подпись');
+  const closed = new AbortController();
+  closed.abort();
+  await expect(decryptPackSliced(b, reply, closed.signal)).rejects.toThrow('экран закрыт');
 });

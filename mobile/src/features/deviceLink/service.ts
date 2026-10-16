@@ -2,7 +2,6 @@ import { fetchFromRelays } from '../roaming/nostrRelay';
 import { pullRoamingBoard } from '../roaming/service';
 import { normalizeNodeOrigin, isPrivateNodeOrigin } from '../connection/connection';
 import {
-  finalizeEvent,
   getPublicKey,
   generateSecretKey,
   type Event,
@@ -27,23 +26,49 @@ import {
   loadOperationQueue,
 } from '../localFirst/repository';
 import { overlayBoard } from './snapshot';
+import { throwIfCanceled } from '../../shared/lib/uiBudget';
 import {
   checkRequest,
-  decryptPack,
-  encryptPack,
+  decryptPackSliced,
+  encryptPackSliced,
   extendChain,
+  finalizeEventSliced,
   LINK_PROTOCOL,
   RESPONSE_KIND,
   verifyChain,
 } from './protocol';
+import { heavyWork } from '../../shared/lib/stallWatch';
 const CACHE = 'device-link/prepared';
+/** Small plain summary of the pack: showing it must not decrypt megabytes. */
+const INFO = 'device-link/prepared-info';
 const secret = () => getOrCreateRoamingDeviceSecret(generateSecretKey);
-export async function prepareDeviceLink(options: { refresh?: boolean } = {}) {
+export interface PreparationInfo {
+  eventId: string;
+  exportedAt: string;
+  boards: number;
+  expiresAt: number;
+}
+function summarize(eventId: string, data: any, k: Uint8Array): PreparationInfo | null {
+  const grants = Object.values(data.chains).map((c) =>
+    verifyChain(c as Event[], getPublicKey(k)),
+  );
+  if (!grants.length) return null;
+  return {
+    eventId,
+    exportedAt: data.snapshot.exportedAt as string,
+    boards: grants.length,
+    expiresAt: Math.min(...grants.map((g) => g.grant.expiresAt)),
+  };
+}
+export async function prepareDeviceLink(options: { refresh?: boolean; signal?: AbortSignal | null } = {}) {
   const scope = sessionStorageKey(CACHE);
   if (!options.refresh) {
     const info = await preparationInfo().catch(() => null);
     if (info) return info.exportedAt;
   }
+  return heavyWork('подготовка подключения устройства', () => fetchPreparation(scope, options.signal));
+}
+async function fetchPreparation(scope: string, signal?: AbortSignal | null) {
   const k = await secret();
   let response: Event;
   try { response = await apiRequest<Event>(
@@ -61,33 +86,58 @@ export async function prepareDeviceLink(options: { refresh?: boolean } = {}) {
       ? 'ПК недоступен: обновление не выполнено. Сохранённое разрешение действует; можно проверить запрос ноутбука и разрешить подключение.'
       : 'ПК недоступен и действующего разрешения нет. Получите его у доступного доверенного узла; мобильный интернет не делает LAN-адрес ПК доступным.');
   }
-  const data = decryptPack(k, response);
-  for (const c of Object.values(data.chains))
-    verifyChain(c as Event[], getPublicKey(k));
-  if (!Object.keys(data.chains).length) throw new Error('В разрешении нет досок.');
+  const data = await decryptPackSliced(k, response, signal);
+  const info = summarize(response.id, data, k);
+  if (!info) throw new Error('В разрешении нет досок.');
   if (scope !== sessionStorageKey(CACHE)) throw new Error('Сессия изменилась; повторите подготовку.');
   await writeSessionJson(CACHE, response);
+  await writeSessionJson(INFO, info);
+  infoMemo = info;
   return data.snapshot.exportedAt as string;
 }
-export async function preparationInfo() {
-  const cached = await readSessionJson<Event | null>(CACHE, null);
-  if (!cached) return null;
-  const k = await secret(),
-    data = decryptPack(k, cached),
-    grants = Object.values(data.chains).map((c) =>
-      verifyChain(c as Event[], getPublicKey(k)),
-    );
-  if (!grants.length) return null;
-  return {
-    exportedAt: data.snapshot.exportedAt as string,
-    boards: grants.length,
-    expiresAt: Math.min(...grants.map((g) => g.grant.expiresAt)),
-  };
+let infoMemo: PreparationInfo | null = null;
+let infoInFlight: Promise<PreparationInfo | null> | null = null;
+/**
+ * What is prepared, from the stored summary. A pack saved by an older build has
+ * no summary: it is opened once, in slices, and the summary is written.
+ */
+export function preparationInfo(): Promise<PreparationInfo | null> {
+  infoInFlight ??= readPreparationInfo().finally(() => { infoInFlight = null; });
+  return infoInFlight;
 }
+async function readPreparationInfo() {
+  let info = infoMemo || await readSessionJson<PreparationInfo | null>(INFO, null);
+  if (!info) {
+    const cached = await readSessionJson<Event | null>(CACHE, null);
+    if (!cached) return null;
+    const k = await secret();
+    info = await heavyWork('проверка подготовленного подключения', async () =>
+      summarize(cached.id, await decryptPackSliced(k, cached), k));
+    if (!info) return null;
+    await writeSessionJson(INFO, info);
+  }
+  infoMemo = info;
+  // An expired grant is the same as none: it cannot admit a new device.
+  return info.expiresAt > Math.floor(Date.now() / 1000) ? info : null;
+}
+export function resetPreparationMemoForTests() { infoMemo = null; infoInFlight = null; }
 export async function deviceFingerprint() {
   return getPublicKey(await secret());
 }
-export async function approveDevice(raw: string, userId: string, deliver?: (signed: Event) => Promise<void>) {
+export async function approveDevice(
+  raw: string,
+  userId: string,
+  deliver?: (signed: Event) => Promise<void>,
+  signal?: AbortSignal | null,
+) {
+  return heavyWork('разрешение подключения ноутбука', () => issueApproval(raw, userId, deliver, signal));
+}
+async function issueApproval(
+  raw: string,
+  userId: string,
+  deliver: ((signed: Event) => Promise<void>) | undefined,
+  signal: AbortSignal | null | undefined,
+) {
   if (raw.length > 10000) throw new Error('Слишком большой запрос.');
   const request = JSON.parse(raw) as Event,
     { recipient, id, expiresAt } = checkRequest(request),
@@ -102,13 +152,14 @@ export async function approveDevice(raw: string, userId: string, deliver?: (sign
     throw new Error(
       'Сначала подготовьте подключение при доступном исходном узле.',
     );
-  const data = decryptPack(k, cached);
+  const data = await decryptPackSliced(k, cached, signal);
   if (data.snapshot.user.id !== userId)
     throw new Error('Снимок принадлежит другому аккаунту.');
   // Capabilities may arrive through the relay after the original preparation.
   // Add them to this one-time approval so Android can admit a new peer while
   // the PC that created the board is offline.
   for (const capability of await listRoamingCapabilities()) {
+    throwIfCanceled(signal);
     if (!capability.delegationChain?.length || data.chains[capability.boardId]) continue;
     let local = await loadBoardSnapshot(capability.boardId);
     if (!local) {
@@ -184,7 +235,8 @@ export async function approveDevice(raw: string, userId: string, deliver?: (sign
           deletedAt: new Date().toISOString(),
         });
   }
-  const response = finalizeEvent(
+  const parts = await encryptPackSliced(k, recipient, data, signal);
+  const response = await finalizeEventSliced(
     {
       kind: RESPONSE_KIND,
       created_at: Math.floor(Date.now() / 1000),
@@ -194,11 +246,13 @@ export async function approveDevice(raw: string, userId: string, deliver?: (sign
         recipient,
         requestId: id,
         expiresAt,
-        parts: encryptPack(k, recipient, data),
+        parts,
       }),
     },
     k,
+    signal,
   );
+  throwIfCanceled(signal);
   await writeSessionJson(`device-link/issued/${id}`, response);
   if (deliver) await deliver(response); else await shareApproval(response);
 }
@@ -217,7 +271,7 @@ async function shareApproval(e: Event) {
 export async function probePreparedRelays() {
   const cached = await readSessionJson<Event | null>(CACHE, null);
   if (!cached) throw new Error('Нет подготовленного доступа. Получите его при доступном доверенном узле.');
-  const data = decryptPack(await secret(), cached);
+  const data = await decryptPackSliced(await secret(), cached);
   const reports: string[] = [];
   for (const boardId of Object.keys(data.chains)) {
     const capability = await loadRoamingCapability(boardId);
@@ -237,21 +291,47 @@ export function nearbyWebOrigin(value: string) {
     throw new Error('Укажите числовой IPv4:порт ноутбука в локальной сети.');
   return origin;
 }
-export async function fetchNearbyRequest(address: string): Promise<Event> {
+/**
+ * Android's HTTP client has no deadline of its own: a laptop that went to sleep
+ * or an IP from another network kept the request (and the busy panel) forever.
+ */
+export const NEARBY_TIMEOUT_MS = 10_000;
+async function nearbyFetch(url: string, init: RequestInit = {}, signal?: AbortSignal | null) {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => { timedOut = true; controller.abort(); }, NEARBY_TIMEOUT_MS);
+  const cancel = () => controller.abort();
+  if (signal?.aborted) cancel(); else signal?.addEventListener('abort', cancel, { once: true });
+  try {
+    const response = await fetch(url, { ...init, signal: controller.signal });
+    const text = await response.text();
+    return { ok: response.ok, text };
+  } catch (error) {
+    throwIfCanceled(signal);
+    if (timedOut) throw new Error('Ноутбук не ответил за 10 секунд. Проверьте IP:порт и что оба устройства в одной сети.');
+    throw new Error(`Не удалось связаться с ноутбуком: ${error instanceof Error ? error.message : String(error)}`);
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', cancel);
+  }
+}
+export async function fetchNearbyRequest(address: string, signal?: AbortSignal | null): Promise<Event> {
   const origin = nearbyWebOrigin(address);
-  const response = await fetch(`${origin}/api/v1/auth/device-link/lan/pending-request`);
+  const response = await nearbyFetch(`${origin}/api/v1/auth/device-link/lan/pending-request`, {}, signal);
   if (!response.ok) throw new Error('Ноутбук не отвечает. Откройте p2pKanban и «Ожидать ответ Android».');
-  const json = await response.json() as {data:{request:Event|null}};
+  let json: {data?:{request?:Event|null}};
+  try { json = JSON.parse(response.text); }
+  catch { throw new Error('По этому адресу отвечает не p2pKanban.'); }
   if (!json.data?.request) throw new Error('На ноутбуке сначала нажмите «Ожидать ответ Android».');
   checkRequest(json.data.request);
   return json.data.request;
 }
-export async function approveNearbyDevice(raw: string, userId: string, address: string) {
+export async function approveNearbyDevice(raw: string, userId: string, address: string, signal?: AbortSignal | null) {
   const origin = nearbyWebOrigin(address);
   await approveDevice(raw,userId,async signed => {
-    const response = await fetch(`${origin}/api/v1/auth/device-link/lan/mobile-result`, {
+    const response = await nearbyFetch(`${origin}/api/v1/auth/device-link/lan/mobile-result`, {
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(signed),
-    });
+    }, signal);
     if (!response.ok) throw new Error('Ноутбук отклонил разрешение. Повторите запрос до истечения 10 минут.');
-  });
+  }, signal);
 }

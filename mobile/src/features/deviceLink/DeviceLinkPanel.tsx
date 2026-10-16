@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { useAppColors } from '../../app/theme';
 import { Button, ErrorDetails, Field, InlineNotice, Panel } from '../../shared/ui/primitives';
@@ -13,6 +13,7 @@ import {
   probePreparedRelays,
 } from './service';
 import { checkRequest } from './protocol';
+import { isSyncCanceled } from '../../shared/lib/uiBudget';
 export function DeviceLinkPanel() {
   const colors = useAppColors(),
     { user } = useAuth();
@@ -23,9 +24,18 @@ export function DeviceLinkPanel() {
     [status, setStatus] = useState(''),
     [failure, setFailure] = useState<unknown>(undefined),
     [fingerprint, setFingerprint] = useState('');
+  // One operation at a time; leaving Settings or «Отменить» stops it between steps.
+  const operation = useRef<AbortController | null>(null);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; operation.current?.abort(); };
+  }, []);
   async function refresh() {
-    setFingerprint(await deviceFingerprint());
+    const key = await deviceFingerprint();
     const info = await preparationInfo();
+    if (!mounted.current) return;
+    setFingerprint(key);
     setStatus(
       info
         ? `Подготовлено ${info.boards} досок · ${info.exportedAt}. Право до ${new Date(info.expiresAt * 1000).toLocaleDateString()}.`
@@ -33,20 +43,33 @@ export function DeviceLinkPanel() {
     );
   }
   useEffect(() => {
-    if (expanded) void refresh().catch((e) => { setStatus(String(e)); setFailure(e); });
+    if (expanded) void refresh().catch((e) => {
+      if (!mounted.current) return;
+      setStatus(e instanceof Error ? e.message : String(e)); setFailure(e);
+    });
   }, [expanded]);
-  async function run(action: () => Promise<unknown>) {
-    if (busy) return;
+  async function run(action: (signal: AbortSignal) => Promise<unknown>) {
+    if (operation.current) return;
+    const controller = new AbortController();
+    operation.current = controller;
     setBusy(true);
     setFailure(undefined);
     try {
-      await action();
+      await action(controller.signal);
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : String(e));
-      setFailure(e);
+      if (!mounted.current) return;
+      if (controller.signal.aborted || isSyncCanceled(e)) setStatus('Отменено.');
+      else {
+        setStatus(e instanceof Error ? e.message : String(e));
+        setFailure(e);
+      }
     } finally {
-      setBusy(false);
+      if (operation.current === controller) operation.current = null;
+      if (mounted.current) setBusy(false);
     }
+  }
+  function cancel() {
+    operation.current?.abort();
   }
   function confirm() {
     try {
@@ -59,10 +82,12 @@ export function DeviceLinkPanel() {
           {
             text: 'Совпадает · разрешить',
             onPress: () => {
-              void run(async () => {
+              void run(async (signal) => {
                 if (!user) throw new Error('Нужен аккаунт.');
-                if (nearbyAddress.trim()) await approveNearbyDevice(request, user.id, nearbyAddress);
-                else await approveDevice(request, user.id);
+                setStatus('Готовим разрешение… Можно отменить.');
+                if (nearbyAddress.trim()) await approveNearbyDevice(request, user.id, nearbyAddress, signal);
+                else await approveDevice(request, user.id, undefined, signal);
+                if (!mounted.current) return;
                 setStatus(
                   nearbyAddress.trim() ? 'Разрешение доставлено ноутбуку. После подключения телефон больше не нужен.' : 'Передайте зашифрованный файл ноутбуку до истечения 10 минут.',
                 );
@@ -79,7 +104,11 @@ export function DeviceLinkPanel() {
     <Panel>
       <Button
         label="Подключить другое устройство"
-        onPress={() => setExpanded(!expanded)}
+        onPress={() => {
+          // Folding the panel is "I changed my mind": the running step stops too.
+          if (expanded) cancel();
+          setExpanded(!expanded);
+        }}
       />
       {expanded && (
         <View style={{ gap: 12 }}>
@@ -93,14 +122,18 @@ export function DeviceLinkPanel() {
             label="Обновить доступ через доступный узел"
             disabled={busy}
             onPress={() => {
-              void run(async () => {
-                await prepareDeviceLink({ refresh: true });
+              void run(async (signal) => {
+                await prepareDeviceLink({ refresh: true, signal });
                 await refresh();
               });
             }}
           />
           <Button label="Проверить relay без ПК" disabled={busy}
-            onPress={() => { void run(async () => { setStatus(await probePreparedRelays()); }); }} />
+            onPress={() => { void run(async () => {
+              const report = await probePreparedRelays();
+              if (mounted.current) setStatus(report);
+            }); }} />
+          {busy ? <Button label="Отменить" variant="ghost" onPress={cancel} /> : null}
           <InlineNotice text={status} tone="neutral" />
           {failure !== undefined ? <ErrorDetails message={status} error={failure} operation="Подключение устройства" /> : null}
           <Text selectable style={{ color: colors.text }}>
@@ -109,8 +142,10 @@ export function DeviceLinkPanel() {
           <Field label="IP:порт ноутбука в локальной сети" value={nearbyAddress}
             onChangeText={setNearbyAddress} editable={!busy} placeholder="192.168.1.42:8080" />
           <Button label="Получить запрос с ноутбука" disabled={busy || !nearbyAddress.trim()}
-            onPress={() => { void run(async () => {
-              const pending = await fetchNearbyRequest(nearbyAddress);
+            onPress={() => { void run(async (signal) => {
+              setStatus('Спрашиваем ноутбук… Можно отменить.');
+              const pending = await fetchNearbyRequest(nearbyAddress, signal);
+              if (!mounted.current) return;
               setRequest(JSON.stringify(pending));
               setStatus('Запрос найден. Сверьте отпечаток с экраном ноутбука и разрешите.');
             }); }} />

@@ -31,7 +31,7 @@ if (
   || packageLock.version !== packageJson.version
   || packageLock.packages?.['']?.version !== packageJson.version
   || appJson.expo.version !== packageJson.version
-  || appJson.expo.android.versionCode !== 25
+  || appJson.expo.android.versionCode !== 26
 ) {
   throw new Error('Версии Android package, lock и Expo не согласованы.');
 }
@@ -202,10 +202,15 @@ requireText('src/features/sync/syncService.ts', [
   "appVersion: '1.0.0'",
 ]);
 requireText('android/app/build.gradle', [
-  'versionCode 25',
+  'versionCode 26',
   'versionName "2.1.0"',
 ]);
 
 console.log('OK: Android CRUD, reminders, appearance, roaming, versions and drag contract are aligned');
 
 forbidText('src/features/localFirst/useLocalBoard.ts', ['ждём подтверждения исходным узлом', 'relayOperationIsInCoordinatorSnapshot']);
+// The device-link pack is megabytes: opened only in slices, never on a tap or a list refresh.
+requireText('src/features/deviceLink/service.ts', ['decryptPackSliced', 'prepared-info', 'NEARBY_TIMEOUT_MS']);
+forbidText('src/features/deviceLink/service.ts', ['decryptPack(', 'encryptPack(', 'await fetch(`']);
+requireText('src/features/boards/BoardsScreen.tsx', ['!focused', 'primedKey']);
+requireText('index.ts', ['installStallWatch()']);
