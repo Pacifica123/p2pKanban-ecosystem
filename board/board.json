@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 56,
-        "comments": 45,
-        "checklists": 19,
+        "cards": 61,
+        "comments": 49,
+        "checklists": 23,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T05:00:00Z",
+    "generatedAt": "2026-10-16T06:00:00Z",
     "selfHosted": true,
-    "boardRevision": 16,
-    "lastPatchId": "2026-10-16-web-update-channel-monorepo",
+    "boardRevision": 17,
+    "lastPatchId": "2026-10-16-ecosystem-docs-revision",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -678,6 +678,56 @@
         "priority": "low",
         "position": 14336,
         "archivedAt": null
+      },
+      {
+        "id": "01a1434b-bf01-7ec0-8d94-b75ec1294143",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "title": "Ревизия документации экосистемы (заметки 2026-10-16)",
+        "description": "Зачем: документации 1,8 МиБ в 277 файлах, 202 из них без даты; общие вещи (HTTP API узла, термины) лежат внутри одного направления, устаревшие планы занимают место и путают. Заметки John 2026-10-16: общий OpenAPI и общая документация, два учебника, актуальность ADR, наследие вместо устаревших доков — как подготовка к мета-бутстраперу.\n\nГотово, когда: John решил по E-ADR-001 и E-ADR-002; аудит актуальности есть и его отчёт разобран по направлениям (карточка «Ревизия актуальности документов по направлениям»); наследие пополняется вместо копий старых планов.\n\nНе входит: devctl (его документация живёт в devctl-universal).",
+        "priority": "high",
+        "position": 1024,
+        "archivedAt": null
+      },
+      {
+        "id": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "web: OpenAPI отстал от узла на 8 маршрутов",
+        "description": "Зачем: web/tools/contract_parity_sweep.py --check красный на 6cef464. В OpenAPI нет 8 смонтированных маршрутов: POST /auth/device-link/prepare (им пользуется Android), /request, /supplement-request, /accept, /approve, GET /integrations/projects, GET /integrations/projects/{projectId}/receipts, POST …/receipts/preview. Описан несмонтированный POST /auth/device-link/lan/inbox. info.version 0.2.0 при web 2.1.0. Часть строк «frontend calls missing in backend» — шаблонные строки, которые сверка не разбирает (GET /ring и др.).\n\nГотово, когда: contract_parity_sweep.py --check зелёный; ложные срабатывания на шаблонных путях устранены в самой сверке; info.version совпадает с web/VERSION.\n\nПервый шаг E-ADR-001; полезен при любом решении по нему.",
+        "priority": "medium",
+        "position": 5120,
+        "archivedAt": null
+      },
+      {
+        "id": "01a1434b-bf0c-79fd-b6a1-8441075228c5",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Два учебника: для пользователя и для разработчика",
+        "description": "Зачем: пресуппозиция 1 — забывание главный противник. Термины и механизмы (узел, реплика, relay, capability, кольцо устройств, честные статусы) объяснены только внутри решений и контрактов: чтобы понять кольцо, надо прочитать trusted-devices.md (22 КиБ) и три SPEC. Учебник отвечает на «что это, откуда и зачем», не повторяя «как именно».\n\nОценка (2026-10-16): идея релевантна, особенно учебник разработчика — его читают John через месяц, новая нейросеть и мета-бутстрапер. Главный риск — третий слой документации, который устареет так же, как планы. Условия, при которых он не устаревает: учебник объясняет и ссылается, факты не копирует (принцип 7); общий глоссарий для обеих книг; docs_audit.py проверяет его ссылки. Пользовательский учебник имеет смысл, когда понятен читатель и есть мета-бутстрапер.\n\nГотово, когда: John ответил на вопросы (читатель, место, язык, порядок), и принципы построения каждой книги записаны.",
+        "priority": "medium",
+        "position": 15360,
+        "archivedAt": null
+      },
+      {
+        "id": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Ревизия актуальности документов по направлениям",
+        "description": "Зачем: аудит 2026-10-16 (python -B tools/ecosystem/docs_audit.py) показал: web 176 документов, 120 без даты; abl 58, без даты 51 (все 7 ADR abl без даты); mobile 14, без даты 8; ADR-006 web заменён ADR-007 молча. Вручную найдено: web/docs/README.md называет версию 1.0.0 и Android versionCode 10 (сейчас 2.1.0 и 25); mobile/README.md — версию 2.0.0 (сейчас 2.1.0).\n\nГотово, когда: по каждому направлению свой патч: устаревшие факты исправлены, у ADR статус и дата, отчёт аудита разобран (исправить, назвать историческим или сжать в наследие).\n\nНачинается после патча 2026-10-16-ecosystem-docs-revision. devctl не входит.",
+        "priority": "medium",
+        "position": 11264,
+        "archivedAt": null
+      },
+      {
+        "id": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Наследие: сжать устаревшие документы направлений",
+        "description": "Зачем: старые планы и манифесты без даты занимают место и выглядят как действующие (пример — systemic-release-stabilization-manifesto-v1 в web). Полезное ядро сжимается в docs/ecosystem/heritage.md, исходник удаляет или помечает историческим патч направления.\n\nГотово, когда: для каждого кластера ядро в наследии, а исходники убраны патчем своего направления без потери проверок.\n\nНачинается после «Ревизии актуальности документов по направлениям»: сначала понять, что устарело.",
+        "priority": "medium",
+        "position": 12288,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1162,6 +1212,62 @@
       {
         "cardId": "01a11517-bfdf-7009-8ee0-86f13f7098bc",
         "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a1434b-bf01-7ec0-8d94-b75ec1294143",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a1434b-bf0c-79fd-b6a1-8441075228c5",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
       }
     ],
     "checklists": [
@@ -1277,6 +1383,30 @@
         "id": "01a11517-bfdf-7001-898b-829fad5cc264",
         "cardId": "01a10f95-3898-7327-aba2-c788e924ec17",
         "title": "Приёмка",
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf02-7559-9411-4fd1e72f7ed3",
+        "cardId": "01a1434b-bf01-7ec0-8d94-b75ec1294143",
+        "title": "Шаги",
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf0d-756b-b407-d40a8786c1bc",
+        "cardId": "01a1434b-bf0c-79fd-b6a1-8441075228c5",
+        "title": "Вопросы John",
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
+        "cardId": "01a1434b-bf12-797a-9766-2893bd7d47a7",
+        "title": "Направления",
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
+        "title": "Кластеры",
         "position": 1024
       }
     ],
@@ -1966,6 +2096,153 @@
         "title": "Карточка, созданная без сети, уходит сама после возврата сети (из приёмки «интерфейс не ждёт сеть»)",
         "isDone": false,
         "position": 4096
+      },
+      {
+        "id": "01a1434b-bf03-7088-bb05-b6390b95b429",
+        "checklistId": "01a1434b-bf02-7559-9411-4fd1e72f7ed3",
+        "title": "tools/ecosystem/docs_audit.py: без даты, битые ссылки, пропавшие пути, ADR, заменённые молча",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf04-723e-aae9-db724d26e622",
+        "checklistId": "01a1434b-bf02-7559-9411-4fd1e72f7ed3",
+        "title": "Наследие H1: ядро web/docs/development (20 документов) в docs/ecosystem/heritage.md",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a1434b-bf05-7cbd-9f7e-fc42152bccda",
+        "checklistId": "01a1434b-bf02-7559-9411-4fd1e72f7ed3",
+        "title": "Устаревшие факты корня: статусы контрактов, R2 в trusted-devices, потребители HTTP API",
+        "isDone": true,
+        "position": 3072
+      },
+      {
+        "id": "01a1434b-bf06-7a28-8abe-19ca01e14dfa",
+        "checklistId": "01a1434b-bf02-7559-9411-4fd1e72f7ed3",
+        "title": "E-ADR-001: решение John по общему слою и поправке принципа 3",
+        "isDone": true,
+        "position": 4096
+      },
+      {
+        "id": "01a1434b-bf07-7d30-86d1-cd2de46b5c75",
+        "checklistId": "01a1434b-bf02-7559-9411-4fd1e72f7ed3",
+        "title": "E-ADR-002: John подтверждает пересмотр ADR-001",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a1434b-bf09-7ae7-a26a-d9cf8df12fbb",
+        "checklistId": "01a10d38-f92b-7738-bd3d-9cfd3de4fc7e",
+        "title": "HTTP API узла: web/docs/api/openapi.yaml → contracts/node-api/1 (E-ADR-001)",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a1434b-bf0e-740a-80d1-d8dae9839248",
+        "checklistId": "01a1434b-bf0d-756b-b407-d40a8786c1bc",
+        "title": "Кто читатель пользовательского учебника: ты сам, близкие люди или публичные пользователи?",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf0f-7769-89be-1ade647f5e52",
+        "checklistId": "01a1434b-bf0d-756b-b407-d40a8786c1bc",
+        "title": "Где он живёт: Markdown в репозитории или справка внутри приложения?",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a1434b-bf10-750e-b9cc-9a1a1c82493a",
+        "checklistId": "01a1434b-bf0d-756b-b407-d40a8786c1bc",
+        "title": "Учебник разработчика пишется и для нейросетей (строже формат, больше ссылок)?",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a1434b-bf11-7b44-b4b2-1c934b8768a4",
+        "checklistId": "01a1434b-bf0d-756b-b407-d40a8786c1bc",
+        "title": "Порядок: сначала общий глоссарий и учебник разработчика, пользовательский после мета-бутстрапера?",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a1434b-bf14-752b-8d65-335180f86c78",
+        "checklistId": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
+        "title": "web: ADR-006 со статусом «частично заменён ADR-007»; «Текущее состояние» в docs/README.md",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf15-7308-990c-a2f055b4b160",
+        "checklistId": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
+        "title": "web: остальные 120 документов без даты по отчёту аудита",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a1434b-bf16-7660-ba90-36e8424460a2",
+        "checklistId": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
+        "title": "mobile: версия в README, документы без даты",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a1434b-bf17-7e90-b6d8-d0dd4582937c",
+        "checklistId": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
+        "title": "abl: даты у ADR-001…007, документы без даты",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a1434b-bf18-766b-9179-42345e24a80b",
+        "checklistId": "01a1434b-bf13-7013-a8fd-cc0f99b9045b",
+        "title": "корень: integration-path и development по отчёту аудита",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a1434b-bf1b-7235-a132-4db069b46ac5",
+        "checklistId": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "title": "web/docs/development: ядро в heritage.md H1",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a1434b-bf1c-7167-9647-097518e5f852",
+        "checklistId": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "title": "web: убрать исходники H1; devbootstrap.py проверяет существование трёх документов программы — править вместе",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a1434b-bf1d-7a27-9ea7-e8e4890b4b51",
+        "checklistId": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "title": "web/docs/product: release notes beta.3–beta.13 и планы, выполненные к v2",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a1434b-bf1e-74a5-a4d7-de659cbe6052",
+        "checklistId": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "title": "web/docs/dev-bootstrap/release-gates-followup",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a1434b-bf1f-7045-bcd6-db9fe9c349f6",
+        "checklistId": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "title": "abl/docs/evidence A00–A10: выполненные этапы",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a1434b-bf20-7de2-930c-fd15ffd30154",
+        "checklistId": "01a1434b-bf1a-752f-a1f5-062292d71557",
+        "title": "mobile: RELEASE_NOTES_1.x в корне направления",
+        "isDone": false,
+        "position": 6144
       }
     ],
     "comments": [
@@ -2238,6 +2515,30 @@
         "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
         "createdAt": "2026-10-16T05:00:00Z",
         "body": "patch 2026-10-16-web-update-channel-monorepo: web-узел обновляется из main монорепозитория и только по коммитам, менявшим web/ (сборка узла берёт только web/, контекст Compose — web/). Updater берёт web/ из архива коммита; архив прежнего однопроектного репозитория тоже принимается. Плашка не показывается, если узел собран из более позднего коммита с тем же web/. Сохранённый адрес p2p_planner переводится на монорепозиторий сам. Старый updater на узле монорепозиторий читать не умеет: один раз выполнить в каталоге узла python bootstrap.py update --source-dir <checkout>/web. Раздел «Что сознательно не связано» в docs/ecosystem/boundaries.md про канал обновления устарел — поправить патчем экосистемы."
+      },
+      {
+        "id": "01a1434b-bf08-74ab-a321-48a2fb0ec8c2",
+        "cardId": "01a1434b-bf01-7ec0-8d94-b75ec1294143",
+        "createdAt": "2026-10-16T06:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-docs-revision: в docs/ecosystem/adr два решения уровня экосистемы, оба «предложено». E-ADR-001: общее — то, что читают несколько направлений; HTTP API узла становится контрактом p2p-kanban-node-api/1 в contracts/, владелец web; нужна поправка принципа 3, потому что тесты mobile уже читают contracts/ из корня. E-ADR-002: оценка John про ADR-001 верна в главном; дорого обошлось отложенное доверие устройств (4 из 6 причин сетевой сцены), а не отложенный транспорт, и у отложенного не было условия возврата. heritage.md: ядро программы стабилизации web в 20 правилах. docs_audit.py нашёл ADR-006 web, молча заменённый ADR-007, и 202 документа без даты."
+      },
+      {
+        "id": "01a1434b-bf0a-7e69-8b5d-d72eea5ce7ba",
+        "cardId": "01a10d38-f92a-70a5-ae6c-afd63ff7cd82",
+        "createdAt": "2026-10-16T06:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-docs-revision: в список добавлен HTTP API узла, самый большой общий контракт: его читают web UI, mobile и abl, а сверяет только web UI. Порядок в E-ADR-001: сначала web догоняет OpenAPI до узла (карточка «web: OpenAPI отстал от узла»), потом перенос с поправкой принципа 3, потом корневая сверка путей mobile и abl."
+      },
+      {
+        "id": "01a1434b-bf21-7ae7-813c-fd6c8cf22a92",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "createdAt": "2026-10-16T06:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-docs-revision: подготовка документации к мета-бутстраперу. Всё, что нужно для понимания совместимости при установке одного направления, должно лежать в корне: контракты (E-ADR-001), глоссарий и учебники, наследие. E-ADR-002 добавляет требование к профилю установки: устройство вступает в кольцо аккаунта, а не привязывается к одному узлу."
+      },
+      {
+        "id": "01a1434c-3431-7064-9c80-317fa3b1799d",
+        "cardId": "01a1434b-bf01-7ec0-8d94-b75ec1294143",
+        "createdAt": "2026-10-16T06:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-docs-revision: John выбрал «Разрешить» (2026-10-16): E-ADR-001 принят, принцип 3 дополнен — сборка и запуск направления корень не читают, его проверки могут читать contracts/ (или копию, сделанную при сборке). Перенос OpenAPI в contracts/node-api/1 — после того как web догонит узел."
       }
     ],
     "boardAppearanceSettings": [],

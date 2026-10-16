@@ -27,7 +27,7 @@
 
 | Контракт | Кто производит | Кто потребляет | Где описан |
 |---|---|---|---|
-| HTTP API узла, включая `/api/v1/auth/native/*` | web | mobile | `web/docs/api/openapi.yaml` |
+| HTTP API узла, включая `/api/v1/auth/native/*` | web | web UI, mobile, abl (frontend через desktop-транспорт) | `web/docs/api/openapi.yaml`; отстаёт от узла, перенос в `contracts/` принят в [E-ADR-001](adr/E-ADR-001-shared-documentation-layer.md) |
 | Roaming доски `p2p-kanban-roaming/1` (Nostr, XChaCha20-Poly1305, порядок `logicalClock → replicaId → eventId`) | web, mobile | web, mobile, abl | `web/docs/sync/roaming-board-protocol-v1.md`, `abl/fixtures/protocol/` |
 | Sync envelope `p2p-kanban-sync/1` | web `sync-core` | abl | `web/backend/crates/sync-core/src/envelope.rs`, `abl/docs/evidence/A10_SYNC_ROAMING_COMPATIBILITY.md` |
 | Привязка устройства `p2p-kanban-device-link/2` | web | mobile, abl | `web/backend/src/auth/device_link.rs`, `abl/fixtures/protocol/device-link-grant-v2.json` |
@@ -36,10 +36,10 @@
 | Patch manifest и `state.json` | devctl | все направления, `web/tools/devctl_receipt.py` | `devctl/docs/patch-format.md`, `devctl/docs/configuration.md` |
 | devctl receipt и `.p2pkanban/project.json` | `web/tools/devctl_receipt.py` | web API интеграций | `web/docs/integrations/devctl-v2.md` |
 
-### Описанные, но ещё не реализованные контракты
+### Контракты в `contracts/`
 
 Лежат в [`contracts/`](../../contracts/README.md): спецификация, JSON Schema и
-эталонные векторы, проверка `python -B tools/ecosystem/check_contracts.py`.
+эталонные векторы; кто их уже реализовал — в `compatibility.json`, проверка `python -B tools/ecosystem/check_contracts.py`.
 Зачем они нужны, рассказывает [trusted-devices.md](trusted-devices.md).
 
 | Контракт | Кто производит | Кто потребляет | Где описан |
@@ -72,11 +72,14 @@ Android 9 из 12, devctl 2 из 3). Это не ошибка: якоря зам
 
 - Направления не импортируют код друг друга и не ссылаются на соседние
   каталоги.
-- Установленные web-узлы продолжают обновляться из прежнего репозитория
-  `Pacifica123/p2p_planner`: `web/tools/container_bootstrap.py` и
-  `web/tools/update_control_plane.py` скачивают архив корня этого репозитория
-  и ждут `bootstrap.py` в корне. В монорепозитории web лежит в `web/`, поэтому
-  переключение канала обновления — отдельный будущий шаг.
+- Канал обновления web-узлов — ветка `main` монорепозитория
+  `Pacifica123/p2pKanban-ecosystem` (с патча 2026-10-16-web-update-channel-monorepo).
+  Обновлением считается последний коммит `main`, менявший `web/`; коммиты в
+  mobile, abl, devctl или доску плашку обновления не показывают. Из архива
+  коммита `web/tools/update_control_plane.py` и `web/tools/container_bootstrap.py`
+  берут только `web/`. Сохранённый в узле адрес `Pacifica123/p2p_planner`
+  переводится на монорепозиторий; узлу со старым updater нужен один ручной
+  переход (`python bootstrap.py update --source-dir <checkout>/web`).
 - Работающий узел остаётся в своём прежнем каталоге. Перенос состояния узла
   в checkout монорепозитория не выполняется.
 - У devctl остаётся собственный `devctl/.devctl/workspace.json` (с устаревшим
