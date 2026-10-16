@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 56,
-        "comments": 41,
+        "comments": 44,
         "checklists": 19,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-07T07:50:00Z",
+    "generatedAt": "2026-10-16T05:00:00Z",
     "selfHosted": true,
-    "boardRevision": 14,
-    "lastPatchId": "2026-10-07-abl-error-details",
+    "boardRevision": 15,
+    "lastPatchId": "2026-10-16-ecosystem-host-acceptance",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -322,11 +322,11 @@
       {
         "id": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Android: интерфейс не ждёт сеть и синхронизацию",
         "description": "Зачем: из доски нельзя было выйти, пока внутри что-то досчитывалось; прошлое исправление (мгновенный Back) лечило ожидание, а JS-поток был занят проверкой всей истории relay каждые 15 секунд.\n\nГотово, когда: на телефоне с длинной историей и плохой сетью выход из доски, закрытие карточки и окон мгновенны; переключение Wi-Fi/мобильной сети не переоткрывает доску.\n\nРазбор и инварианты: mobile/docs/architecture/ui-responsiveness-20261006.md.",
         "priority": "urgent",
-        "position": 2048,
+        "position": 15360,
         "archivedAt": null
       },
       {
@@ -602,11 +602,11 @@
       {
         "id": "01a11070-f286-749a-ad93-73abf3da1f0e",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "EAS: связать сборку из монорепозитория с проектом Expo приложения",
         "description": "Зачем: облачная сборка из github.com/Pacifica123/p2pKanban-ecosystem (папка mobile) упала: в mobile/app.json extra.eas.projectId = 19e01039-73f2-4df3-ac5b-ebe8a587b807 (owner pacifica123program, slug p2pkanban-mobile), а сборку запустил другой проект Expo c0b2361e-ed0f-4b93-826f-37e119119d0a. Код тут ни при чём: репозиторий привязан не к тому проекту Expo.\n\nГотово, когда: облачная сборка EAS из монорепозитория собирает APK, который ставится поверх текущего приложения без удаления данных.\n\nРекомендуется: на expo.dev отвязать GitHub от проекта c0b2361e и в существующем проекте pacifica123program/p2pkanban-mobile (19e01039) подключить этот репозиторий с базовой папкой mobile. Так сохраняются ключи подписи Android проекта. Перейти на c0b2361e (поменять projectId в app.json) можно только сознательно: у нового проекта будут свои ключи подписи, и APK из EAS не встанет поверх уже установленного.",
         "priority": "high",
-        "position": 10240,
+        "position": 16384,
         "archivedAt": null
       },
       {
@@ -1432,21 +1432,21 @@
         "id": "01a10f95-3885-795a-9ecd-11b4f9b8aeb7",
         "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
         "title": "Длинная история: «Назад» сразу после открытия доски",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a10f95-3886-7ba0-a360-22e63d1816f5",
         "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
         "title": "Авиарежим при открытой доске: вход/выход, карточка открывается и закрывается",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
         "id": "01a10f95-3887-7af0-a69f-ca783de87f3f",
         "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
         "title": "Смена Wi-Fi ↔ мобильная сеть не показывает «Открываем доску»",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -1460,7 +1460,7 @@
         "id": "01a10f95-3889-747b-9a38-e1c54f726243",
         "checklistId": "01a10f95-3883-720d-b099-f574f18db10f",
         "title": "5 минут прокрутки при нормальной сети без подвисаний на опросах",
-        "isDone": false,
+        "isDone": true,
         "position": 6144
       },
       {
@@ -1684,21 +1684,21 @@
         "id": "01a11070-f288-791c-b4e3-0415209271cc",
         "checklistId": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
         "title": "expo.dev: GitHub подключён к проекту 19e01039, base directory = mobile",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
         "id": "01a11070-f289-7e98-b46d-ca51d4c90691",
         "checklistId": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
         "title": "Сборка preview (APK) из main проходит",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a11070-f28a-733c-823f-7af92ed8237e",
         "checklistId": "01a11070-f287-7fce-a39f-a77b8a0b29e5",
         "title": "APK встаёт поверх установленного, данные на месте",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -1959,6 +1959,13 @@
         "title": "Хост: «Синхронизировать сейчас» — кворум relay собран, ошибок обмена нет",
         "isDone": false,
         "position": 5120
+      },
+      {
+        "id": "01a14315-1be2-7ad2-b66e-73ad144957f2",
+        "checklistId": "01a10f95-38a0-7248-9986-114aefb16211",
+        "title": "Карточка, созданная без сети, уходит сама после возврата сети (из приёмки «интерфейс не ждёт сеть»)",
+        "isDone": false,
+        "position": 4096
       }
     ],
     "comments": [
@@ -2207,6 +2214,24 @@
         "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
         "createdAt": "2026-10-07T07:50:00Z",
         "body": "patch 2026-10-07-abl-error-details: в abl кнопка «Скопировать подробности» под полосой ошибки; ошибки нативных команд Tauri приходят как вид native (код NATIVE_ERROR), журнал 200 строк в памяти WebView, в отчёт 50 после вычистки секретов. Коммит сборки берётся из P2PKANBAN_SOURCE_REVISION или git HEAD при vite build; в пакете PKGBUILD сборка и, без git, коммит будут «неизвестны». Код готов во всех трёх направлениях; осталась приёмка на хосте: Docker (errorId у 5xx, заголовок узла), новый APK (versionCode 25), Arch."
+      },
+      {
+        "id": "01a14314-e983-7098-a1ee-34d15ba52777",
+        "cardId": "01a10f95-3882-77a0-9c45-96fcbc289b9e",
+        "createdAt": "2026-10-16T05:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance: принято John на телефоне (неделя до 2026-10-16): выход из доски, карточки и окна не ждут сеть и не виснут. Пункт «карточка, созданная без сети, уходит сама после возврата сети» отдельно не проверялся (не было интернета) и перенесён в «Межсетевую приёмку Android». Новая жалоба на зависание после неверных нажатий и простоя к этой карточке не относится явно и разбирается отдельной карточкой mobile."
+      },
+      {
+        "id": "01a14314-f6c1-7f29-bc80-1e3d5a737c2e",
+        "cardId": "01a11070-f286-749a-ad93-73abf3da1f0e",
+        "createdAt": "2026-10-16T05:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance: John перепривязал монорепозиторий к проекту Expo 19e01039 (pacifica123program/p2pkanban-mobile); APK из EAS собран 2026-10-16 и стоит на телефоне, на нём принят интерфейс. Проект c0b2361e больше не используется, его можно удалить на expo.dev."
+      },
+      {
+        "id": "01a14315-7630-7ce0-9802-965eb2747cf8",
+        "cardId": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
+        "createdAt": "2026-10-16T05:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-host-acceptance: не проверена: на прошлой неделе у John на месте не было интернета. Остаётся в «Ждёт хоста»; сюда добавлен пункт про карточку, созданную без сети."
       }
     ],
     "boardAppearanceSettings": [],
