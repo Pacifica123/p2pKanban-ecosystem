@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 62,
-        "comments": 51,
-        "checklists": 23,
+        "cards": 63,
+        "comments": 52,
+        "checklists": 24,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T05:30:00Z",
+    "generatedAt": "2026-10-16T07:00:00Z",
     "selfHosted": true,
-    "boardRevision": 19,
-    "lastPatchId": "2026-10-16-mobile-ui-freeze",
+    "boardRevision": 20,
+    "lastPatchId": "2026-10-16-ecosystem-ui-themes",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -738,6 +738,16 @@
         "priority": "urgent",
         "position": 17408,
         "archivedAt": null
+      },
+      {
+        "id": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "title": "Темы интерфейса приложения: Графит, Лимон, Лазурь, Серебро во всех направлениях",
+        "description": "Зачем: владелец убирает прежнюю тёмно-синюю тему приложения (причина эстетическая) и хочет в каждом приложении экосистемы одинаковый набор тем интерфейса самого приложения, не доски.\n\nТемы (словарь p2p-kanban-ui-themes/1, docs/ecosystem/ui-themes.md): Графит — тёмно-серая рабочая, как KDE Breeze Dark (по умолчанию); Лимон — светло-жёлтая flat, как AppFlowy Lemonade; Лазурь — светло-синяя flat, как Word; Серебро — светло-серая flat, как стандартная тема AppFlowy.\n\nРешения: значения цветов описаны один раз в docs/ecosystem/ui-themes.json, каждое направление держит свою копию; выбор темы — настройка устройства, через узел не синхронизируется; поле appTheme на узле остаётся для старых клиентов. Контракт между направлениями не меняется.\n\nГотово, когда: четыре темы переключаются в web, mobile и abl; тёмно-синей нигде нет; принято на Docker, телефоне и Arch.",
+        "priority": "medium",
+        "position": 13312,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1282,6 +1292,22 @@
       {
         "cardId": "01a14330-47c0-735a-958d-4b8c66ef8ea5",
         "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
       }
     ],
     "checklists": [
@@ -1421,6 +1447,12 @@
         "id": "01a1434b-bf1a-752f-a1f5-062292d71557",
         "cardId": "01a1434b-bf19-7640-bffc-f5dfc8820815",
         "title": "Кластеры",
+        "position": 1024
+      },
+      {
+        "id": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "title": "Шаги",
         "position": 1024
       }
     ],
@@ -2257,6 +2289,41 @@
         "title": "mobile: RELEASE_NOTES_1.x в корне направления",
         "isDone": false,
         "position": 6144
+      },
+      {
+        "id": "01a14382-ad80-7291-b9a6-1dd72571e0b0",
+        "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
+        "title": "Экосистема: словарь тем и проверка контраста",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a14382-ad80-77b0-8403-017ce3c4a4df",
+        "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
+        "title": "web: темы и выбор на странице «Вид приложения»",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a14382-ad80-71b0-acc5-b05b3a7d0508",
+        "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
+        "title": "mobile: темы в «Настройках», новый APK",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a14382-ad80-7937-a5ce-b824c03ce55c",
+        "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
+        "title": "abl: темы и выбор в шапке окна",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a14382-ad80-7a0e-a742-77f6ce6c5b6a",
+        "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
+        "title": "Приёмка: Docker, телефон, Arch",
+        "isDone": false,
+        "position": 5120
       }
     ],
     "comments": [
@@ -2565,6 +2632,12 @@
         "cardId": "01a14330-47c0-735a-958d-4b8c66ef8ea5",
         "createdAt": "2026-10-16T05:30:00Z",
         "body": "patch 2026-10-16-mobile-ui-freeze: пакет подключения открывается порциями (хэш по 16 КБ, NIP-44 по части) с отменой; для показа «Подготовлено…» хранится сводка без расшифровки; проверка реплик досок только на видимом экране и один раз на набор досок и сеть; запросы к ноутбуку 10 с и «Отменить»; сторож JS-потока пишет паузы и незавершённую тяжёлую работу в журнал; в настройках видна сборка и коммит. versionCode 25 → 26, нужен новый APK поверх. Ждёт телефона."
+      },
+      {
+        "id": "01a14382-ad80-7c23-a8a0-34aa59c95443",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "createdAt": "2026-10-16T07:00:00Z",
+        "body": "patch 2026-10-16-ecosystem-ui-themes: словарь p2p-kanban-ui-themes/1 описан в docs/ecosystem/ui-themes.md и ui-themes.json: 4 темы, 20 токенов, по умолчанию graphite. tools/ecosystem/check_ui_themes.py проверяет полноту и контраст WCAG ≥ 4.5 (текст, подписи, ссылки и статусы на всех поверхностях, текст на главной кнопке); с --directions сообщает, где копии направлений расходятся со словарём."
       }
     ],
     "boardAppearanceSettings": [],
