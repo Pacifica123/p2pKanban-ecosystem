@@ -976,11 +976,16 @@ def skew_lines(versions: dict) -> list[str]:
     return lines
 
 
-def deployed_version(versions: dict, direction: str) -> str | None:
+def deployed_row(versions: dict, direction: str) -> dict | None:
     for row in versions.get(direction, {}).get("deployed", []):
         if row.get("version") and row.get("relation") in ("match", "behind", "ahead", "different"):
-            return str(row["version"]).split(" ")[0]
+            return row
     return None
+
+
+def deployed_version(versions: dict, direction: str) -> str | None:
+    row = deployed_row(versions, direction)
+    return str(row["version"]).split(" ")[0] if row else None
 
 
 def contracts_view(root: Path, versions: dict) -> list[dict]:
@@ -998,9 +1003,17 @@ def contracts_view(root: Path, versions: dict) -> list[dict]:
                 continue
             since = str(impl.get("since") or "")
             deployed = deployed_version(versions, direction)
+            relation = (deployed_row(versions, direction) or {}).get("relation")
             accepted = "принят на хосте" if impl.get("hostAccepted") else "не принят на хосте"
+            # since вида «2.1.0+<patchId>»: версия направления не росла, патч различим только по сборке
+            base_since = since.split("+", 1)[0]
             if not deployed or not since:
                 state, text = "unknown", f"с {since or '?'}; что стоит — неизвестно; {accepted}"
+            elif relation == "match":
+                state, text = "present", f"с {since}; стоит {deployed}, сборка этого дерева — есть; {accepted}"
+            elif "+" in since and compare_versions(deployed, base_since) == "match":
+                state, text = "unknown", (f"с {since}; стоит {deployed}, другая сборка — по версии не различить, "
+                                          f"есть ли контракт; {accepted}")
             elif compare_versions(deployed, since) == "behind":
                 state, text = "missing", f"с {since}; стоит {deployed} — контракта там нет; {accepted}"
             else:
