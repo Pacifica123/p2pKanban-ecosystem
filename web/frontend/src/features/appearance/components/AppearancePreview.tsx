@@ -1,13 +1,8 @@
 import { useAppearance } from '@/app/providers/AppearanceProvider';
 import { Badge } from '@/shared/ui/Badge';
+import { getUiTheme } from '@/shared/appearance/uiThemes';
 import { getBoardAccentColor, getBoardPresetDefinition, getBoardSurfaceStyle } from '@/shared/appearance/theme';
 import type { BoardAppearanceSettings, UserAppearancePreferences } from '@/shared/types/api';
-
-const themeLabels: Record<string, string> = {
-  dark: 'тёмная',
-  light: 'светлая',
-  system: 'системная',
-};
 
 const densityLabels: Record<string, string> = {
   comfortable: 'свободная',
@@ -31,7 +26,7 @@ const cardDetailsModeLabels: Record<string, string> = {
 };
 
 export function AppAppearancePreview({ appearance }: { appearance: UserAppearancePreferences }) {
-  const { resolvedTheme } = useAppearance();
+  const { resolvedTheme, uiTheme } = useAppearance();
 
   return (
     <div className="appearance-preview-card">
@@ -41,7 +36,7 @@ export function AppAppearancePreview({ appearance }: { appearance: UserAppearanc
           <p className="muted">Так будет выглядеть интерфейс после сохранения.</p>
         </div>
         <div className="row-actions">
-          <Badge tone={appearance.appTheme}>{themeLabels[appearance.appTheme] || appearance.appTheme}</Badge>
+          <Badge tone="default">{getUiTheme(uiTheme).label}</Badge>
           <Badge tone={resolvedTheme}>{resolvedTheme === 'dark' ? 'тёмная' : 'светлая'}</Badge>
           <Badge tone={appearance.density}>{densityLabels[appearance.density] || appearance.density}</Badge>
         </div>

@@ -6,6 +6,7 @@ import { Panel } from '@/shared/ui/Panel';
 import { SelectField } from '@/shared/ui/Field';
 import { Badge } from '@/shared/ui/Badge';
 import { AppAppearancePreview } from '@/features/appearance/components/AppearancePreview';
+import { UiThemePicker } from '@/features/appearance/components/UiThemePicker';
 import { useMyAppearanceQuery, useUpdateMyAppearanceMutation } from '@/features/appearance/hooks/useAppearance';
 import { useAppearance } from '@/app/providers/AppearanceProvider';
 import type { Density, UserAppearancePreferences } from '@/shared/types/api';
@@ -89,13 +90,12 @@ export function UserAppearancePage() {
 
       <div className="customization-layout customization-layout--two-columns">
         <div className="grid">
-          <Panel title="Интерфейс" description="Тема, плотность элементов и анимация.">
+          <Panel title="Тема приложения" description="Применяется сразу и хранится на этом устройстве. Оформление досок настраивается отдельно.">
+            <UiThemePicker />
+          </Panel>
+
+          <Panel title="Интерфейс" description="Плотность элементов и анимация.">
             <div className="grid customization-form-grid">
-              <SelectField label="Тема" value={currentDraft.appTheme} onChange={(event) => setDraft({ ...currentDraft, appTheme: event.target.value as UserAppearancePreferences['appTheme'] })}>
-                <option value="system">Как в системе</option>
-                <option value="light">Светлая</option>
-                <option value="dark">Тёмная</option>
-              </SelectField>
               <SelectField label="Плотность" value={currentDraft.density} onChange={(event) => setDraft({ ...currentDraft, density: event.target.value as Density })}>
                 <option value="comfortable">Свободная</option>
                 <option value="compact">Компактная</option>
@@ -144,7 +144,7 @@ export function UserAppearancePage() {
           <Panel title="Как это работает">
             <ul className="rules-list">
               <li>Изменения сразу показываются в этой вкладке.</li>
-              <li>Кнопка «Сохранить» переносит их на сервер.</li>
+              <li>Кнопка «Сохранить» переносит их на сервер. Тема приложения не ждёт сохранения: она остаётся на этом устройстве.</li>
               <li>Режимы карточки и чек-листа действуют на всех ваших досках.</li>
               <li>Сброс возвращает последнее сохранённое состояние.</li>
             </ul>

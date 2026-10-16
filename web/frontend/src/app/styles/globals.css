@@ -1,19 +1,27 @@
 :root {
   color-scheme: dark;
-  --bg: #09111f;
-  --bg-soft: #0f172a;
-  --bg-elevated: #111c34;
-  --bg-card: #13203d;
-  --surface-border: rgba(148, 163, 184, 0.18);
-  --surface-strong: rgba(148, 163, 184, 0.32);
-  --text: #e2e8f0;
-  --text-soft: #94a3b8;
-  --accent: #60a5fa;
-  --accent-strong: #3b82f6;
-  --danger: #ef4444;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --shadow: 0 1px 2px rgba(2, 6, 23, 0.24);
+  /* Палитра приложения приходит из themes.css (словарь docs/ecosystem/ui-themes.md). */
+  --bg: var(--ui-background);
+  --bg-soft: var(--ui-surface-muted);
+  --bg-elevated: var(--ui-surface);
+  --bg-card: var(--ui-surface-raised);
+  --surface-border: var(--ui-border);
+  --surface-strong: var(--ui-border-strong);
+  --text: var(--ui-text);
+  --text-soft: var(--ui-text-muted);
+  --accent: var(--ui-accent);
+  --accent-strong: var(--ui-accent-strong);
+  --accent-soft: var(--ui-accent-soft);
+  --accent-text: var(--ui-accent-text);
+  --on-accent: var(--ui-on-accent);
+  --danger: var(--ui-danger);
+  --danger-text: var(--ui-danger-text);
+  --success: var(--ui-success);
+  --success-text: var(--ui-success-text);
+  --warning: var(--ui-warning);
+  --warning-text: var(--ui-warning-text);
+  --overlay: var(--ui-overlay);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
   --layout-gap: 16px;
   --panel-padding: 16px;
   --field-padding-y: 10px;
@@ -29,18 +37,7 @@
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #edf3ff;
-  --bg-soft: #f8fbff;
-  --bg-elevated: #ffffff;
-  --bg-card: #ffffff;
-  --surface-border: rgba(148, 163, 184, 0.28);
-  --surface-strong: rgba(71, 85, 105, 0.28);
-  --text: #0f172a;
-  --text-soft: #475569;
-  --accent: #2563eb;
-  --accent-strong: #1d4ed8;
-  --shadow: 0 1px 2px rgba(71, 85, 105, 0.12);
-  --app-background: var(--bg);
+  --shadow: 0 1px 2px rgba(60, 64, 72, 0.12);
 }
 
 :root[data-theme='dark'] {
@@ -393,7 +390,7 @@ body {
   justify-content: center;
   border-radius: 8px;
   background: color-mix(in srgb, var(--accent) 16%, var(--bg-elevated));
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 800;
   font-size: 0.82rem;
 }
@@ -533,7 +530,7 @@ body {
 .button--primary {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
-  color: white;
+  color: var(--on-accent);
 }
 
 .button--primary:hover {
@@ -541,8 +538,8 @@ body {
 }
 
 .button--danger {
-  border-color: rgba(239, 68, 68, 0.32);
-  color: #fecaca;
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  color: var(--danger-text);
 }
 
 .button--ghost {
@@ -616,15 +613,15 @@ body {
 
 .badge--high,
 .badge--urgent {
-  color: #fecaca;
-  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--danger-text);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
 }
 
 .badge--medium,
 .badge--in_progress,
 .badge--warning {
-  color: #fde68a;
-  border-color: rgba(245, 158, 11, 0.35);
+  color: var(--warning-text);
+  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
 }
 
 .badge--done,
@@ -634,8 +631,8 @@ body {
 .badge--member,
 .badge--active,
 .badge--accepted {
-  color: #bbf7d0;
-  border-color: rgba(34, 197, 94, 0.35);
+  color: var(--success-text);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
 }
 
 .badge--guest,
@@ -893,7 +890,7 @@ body {
 }
 
 .card-checklist-progress__track > span.is-complete {
-  background: #22c55e;
+  background: var(--success);
 }
 
 .card-checklist-progress__value {
@@ -1043,7 +1040,7 @@ body {
 }
 
 .inline-banner--error {
-  border-color: rgba(239, 68, 68, 0.28);
+  border-color: color-mix(in srgb, var(--danger) 36%, transparent);
 }
 
 .inline-banner > div:first-child {
@@ -1109,7 +1106,7 @@ body {
   z-index: 50;
   display: flex;
   justify-content: flex-end;
-  background: rgba(2, 6, 23, 0.54);
+  background: var(--overlay);
 }
 
 .activity-drawer__surface {
@@ -1207,7 +1204,7 @@ body {
 .drawer {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.68);
+  background: var(--overlay);
   display: flex;
   justify-content: flex-end;
   z-index: 40;
@@ -1347,7 +1344,42 @@ body {
 .preset-card__swatch {
   height: 84px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--surface-border);
+}
+
+.ui-theme-swatch {
+  height: 84px;
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  overflow: hidden;
+}
+
+.ui-theme-swatch__lines {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.ui-theme-swatch__lines > span {
+  display: block;
+  height: 6px;
+  width: 80%;
+  border-radius: 999px;
+  opacity: 0.55;
+}
+
+.ui-theme-swatch__lines > span:nth-child(2) {
+  width: 55%;
+  opacity: 0.35;
+}
+
+.ui-theme-swatch__lines > .ui-theme-swatch__accent {
+  width: 42%;
+  height: 12px;
+  opacity: 1;
 }
 
 .appearance-preview-card {
@@ -1603,7 +1635,7 @@ body {
 }
 
 .source-update-card__eyebrow {
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1634,15 +1666,15 @@ body {
 }
 
 input[type='checkbox']{appearance:none;-webkit-appearance:none;display:inline-grid;place-content:center;width:18px;height:18px;min-width:18px;margin:0;border:1.5px solid var(--text-soft);border-radius:5px;background:var(--bg-soft);cursor:pointer;vertical-align:middle}
-input[type='checkbox']:checked,input[type='checkbox']:indeterminate{border-color:var(--accent);background:var(--accent)}
-input[type='checkbox']:checked::after{content:'';width:8px;height:5px;border-left:2px solid var(--bg);border-bottom:2px solid var(--bg);transform:translateY(-1px) rotate(-45deg)}
-input[type='checkbox']:indeterminate::after{content:'';width:9px;border-bottom:2px solid var(--bg)}
+input[type='checkbox']:checked,input[type='checkbox']:indeterminate{border-color:var(--accent-strong);background:var(--accent-strong)}
+input[type='checkbox']:checked::after{content:'';width:8px;height:5px;border-left:2px solid var(--on-accent);border-bottom:2px solid var(--on-accent);transform:translateY(-1px) rotate(-45deg)}
+input[type='checkbox']:indeterminate::after{content:'';width:9px;border-bottom:2px solid var(--on-accent)}
 input[type='checkbox']:focus-visible{outline:2px solid var(--accent);outline-offset:3px}input[type='checkbox']:disabled{opacity:.5;cursor:not-allowed}
 @media(forced-colors:active){input[type='checkbox']{appearance:auto}input[type='checkbox']::after{display:none}}
-.priority-stars{color:var(--accent);letter-spacing:2px;font-size:20px;white-space:nowrap}
+.priority-stars{color:var(--accent-text);letter-spacing:2px;font-size:20px;white-space:nowrap}
 .markdown-editor{display:grid;gap:10px;min-width:0}.markdown-editor button{padding:6px 10px;color:var(--text);background:var(--bg-soft);border:1px solid var(--surface-border);border-radius:6px}
 .markdown-view{overflow-wrap:anywhere;line-height:1.6;min-width:0}.markdown-view>*{margin-block:.5em}.markdown-view ul,.markdown-view ol{padding-left:1.5em}.markdown-view ul{list-style:disc}.markdown-view ol{list-style:decimal}
-.markdown-view blockquote{border-left:3px solid var(--accent);padding-left:1em;color:var(--text-soft)}.markdown-view pre{overflow-x:auto;padding:12px;background:var(--bg-soft)}.markdown-view code{font-family:ui-monospace,monospace;background:var(--bg-soft)}.markdown-view a{color:var(--accent);text-decoration:underline}
+.markdown-view blockquote{border-left:3px solid var(--accent);padding-left:1em;color:var(--text-soft)}.markdown-view pre{overflow-x:auto;padding:12px;background:var(--bg-soft)}.markdown-view code{font-family:ui-monospace,monospace;background:var(--bg-soft)}.markdown-view a{color:var(--accent-text);text-decoration:underline}
 
 /* «Скопировать подробности» (contracts/error-report/1) */
 .error-details {

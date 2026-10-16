@@ -1,0 +1,103 @@
+/*
+ * Темы интерфейса приложения (не доски): копия словаря p2p-kanban-ui-themes/1
+ * из docs/ecosystem/ui-themes.json. Тема выбирается атрибутом data-ui-theme
+ * на <html>; без атрибута действует graphite. Значения меняются вместе со
+ * словарём: python -B tools/ecosystem/check_ui_themes.py --directions.
+ */
+
+/* Графит — тёмно-серая рабочая, в духе KDE Breeze Dark */
+:root,
+:root[data-ui-theme='graphite'] {
+  --ui-background: #1b1e20;
+  --ui-surface: #292c30;
+  --ui-surface-muted: #202326;
+  --ui-surface-raised: #31363b;
+  --ui-border: #3a3f44;
+  --ui-border-strong: #4f555b;
+  --ui-text: #fcfcfc;
+  --ui-text-muted: #a1a9b1;
+  --ui-accent: #3daee9;
+  --ui-accent-strong: #2574a9;
+  --ui-accent-soft: #1f3a4b;
+  --ui-accent-text: #3daee9;
+  --ui-on-accent: #ffffff;
+  --ui-danger: #da4453;
+  --ui-danger-text: #f08b95;
+  --ui-success: #27ae60;
+  --ui-success-text: #6fd39a;
+  --ui-warning: #f67400;
+  --ui-warning-text: #fdbc4b;
+  --ui-overlay: rgba(0, 0, 0, 0.6);
+}
+
+/* Лимон — светло-жёлтая flat, в духе темы Lemonade в AppFlowy */
+:root[data-ui-theme='lemon'] {
+  --ui-background: #fff7d6;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #fffbea;
+  --ui-surface-raised: #ffffff;
+  --ui-border: #efe3b5;
+  --ui-border-strong: #d9c47c;
+  --ui-text: #333333;
+  --ui-text-muted: #6b6250;
+  --ui-accent: #ffd667;
+  --ui-accent-strong: #f5c400;
+  --ui-accent-soft: #fff0b3;
+  --ui-accent-text: #8a6500;
+  --ui-on-accent: #2b2b2b;
+  --ui-danger: #d13438;
+  --ui-danger-text: #a4262c;
+  --ui-success: #107c10;
+  --ui-success-text: #0b6a0b;
+  --ui-warning: #c27c0e;
+  --ui-warning-text: #8a5300;
+  --ui-overlay: rgba(51, 43, 20, 0.4);
+}
+
+/* Лазурь — светло-синяя flat, в духе Microsoft Word */
+:root[data-ui-theme='azure'] {
+  --ui-background: #e9eff8;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #f4f7fc;
+  --ui-surface-raised: #ffffff;
+  --ui-border: #d6e0ee;
+  --ui-border-strong: #a9bcd8;
+  --ui-text: #252423;
+  --ui-text-muted: #605e5c;
+  --ui-accent: #2b7cd3;
+  --ui-accent-strong: #2b579a;
+  --ui-accent-soft: #dce8f7;
+  --ui-accent-text: #2b579a;
+  --ui-on-accent: #ffffff;
+  --ui-danger: #d13438;
+  --ui-danger-text: #a4262c;
+  --ui-success: #107c10;
+  --ui-success-text: #0b6a0b;
+  --ui-warning: #c27c0e;
+  --ui-warning-text: #8a5300;
+  --ui-overlay: rgba(20, 32, 54, 0.4);
+}
+
+/* Серебро — светло-серая flat, в духе стандартной темы AppFlowy */
+:root[data-ui-theme='silver'] {
+  --ui-background: #eef0f4;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #f7f8fa;
+  --ui-surface-raised: #ffffff;
+  --ui-border: #e0e3ea;
+  --ui-border-strong: #bdc3cf;
+  --ui-text: #333333;
+  --ui-text-muted: #646b77;
+  --ui-accent: #00bcf0;
+  --ui-accent-strong: #007ba6;
+  --ui-accent-soft: #e0f8ff;
+  --ui-accent-text: #006f92;
+  --ui-on-accent: #ffffff;
+  --ui-danger: #d13438;
+  --ui-danger-text: #a4262c;
+  --ui-success: #107c10;
+  --ui-success-text: #0b6a0b;
+  --ui-warning: #c27c0e;
+  --ui-warning-text: #8a5300;
+  --ui-overlay: rgba(30, 34, 44, 0.4);
+}

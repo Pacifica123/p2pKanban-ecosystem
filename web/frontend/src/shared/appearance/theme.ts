@@ -17,45 +17,27 @@ export interface BoardPresetDefinition {
   variablesByMode?: Partial<Record<ResolvedThemeMode, CssVariableMap>>;
 }
 
+// Пресет «System» не задаёт своих цветов: доска берёт палитру текущей темы
+// приложения (app/styles/themes.css, словарь docs/ecosystem/ui-themes.md).
 const systemPreset: BoardPresetDefinition = {
   id: 'system',
   label: 'System',
-  description: 'Нейтральный preset, опирается на текущую app theme.',
-  preview: 'linear-gradient(135deg, rgba(59,130,246,0.25), rgba(15,23,42,0.96))',
-  wallpaperPreset: 'aurora',
+  description: 'Нейтральный preset, опирается на текущую тему приложения.',
+  preview: 'var(--ui-background)',
+  wallpaperPreset: 'app',
   variables: {
-    '--bg': '#09111f',
-    '--bg-soft': '#0f172a',
-    '--bg-elevated': '#111c34',
-    '--bg-card': '#13203d',
-    '--surface-border': 'rgba(148, 163, 184, 0.18)',
-    '--surface-strong': 'rgba(148, 163, 184, 0.32)',
-    '--text': '#e2e8f0',
-    '--text-soft': '#94a3b8',
-    '--accent': '#60a5fa',
-    '--accent-strong': '#3b82f6',
-    '--shadow': '0 20px 50px rgba(2, 6, 23, 0.45)',
-  },
-  previewByMode: {
-    light: 'linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(255,255,255,0.96))',
-  },
-  wallpaperPresetByMode: {
-    light: 'aurora',
-  },
-  variablesByMode: {
-    light: {
-      '--bg': '#edf3ff',
-      '--bg-soft': '#f8fbff',
-      '--bg-elevated': '#ffffff',
-      '--bg-card': '#ffffff',
-      '--surface-border': 'rgba(148, 163, 184, 0.28)',
-      '--surface-strong': 'rgba(71, 85, 105, 0.28)',
-      '--text': '#0f172a',
-      '--text-soft': '#475569',
-      '--accent': '#2563eb',
-      '--accent-strong': '#1d4ed8',
-      '--shadow': '0 20px 45px rgba(148, 163, 184, 0.18)',
-    },
+    '--bg': 'var(--ui-background)',
+    '--bg-soft': 'var(--ui-surface-muted)',
+    '--bg-elevated': 'var(--ui-surface)',
+    '--bg-card': 'var(--ui-surface-raised)',
+    '--surface-border': 'var(--ui-border)',
+    '--surface-strong': 'var(--ui-border-strong)',
+    '--text': 'var(--ui-text)',
+    '--text-soft': 'var(--ui-text-muted)',
+    '--accent': 'var(--ui-accent)',
+    '--accent-strong': 'var(--ui-accent-strong)',
+    '--accent-text': 'var(--ui-accent-text)',
+    '--shadow': '0 1px 2px rgba(0, 0, 0, 0.18)',
   },
 };
 
@@ -228,6 +210,10 @@ export const BOARD_THEME_PRESETS: BoardPresetDefinition[] = [
 ];
 
 const WALLPAPER_PRESETS: Record<string, Record<ResolvedThemeMode, string>> = {
+  app: {
+    dark: 'var(--ui-background)',
+    light: 'var(--ui-background)',
+  },
   aurora: {
     dark: 'radial-gradient(circle at top left, rgba(96,165,250,0.24), transparent 30%), radial-gradient(circle at bottom right, rgba(59,130,246,0.18), transparent 28%), linear-gradient(180deg, rgba(9,17,31,0.98), rgba(15,23,42,0.98))',
     light: 'radial-gradient(circle at top left, rgba(96,165,250,0.16), transparent 30%), radial-gradient(circle at bottom right, rgba(37,99,235,0.12), transparent 28%), linear-gradient(180deg, rgba(248,251,255,0.98), rgba(237,243,255,0.98))',
@@ -291,6 +277,7 @@ function getAccentPalette(accentColor: string, themeMode: ResolvedThemeMode): Cs
       '--surface-strong': `color-mix(in srgb, ${accentColor} 42%, rgba(71, 85, 105, 0.24))`,
       '--accent': accentColor,
       '--accent-strong': `color-mix(in srgb, ${accentColor} 82%, #111827)`,
+      '--accent-text': `color-mix(in srgb, ${accentColor} 70%, #111827)`,
     };
   }
 
@@ -302,6 +289,7 @@ function getAccentPalette(accentColor: string, themeMode: ResolvedThemeMode): Cs
     '--surface-strong': `color-mix(in srgb, ${accentColor} 48%, rgba(148, 163, 184, 0.18))`,
     '--accent': accentColor,
     '--accent-strong': `color-mix(in srgb, ${accentColor} 78%, #ffffff)`,
+    '--accent-text': accentColor,
   };
 }
 
@@ -335,8 +323,10 @@ export function getBoardThemeStyle(
 ): CSSProperties {
   const preset = getBoardPresetDefinition(appearance.themePreset);
   const accentColor = getBoardAccentColor(appearance);
+  const variables = resolvePresetVariables(preset, themeMode);
   const style: CSSProperties & CssVariableMap = {
-    ...resolvePresetVariables(preset, themeMode),
+    ...variables,
+    '--accent-text': variables['--accent-text'] || variables['--accent'],
     ...(accentColor ? getAccentPalette(accentColor, themeMode) : {}),
     '--board-column-width': appearance.columnDensity === 'compact' ? '280px' : '320px',
     '--board-card-gap': appearance.columnDensity === 'compact' ? '10px' : '12px',

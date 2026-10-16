@@ -1,39 +1,42 @@
 import type { PropsWithChildren } from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useMyAppearanceQuery } from '@/features/appearance/hooks/useAppearance';
-import { buildUserAppearancePreview, resolveSystemTheme } from '@/shared/appearance/theme';
+import { buildUserAppearancePreview } from '@/shared/appearance/theme';
 import type { ResolvedThemeMode } from '@/shared/appearance/theme';
+import { UI_THEME_STORAGE_KEY, applyUiTheme, getUiTheme, readStoredUiTheme, writeStoredUiTheme } from '@/shared/appearance/uiThemes';
+import type { UiThemeId } from '@/shared/appearance/uiThemes';
 import type { UserAppearancePreferences } from '@/shared/types/api';
 
 interface AppearanceContextValue {
   persistedUserAppearance?: UserAppearancePreferences;
   effectiveUserAppearance?: UserAppearancePreferences;
   resolvedTheme: ResolvedThemeMode;
+  uiTheme: UiThemeId;
+  setUiTheme: (theme: UiThemeId) => void;
   setUserPreview: (patch: Partial<UserAppearancePreferences> | null) => void;
   clearUserPreview: () => void;
 }
 
 const AppearanceContext = createContext<AppearanceContextValue | undefined>(undefined);
 
-function getSystemPrefersDark() {
-  if (typeof window === 'undefined') return true;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
-
 export function AppearanceProvider({ children }: PropsWithChildren) {
   const myAppearanceQuery = useMyAppearanceQuery();
-  const [systemPrefersDark, setSystemPrefersDark] = useState(getSystemPrefersDark);
   const [preview, setPreview] = useState<Partial<UserAppearancePreferences> | null>(null);
+  // Тема приложения — настройка устройства: localStorage, на узел не уходит.
+  // Поле appTheme на узле остаётся для старых клиентов и здесь не читается.
+  const [uiTheme, setUiThemeState] = useState<UiThemeId>(readStoredUiTheme);
+
+  const setUiTheme = useCallback((theme: UiThemeId) => {
+    writeStoredUiTheme(theme);
+    setUiThemeState(theme);
+  }, []);
 
   useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const listener = (event: MediaQueryListEvent) => setSystemPrefersDark(event.matches);
-    if (media.addEventListener) {
-      media.addEventListener('change', listener);
-      return () => media.removeEventListener('change', listener);
-    }
-    media.addListener(listener);
-    return () => media.removeListener(listener);
+    const listener = (event: StorageEvent) => {
+      if (event.key === null || event.key === UI_THEME_STORAGE_KEY) setUiThemeState(readStoredUiTheme());
+    };
+    window.addEventListener('storage', listener);
+    return () => window.removeEventListener('storage', listener);
   }, []);
 
   const effectiveUserAppearance = useMemo(() => {
@@ -41,13 +44,11 @@ export function AppearanceProvider({ children }: PropsWithChildren) {
     return preview ? buildUserAppearancePreview(myAppearanceQuery.data, preview) : myAppearanceQuery.data;
   }, [myAppearanceQuery.data, preview]);
 
-  const resolvedTheme = useMemo<ResolvedThemeMode>(() => {
-    return resolveSystemTheme(effectiveUserAppearance?.appTheme || 'system', systemPrefersDark);
-  }, [effectiveUserAppearance?.appTheme, systemPrefersDark]);
+  const resolvedTheme = getUiTheme(uiTheme).scheme;
 
   useEffect(() => {
     const root = document.documentElement;
-    root.dataset.theme = resolvedTheme;
+    applyUiTheme(uiTheme, root);
 
     const appearance = effectiveUserAppearance;
     if (!appearance) return;
@@ -56,17 +57,19 @@ export function AppearanceProvider({ children }: PropsWithChildren) {
     root.dataset.reduceMotion = String(appearance.reduceMotion);
     root.dataset.checklistItemSubmitMode = appearance.checklistItemSubmitMode;
     root.dataset.cardDetailsMode = appearance.cardDetailsMode;
-  }, [effectiveUserAppearance, resolvedTheme]);
+  }, [effectiveUserAppearance, uiTheme]);
 
   const value = useMemo<AppearanceContextValue>(
     () => ({
       persistedUserAppearance: myAppearanceQuery.data,
       effectiveUserAppearance,
       resolvedTheme,
+      uiTheme,
+      setUiTheme,
       setUserPreview: (patch) => setPreview(patch),
       clearUserPreview: () => setPreview(null),
     }),
-    [effectiveUserAppearance, myAppearanceQuery.data, resolvedTheme],
+    [effectiveUserAppearance, myAppearanceQuery.data, resolvedTheme, setUiTheme, uiTheme],
   );
 
   return <AppearanceContext.Provider value={value}>{children}</AppearanceContext.Provider>;

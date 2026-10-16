@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 63,
-        "comments": 52,
+        "comments": 53,
         "checklists": 24,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T07:00:00Z",
+    "generatedAt": "2026-10-16T07:10:00Z",
     "selfHosted": true,
-    "boardRevision": 20,
-    "lastPatchId": "2026-10-16-ecosystem-ui-themes",
+    "boardRevision": 21,
+    "lastPatchId": "2026-10-16-web-ui-themes",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2638,6 +2638,12 @@
         "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "createdAt": "2026-10-16T07:00:00Z",
         "body": "patch 2026-10-16-ecosystem-ui-themes: словарь p2p-kanban-ui-themes/1 описан в docs/ecosystem/ui-themes.md и ui-themes.json: 4 темы, 20 токенов, по умолчанию graphite. tools/ecosystem/check_ui_themes.py проверяет полноту и контраст WCAG ≥ 4.5 (текст, подписи, ссылки и статусы на всех поверхностях, текст на главной кнопке); с --directions сообщает, где копии направлений расходятся со словарём."
+      },
+      {
+        "id": "01a1438b-d540-7cb2-9c7e-2393adbb905c",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "createdAt": "2026-10-16T07:10:00Z",
+        "body": "patch 2026-10-16-web-ui-themes: web UI красится из frontend/src/app/styles/themes.css (--ui-*), выбор темы — карточки на странице «Вид приложения», применяется сразу и хранится в localStorage (p2p-kanban.ui-theme). Прежняя тёмно-синяя и старая светлая палитры удалены, бледные цвета статусов заменены токенами (в светлых темах текст ошибок и бейджей стал читаемым). Пресет доски System теперь берёт цвета темы приложения; остальные пресеты досок не тронуты. API, БД и appTheme не меняются. Проверено: vitest 79/79, tsc, vite build, скриншоты Playwright всех четырёх тем."
       }
     ],
     "boardAppearanceSettings": [],
