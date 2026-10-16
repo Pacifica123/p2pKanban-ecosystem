@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ErrorDetails } from './shared/errorReport/ErrorDetails';
+import { ThemeSelect } from './shared/uiThemes/ThemeSelect';
 import { notePlatform } from './shared/errorReport/journal';
 import type { FormEvent } from 'react';
 import {
@@ -501,6 +502,7 @@ export default function App() {
           <span>session: <strong>{integration?.sessionType ?? 'detecting'}</strong>{integration ? ` · ${integration.desktop}` : ''}</span>
           <span>notifications/tray: <strong>{integration ? `${integration.notifications}/${integration.statusNotifier}` : 'detecting'}</strong></span>
           <span>LAN bridge: <strong>{lanBridgeStatus?.lifecycle ?? 'stopped'}</strong></span>
+          <ThemeSelect />
         </div>
       </header>
 

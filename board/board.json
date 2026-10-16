@@ -13,8 +13,8 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 63,
-        "comments": 54,
+        "cards": 64,
+        "comments": 55,
         "checklists": 24,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T07:20:00Z",
+    "generatedAt": "2026-10-16T07:30:00Z",
     "selfHosted": true,
-    "boardRevision": 22,
-    "lastPatchId": "2026-10-16-mobile-ui-themes",
+    "boardRevision": 23,
+    "lastPatchId": "2026-10-16-abl-ui-themes",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -748,6 +748,16 @@
         "priority": "medium",
         "position": 13312,
         "archivedAt": null
+      },
+      {
+        "id": "01a1439e-24c0-7a24-ab77-e6bcba0e38d1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "abl: запоминать тему приложения через Rust core",
+        "description": "Зачем: в abl выбор темы интерфейса сбрасывается на Графит при каждом запуске. Фронтенду запрещены localStorage и sessionStorage (проверки A07–A09), долговременное состояние живёт за границей Rust core.\n\nКак: команда desktop_api_get/set_ui_preferences и запись в профиле (SQLite profile или файл настроек в XDG_CONFIG_HOME), id темы из словаря p2p-kanban-ui-themes/1, неизвестное значение → graphite. Нужна миграция или файл вне профиля — решить в патче.\n\nГотово, когда: выбранная тема переживает перезапуск на Arch.",
+        "priority": "low",
+        "position": 13312,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1308,6 +1318,14 @@
       {
         "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a1439e-24c0-7a24-ab77-e6bcba0e38d1",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a1439e-24c0-7a24-ab77-e6bcba0e38d1",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
       }
     ],
     "checklists": [
@@ -2650,6 +2668,12 @@
         "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "createdAt": "2026-10-16T07:20:00Z",
         "body": "patch 2026-10-16-mobile-ui-themes: mobile красится из src/app/uiThemes.ts (копия словаря), выбор — четыре кнопки в «Настройках», сразу и без сети, хранится в AsyncStorage (p2p-kanban.ui-theme), не зависит от сеанса и узла. appTheme на узле больше не читается и не меняется. В AppColors появились accentText и onAccent: акцент как заливка и акцент как текст разведены, иначе жёлтый Лимон был бы нечитаем. Пресет доски System следует теме приложения. versionCode 26 общий с mobile-ui-freeze, новый APK один на оба. Проверено: jest 129/129, tsc, check-core-crud-contract; на телефоне не смотрел."
+      },
+      {
+        "id": "01a1439e-24c0-791c-8674-e7b58664d23d",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "createdAt": "2026-10-16T07:30:00Z",
+        "body": "patch 2026-10-16-abl-ui-themes: abl красится из src/themes.css (копия словаря), styles.css без цветовых литералов, выбор Theme в шапке окна; CSP, Rust core, схема и упаковка не меняются. Выбор пока живёт до перезапуска окна: фронтенду abl запрещены хранилища браузера (A07–A09), запоминание вынесено в отдельную карточку. Код во всех трёх направлениях готов, осталась приёмка: Docker (страница «Вид приложения»), новый APK (versionCode 26, вместе с mobile-ui-freeze), Arch."
       }
     ],
     "boardAppearanceSettings": [],
