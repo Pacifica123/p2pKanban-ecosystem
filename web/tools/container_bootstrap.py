@@ -41,6 +41,9 @@ ADOPTION_RELATIVE_PATH = Path(".dev-bootstrap/adoption.json")
 DEPLOYMENT_REGISTRY_FILENAME = "p2pkanban-deployment.json"
 DEFAULT_RUNTIME_RELATIVE_PATH = Path("runtime/p2pkanban-node")
 BUILD_INFO_FILENAME = "BUILD_INFO.json"
+# board/README.md «Номер патча в версии клиентов»: the patch a release was built from.
+BUILD_PATCH_FILENAME = "BUILD_PATCH.json"
+PATCH_ID_PATTERN = re.compile(r"[0-9A-Za-z][0-9A-Za-z._-]{0,127}")
 UPDATE_LOCK_RELATIVE_PATH = Path(".dev-bootstrap/update.lock")
 UPDATE_RELEASES_RELATIVE_PATH = Path(".dev-bootstrap/releases")
 UPDATE_BACKUPS_RELATIVE_PATH = Path(".dev-bootstrap/backups")
@@ -912,10 +915,14 @@ def compose_environment(
     image_tag: str = "local",
     *,
     source_revision: str | None = None,
+    patch: dict[str, Any] | None = None,
 ) -> dict[str, str]:
     env = os.environ.copy()
+    patch = patch or {}
     env.update(
         {
+            "P2PKANBAN_PATCH_ID": str(patch.get("patchId") or "unknown"),
+            "P2PKANBAN_PATCH_REVISION": str(patch.get("boardRevision") or "unknown"),
             "P2PKANBAN_WEB_PORT": str(web_port),
             "P2PKANBAN_BIND_ADDRESS": bind_address,
             "P2PKANBAN_IMAGE_TAG": safe_identifier(image_tag, fallback="local"),
@@ -939,6 +946,58 @@ def source_revision(source_root: Path) -> str | None:
     if head and re.fullmatch(r"[0-9a-f]{40}", head):
         return head
     return None
+
+
+def normalized_patch(patch_id: object, revision: object) -> dict[str, Any] | None:
+    if not isinstance(patch_id, str) or not PATCH_ID_PATTERN.fullmatch(patch_id.strip()):
+        return None
+    if isinstance(revision, str) and revision.strip().isdigit():
+        revision = int(revision.strip())
+    if isinstance(revision, bool) or not isinstance(revision, int) or not 1 <= revision <= 10**9:
+        revision = None
+    return {"patchId": patch_id.strip(), "boardRevision": revision}
+
+
+def board_patch(ecosystem_root: Path) -> dict[str, Any] | None:
+    """origin.lastPatchId and origin.boardRevision of the monorepo board."""
+    if not (ecosystem_root / "ecosystem.json").is_file():
+        return None
+    origin = read_json_object(ecosystem_root / "board" / "board.json").get("origin")
+    if not isinstance(origin, dict):
+        return None
+    return normalized_patch(origin.get("lastPatchId"), origin.get("boardRevision"))
+
+
+def source_patch(source_root: Path) -> dict[str, Any] | None:
+    """Explicit P2PKANBAN_PATCH_*, then BUILD_PATCH.json written by update, then
+    the board right above web/. Only the direct parent: release copies live
+    inside the checkout and must not borrow its newer board."""
+    explicit = normalized_patch(
+        os.environ.get("P2PKANBAN_PATCH_ID"),
+        os.environ.get("P2PKANBAN_PATCH_REVISION"),
+    )
+    if explicit:
+        return explicit
+    recorded = read_json_object(source_root / BUILD_PATCH_FILENAME)
+    from_file = normalized_patch(recorded.get("patchId"), recorded.get("boardRevision"))
+    if from_file:
+        return from_file
+    return board_patch(source_root.resolve().parent)
+
+
+def write_build_patch(source_root: Path, patch: dict[str, Any] | None) -> None:
+    if patch:
+        (source_root / BUILD_PATCH_FILENAME).write_text(
+            json.dumps(patch, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+
+def patch_label(patch: dict[str, Any] | None) -> str:
+    if not patch:
+        return "патч неизвестен"
+    revision = patch.get("boardRevision")
+    return f"патч {revision} · {patch['patchId']}" if revision else f"патч {patch['patchId']}"
 
 
 def source_image_tag(source_root: Path, revision: str | None) -> str:
@@ -1786,12 +1845,15 @@ def prepare_update_source(
         copy_source_tree(source, staging)
         version = validate_update_source(staging)
         fingerprint = source_fingerprint(staging)
+        patch = source_patch(source)
+        write_build_patch(staging, patch)
         return staging, {
             "kind": "local-directory",
             "repository": None,
             "branch": None,
             "revision": fingerprint,
             "version": version,
+            "patch": patch,
         }
 
     branch = args.branch or str(state.get("updateBranch") or DEFAULT_UPDATE_BRANCH)
@@ -1822,11 +1884,14 @@ def prepare_update_source(
     )
     extracted_parent = staging_parent / "extracted"
     extracted_parent.mkdir()
-    extracted = update_source_subdirectory(
-        safe_extract_zip(archive_path, extracted_parent)
-    )
+    archive_root = safe_extract_zip(archive_path, extracted_parent)
+    extracted = update_source_subdirectory(archive_root)
+    # The board sits next to web/ in the archive and is dropped with it.
+    patch = board_patch(archive_root) if extracted != archive_root else None
     staging = staging_parent / "source"
     os.replace(extracted, staging)
+    write_build_patch(staging, patch)
+    print(f"Сборка из {patch_label(patch)}.")
     print("Проверяю полученный source перед сборкой.")
     version = validate_update_source(staging)
     fingerprint = source_fingerprint(staging)
@@ -1840,6 +1905,7 @@ def prepare_update_source(
         "sourceFingerprint": fingerprint,
         "archiveSha256": archive_sha,
         "version": version,
+        "patch": patch,
     }
 
 
@@ -1917,6 +1983,7 @@ def command_start(args: argparse.Namespace, project_root: Path) -> int:
         bind_address,
         image_tag,
         source_revision=build_revision,
+        patch=source_patch(source_root),
     )
     offline_manifest = None
     if getattr(args, "offline", False) and not args.dry_run:
@@ -2282,6 +2349,7 @@ def command_update(args: argparse.Namespace, project_root: Path) -> int:
                 bind_address,
                 target_image_tag,
                 source_revision=target_revision,
+                patch=source_metadata.get("patch"),
             )
 
             if args.dry_run:

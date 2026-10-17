@@ -35,3 +35,26 @@
 - Сборка web UI знает свой коммит (`VITE_SOURCE_REVISION`) и тег образа
   (`VITE_BUILD_ID`); в отчёте видно и версию UI, и версию узла, с которым он
   говорил.
+
+## Патч сборки
+
+Внизу боковой панели под версиями Web и Backend стоит строка
+«патч N · <patchId>»: из какого devctl-патча собран этот
+web UI. Правило общее для клиентов: `board/README.md`, «Номер патча в версии
+клиентов».
+
+- `tools/container_bootstrap.py` находит патч так: `P2PKANBAN_PATCH_ID` и
+  `P2PKANBAN_PATCH_REVISION`, затем `BUILD_PATCH.json` в корне исходников
+  узла, затем `board/board.json` непосредственно над `web/`. Дальше вверх не
+  ищет: релизные копии `.dev-bootstrap/releases/*/source` лежат внутри
+  checkout и не должны брать его более новую доску.
+- Обновление из GitHub берёт доску из архива коммита до того, как от него
+  остаётся только `web/`, и пишет `BUILD_PATCH.json` в релизную копию.
+  Отпечаток исходников (`source_fingerprint`) файл не меняет.
+- Compose передаёт пару в сборку образа web как `VITE_PATCH_ID` и
+  `VITE_PATCH_REVISION`; `vite.config.ts` вписывает её в бандл, а в checkout
+  без этих переменных читает доску над `web/` сам. Перезапуск без пересборки
+  (`--no-build`) номер не меняет: он в образе.
+- Backend номер не знает: `/health` и `x-p2p-kanban-node` прежние.
+- Проверки: `python -B tools/test_build_patch.py`, `npx vitest run
+  src/test/unit/shared/buildPatch.test.ts`.

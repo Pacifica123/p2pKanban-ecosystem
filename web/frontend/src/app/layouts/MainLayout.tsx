@@ -10,7 +10,7 @@ import { ErrorState } from '@/shared/ui/ErrorState';
 import { Button } from '@/shared/ui/Button';
 import { Icon } from '@/shared/ui/Icon';
 import { getBackendVersion } from '@/features/system/api/version';
-import { webClientVersion } from '@/shared/version';
+import { buildPatchLabel, webBuildPatch, webClientVersion } from '@/shared/version';
 import { SourceUpdateSurface } from '@/features/system/components/SourceUpdateSurface';
 import { apiRequest } from '@/shared/api/client';
 
@@ -136,9 +136,10 @@ export function MainLayout() {
             ) : null}
           </nav>
         </details>
-        <div className="app-sidebar__version" title="Версии клиента и подключённого backend-узла">
+        <div className="app-sidebar__version" title="Версии клиента и подключённого backend-узла; патч, из которого собран этот web">
           <span>Web {webClientVersion}</span>
           <span>Backend {backendVersionQuery.data?.version || 'недоступен'}</span>
+          <span className="app-sidebar__patch" data-testid="build-patch">{buildPatchLabel(webBuildPatch)}</span>
         </div>
       </aside>
 

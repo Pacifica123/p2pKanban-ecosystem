@@ -241,6 +241,11 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.app-sidebar__patch {
+  flex-basis: 100%;
+  overflow-wrap: anywhere;
+}
+
 .sidebar-group__summary {
   min-height: 30px;
   padding: 5px 8px;

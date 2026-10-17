@@ -143,6 +143,9 @@ services:
         VITE_API_BASE_URL: /api/v1
         VITE_SOURCE_REVISION: ${P2PKANBAN_SOURCE_REVISION:-unknown}
         VITE_BUILD_ID: ${P2PKANBAN_IMAGE_TAG:-local}
+        # board/README.md «Номер патча в версии клиентов»: baked in, shown next to the version.
+        VITE_PATCH_ID: ${P2PKANBAN_PATCH_ID:-unknown}
+        VITE_PATCH_REVISION: ${P2PKANBAN_PATCH_REVISION:-unknown}
     restart: unless-stopped
     depends_on:
       backend:
