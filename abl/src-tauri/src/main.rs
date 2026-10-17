@@ -486,7 +486,8 @@ fn run() -> Result<(), String> {
             desktop_api::desktop_api_lan_bridge_addresses,
             desktop_api::desktop_api_lan_bridge_status,
             desktop_api::desktop_api_start_lan_bridge,
-            desktop_api::desktop_api_stop_lan_bridge
+            desktop_api::desktop_api_stop_lan_bridge,
+            desktop_api::desktop_api_project_board
         ])
         .setup(move |app| {
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))

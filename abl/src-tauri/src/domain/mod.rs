@@ -6,4 +6,5 @@ pub mod system;
 pub mod sync;
 
 pub mod lan_bridge;
+pub mod project_board;
 pub mod recovery;

@@ -4,6 +4,7 @@ import { ThemeSelect } from './shared/uiThemes/ThemeSelect';
 import { notePlatform, trace } from './shared/errorReport/journal';
 import { DebugJournalPanel } from './shared/debug/DebugJournalPanel';
 import { useDebugMode } from './shared/debug/debugMode';
+import { ProjectBoardPanel } from './features/projectBoard/ProjectBoardPanel';
 import type { FormEvent } from 'react';
 import {
   createBoard,
@@ -596,6 +597,8 @@ export default function App() {
           )}
         </div>
       </section>
+
+      <ProjectBoardPanel />
 
       <section className="planner-grid" aria-label="Local durable planner">
         <aside className="panel">

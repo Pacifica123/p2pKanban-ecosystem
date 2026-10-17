@@ -18,6 +18,7 @@ import type {
   ParityUnsyncedCount,
   PendingChangeCount,
   ProfileDiagnostics,
+  ProjectBoardPayload,
   VaultStatus,
   WorkspaceSummary,
 } from '../api/types';
@@ -33,6 +34,7 @@ const DESKTOP_LAN_BRIDGE_ADDRESSES_COMMAND = 'desktop_api_lan_bridge_addresses' 
 const DESKTOP_LAN_BRIDGE_STATUS_COMMAND = 'desktop_api_lan_bridge_status' as const;
 const DESKTOP_START_LAN_BRIDGE_COMMAND = 'desktop_api_start_lan_bridge' as const;
 const DESKTOP_STOP_LAN_BRIDGE_COMMAND = 'desktop_api_stop_lan_bridge' as const;
+const DESKTOP_PROJECT_BOARD_COMMAND = 'desktop_api_project_board' as const;
 const DESKTOP_LIST_WORKSPACES_COMMAND = 'desktop_api_list_workspaces' as const;
 const DESKTOP_CREATE_WORKSPACE_COMMAND = 'desktop_api_create_workspace' as const;
 const DESKTOP_LIST_BOARDS_COMMAND = 'desktop_api_list_boards' as const;
@@ -128,6 +130,9 @@ export const desktopTransport: ApiTransport = {
     }
     if (method === 'POST' && path === '/system/lan-bridge/stop') {
       return (await invoke<LanBridgeStatus>(DESKTOP_STOP_LAN_BRIDGE_COMMAND)) as T;
+    }
+    if (method === 'GET' && path === '/project-board') {
+      return (await invoke<ProjectBoardPayload>(DESKTOP_PROJECT_BOARD_COMMAND)) as T;
     }
     if (method === 'GET' && path === '/planner/workspaces') {
       return (await invoke<WorkspaceSummary[]>(DESKTOP_LIST_WORKSPACES_COMMAND)) as T;

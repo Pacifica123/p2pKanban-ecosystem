@@ -142,3 +142,14 @@ export interface LanBridgeStartResult extends LanBridgeStatus {
   capability: string;
   devicePublicKey: string;
 }
+
+/** contracts/project-board/1: the board copy and its summary, all strings like the other native DTOs. */
+export interface ProjectBoardPayload {
+  source: 'build' | 'node';
+  revision: string;
+  lastPatchId: string;
+  generatedAt: string;
+  sha256: string;
+  bytes: string;
+  raw: string;
+}

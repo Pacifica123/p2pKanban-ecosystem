@@ -57,7 +57,7 @@
     },
     {
       "path": "src-tauri/src/main.rs",
-      "sha256": "dc7438b5a1ca40f90f61dbe72de89e26cfb6c35d70b61f83016ea1c2ea7f0a8c"
+      "sha256": "c866e05bc015209d74603eb7f903903e95d0b54d213ce37b6b8a4f131f509108"
     },
     {
       "path": "tools/a16_host_recovery_probe.py",

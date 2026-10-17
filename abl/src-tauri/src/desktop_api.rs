@@ -18,6 +18,7 @@ use crate::{
     domain::{
         integration::{DeepLinkIntent, IntegrationCapabilities},
         lan_bridge::LanBridgeStatus,
+        project_board::{self, ProjectBoardSummary},
     },
     infrastructure::linux::xdg::ProfileDiagnostics,
 };
@@ -75,6 +76,18 @@ fn lan_bridge_status_to_wire(status: LanBridgeStatus) -> BTreeMap<&'static str, 
         ("expiresAtUnix", status.expires_at_unix.map(|value| value.to_string()).unwrap_or_default()),
         ("attempts", status.attempts.to_string()),
         ("lastResult", status.last_result.unwrap_or_default()),
+    ])
+}
+
+fn project_board_to_wire(raw: &str, summary: ProjectBoardSummary) -> BTreeMap<&'static str, String> {
+    BTreeMap::from([
+        ("source", "build".to_owned()),
+        ("revision", summary.revision.to_string()),
+        ("lastPatchId", summary.last_patch_id),
+        ("generatedAt", summary.generated_at.unwrap_or_default()),
+        ("sha256", summary.sha256),
+        ("bytes", summary.bytes.to_string()),
+        ("raw", raw.to_owned()),
     ])
 }
 
@@ -653,6 +666,13 @@ pub fn desktop_api_unsynced_parity_count(workspaceId:String, boardId:String, par
     parity.unsynced_parity_count(&workspaceId,&boardId).map(|count|BTreeMap::from([("count",count.to_string())])).map_err(parity_error_code)
 }
 
+/// contracts/project-board/1: the copy compiled into this build, read-only.
+#[tauri::command]
+pub fn desktop_api_project_board() -> BTreeMap<&'static str, String> {
+    let (raw, summary) = project_board::build_board();
+    project_board_to_wire(raw, summary)
+}
+
 #[tauri::command]
 pub fn desktop_api_integration_capabilities(
     integration: State<'_, IntegrationService>,
@@ -710,7 +730,7 @@ pub fn desktop_api_stop_lan_bridge(
 mod tests {
     use super::{
         deep_link_intent_to_wire, health_to_wire, integration_capabilities_to_wire,
-        lan_bridge_status_to_wire, profile_diagnostics_to_wire, vault_status_to_wire,
+        lan_bridge_status_to_wire, profile_diagnostics_to_wire, project_board_to_wire, vault_status_to_wire,
     };
     use crate::{
         application::{
@@ -724,6 +744,17 @@ mod tests {
         infrastructure::linux::xdg::ProfileDiagnostics,
     };
     use std::path::PathBuf;
+
+    #[test]
+    fn project_board_wire_carries_build_copy_bytes_and_summary() {
+        let (raw, summary) = crate::domain::project_board::build_board();
+        let revision = summary.revision.to_string();
+        let payload = project_board_to_wire(raw, summary);
+        assert_eq!(payload.get("source").map(String::as_str), Some("build"));
+        assert_eq!(payload.get("raw").map(String::as_str), Some(raw));
+        assert_eq!(payload.get("revision"), Some(&revision));
+        assert_eq!(payload.get("bytes"), Some(&raw.len().to_string()));
+    }
 
     #[test]
     fn adapter_maps_application_read_model_to_existing_wire_contract() {

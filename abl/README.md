@@ -17,6 +17,7 @@ See [A17 offline-kit instructions](docs/A17_OFFLINE_KIT.md) and [A16 recovery](d
 - `docs/architecture/` — implementation-driving architecture and ADR/debt corrections.
 - `docs/IMPLEMENTATION_STATUS.md` — decision → files/tests → status → next patch traceability.
 - `docs/evidence/` — frozen source facts plus implementation/UTS evidence boundaries.
+- `docs/PROJECT_BOARD.md` — read-only project board compiled into abl (`p2p-kanban-project-board/1`).
 - `evidence/` and `fixtures/` — frozen compatibility evidence for later stages.
 - `tools/uts_plan.json` — evolving machine-readable UserTestSpace verification plan.
 - `tools/uts_verify.py` — stable single-entry UTS runner.
