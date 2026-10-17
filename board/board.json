@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 92,
+        "comments": 95,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:57:00Z",
+    "generatedAt": "2026-10-17T09:00:00Z",
     "selfHosted": true,
-    "boardRevision": 49,
-    "lastPatchId": "2026-10-17-abl-project-board",
+    "boardRevision": 50,
+    "lastPatchId": "2026-10-17-ecosystem-host-acceptance-r49",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -192,11 +192,11 @@
       {
         "id": "01a10d38-f932-79de-a74e-9d120add6abc",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Устаревшие статические проверки web",
         "description": "Зачем: на исходном снапшоте web часть tools/check_*.py падает без связи с монорепозиторием: check_zero_config_bootstrap (README became dense again), check_mobile_web_feature_contract (ждёт VERSION 1.0.0), check_cross_client_crud_contract и check_web_customization_part2_contract (v1 versions are not aligned), check_card_deletion_scope_contract, check_release_prep. После переноса результаты те же.\n\nГотово, когда: у каждой проверки решение: обновить под 2.1.0, пометить исторической или удалить; список проверок для манифеста web-патча зелёный.",
         "priority": "medium",
-        "position": 20480,
+        "position": 21504,
         "archivedAt": null
       },
       {
@@ -652,11 +652,11 @@
       {
         "id": "01a114f8-cc77-7001-b7e7-09884e7db90f",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "devctl 0.9.0 в монорепозитории: пачки патчей",
         "description": "Зачем: владелец поставил devctl 0.9.0 из devctl-universal (50f4324): пачки патчей, реестр workspace машины, проверка base.expectedHead и base.after. Гостевая копия devctl/ оставалась на 0.8.0, поэтому UTS показал бы расхождение «установлено ≠ исходники», а devctl/docs/patch-format.md, на который ссылаются правила проекта, не знал expectedHead/after.\n\nГотово, когда: первая пачка экосистемы применена на хосте через devctl batch start, а следующий UTS показывает devctl 0.9.0 «совпадает» с установленным.",
         "priority": "high",
-        "position": 13312,
+        "position": 19456,
         "archivedAt": null
       },
       {
@@ -2292,14 +2292,14 @@
         "id": "01a114f8-cc78-7004-adcc-281a2b2a9fba",
         "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
         "title": "devctl batch plan и batch start прошли на хосте владельца",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a114f8-cc78-7005-b40a-1fed64ca30c7",
         "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
         "title": "UTS: devctl.installed совпадает с исходниками",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -2889,6 +2889,13 @@
         "title": "Чек A15 выписан на хосте: в UTS host.a15-release-receipt PASS",
         "isDone": false,
         "position": 6144
+      },
+      {
+        "id": "01a1507a-b00a-7f07-81b8-df05b491af9d",
+        "checklistId": "01a11120-7a01-72b7-8f68-b39aed41a291",
+        "title": "Manjaro PC с GPU: окно открывается на Wayland, после выхода не остаётся процессов WebKit",
+        "isDone": false,
+        "position": 6144
       }
     ],
     "comments": [
@@ -3443,6 +3450,24 @@
         "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
         "createdAt": "2026-10-17T03:30:00Z",
         "body": "patch 2026-10-17-abl-project-board: abl показывает «Доска проекта · только чтение»: копия вшита в бинарник, сводка и выбор по контракту в Rust. С узла abl доску не берёт: связи abl с web-узлом пока нет, пункт ждёт её. Все три клиента готовы; нужна приёмка на телефоне, Arch и Docker."
+      },
+      {
+        "id": "01a1502e-134e-74fc-81f6-f09b74cdf279",
+        "cardId": "01a114f8-cc77-7001-b7e7-09884e7db90f",
+        "createdAt": "2026-10-17T09:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: пачка 2026-10-17 (17 патчей) применена на Manjaro через devctl batch start. 17-й патч упал на проверке (в abl/ нет node_modules), исправленная пачка повторена: 16 применённых пропущены, push выполнен, HEAD 3099444. UTS r49: devctl 0.9.0 · сборка d81be06c6a3d совпадает с исходниками. Карточка в «Сделано»."
+      },
+      {
+        "id": "01a150fb-6b4a-7636-8da9-405896bbf854",
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "createdAt": "2026-10-17T09:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: UTS r49 на Manjaro (3099444): шесть прежде падавших проверок web — zero-config bootstrap, mobile-web feature, cross-client CRUD, customization part 2, card deletion scope, release prep — PASS. Упала соседняя contract-workspace-access: патч 2026-10-17-web-project-board убрал из roadmap строку, которую она ищет; возвращена патчем 2026-10-17-web-r49-fixes. Карточка в «Сделано»."
+      },
+      {
+        "id": "01a15062-ff30-78c3-8845-3166df9b5ab0",
+        "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
+        "createdAt": "2026-10-17T09:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: UTS r49 на Manjaro PC (первый прогон abl на этом ПК, r24 был на ноутбуке): abl PASS 87, FAIL 4. host.a15-package-prep: нет namcap и makechrootpkg (пакеты devtools, namcap). host.a13-desktop-integration: окно падает на Wayland «Error 71 (Ошибка протокола)». runtime.a18-runtime-budgets и runtime.a18-chaos: после выхода остаётся 1 процесс (freeze-thaw, hard-kill, instance-storm, fixture), wakeups 248/с при пороге 150; в каждом запуске WebKit пишет «Failed to create GBM buffer». Тот же код в облаке под Xvfb: бюджеты PASS (0 процессов после выхода, 3 wakeups/с), хаос PASS. Предположение: дефект проявляется только с GPU-рендерером WebKit этого ПК; проверить — повтор проб с WEBKIT_DISABLE_DMABUF_RENDERER=1."
       }
     ],
     "boardAppearanceSettings": [],
