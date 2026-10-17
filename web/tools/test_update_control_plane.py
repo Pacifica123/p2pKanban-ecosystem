@@ -310,5 +310,33 @@ class UpdateChannelTest(unittest.TestCase):
             self.assertNotIn("http://127.0.0.1:8082", stray.allowed_origins())
 
 
+    def test_port_takeover_recognises_only_p2pkanban_updaters(self) -> None:
+        root = "/home/u/UserTestSpace/r49"
+        updater = ["python3", "-B", f"{root}/tools/update_control_plane.py", "serve", "--project-root", root]
+        self.assertEqual(bootstrap.stray_update_control(updater), Path(root))
+        self.assertIsNone(bootstrap.stray_update_control(["python3", "-m", "http.server", "8765"]))
+        self.assertIsNone(bootstrap.stray_update_control(updater[:3] + ["status"]))
+
+    def test_port_takeover_asks_and_never_kills_foreign_processes(self) -> None:
+        updater = ["python3", "tools/update_control_plane.py", "serve", "--project-root", "/old"]
+        with tempfile.TemporaryDirectory() as raw:
+            target = Path(raw)
+            with mock.patch.object(bootstrap, "port_listener_pids", return_value={41}), \
+                    mock.patch.object(bootstrap, "os") as fake_os:
+                with mock.patch.object(bootstrap, "process_command", return_value=["nginx"]):
+                    with self.assertRaisesRegex(bootstrap.BootstrapError, "не установщиком"):
+                        bootstrap.free_update_control_port(target, assume_yes=True)
+                with mock.patch.object(bootstrap, "process_command", return_value=updater), \
+                        mock.patch.object(bootstrap, "confirm", return_value=False):
+                    with self.assertRaisesRegex(bootstrap.BootstrapError, "--yes"):
+                        bootstrap.free_update_control_port(target)
+                fake_os.kill.assert_not_called()
+                with mock.patch.object(bootstrap, "process_command", return_value=updater), \
+                        mock.patch.object(bootstrap, "confirm", return_value=True), \
+                        mock.patch.object(bootstrap, "is_port_available", return_value=True):
+                    bootstrap.free_update_control_port(target)
+                fake_os.kill.assert_called_once_with(41, bootstrap.signal.SIGTERM)
+
+
 if __name__ == "__main__":
     unittest.main()

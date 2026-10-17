@@ -15,6 +15,7 @@ import os
 import re
 import shlex
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -1136,7 +1137,121 @@ def update_control_health(project_root: Path) -> dict[str, Any]:
     return value
 
 
-def ensure_update_control_plane(project_root: Path) -> None:
+def port_listener_pids(port: int) -> set[int]:
+    """PIDs of this user's processes listening on a loopback TCP port (Linux /proc)."""
+    inodes: set[str] = set()
+    for table in ("/proc/net/tcp", "/proc/net/tcp6"):
+        try:
+            lines = Path(table).read_text(encoding="ascii").splitlines()[1:]
+        except OSError:
+            continue
+        for line in lines:
+            fields = line.split()
+            if len(fields) > 9 and fields[3] == "0A" and int(fields[1].rsplit(":", 1)[1], 16) == port:
+                inodes.add(fields[9])
+    pids: set[int] = set()
+    if not inodes:
+        return pids
+    for entry in Path("/proc").iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            for fd in (entry / "fd").iterdir():
+                target = os.readlink(fd)
+                if target.startswith("socket:[") and target[8:-1] in inodes:
+                    pids.add(int(entry.name))
+                    break
+        except OSError:
+            continue
+    return pids
+
+
+def process_command(pid: int) -> list[str]:
+    try:
+        raw = Path(f"/proc/{pid}/cmdline").read_bytes()
+    except OSError:
+        return []
+    return [part.decode("utf-8", "replace") for part in raw.split(b"\0") if part]
+
+
+def stray_update_control(command: Sequence[str]) -> Path | None:
+    """Project root of a p2pKanban update control plane, by its command line."""
+    if not any(Path(part).name == UPDATE_CONTROL_RELATIVE_PATH.name for part in command):
+        return None
+    if "serve" not in command or "--project-root" not in command:
+        return None
+    index = command.index("--project-root")
+    return Path(command[index + 1]) if index + 1 < len(command) else None
+
+
+def confirm(question: str) -> bool:
+    if not sys.stdin.isatty():
+        return False
+    try:
+        answer = input(f"{question} [y/N] ")
+    except EOFError:
+        return False
+    return answer.strip().lower() in {"y", "yes", "д", "да"}
+
+
+def free_update_control_port(project_root: Path, *, assume_yes: bool = False) -> None:
+    """Replace another p2pKanban updater holding the port, after asking the owner.
+
+    It can be left by a bootstrap from another copy (UserTestSpace) or an
+    older control plane that does not answer /health. Foreign processes are
+    never touched.
+    """
+    port = DEFAULT_UPDATE_CONTROL_PORT
+    pids = port_listener_pids(port)
+    if not pids:
+        raise BootstrapError(
+            f"Локальный порт control plane {port} занят другим процессом, и его не удалось "
+            "опознать (это не процесс текущего пользователя или не Linux). "
+            "p2pKanban не будет подменять его или выбирать новый порт."
+        )
+    strays: dict[int, Path] = {}
+    for pid in sorted(pids):
+        command = process_command(pid)
+        root = stray_update_control(command)
+        if root is None:
+            raise BootstrapError(
+                f"Порт {port} занят не установщиком p2pKanban: pid {pid}, "
+                f"{' '.join(command) or 'команда неизвестна'}. Освободите порт сами."
+            )
+        strays[pid] = root
+    described = ", ".join(f"pid {pid} для {root}" for pid, root in strays.items())
+    question = (
+        f"Порт {port} занят установщиком p2pKanban ({described}). "
+        f"Остановить его и запустить установщик для {project_root}?"
+    )
+    if not (assume_yes or confirm(question)):
+        raise BootstrapError(
+            f"Порт {port} занят установщиком p2pKanban ({described}). "
+            "Повторите в терминале и ответьте y или добавьте --yes."
+        )
+    for pid in strays:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline and not is_port_available(port):
+        time.sleep(0.1)
+    if not is_port_available(port):
+        for pid in strays:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        deadline = time.monotonic() + 3
+        while time.monotonic() < deadline and not is_port_available(port):
+            time.sleep(0.1)
+    if not is_port_available(port):
+        raise BootstrapError(f"Прежний установщик не освободил порт {port}.")
+    print(f"Прежний установщик остановлен: {described}.")
+
+
+def ensure_update_control_plane(project_root: Path, *, assume_yes: bool = False) -> None:
     tool = project_root / UPDATE_CONTROL_RELATIVE_PATH
     if not tool.is_file():
         raise BootstrapError("Не найден локальный control plane обновлений.")
@@ -1150,10 +1265,7 @@ def ensure_update_control_plane(project_root: Path) -> None:
         while time.monotonic() < deadline and not is_port_available(DEFAULT_UPDATE_CONTROL_PORT):
             time.sleep(0.1)
     if not is_port_available(DEFAULT_UPDATE_CONTROL_PORT):
-        raise BootstrapError(
-            f"Локальный порт control plane {DEFAULT_UPDATE_CONTROL_PORT} занят "
-            "другим процессом. p2pKanban не будет подменять его или выбирать новый порт."
-        )
+        free_update_control_port(project_root, assume_yes=assume_yes)
 
     log_path = project_root / ".dev-bootstrap/update-control.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1439,8 +1551,11 @@ def command_watch_updates(args: argparse.Namespace, project_root: Path) -> int:
     owner = any_update_control_health().get("projectRoot")
     if isinstance(owner, str) and owner and Path(owner).resolve() != runtime_root.resolve():
         print(f"Останавливаю установщик, запущенный для другого каталога: {owner}")
-        stop_any_p2p_update_control()
-    ensure_update_control_plane(runtime_root)
+        try:
+            stop_any_p2p_update_control()
+        except BootstrapError as exc:
+            print(f"Остановить по-хорошему не вышло: {exc}")
+    ensure_update_control_plane(runtime_root, assume_yes=args.yes)
     print(
         "Проверка commit и UI-установщик доступны на loopback "
         f"порту {DEFAULT_UPDATE_CONTROL_PORT}. Runtime: {runtime_root}"
@@ -2903,6 +3018,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--dry-run",
         action="store_true",
         help="Показать действие без запуска процесса.",
+    )
+    watch_updates.add_argument(
+        "--yes",
+        action="store_true",
+        help="Без вопроса заменить установщик p2pKanban, который держит порт 8765.",
     )
     watch_updates.set_defaults(func=command_watch_updates)
 
