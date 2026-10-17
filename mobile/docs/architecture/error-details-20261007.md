@@ -31,6 +31,20 @@
 В EAS то же делает `eas-build-post-install` (`EAS_BUILD_GIT_COMMIT_HASH` →
 `.env.local`, файл в `.gitignore`). Без git и без переменной коммит «неизвестен».
 
+## Патч сборки
+
+В «Настройках» под строкой «Android-клиент» стоит «Собран из патча:
+патч N · <patchId>». Правило общее для клиентов:
+`board/README.md`, «Номер патча в версии клиентов».
+
+`scripts/build-patch.mjs` берёт `EXPO_PUBLIC_PATCH_ID`/`P2PKANBAN_PATCH_ID` и
+`…_PATCH_REVISION`, затем `BUILD_PATCH.json` в `mobile/`, затем
+`board/board.json` непосредственно над `mobile/`. `npm run apk` и
+`eas-build-post-install` передают пару как `EXPO_PUBLIC_PATCH_ID` и
+`EXPO_PUBLIC_PATCH_REVISION`, и Expo вписывает её в бандл, как коммит.
+EAS загружает весь монорепозиторий, поэтому доска над `mobile/` там есть.
+«Скопировать подробности» номер не несёт: это поле контракта error-report/1.
+
 ## Проверка
 
 - `npx jest src/shared/errorReport` — векторы `contracts/error-report/1`,

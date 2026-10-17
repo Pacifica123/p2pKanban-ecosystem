@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildPatch, patchEnvironment, patchLabel } from './build-patch.mjs';
 
 const HEX = /^[0-9a-f]{40}$/;
 
@@ -24,8 +25,11 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
   const revision = sourceRevision(root);
   if (process.argv.includes('--env-file')) {
-    if (revision) writeFileSync(join(root, '.env.local'), `EXPO_PUBLIC_SOURCE_REVISION=${revision}\n`);
-    console.log(revision ? `.env.local: EXPO_PUBLIC_SOURCE_REVISION=${revision}` : 'коммит неизвестен: .env.local не записан');
+    const values = { ...(revision ? { EXPO_PUBLIC_SOURCE_REVISION: revision } : {}), ...patchEnvironment(buildPatch(root)) };
+    const lines = Object.entries(values).map(([key, value]) => `${key}=${value}\n`);
+    if (lines.length) writeFileSync(join(root, '.env.local'), lines.join(''));
+    console.log(revision ? `.env.local: EXPO_PUBLIC_SOURCE_REVISION=${revision}` : 'коммит неизвестен');
+    console.log(`.env.local: ${patchLabel(buildPatch(root))}`);
   } else {
     console.log(revision ?? 'unknown');
   }

@@ -24,6 +24,7 @@ import { useAppearance } from '../appearance/AppearanceProvider';
 import { useConnection } from '../connection/ConnectionProvider';
 import { getBackendVersion } from '../../shared/api/endpoints';
 import { mobileSoftware } from '../../shared/errorReport/collect';
+import { buildPatchLabel, mobileBuildPatch } from '../../shared/buildPatch';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -266,6 +267,12 @@ export function SettingsScreen({ navigation }: Props) {
           <Text style={[styles.caption, { color: colors.muted }]}>Android-клиент</Text>
           <Text style={[styles.versionValue, { color: colors.text }]} selectable>
             {clientBuildLabel()}
+          </Text>
+        </View>
+        <View style={styles.versionRow}>
+          <Text style={[styles.caption, { color: colors.muted }]}>Собран из патча</Text>
+          <Text style={[styles.versionValue, { color: colors.text }]} selectable testID="build-patch">
+            {buildPatchLabel(mobileBuildPatch())}
           </Text>
         </View>
         <View style={styles.versionRow}>

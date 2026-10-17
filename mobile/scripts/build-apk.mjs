@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { expoCommand, gradleCommand } from './apk-commands.mjs';
 import { sourceRevision } from './source-revision.mjs';
+import { buildPatch, patchEnvironment, patchLabel } from './build-patch.mjs';
 
 const mobileRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packageVersion = JSON.parse(
@@ -61,6 +62,9 @@ if (javaProbe.error || javaProbe.status !== 0 || javaMajor < 17) {
 const revision = sourceRevision(mobileRoot);
 if (revision) process.env.EXPO_PUBLIC_SOURCE_REVISION = revision;
 console.log(`Коммит сборки: ${revision ?? 'неизвестен (нет git и P2PKANBAN_SOURCE_REVISION)'}`);
+const patch = buildPatch(mobileRoot);
+Object.assign(process.env, patchEnvironment(patch));
+console.log(`Сборка из: ${patchLabel(patch)}`);
 
 run(...expoCommand(process.execPath, expoCli), mobileRoot);
 run(...gradleCommand(process.platform), join(mobileRoot, 'android'));

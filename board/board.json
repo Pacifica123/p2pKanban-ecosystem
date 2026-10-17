@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 83,
+        "comments": 84,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:49:00Z",
+    "generatedAt": "2026-10-17T07:50:00Z",
     "selfHosted": true,
-    "boardRevision": 41,
-    "lastPatchId": "2026-10-17-mobile-catalog-status",
+    "boardRevision": 42,
+    "lastPatchId": "2026-10-17-mobile-build-patch",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2684,7 +2684,7 @@
         "id": "01a147cd-4f85-7e74-8448-8b03d6a3ada2",
         "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
         "title": "mobile: «Собран из патча» в «Настройках»; npm run apk и EAS",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -3382,6 +3382,12 @@
         "cardId": "01a145b0-6001-7a1b-8c2d-3e4f5a6b7c81",
         "createdAt": "2026-10-17T03:10:00Z",
         "body": "patch 2026-10-17-mobile-catalog-status: «Пространства» и «Доски» вне сети узла показывают, почему новое не приходит: релеи недоступны (с причинами по каждому релею) или телефон ещё не получил адреса релеев; у сообщения «Скопировать подробности». Раньше ошибка каталога молча проглатывалась. versionCode 27 → 28, нужен новый APK. Ждёт Docker-узлов и телефона на мобильной сети."
+      },
+      {
+        "id": "01a147df-9f01-7b0c-bc19-f2284ac34394",
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "createdAt": "2026-10-17T03:20:00Z",
+        "body": "patch 2026-10-17-mobile-build-patch: «Настройки» показывают «Собран из патча»; npm run apk и eas-build-post-install вписывают EXPO_PUBLIC_PATCH_*; versionCode 28. Ждёт телефона."
       }
     ],
     "boardAppearanceSettings": [],
