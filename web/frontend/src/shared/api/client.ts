@@ -89,6 +89,7 @@ export async function apiRequest<T>(
 
   const method = (init.method ?? 'GET').toUpperCase();
   const requestPath = `${env.apiBaseUrl}${path}`;
+  const startedAt = Date.now();
   let response: Response;
   try {
     response = await fetch(`${env.apiBaseUrl}${path}`, {
@@ -146,7 +147,7 @@ export async function apiRequest<T>(
       http: { method, path: requestPath, body: text || null, errorId },
     });
   }
-  logLine('debug', 'api', `${method} ${requestPath} → ${response.status}`);
+  logLine('debug', 'api', `${method} ${requestPath} → ${response.status} за ${Date.now() - startedAt} мс`);
 
   if (payload && typeof payload === 'object' && 'data' in (payload as Record<string, unknown>)) {
     return (payload as ApiEnvelope<T>).data;

@@ -1701,3 +1701,34 @@ input[type='checkbox']:focus-visible{outline:2px solid var(--accent);outline-off
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
 }
+
+.debug-journal__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.debug-journal__lines {
+  height: min(62vh, 640px);
+  overflow: auto;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.debug-journal__line--warn {
+  color: var(--warning-text);
+}
+
+.debug-journal__line--error {
+  color: var(--danger-text);
+}

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { NavLink, Outlet, useParams } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
 import { paths } from '@/app/router/paths';
 import { useAuthSession } from '@/app/providers/AuthSessionProvider';
 import { useWorkspacesQuery } from '@/features/workspaces/hooks/useWorkspaces';
@@ -13,6 +13,8 @@ import { getBackendVersion } from '@/features/system/api/version';
 import { buildPatchLabel, webBuildPatch, webClientVersion } from '@/shared/version';
 import { SourceUpdateSurface } from '@/features/system/components/SourceUpdateSurface';
 import { apiRequest } from '@/shared/api/client';
+import { trace } from '@/shared/errorReport/journal';
+import { useDebugMode } from '@/shared/debug/debugMode';
 
 const NAV_COLLAPSED_KEY = 'p2pkanban:navigation-collapsed';
 
@@ -22,6 +24,8 @@ function visibilityLabel(value: string) {
 
 export function MainLayout() {
   const { workspaceId, boardId } = useParams();
+  const location = useLocation();
+  const debugMode = useDebugMode();
   const { user, signOutCurrent, signOutEverywhere } = useAuthSession();
   const workspacesQuery = useWorkspacesQuery();
   const boardsQuery = useBoardsQuery(workspaceId);
@@ -40,6 +44,10 @@ export function MainLayout() {
   const [isNavigationCollapsed, setNavigationCollapsed] = useState(
     () => window.localStorage.getItem(NAV_COLLAPSED_KEY) === 'true',
   );
+
+  useEffect(() => {
+    trace('nav', () => `страница ${location.pathname}`);
+  }, [location.pathname]);
 
   function toggleNavigation() {
     setNavigationCollapsed((current) => {
@@ -128,6 +136,10 @@ export function MainLayout() {
             </NavLink>
             <NavLink to={paths.userAppearance} className={({ isActive }) => `nav-list__item ${isActive ? 'is-active' : ''}`}>
               <span>Вид приложения</span>
+            </NavLink>
+            <NavLink to={paths.debugJournal} className={({ isActive }) => `nav-list__item ${isActive ? 'is-active' : ''}`}>
+              <span>Журнал отладки</span>
+              {debugMode ? <span className="nav-list__meta">включён</span> : null}
             </NavLink>
             {workspaceId && boardId ? (
               <NavLink to={paths.boardAppearance(workspaceId, boardId)} className={({ isActive }) => `nav-list__item ${isActive ? 'is-active' : ''}`}>

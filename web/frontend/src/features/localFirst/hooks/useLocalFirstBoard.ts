@@ -27,6 +27,7 @@ import type {
   LocalUpdateCardInput,
 } from '@/features/localFirst/types';
 import type { Board, BoardColumn, Card } from '@/shared/types/api';
+import { logLine, trace } from '@/shared/errorReport/journal';
 
 interface UseLocalFirstBoardRuntimeInput {
   workspaceId?: string;
@@ -144,6 +145,7 @@ export function useLocalFirstBoardRuntime({
 
     try {
       const operations = getLocalFirstOperationsForBoard(boardId).filter((operation) => operation.status === 'pending');
+      trace('board', () => `доска ${boardId.slice(0, 8)}: отправляем узлу ${operations.length} изменений`);
 
       for (const pendingOperation of operations) {
         const operation = resolveOperationIds(pendingOperation, cardIdMap);
@@ -177,8 +179,10 @@ export function useLocalFirstBoardRuntime({
             await reorderColumnCards(operation.entityId, operation.payload.input);
             removeLocalFirstOperation(operation.id);
           }
+          trace('board', () => `доска ${boardId.slice(0, 8)}: узел принял ${operation.kind} ${operation.entityId}`);
         } catch (error) {
           const message = getOperationError(error);
+          logLine('warn', 'board', `доска ${boardId.slice(0, 8)}: узел не принял ${operation.kind} ${operation.entityId}:`, error);
           markLocalFirstOperationStatus(operation.id, 'failed', message);
           setLastError(message);
           if (isNetworkUnavailableError(error)) break;

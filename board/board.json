@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 73,
-        "comments": 79,
-        "checklists": 33,
+        "cards": 74,
+        "comments": 80,
+        "checklists": 34,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:45:00Z",
+    "generatedAt": "2026-10-17T07:46:00Z",
     "selfHosted": true,
-    "boardRevision": 37,
-    "lastPatchId": "2026-10-17-web-build-patch",
+    "boardRevision": 38,
+    "lastPatchId": "2026-10-17-web-debug-mode",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -848,6 +848,16 @@
         "priority": "high",
         "position": 4096,
         "archivedAt": null
+      },
+      {
+        "id": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "title": "Режим отладки: живой журнал без секретов в mobile, web и abl",
+        "description": "Зачем: «Скопировать подробности» отдаёт 50 строк в момент ошибки, а странное поведение без ошибки (после перехода на мобильную сеть новые доски не появляются, «Офлайн-копия») не видно ничем. John попросил «режим отладки» в каждом клиенте: может чуть сильнее нагружать клиент, но в реальном времени ведёт всё, что происходило в канбане, вычищая чувствительное.\n\nГотово, когда: в mobile, web и abl есть переключатель режима и экран журнала, строки появляются по мере работы, журнал выгружается в Markdown; в журнале нет паролей, токенов и ключей (redact из error-report/1) и нет текстов карточек (только id, виды операций и числа); принято на телефоне, в браузере и на Arch.\n\nНе контракт: журнал не уходит между направлениями. Форма строки и вырезание — из p2p-kanban-error-report/1, Markdown-выгрузка одинаковой формы во всех клиентах («# p2pKanban: журнал отладки», программа, платформа, строки). Автоприёмка может читать тот же журнал внутри клиента.",
+        "priority": "medium",
+        "position": 6144,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1504,6 +1514,18 @@
       {
         "cardId": "01a145b0-6001-7a1b-8c2d-3e4f5a6b7c81",
         "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
       }
     ],
     "checklists": [
@@ -1704,6 +1726,12 @@
         "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
         "title": "Приёмка на хосте",
         "position": 5120
+      },
+      {
+        "id": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "title": "Этапы",
+        "position": 1024
       }
     ],
     "checklistItems": [
@@ -2826,6 +2854,34 @@
         "title": "Новый коммит доски в main виден на узле без пересборки",
         "isDone": false,
         "position": 3072
+      },
+      {
+        "id": "01a14b00-d0a0-7d03-a1b2-5f3b2e1a4b03",
+        "checklistId": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
+        "title": "mobile: режим в настройках, экран журнала, хвост прошлого запуска, экспорт .md",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a14b00-d0a0-7d04-b2c3-6a4c3f2b5c04",
+        "checklistId": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
+        "title": "web: режим и окно журнала в браузере, экспорт .md",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a14b00-d0a0-7d05-c3d4-7b5d4a3c6d05",
+        "checklistId": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
+        "title": "abl: режим и окно журнала в приложении, экспорт .md",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a14b00-d0a0-7d06-d4e5-8c6e5b4d7e06",
+        "checklistId": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
+        "title": "Принято на телефоне, в браузере у Docker-узла и на Arch",
+        "isDone": false,
+        "position": 4096
       }
     ],
     "comments": [
@@ -3302,6 +3358,12 @@
         "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "createdAt": "2026-10-17T03:10:00Z",
         "body": "patch 2026-10-17-web-build-patch: web UI показывает «патч N · patchId» под версиями; обновление из GitHub пишет BUILD_PATCH.json в релизную копию. Ждёт Docker на хосте."
+      },
+      {
+        "id": "01a14b00-d0a0-7d08-f6a7-ae807d6f9a08",
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "createdAt": "2026-10-17T03:10:00Z",
+        "body": "patch 2026-10-17-web-debug-mode: web: Настройки → «Журнал отладки» (/settings/debug), переключатель хранится в этом браузере. Тот же журнал, что у «Скопировать подробности»; в режиме — смена страниц и шаги отправки изменений доски, 5000 строк, хвост 500 строк переживает перезагрузку; всегда — время каждого запроса, сеть браузера, видимость вкладки. Экспорт .md. Узел не меняется: его журнал по-прежнему bootstrap.py logs. Проверено здесь: tsc, vitest 83/83."
       }
     ],
     "boardAppearanceSettings": [],
