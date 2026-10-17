@@ -1,6 +1,7 @@
 import type { Event as NostrEvent, Filter } from 'nostr-tools';
 import { finalizeEvent, verifyEvent } from 'nostr-tools/pure';
 
+import { trace } from '../../shared/errorReport/journal';
 import { mapInSlices, throwIfCanceled } from '../../shared/lib/uiBudget';
 
 const RELAY_TIMEOUT_MS = 8_000;
@@ -159,6 +160,9 @@ export async function publishToRelays(
   const settled = await Promise.allSettled(relays.map((relay) => publishOne(relay, event)));
   const acceptedRelays = settled.flatMap((result) => result.status === 'fulfilled' ? [result.value] : []);
   const failedRelays = relays.filter((relay) => !acceptedRelays.includes(relay));
+  trace('relay', () => `отправка ${event.id.slice(0, 12)}: приняли ${acceptedRelays.length} из ${relays.length}, нужно ${minimumAcks}`
+    + settled.flatMap((result, index) => result.status === 'rejected'
+      ? [`; ${relays[index]}: ${result.reason instanceof Error ? result.reason.message : 'ошибка WebSocket'}`] : []).join(''));
   if (acceptedRelays.length < minimumAcks) {
     throw new Error(
       `Relay-журнал принят: ${acceptedRelays.length} из ${minimumAcks} обязательных подтверждений.`,
@@ -179,6 +183,10 @@ export async function fetchFromRelays(input: {
   };
   const settled = await Promise.allSettled(input.relays.map((relay) => fetchOne(relay, filter)));
   const relayCount = settled.filter(result => result.status === 'fulfilled').length;
+  trace('relay', () => `чтение доски ${input.boardTag.slice(0, 8)}${input.since ? ` с ${new Date(input.since * 1000).toISOString()}` : ' целиком'}:`
+    + ` ответили ${relayCount} из ${input.relays.length}`
+    + settled.flatMap((result, index) => result.status === 'rejected'
+      ? [`; ${input.relays[index]}: ${result.reason instanceof Error ? result.reason.message : 'ошибка WebSocket'}`] : []).join(''));
   if (!relayCount) {
     const errors = settled.flatMap((r, i) => r.status === 'rejected' ? [`${input.relays[i]}: ${r.reason instanceof Error ? r.reason.message : 'ошибка WebSocket'}`] : []);
     throw new Error(`Релейная связь недоступна. ${errors.join('; ')}`);

@@ -31,6 +31,7 @@ import {
   type StoredNativeSession,
 } from '../../shared/storage/storage';
 import type { AuthUser, NativeAuthSuccessResponse } from '../../shared/types/api';
+import { logLine } from '../../shared/errorReport/journal';
 import { useConnection } from '../connection/ConnectionProvider';
 import { cancelAllCardReminders } from '../reminders/service';
 
@@ -98,9 +99,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         if (generationRef.current !== generation) return null;
         await applyResponse(response, nodeOrigin);
         return response.accessToken;
-      } catch {
+      } catch (error) {
         // HTTP credentials do not own the separately provisioned board replica.
         if (generationRef.current !== generation) return null;
+        logLine('warn', 'auth', 'сессия не обновлена, остаёмся на сохранённых копиях:', error);
         setOfflineSession(true);
         return null;
       }
@@ -165,6 +167,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       }
     })();
   }, [applyStoredSession, nodeOrigin, refreshCurrent]);
+
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+    logLine('info', 'auth', isOfflineSession
+      ? `офлайн-сессия: узел ${nodeOrigin ?? 'не задан'} не подтвердил вход, экраны показывают сохранённые копии`
+      : `сессия подтверждена узлом ${nodeOrigin ?? ''}`.trim());
+  }, [isOfflineSession, nodeOrigin, status]);
 
   useEffect(() => {
     if (!session) return;

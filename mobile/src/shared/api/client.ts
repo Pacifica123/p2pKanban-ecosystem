@@ -106,6 +106,7 @@ async function performRequest<T>(
 
   const method = (init.method ?? 'GET').toUpperCase();
   const requestPath = `/api/v1${path}`;
+  const startedAt = Date.now();
   let response: Response;
   let payload: unknown;
   let text = '';
@@ -163,7 +164,7 @@ async function performRequest<T>(
       http: { method, path: requestPath, body: text || null, errorId },
     });
   }
-  logLine('debug', 'api', `${method} ${requestPath} → ${response.status}`);
+  logLine('debug', 'api', `${method} ${requestPath} → ${response.status} за ${Date.now() - startedAt} мс`);
 
   if (payload && typeof payload === 'object' && 'data' in (payload as Record<string, unknown>)) {
     return (payload as ApiEnvelope<T>).data;

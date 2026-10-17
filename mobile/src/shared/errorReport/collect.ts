@@ -26,7 +26,7 @@ export function mobileSoftware(): ErrorReport['software'] {
   return { direction: 'mobile', version: mobileClientVersion, build: code ? String(code) : null, commit: sourceRevision() };
 }
 
-function platform(): string {
+export function mobilePlatform(): string {
   const constants = Platform.constants as { Release?: string; Model?: string } | undefined;
   const release = constants?.Release ? `Android ${constants.Release}` : `${Platform.OS}`;
   return `${release} (API ${Platform.Version})${constants?.Model ? ` · ${constants.Model}` : ''}`;
@@ -63,7 +63,7 @@ export function collectReport(context: ReportContext): ErrorReport {
     reportId: newReportId(),
     at: new Date().toISOString(),
     software: mobileSoftware(),
-    platform: platform(),
+    platform: mobilePlatform(),
     screen: context.screen ?? null,
     operation: context.operation ?? null,
     stage: context.stage ?? null,

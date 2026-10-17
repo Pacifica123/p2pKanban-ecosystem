@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 84,
+        "comments": 85,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:50:00Z",
+    "generatedAt": "2026-10-17T07:51:00Z",
     "selfHosted": true,
-    "boardRevision": 42,
-    "lastPatchId": "2026-10-17-mobile-build-patch",
+    "boardRevision": 43,
+    "lastPatchId": "2026-10-17-mobile-debug-mode",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2859,7 +2859,7 @@
         "id": "01a14b00-d0a0-7d03-a1b2-5f3b2e1a4b03",
         "checklistId": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
         "title": "mobile: режим в настройках, экран журнала, хвост прошлого запуска, экспорт .md",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
@@ -3388,6 +3388,12 @@
         "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "createdAt": "2026-10-17T03:20:00Z",
         "body": "patch 2026-10-17-mobile-build-patch: «Настройки» показывают «Собран из патча»; npm run apk и eas-build-post-install вписывают EXPO_PUBLIC_PATCH_*; versionCode 28. Ждёт телефона."
+      },
+      {
+        "id": "01a14b00-d0a0-7d07-e5f6-9d7f6c5e8f07",
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "createdAt": "2026-10-17T03:00:00Z",
+        "body": "patch 2026-10-17-mobile-debug-mode: mobile (versionCode 28): Настройки → «Режим отладки» и экран «Журнал отладки». Включённый режим пишет шаги синхронизации досок, relay, смену сети и экранов, держит 5000 строк вместо 200 и сохраняет хвост 500 строк без секретов, так что после зависания виден «Прошлый запуск». Офлайн-сессия и смена сети пишутся всегда. Экспорт — Markdown в буфер обмена или файл .md. Проверено здесь: tsc, Jest 138/138 (29 наборов), check-core-crud-contract."
       }
     ],
     "boardAppearanceSettings": [],

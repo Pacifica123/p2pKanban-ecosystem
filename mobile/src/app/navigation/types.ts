@@ -25,4 +25,5 @@ export type RootStackParamList = {
     boardName: string;
   };
   Settings: undefined;
+  DebugJournal: undefined;
 };

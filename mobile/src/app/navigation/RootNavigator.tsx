@@ -14,7 +14,9 @@ import { BoardScreen } from '../../features/boards/BoardScreen';
 import { BoardsScreen } from '../../features/boards/BoardsScreen';
 import { useConnection } from '../../features/connection/ConnectionProvider';
 import { ConnectionScreen } from '../../features/connection/ConnectionScreen';
+import { DebugJournalScreen } from '../../features/settings/DebugJournalScreen';
 import { SettingsScreen } from '../../features/settings/SettingsScreen';
+import { trace } from '../../shared/errorReport/journal';
 import { useAppearance } from '../../features/appearance/AppearanceProvider';
 import { WorkspacesScreen } from '../../features/workspaces/WorkspacesScreen';
 import { WorkspaceAccessScreen } from '../../features/workspaces/WorkspaceAccessScreen';
@@ -66,6 +68,7 @@ export function RootNavigator() {
       ref={navigationRef}
       theme={theme}
       onReady={() => flushReminderTarget(auth.status === 'authenticated')}
+      onStateChange={() => trace('nav', () => `экран ${navigationRef.getCurrentRoute()?.name ?? 'неизвестен'}`)}
     >
       <Stack.Navigator screenOptions={{
         headerShown: false,
@@ -83,6 +86,7 @@ export function RootNavigator() {
             <Stack.Screen name="Board" component={BoardScreen} />
             <Stack.Screen name="Activity" component={ActivityScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="DebugJournal" component={DebugJournalScreen} />
           </>
         )}
       </Stack.Navigator>

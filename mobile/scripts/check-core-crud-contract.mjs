@@ -201,6 +201,8 @@ requireText('src/features/localFirst/localVisibility.ts', [
 requireText('src/features/sync/syncService.ts', [
   "appVersion: '1.0.0'",
 ]);
+requireText('src/shared/debug/debugMode.ts', ['setJournalDebugMode', 'TAIL_LINES']);
+requireText('src/features/settings/SettingsScreen.tsx', ["navigation.navigate('DebugJournal')"]);
 requireText('android/app/build.gradle', [
   'versionCode 28',
   'versionName "2.1.0"',

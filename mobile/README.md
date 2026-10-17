@@ -5,6 +5,9 @@
 «Скопировать подробности» у любой ошибки, коммит сборки в APK —
 [error-details-20261007](docs/architecture/error-details-20261007.md).
 
+Режим отладки: журнал в реальном времени без секретов, экспорт в Markdown —
+[debug-mode-20261017](docs/architecture/debug-mode-20261017.md).
+
 Четыре темы приложения (Графит, Лимон, Лазурь, Серебро), выбор на устройстве —
 [ui-themes-20261016](docs/architecture/ui-themes-20261016.md).
 

@@ -3,6 +3,8 @@ import { onlineManager } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
+import { logLine } from '../shared/errorReport/journal';
+
 interface NetworkContextValue {
   isOnline: boolean;
   networkType: string;
@@ -18,6 +20,16 @@ function connected(value: { isConnected: boolean | null; isInternetReachable: bo
   return value.isConnected !== false;
 }
 
+let lastLogged = '';
+
+/** One journal line per real change: switching Wi-Fi to mobile data explains most sync surprises. */
+function noteNetwork(type: string, online: boolean) {
+  const text = `сеть: ${type}, ${online ? 'есть подключение' : 'нет подключения'}`;
+  if (text === lastLogged) return;
+  lastLogged = text;
+  logLine('info', 'net', text);
+}
+
 export function NetworkProvider({ children }: PropsWithChildren) {
   const [isOnline, setOnline] = useState(true);
   const [networkType, setNetworkType] = useState('unknown');
@@ -25,12 +37,14 @@ export function NetworkProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       const next = connected(state);
+      noteNetwork(state.type, next);
       setOnline(next);
       setNetworkType(state.type);
       onlineManager.setOnline(next);
     });
     void NetInfo.fetch().then((state) => {
       const next = connected(state);
+      noteNetwork(state.type, next);
       setOnline(next);
       setNetworkType(state.type);
       onlineManager.setOnline(next);

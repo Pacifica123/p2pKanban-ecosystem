@@ -1,10 +1,29 @@
-// In-memory journal for error reports (contracts/error-report/1, «Кольцевой буфер»).
-// Nothing is written to disk and nothing leaves the phone by itself: lines only
-// go into a report, and a report only into the clipboard, on a tap.
+// In-memory journal for error reports (contracts/error-report/1, «Кольцевой буфер»)
+// and for the debug mode (docs/architecture/debug-mode-20261017.md). Nothing leaves the phone by
+// itself: lines go into a report or a debug export, and those only into the
+// clipboard or a share sheet, on a tap. Only the debug mode keeps a redacted
+// tail on disk, so the next start can show how the previous run ended.
 import { NODE_HEADER, parseNodeHeader, type ErrorReport, type NodeIdentity } from './report';
 
-const CAPACITY = 200;
-const lines: string[] = [];
+/** Ordinary mode: enough for «Скопировать подробности». */
+export const NORMAL_CAPACITY = 200;
+/** Debug mode: a few minutes of busy sync, still well under a megabyte. */
+export const DEBUG_CAPACITY = 5_000;
+
+export type JournalLevel = 'debug' | 'info' | 'warn' | 'error';
+
+export type JournalEntry = {
+  seq: number;
+  level: JournalLevel;
+  source: string;
+  /** `<UTC time> <level> <source>: <text>` — the form the contract recommends. */
+  line: string;
+};
+
+let entries: JournalEntry[] = [];
+let nextSeq = 1;
+let debugMode = false;
+const listeners = new Set<() => void>();
 
 export type ApiFailure = NonNullable<ErrorReport['http']> & { at: number; peer: NodeIdentity | null };
 
@@ -17,14 +36,56 @@ function stringify(value: unknown): string {
   try { return JSON.stringify(value); } catch { return String(value); }
 }
 
-/** `<UTC time> <level> <source>: <text>` — the form the contract recommends. */
-export function logLine(level: 'debug' | 'info' | 'warn' | 'error', source: string, ...parts: unknown[]) {
-  lines.push(`${new Date().toISOString()} ${level} ${source}: ${parts.map(stringify).join(' ')}`);
-  if (lines.length > CAPACITY) lines.splice(0, lines.length - CAPACITY);
+function capacity() {
+  return debugMode ? DEBUG_CAPACITY : NORMAL_CAPACITY;
+}
+
+function push(level: JournalLevel, source: string, text: string) {
+  const line = `${new Date().toISOString()} ${level} ${source}: ${text}`;
+  entries.push({ seq: nextSeq++, level, source, line });
+  if (entries.length > capacity()) entries.splice(0, entries.length - capacity());
+  for (const listener of listeners) listener();
+}
+
+/** A line that is always kept: requests, warnings, errors, stalls. */
+export function logLine(level: JournalLevel, source: string, ...parts: unknown[]) {
+  push(level, source, parts.map(stringify).join(' '));
+}
+
+/**
+ * A detailed line that only the debug mode keeps: sync steps, screens, network
+ * changes. The text is built only when the mode is on, so ordinary use pays
+ * nothing. Name ids, kinds and counts here, not card titles or descriptions.
+ */
+export function trace(source: string, describe: () => string) {
+  if (!debugMode) return;
+  let text: string;
+  try { text = describe(); } catch (error) { text = `(строка не собрана: ${stringify(error)})`; }
+  push('debug', source, text);
 }
 
 export function journalLines(): string[] {
-  return [...lines];
+  return entries.map((entry) => entry.line);
+}
+
+export function journalEntries(): JournalEntry[] {
+  return [...entries];
+}
+
+/** Called on every new line; the viewer batches its own redraws. */
+export function subscribeJournal(listener: () => void) {
+  listeners.add(listener);
+  return () => { listeners.delete(listener); };
+}
+
+export function isJournalDebugMode() {
+  return debugMode;
+}
+
+export function setJournalDebugMode(on: boolean) {
+  debugMode = on;
+  if (entries.length > capacity()) entries.splice(0, entries.length - capacity());
+  for (const listener of listeners) listener();
 }
 
 /** Remember which node answered last (`x-p2p-kanban-node`); an old node sends none. */
@@ -71,7 +132,10 @@ export function installJournal() {
 }
 
 export function resetJournalForTests() {
-  lines.length = 0;
+  entries = [];
+  nextSeq = 1;
+  debugMode = false;
+  listeners.clear();
   lastPeer = null;
   lastFailure = null;
 }

@@ -5,6 +5,7 @@ import { AppState } from 'react-native';
 
 import { useNetwork } from '../../app/NetworkProvider';
 import { ApiError, isNetworkError } from '../../shared/api/client';
+import { logLine, trace } from '../../shared/errorReport/journal';
 import { isSyncCanceled, throwIfCanceled, yieldToUi } from '../../shared/lib/uiBudget';
 import {
   applyLocalCardVisibility,
@@ -282,6 +283,7 @@ export function useLocalBoard(
   const noteResult = useCallback((error: unknown) => {
     if (isSyncCanceled(error) || lifecycleRef.current.signal.aborted) return;
     if (error) {
+      logLine('warn', 'board', `доска ${boardId.slice(0, 8)}: синхронизация не удалась (попытка ${failuresRef.current + 1}):`, error);
       failuresRef.current += 1;
       retryAtRef.current = Date.now()
         + Math.min(SYNC_INTERVAL_MS * 2 ** (failuresRef.current - 1), MAX_RETRY_DELAY_MS);
@@ -290,7 +292,7 @@ export function useLocalBoard(
       failuresRef.current = 0;
       retryAtRef.current = 0;
     }
-  }, []);
+  }, [boardId]);
 
   const refresh = useCallback(async (request: { full?: boolean } = {}) => {
     if (!isOnlineRef.current || refreshLock.current) return;
@@ -310,6 +312,8 @@ export function useLocalBoard(
           signal, mode, materialize: 'if-changed',
         });
         if (mode === 'full') lastFullPullRef.current = Date.now();
+        trace('board', () => `доска ${boardId.slice(0, 8)}: relay ${mode === 'full' ? 'полностью' : 'с последнего раза'}`
+          + ` — ответили ${relay.relayCount} из ${installed.relays.length}, событий ${relay.received}, новых ${relay.changed ? 'есть' : 'нет'}`);
         throwIfCanceled(signal);
         if (relay.changed) {
           await runSerialized(async () => {
@@ -349,6 +353,8 @@ export function useLocalBoard(
         throw error;
       }
       throwIfCanceled(signal);
+      trace('board', () => `доска ${boardId.slice(0, 8)}: снимок с узла, карточек ${coordinatorSnapshot.cards.length};`
+        + ` ключ relay ${provisionedCapability ? `выдан (${provisionedCapability.relays.length} relay)` : 'не выдан'}`);
       const merged = await runSerialized(async () => {
         if (provisionedCapability) {
           const previousCapability = roamingCapabilityRef.current;
@@ -479,6 +485,7 @@ export function useLocalBoard(
           applyRemote = (snapshot, operations) => ({ snapshot, operations });
         }
       } catch (error) {
+        logLine('warn', 'board', `доска ${boardId.slice(0, 8)}: узел не принял ${next.kind} ${next.entityId}:`, error);
         if (coordinatorUnavailable(error)) {
           nodeUnavailableUntilRef.current = Date.now() + 30_000;
           throw new Error('Узел недоступен; для relay требуется первоначальная подготовка доски.');
@@ -500,6 +507,7 @@ export function useLocalBoard(
       }
 
       nodeUnavailableUntilRef.current = 0;
+      trace('board', () => `доска ${boardId.slice(0, 8)}: узел принял ${next.kind} ${next.entityId}`);
       await runSerialized(async () => {
         const currentSnapshot = snapshotRef.current;
         if (!currentSnapshot) return;
@@ -575,6 +583,8 @@ export function useLocalBoard(
         const delivered = await publishedOperationIds(installed);
         const before = await loadOperationQueue();
         const queue = before.filter(op => op.boardId !== boardId || !delivered.has(op.id));
+        trace('board', () => `доска ${boardId.slice(0, 8)}: relay подтвердил ${before.length - queue.length},`
+          + ` ждут отправки ${queue.filter(op => op.boardId === boardId).length}`);
         if (queue.length === before.length) return;
         await persistBoardAndQueue(local, queue);
         applyState(local, queue);
@@ -621,6 +631,9 @@ export function useLocalBoard(
       const stored = local.snapshot ? applyLocalCardVisibility(local.snapshot, hidden) : null;
       applyState(stored, local.operations);
       setHydrated(true);
+      trace('board', () => `доска ${boardId.slice(0, 8)}: открыта, локальная копия `
+        + `${stored ? `${stored.cards.length} карточек от ${stored.cachedAt}` : 'нет'}, ключ relay ${capability ? 'есть' : 'нет'},`
+        + ` в очереди ${local.operations.filter(op => op.boardId === boardId).length}`);
 
       if (capability) {
         // A crash between journal commit and snapshot write is repaired after the board is visible.
@@ -690,6 +703,8 @@ export function useLocalBoard(
       }
       await persistBoardAndQueue(nextSnapshot, nextOperations);
       applyState(nextSnapshot, nextOperations);
+      trace('board', () => `доска ${boardId.slice(0, 8)}: изменение ${operation.kind} ${operation.entityId} записано на телефоне`
+        + ` (${capability && canPublishThroughRoaming(operation) ? 'журнал relay' : 'очередь узла'})`);
     });
     retryAtRef.current = 0;
   }, [applyState, boardId, canEdit, runSerialized, user]);

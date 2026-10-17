@@ -25,6 +25,7 @@ import { useConnection } from '../connection/ConnectionProvider';
 import { getBackendVersion } from '../../shared/api/endpoints';
 import { mobileSoftware } from '../../shared/errorReport/collect';
 import { buildPatchLabel, mobileBuildPatch } from '../../shared/buildPatch';
+import { setDebugMode, useDebugMode } from '../../shared/debug/debugMode';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -82,6 +83,7 @@ export function SettingsScreen({ navigation }: Props) {
   const uiTheme = useUiTheme();
   const connection = useConnection();
   const { isOnline } = useNetwork();
+  const debugMode = useDebugMode();
   const [busy, setBusy] = useState(false);
   const [appearanceError, setAppearanceError] = useState<string | null>(null);
   const backendVersion = useQuery({
@@ -288,6 +290,30 @@ export function SettingsScreen({ navigation }: Props) {
           видно, какая работа шла и сколько JS-поток не отвечал.
         </Text>
         <ErrorDetails message="Журнал по запросу из настроек" operation="Диагностика" screen="Настройки" />
+      </Panel>
+
+      <Panel style={styles.panel}>
+        <SectionTitle title="Режим отладки" />
+        <Text style={[styles.caption, { color: colors.muted }]}>
+          {debugMode
+            ? 'Включён: журнал пишет каждый шаг синхронизации, смену экрана и сети, хранит 5000 строк и переживает перезапуск. Немного нагружает телефон; выключите, когда разберётесь.'
+            : 'Журнал в реальном времени: шаги синхронизации досок, relay, смена сети и экранов. Пароли, токены и ключи вырезаются, тексты карточек не пишутся.'}
+        </Text>
+        <View style={styles.choices}>
+          <SettingChoice
+            label="Выключен"
+            value="off"
+            selected={debugMode ? 'on' : 'off'}
+            onPress={() => void setDebugMode(false)}
+          />
+          <SettingChoice
+            label="Включён"
+            value="on"
+            selected={debugMode ? 'on' : 'off'}
+            onPress={() => void setDebugMode(true)}
+          />
+        </View>
+        <Button label="Открыть журнал" onPress={() => navigation.navigate('DebugJournal')} />
       </Panel>
     </Screen>
   );
