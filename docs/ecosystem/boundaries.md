@@ -33,6 +33,7 @@
 | Привязка устройства `p2p-kanban-device-link/2` | web | mobile, abl | `web/backend/src/auth/device_link.rs`, `abl/fixtures/protocol/device-link-grant-v2.json` |
 | Перенос узла `p2p-kanban-web-node-link/1` | web | web, abl | `web/docs/architecture/web-node-link-v1.md` |
 | Переносимая доска `p2p_planner_bundle` v1 | web, abl | web, abl, корневая доска | `web/docs/architecture/import-export-backup-v1.md`, `abl/src-tauri/src/domain/import.rs` |
+| Отчёт кнопки приёмки `p2p-kanban-acceptance-report/1` | web UI, mobile (позже abl) | человек и агент, разбирающие приёмку; позже UTS | `docs/ecosystem/self-acceptance.md` |
 | Patch manifest и `state.json` | devctl | все направления, `web/tools/devctl_receipt.py` | `devctl/docs/patch-format.md`, `devctl/docs/configuration.md` |
 | devctl receipt и `.p2pkanban/project.json` | `web/tools/devctl_receipt.py` | web API интеграций | `web/docs/integrations/devctl-v2.md` |
 | Номер патча сборки: `origin.boardRevision` и `origin.lastPatchId` доски, `BUILD_PATCH.json`, `P2PKANBAN_PATCH_*` | корень (каждый патч обновляет доску), updater web (`BUILD_PATCH.json`) | сборки web, mobile, abl: строка «патч N · patchId» рядом с версией | `board/README.md`, «Номер патча в версии клиентов» |

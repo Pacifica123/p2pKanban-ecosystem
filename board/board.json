@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 69,
-        "comments": 73,
-        "checklists": 27,
+        "cards": 71,
+        "comments": 75,
+        "checklists": 28,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:41:00Z",
+    "generatedAt": "2026-10-17T07:42:00Z",
     "selfHosted": true,
-    "boardRevision": 33,
-    "lastPatchId": "2026-10-17-ecosystem-build-patch-rule",
+    "boardRevision": 34,
+    "lastPatchId": "2026-10-17-ecosystem-self-acceptance-plan",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -808,6 +808,26 @@
         "priority": "medium",
         "position": 6144,
         "archivedAt": null
+      },
+      {
+        "id": "01a147a1-3c73-732f-b520-148243e5f550",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "Автоприёмка: кнопка «Проверка приёмки» в web и Android",
+        "description": "Зачем: John (2026-10-17): приёмка — это вопросы ABCD. Агент в облаке закрывает только A, UTS на хосте — B; если встроить в собранный клиент кнопку C, которая сама делает то, что сделал бы человек (тестовое пространство, доски, CRUD, смена сети на телефоне), человеку останется малое D. В собранном клиенте уже есть настоящий аккаунт и узел, поэтому кнопка проверяет то, что из исходников проверить трудно.\n\nГотово, когда: в web («Настройки → Проверка приёмки») и в Android («Настройки → Диагностика → Проверка приёмки») кнопка проходит фазы из docs/ecosystem/self-acceptance.md и отдаёт отчёт p2p-kanban-acceptance-report/1 в Markdown (скопировать, сохранить файлом); первый отчёт с Docker-узла и с телефона прислан и по нему сдвинуты карточки «Ждёт хоста».\n\nОграничения: кнопка не делает необратимого (кольцо, перенос доверия, выход везде, обновление узла) и не трогает доски вне пространства «Приёмка p2pKanban». abl получит кнопку позже; до тех пор у abl уровень B (UTS и чек сборки пакета).",
+        "priority": "high",
+        "position": 8192,
+        "archivedAt": null
+      },
+      {
+        "id": "01a147a1-3c73-7cce-baf3-317f70c74407",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "UTS принимает отчёт кнопки приёмки",
+        "description": "Зачем: отчёт кнопки «Проверка приёмки» (p2p-kanban-acceptance-report/1) — доказательство уровня «на устройстве», но сейчас его читает только человек и агент.\n\nГотово, когда: uts.py --client-report <файл.md> разбирает JSON после маркера, сверяет сборку клиента с деревом и засчитывает шаги PASS как проверки уровня device для карточек из covers (docs/ecosystem/self-acceptance.md).",
+        "priority": "low",
+        "position": 15360,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1416,6 +1436,26 @@
       {
         "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a147a1-3c73-7cce-baf3-317f70c74407",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
       }
     ],
     "checklists": [
@@ -1579,6 +1619,12 @@
         "id": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
         "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "title": "Шаги",
+        "position": 1024
+      },
+      {
+        "id": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "title": "Этапы",
         "position": 1024
       }
     ],
@@ -2548,6 +2594,48 @@
         "title": "Хост: Docker после обновления, APK из EAS, пакет из UTS показывают свой патч",
         "isDone": false,
         "position": 5120
+      },
+      {
+        "id": "01a147a1-3c73-73b6-9c39-660ebc6df12d",
+        "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "title": "План ABCD и формат отчёта (docs/ecosystem/self-acceptance.md)",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a147a1-3c73-777a-8399-6146d86fca75",
+        "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "title": "web: страница «Проверка приёмки»",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a147a1-3c73-7833-be01-b833ad44c152",
+        "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "title": "mobile: экран «Проверка приёмки» с фазами смены сети",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a147a1-3c73-7096-aee0-030a635ed567",
+        "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "title": "Первый отчёт с Docker-узла",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a147a1-3c73-746c-9076-37252e20e2c6",
+        "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "title": "Первый отчёт с телефона",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a147a1-3c73-78a7-b2dc-1231481d39b3",
+        "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
+        "title": "abl: кнопка или решение «только B»",
+        "isDone": false,
+        "position": 6144
       }
     ],
     "comments": [
@@ -2988,6 +3076,18 @@
         "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "createdAt": "2026-10-17T03:00:00Z",
         "body": "patch 2026-10-17-ecosystem-build-patch-rule: карточка заведена; правило номера патча записано в board/README.md, источник — origin.boardRevision и origin.lastPatchId доски."
+      },
+      {
+        "id": "01a147a1-3c73-7118-8905-b1260fcddb6a",
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "createdAt": "2026-10-17T03:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-self-acceptance-plan: записан план ABCD — каждый вопрос колонки «Ждёт хоста» (rev 32) разнесён по уровням: агент, UTS, кнопка в клиенте, человек; описаны фазы кнопки в web и Android и отчёт p2p-kanban-acceptance-report/1. Кода в направлениях этот патч не меняет."
+      },
+      {
+        "id": "01a147a1-3c73-769b-882a-bd7b5dccc450",
+        "cardId": "01a147a1-3c73-7cce-baf3-317f70c74407",
+        "createdAt": "2026-10-17T03:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-self-acceptance-plan: идея записана вместе с планом автоприёмки."
       }
     ],
     "boardAppearanceSettings": [],
