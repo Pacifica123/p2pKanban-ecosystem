@@ -36,10 +36,29 @@ function settled(scope: string) {
 }
 export function resetCatalogProgress() { settledCatalogEvents.clear(); }
 
+/** The phone has never received relay addresses and publisher keys from its node. */
+export class CatalogChannelMissing extends Error {
+  constructor() {
+    super('Каталог досок через релеи ещё не настроен на этом телефоне.');
+    this.name = 'CatalogChannelMissing';
+  }
+}
+
+/** What the person is told when boards cannot arrive without the node. */
+export function catalogProblemText(error: unknown) {
+  if (error instanceof CatalogChannelMissing) {
+    return 'Без связи с узлом новые доски приходят через релеи, но этот телефон ещё не получил их адреса. '
+      + 'Видны только сохранённые доски. Откройте любую доску один раз в сети узла.';
+  }
+  const reason = error instanceof Error ? ` ${error.message}` : '';
+  return 'Без связи с узлом новые доски и пространства приходят только через релеи, а сейчас они недоступны. '
+    + `Видны сохранённые раньше.${reason}`;
+}
+
 /** Recover board metadata and keys without contacting the HTTP node. */
 export async function refreshDeviceCatalog(workspaceId: string, userId?: string) {
   const channel=await loadRoamingCatalogChannel();
-  if (!channel?.relays.length || !channel.trustedPublishers.length) return loadCachedBoards(workspaceId);
+  if (!channel?.relays.length || !channel.trustedPublishers.length) throw new CatalogChannelMissing();
   const secret=await getOrCreateRoamingDeviceSecret(generateSecretKey), recipient=getPublicKey(secret);
   const done=settled(`boards:${workspaceId}:${recipient}`), valid:string[]=[];
   const response=await fetchDeviceCatalogEvents({relays:channel.relays,kind:channel.eventKind,recipient,knownIds:done});
@@ -81,7 +100,7 @@ export async function refreshDeviceCatalog(workspaceId: string, userId?: string)
 export async function refreshWorkspaceCatalog(userId: string): Promise<Workspace[]> {
   const cached = await loadCachedWorkspaces();
   const channel = await loadRoamingCatalogChannel();
-  if (!channel?.relays.length || !channel.trustedPublishers.length) return cached;
+  if (!channel?.relays.length || !channel.trustedPublishers.length) throw new CatalogChannelMissing();
   const secret = await getOrCreateRoamingDeviceSecret(generateSecretKey), recipient = getPublicKey(secret);
   const done = settled(`workspaces:${userId}:${recipient}`), valid: string[] = [];
   const response = await fetchDeviceCatalogEvents({relays:channel.relays,kind:channel.eventKind,recipient,knownIds:done});

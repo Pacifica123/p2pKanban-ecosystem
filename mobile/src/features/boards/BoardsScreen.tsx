@@ -10,7 +10,7 @@ import { useNetwork } from '../../app/NetworkProvider';
 import {getApiNodeOrigin} from '../../shared/api/client';
 import {isPrivateNodeOrigin} from '../connection/connection';
 import {listLocalReplicaBoards} from '../localFirst/repository';
-import {refreshDeviceCatalog} from '../roaming/catalog';
+import {catalogProblemText, refreshDeviceCatalog} from '../roaming/catalog';
 import { useAuth } from '../auth/AuthProvider';
 import type { RootStackParamList } from '../../app/navigation/types';
 import { radius, spacing, useAppColors } from '../../app/theme';
@@ -64,6 +64,7 @@ export function BoardsScreen({ navigation, route }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const [catalogFailure, setCatalogFailure] = useState<unknown>(undefined);
   const [primeState, setPrimeState] = useState<
     { status: 'idle' | 'running' | 'done'; result: PrimeBoardsResult | null }
   >({ status: 'idle', result: null });
@@ -139,7 +140,11 @@ export function BoardsScreen({ navigation, route }: Props) {
         const boards = await refreshDeviceCatalog(workspaceId, user?.id);
         if (active && boards.length) setCached(current =>
           [...new Map([...current, ...boards].map(board => [board.id, board])).values()]);
-      } catch { /* Local replica stays usable during a relay outage. */ }
+        if (active) setCatalogFailure(undefined);
+      } catch (error) {
+        // Local replica stays usable during a relay outage; the notice says why nothing new arrives.
+        if (active) setCatalogFailure(error);
+      }
       finally { busy = false; }
     };
     void refreshCatalog();
@@ -254,6 +259,10 @@ export function BoardsScreen({ navigation, route }: Props) {
           text={`${formatCountRu(primeState.result.failed, 'доску', 'доски', 'досок')} пока не удалось восстановить. Для нового устройства нужен ключ; для известной доски — сохранённый снимок или доступный relay.`}
           tone="warning"
         />
+      ) : null}
+
+      {catalogFailure !== undefined && (preferReplicaCatalog || (privateHttpNode && query.isError)) ? (
+        <InlineNotice text={catalogProblemText(catalogFailure)} tone="danger" error={catalogFailure} />
       ) : null}
 
       <View style={styles.toolbar}>

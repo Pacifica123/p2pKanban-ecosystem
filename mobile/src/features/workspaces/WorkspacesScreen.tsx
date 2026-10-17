@@ -7,7 +7,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNetwork } from '../../app/NetworkProvider';
 import { getApiNodeOrigin } from '../../shared/api/client';
 import { isPrivateNodeOrigin } from '../connection/connection';
-import { refreshWorkspaceCatalog } from '../roaming/catalog';
+import { catalogProblemText, refreshWorkspaceCatalog } from '../roaming/catalog';
 import type { RootStackParamList } from '../../app/navigation/types';
 import { radius, spacing, useAppColors } from '../../app/theme';
 import {
@@ -48,11 +48,14 @@ export function WorkspacesScreen({ navigation }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const [catalogFailure, setCatalogFailure] = useState<unknown>(undefined);
 
   useEffect(() => {
     void loadCachedWorkspaces().then(setCached);
   }, []);
 
+  // On mobile data a LAN node is out of reach: spaces come from the cache and the relay catalog.
+  const awayFromNode = networkType === 'cellular' && isPrivateNodeOrigin(getApiNodeOrigin());
   const query = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
@@ -61,7 +64,7 @@ export function WorkspacesScreen({ navigation }: Props) {
       setCached(response.items);
       return response;
     },
-    enabled: isOnline && !(networkType === 'cellular' && isPrivateNodeOrigin(getApiNodeOrigin())),
+    enabled: isOnline && !awayFromNode,
   });
   useEffect(() => {
     // A screen under the open board does not poll: the board owns the JS thread.
@@ -73,8 +76,11 @@ export function WorkspacesScreen({ navigation }: Props) {
       busy = true;
       try {
         const workspaces = await refreshWorkspaceCatalog(auth.user!.id);
-        if (active) setCached(workspaces);
-      } catch { /* A failed HTTP or relay request cannot erase cached spaces. */ }
+        if (active) { setCached(workspaces); setCatalogFailure(undefined); }
+      } catch (error) {
+        // A failed relay request cannot erase cached spaces, but the person sees why nothing new arrives.
+        if (active) setCatalogFailure(error);
+      }
       finally { busy = false; }
     };
     void refreshCatalog();
@@ -194,6 +200,10 @@ export function WorkspacesScreen({ navigation }: Props) {
           text="Нет связи с узлом. Доступны сохранённые пространства и доски."
           tone="warning"
         />
+      ) : null}
+
+      {catalogFailure !== undefined && (auth.isOfflineSession || awayFromNode) ? (
+        <InlineNotice text={catalogProblemText(catalogFailure)} tone="danger" error={catalogFailure} />
       ) : null}
 
       <View style={styles.toolbar}>

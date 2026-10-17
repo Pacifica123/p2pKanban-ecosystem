@@ -193,7 +193,10 @@ export async function fetchDeviceCatalogEvents(input: {
   const filter: Filter = { kinds: [input.kind], '#p': [input.recipient] };
   const settled = await Promise.allSettled(input.relays.map(relay => fetchOne(relay, filter)));
   const relayCount = settled.filter(result => result.status === 'fulfilled').length;
-  if (!relayCount) throw new Error('Каталог реплик недоступен через настроенные relay.');
+  if (!relayCount) {
+    const errors = settled.flatMap((r, i) => r.status === 'rejected' ? [`${input.relays[i]}: ${r.reason instanceof Error ? r.reason.message : 'ошибка WebSocket'}`] : []);
+    throw new Error(`Каталог досок недоступен: ни один релей не ответил. ${errors.join('; ')}`);
+  }
   const { events } = await verifyCollected(settled, input);
   return {events, relayCount};
 }
