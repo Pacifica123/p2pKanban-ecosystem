@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 68,
-        "comments": 72,
-        "checklists": 26,
+        "cards": 69,
+        "comments": 73,
+        "checklists": 27,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-16T18:20:00Z",
+    "generatedAt": "2026-10-17T07:41:00Z",
     "selfHosted": true,
-    "boardRevision": 32,
-    "lastPatchId": "2026-10-16-ecosystem-textbooks-methodology",
+    "boardRevision": 33,
+    "lastPatchId": "2026-10-17-ecosystem-build-patch-rule",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -798,6 +798,16 @@
         "priority": "low",
         "position": 14336,
         "archivedAt": null
+      },
+      {
+        "id": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "Номер патча в версии web, mobile и abl",
+        "description": "Зачем: по web UI, телефону и окну abl не видно, из какого патча собран клиент; на приёмке это приходится выяснять вручную (сообщение John 2026-10-17).\n\nГотово, когда: web (низ боковой панели), mobile («Настройки») и abl (шапка окна) показывают «патч N · patchId» последнего патча своей сборки, и это видно на хосте: узел после обновления из GitHub, APK из EAS, пакет из UTS A15.\n\nПравило: board/README.md, «Номер патча в версии клиентов». Номер вшивается при сборке, в «Скопировать подробности» его нет (это было бы изменение error-report/1). Порядок: экосистема → web → mobile → abl.",
+        "priority": "medium",
+        "position": 6144,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1386,6 +1396,26 @@
       {
         "cardId": "01a145b5-737d-77c5-95d7-3bdebf8cbdaf",
         "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
       }
     ],
     "checklists": [
@@ -1544,6 +1574,12 @@
         "cardId": "01a1434b-bf0c-79fd-b6a1-8441075228c5",
         "title": "Дальше",
         "position": 3072
+      },
+      {
+        "id": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "title": "Шаги",
+        "position": 1024
       }
     ],
     "checklistItems": [
@@ -2477,6 +2513,41 @@
         "title": "УП: после мета-бутстрапера",
         "isDone": false,
         "position": 4096
+      },
+      {
+        "id": "01a147cd-4f83-736e-99e3-b410c9176441",
+        "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
+        "title": "Правило в board/README.md и строка в boundaries.md",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f84-7627-a1a8-191b99955c62",
+        "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
+        "title": "web: строка под версиями в боковой панели; updater сохраняет патч архива",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f85-7e74-8448-8b03d6a3ada2",
+        "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
+        "title": "mobile: «Собран из патча» в «Настройках»; npm run apk и EAS",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a147cd-4f86-7634-bc02-ae5df220960f",
+        "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
+        "title": "abl: строка в шапке окна; сборка в .uts-reports",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a147cd-4f87-7f43-9fd4-2a4e1f7f1887",
+        "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
+        "title": "Хост: Docker после обновления, APK из EAS, пакет из UTS показывают свой патч",
+        "isDone": false,
+        "position": 5120
       }
     ],
     "comments": [
@@ -2911,6 +2982,12 @@
         "cardId": "01a145b5-737d-77c5-95d7-3bdebf8cbdaf",
         "createdAt": "2026-10-16T18:20:00Z",
         "body": "patch 2026-10-16-ecosystem-textbooks-methodology: карточка заведена методологией учебников; шаг нужен до первого издания со скриншотами."
+      },
+      {
+        "id": "01a147cd-4f88-79d6-b23d-896d96a300a1",
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "createdAt": "2026-10-17T03:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-build-patch-rule: карточка заведена; правило номера патча записано в board/README.md, источник — origin.boardRevision и origin.lastPatchId доски."
       }
     ],
     "boardAppearanceSettings": [],
