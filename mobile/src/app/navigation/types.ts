@@ -26,4 +26,5 @@ export type RootStackParamList = {
   };
   Settings: undefined;
   DebugJournal: undefined;
+  Acceptance: undefined;
 };

@@ -315,6 +315,15 @@ export function SettingsScreen({ navigation }: Props) {
         </View>
         <Button label="Открыть журнал" onPress={() => navigation.navigate('DebugJournal')} />
       </Panel>
+
+      <Panel style={styles.panel}>
+        <SectionTitle title="Диагностика" />
+        <Text style={[styles.caption, { color: colors.muted }]}>
+          Проверка приёмки сама проходит то, о чём обычно спрашивает приёмка: карточки, чек-листы, смену сети,
+          работу без сети, и собирает отчёт в Markdown.
+        </Text>
+        <Button label="Проверка приёмки" onPress={() => navigation.navigate('Acceptance')} />
+      </Panel>
     </Screen>
   );
 }

@@ -8,6 +8,9 @@
 Режим отладки: журнал в реальном времени без секретов, экспорт в Markdown —
 [debug-mode-20261017](docs/architecture/debug-mode-20261017.md).
 
+Отладочная «Проверка приёмки»: сама проходит карточки, смену сети и работу без сети,
+отчёт в Markdown — [acceptance-check-20261017](docs/architecture/acceptance-check-20261017.md).
+
 Четыре темы приложения (Графит, Лимон, Лазурь, Серебро), выбор на устройстве —
 [ui-themes-20261016](docs/architecture/ui-themes-20261016.md).
 

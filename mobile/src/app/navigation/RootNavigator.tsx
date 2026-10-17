@@ -17,6 +17,7 @@ import { ConnectionScreen } from '../../features/connection/ConnectionScreen';
 import { DebugJournalScreen } from '../../features/settings/DebugJournalScreen';
 import { SettingsScreen } from '../../features/settings/SettingsScreen';
 import { trace } from '../../shared/errorReport/journal';
+import { AcceptanceScreen } from '../../features/acceptance/AcceptanceScreen';
 import { useAppearance } from '../../features/appearance/AppearanceProvider';
 import { WorkspacesScreen } from '../../features/workspaces/WorkspacesScreen';
 import { WorkspaceAccessScreen } from '../../features/workspaces/WorkspaceAccessScreen';
@@ -87,6 +88,7 @@ export function RootNavigator() {
             <Stack.Screen name="Activity" component={ActivityScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="DebugJournal" component={DebugJournalScreen} />
+            <Stack.Screen name="Acceptance" component={AcceptanceScreen} />
           </>
         )}
       </Stack.Navigator>
