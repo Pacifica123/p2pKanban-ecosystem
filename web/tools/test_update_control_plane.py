@@ -288,6 +288,27 @@ class UpdateChannelTest(unittest.TestCase):
             (single / "bootstrap.py").write_text("", encoding="utf-8")
             self.assertEqual(bootstrap.update_source_subdirectory(single), single)
 
+    def test_watch_updates_serves_the_root_the_running_node_came_from(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            node = Path(directory) / "node"
+            write_json(node / ".dev-bootstrap/container-stack.json", {"webPort": 8082})
+            # A root with stack state is served as is.
+            self.assertEqual(bootstrap.watch_updates_root(node), node)
+            copy = Path(directory) / "copy"  # a UserTestSpace copy: no .dev-bootstrap state
+            copy.mkdir()
+            with mock.patch.object(bootstrap, "running_stack_root", return_value=node):
+                self.assertEqual(bootstrap.watch_updates_root(copy), node)
+            with mock.patch.object(bootstrap, "running_stack_root", return_value=None):
+                with self.assertRaises(bootstrap.BootstrapError) as raised:
+                    bootstrap.watch_updates_root(copy)
+                self.assertIn("UserTestSpace", str(raised.exception))
+
+    def test_root_without_stack_state_would_not_allow_the_node_origin(self) -> None:
+        # Why the copy cannot serve: its updater falls back to port 8080.
+        with tempfile.TemporaryDirectory() as directory:
+            stray = ControlApplication(Path(directory), 0)
+            self.assertNotIn("http://127.0.0.1:8082", stray.allowed_origins())
+
 
 if __name__ == "__main__":
     unittest.main()

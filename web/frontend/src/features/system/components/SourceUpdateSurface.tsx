@@ -85,7 +85,7 @@ export function SourceUpdateSurface() {
     setActionError(null);
     if (!state?.available || !state.sessionToken) {
       setActionError(
-        'Commit найден напрямую в GitHub, но локальный установщик после перезапуска компьютера не запущен. Выполните `python bootstrap.py watch-updates`; контейнеры и данные затронуты не будут.',
+        'Commit найден напрямую в GitHub, но локальный установщик не отвечает этой странице: он не запущен (например, после перезапуска компьютера) или запущен не из того каталога, откуда работает узел. Выполните `python bootstrap.py watch-updates` в каталоге web этого узла (не в копии UserTestSpace); контейнеры и данные затронуты не будут.',
       );
       return;
     }

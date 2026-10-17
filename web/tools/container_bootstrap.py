@@ -1398,6 +1398,36 @@ def command_adopt_running(args: argparse.Namespace, project_root: Path) -> int:
     return 0
 
 
+def running_stack_root(project_root: Path) -> Path | None:
+    """Root of the stack Docker is running now, from its Compose labels."""
+    try:
+        gateway = compose_service_container(project_root, "gateway")
+        root = compose_working_project_root(gateway)
+    except (BootstrapError, OSError, subprocess.TimeoutExpired):
+        return None
+    return root if (root / STATE_RELATIVE_PATH).is_file() else None
+
+
+def watch_updates_root(project_root: Path) -> Path:
+    """The updater must serve the root the running node was started from.
+
+    Started anywhere else (a UserTestSpace copy, a fresh clone) it knows
+    neither the web port nor the running build: the browser of the node gets
+    no CORS answer and reports that the installer is not running.
+    """
+    if (project_root / STATE_RELATIVE_PATH).is_file():
+        return project_root
+    running = running_stack_root(project_root)
+    if running is not None:
+        print(f"В {project_root} узел не запускался; работающий узел запущен из {running}.")
+        return running
+    raise BootstrapError(
+        f"В {project_root} узел не запускался ({STATE_RELATIVE_PATH} нет), и работающий "
+        "Docker-стек p2pKanban не найден. Выполните watch-updates в каталоге web, из которого "
+        "запускали `python bootstrap.py`, а не в копии UserTestSpace."
+    )
+
+
 def command_watch_updates(args: argparse.Namespace, project_root: Path) -> int:
     if args.dry_run:
         print(
@@ -1405,10 +1435,15 @@ def command_watch_updates(args: argparse.Namespace, project_root: Path) -> int:
             f"http://127.0.0.1:{DEFAULT_UPDATE_CONTROL_PORT}."
         )
         return 0
-    ensure_update_control_plane(project_root)
+    runtime_root = watch_updates_root(project_root)
+    owner = any_update_control_health().get("projectRoot")
+    if isinstance(owner, str) and owner and Path(owner).resolve() != runtime_root.resolve():
+        print(f"Останавливаю установщик, запущенный для другого каталога: {owner}")
+        stop_any_p2p_update_control()
+    ensure_update_control_plane(runtime_root)
     print(
         "Проверка commit и UI-установщик доступны на loopback "
-        f"порту {DEFAULT_UPDATE_CONTROL_PORT}. Runtime: {project_root}"
+        f"порту {DEFAULT_UPDATE_CONTROL_PORT}. Runtime: {runtime_root}"
     )
     return 0
 

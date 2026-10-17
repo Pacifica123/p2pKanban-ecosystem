@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 95,
+        "comments": 97,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T09:00:00Z",
+    "generatedAt": "2026-10-17T09:10:00Z",
     "selfHosted": true,
-    "boardRevision": 50,
-    "lastPatchId": "2026-10-17-ecosystem-host-acceptance-r49",
+    "boardRevision": 51,
+    "lastPatchId": "2026-10-17-web-r49-fixes",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -3468,6 +3468,18 @@
         "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
         "createdAt": "2026-10-17T09:00:00Z",
         "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: UTS r49 на Manjaro PC (первый прогон abl на этом ПК, r24 был на ноутбуке): abl PASS 87, FAIL 4. host.a15-package-prep: нет namcap и makechrootpkg (пакеты devtools, namcap). host.a13-desktop-integration: окно падает на Wayland «Error 71 (Ошибка протокола)». runtime.a18-runtime-budgets и runtime.a18-chaos: после выхода остаётся 1 процесс (freeze-thaw, hard-kill, instance-storm, fixture), wakeups 248/с при пороге 150; в каждом запуске WebKit пишет «Failed to create GBM buffer». Тот же код в облаке под Xvfb: бюджеты PASS (0 процессов после выхода, 3 wakeups/с), хаос PASS. Предположение: дефект проявляется только с GPU-рендерером WebKit этого ПК; проверить — повтор проб с WEBKIT_DISABLE_DMABUF_RENDERER=1."
+      },
+      {
+        "id": "01a15067-7bf3-72c7-86f3-c4f1f166aba8",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-17T09:10:00Z",
+        "body": "patch 2026-10-17-web-r49-fixes: по UTS r49 узел на :8082 работает на сборке 0a0bb2e, обновление из UI не шло. watch-updates был запущен в копии UserTestSpace: там нет .dev-bootstrap, установщик решил, что узел на :8080, и не отвечал странице узла (CORS), а она писала «установщик не запущен». Теперь watch-updates берёт каталог работающего узла из меток Docker Compose и останавливает установщик, запущенный для другого каталога; текст ошибки называет обе причины. Ждёт хоста: watch-updates, затем «Обновить» в web."
+      },
+      {
+        "id": "01a150ff-4bf5-724b-8f9f-9238be9d439c",
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "createdAt": "2026-10-17T09:10:00Z",
+        "body": "patch 2026-10-17-web-r49-fixes: в web/docs/product/v1-execution-roadmap.md вернулась строка «Пригласительные ссылки и права доступа» — «Готово»; check_workspace_access_contract.py снова OK."
       }
     ],
     "boardAppearanceSettings": [],
