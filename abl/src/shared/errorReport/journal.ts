@@ -1,10 +1,29 @@
-// In-memory journal for error reports (contracts/error-report/1, «Кольцевой буфер»).
-// Nothing is written to disk and nothing leaves the WebView by itself: lines
-// only go into a report, and a report only into the clipboard, on a click.
+// In-memory journal for error reports (contracts/error-report/1, «Кольцевой буфер»)
+// and for the debug mode (abl/docs/DEBUG_MODE.md). Nothing leaves the WebView by
+// itself: lines go into a report or a debug export, and those only into the
+// clipboard, on a click. Nothing is stored: the frontend keeps no durable data
+// outside the Rust repository boundary.
 import type { ErrorReport } from './report';
 
-const CAPACITY = 200;
-const lines: string[] = [];
+/** Ordinary mode: enough for «Скопировать подробности». */
+export const NORMAL_CAPACITY = 200;
+/** Debug mode: a few minutes of busy sync, still well under a megabyte. */
+export const DEBUG_CAPACITY = 5_000;
+
+export type JournalLevel = 'debug' | 'info' | 'warn' | 'error';
+
+export type JournalEntry = {
+  seq: number;
+  level: JournalLevel;
+  source: string;
+  /** `<UTC time> <level> <source>: <text>` — the form the contract recommends. */
+  line: string;
+};
+
+let entries: JournalEntry[] = [];
+let nextSeq = 1;
+let debugMode = false;
+const listeners = new Set<() => void>();
 
 export type Failure = {
   at: number;
@@ -24,14 +43,56 @@ function stringify(value: unknown): string {
   try { return JSON.stringify(value); } catch { return String(value); }
 }
 
-/** `<UTC time> <level> <source>: <text>` — the form the contract recommends. */
-export function logLine(level: 'debug' | 'info' | 'warn' | 'error', source: string, ...parts: unknown[]) {
-  lines.push(`${new Date().toISOString()} ${level} ${source}: ${parts.map(stringify).join(' ')}`);
-  if (lines.length > CAPACITY) lines.splice(0, lines.length - CAPACITY);
+function capacity() {
+  return debugMode ? DEBUG_CAPACITY : NORMAL_CAPACITY;
+}
+
+function push(level: JournalLevel, source: string, text: string) {
+  const line = `${new Date().toISOString()} ${level} ${source}: ${text}`;
+  entries.push({ seq: nextSeq++, level, source, line });
+  if (entries.length > capacity()) entries.splice(0, entries.length - capacity());
+  for (const listener of listeners) listener();
+}
+
+/** A line that is always kept: requests, warnings, errors, stalls. */
+export function logLine(level: JournalLevel, source: string, ...parts: unknown[]) {
+  push(level, source, parts.map(stringify).join(' '));
+}
+
+/**
+ * A detailed line that only the debug mode keeps: sync steps, screens, network
+ * changes. The text is built only when the mode is on, so ordinary use pays
+ * nothing. Name ids, kinds and counts here, not card titles or descriptions.
+ */
+export function trace(source: string, describe: () => string) {
+  if (!debugMode) return;
+  let text: string;
+  try { text = describe(); } catch (error) { text = `(строка не собрана: ${stringify(error)})`; }
+  push('debug', source, text);
 }
 
 export function journalLines(): string[] {
-  return [...lines];
+  return entries.map((entry) => entry.line);
+}
+
+export function journalEntries(): JournalEntry[] {
+  return [...entries];
+}
+
+/** Called on every new line; the viewer batches its own redraws. */
+export function subscribeJournal(listener: () => void) {
+  listeners.add(listener);
+  return () => { listeners.delete(listener); };
+}
+
+export function isJournalDebugMode() {
+  return debugMode;
+}
+
+export function setJournalDebugMode(on: boolean) {
+  debugMode = on;
+  if (entries.length > capacity()) entries.splice(0, entries.length - capacity());
+  for (const listener of listeners) listener();
 }
 
 export function noteFailure(failure: Omit<Failure, 'at'>) {
@@ -68,4 +129,13 @@ export function installJournal(target: Window & typeof globalThis = window) {
   }
   target.addEventListener('error', (event) => logLine('error', 'window', event.message || event.error));
   target.addEventListener('unhandledrejection', (event) => logLine('error', 'promise', event.reason));
+}
+
+export function resetJournalForTests() {
+  entries = [];
+  nextSeq = 1;
+  debugMode = false;
+  listeners.clear();
+  lastFailure = null;
+  platformNote = null;
 }

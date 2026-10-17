@@ -22,9 +22,10 @@ function described(error: unknown, method: string, path: string): unknown {
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const method = requestMethod(init);
+  const startedAt = Date.now();
   try {
     const value = await activeTransport.request<T>(path, init);
-    logLine('debug', activeTransport.kind, `${method} ${path} → ok`);
+    logLine('debug', activeTransport.kind, `${method} ${path} → ok за ${Date.now() - startedAt} мс`);
     return value;
   } catch (reason) {
     const error = described(reason, method, path);

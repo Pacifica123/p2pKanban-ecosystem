@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ErrorDetails } from './shared/errorReport/ErrorDetails';
 import { ThemeSelect } from './shared/uiThemes/ThemeSelect';
-import { notePlatform } from './shared/errorReport/journal';
+import { notePlatform, trace } from './shared/errorReport/journal';
+import { DebugJournalPanel } from './shared/debug/DebugJournalPanel';
+import { useDebugMode } from './shared/debug/debugMode';
 import type { FormEvent } from 'react';
 import {
   createBoard,
@@ -119,6 +121,24 @@ export default function App() {
   const [commentDraft, setCommentDraft] = useState('');
   const [appearanceDraft, setAppearanceDraft] = useState('{}');
   const [error, setError] = useState<string | null>(null);
+  const [showJournal, setShowJournal] = useState(false);
+  const debugMode = useDebugMode();
+
+  // Ctrl+Shift+L opens the debug journal from anywhere in the window.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'l') {
+        event.preventDefault();
+        setShowJournal((current) => !current);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    trace('nav', () => `пространство ${selectedWorkspace?.id ?? 'не выбрано'}, доска ${openedBoard?.id ?? 'не открыта'}, карточка ${selectedCard?.id ?? 'не выбрана'}`);
+  }, [selectedWorkspace?.id, openedBoard?.id, selectedCard?.id]);
 
   useEffect(() => {
     void Promise.all([
@@ -506,10 +526,15 @@ export default function App() {
           <span>notifications/tray: <strong>{integration ? `${integration.notifications}/${integration.statusNotifier}` : 'detecting'}</strong></span>
           <span>LAN bridge: <strong>{lanBridgeStatus?.lifecycle ?? 'stopped'}</strong></span>
           <ThemeSelect />
+          <button type="button" onClick={() => setShowJournal((current) => !current)} title="Ctrl+Shift+L">
+            Журнал отладки{debugMode ? ' · вкл' : ''}
+          </button>
         </div>
       </header>
 
       {error ? <div className="error-banner" role="alert">{error}<ErrorDetails message={error} /></div> : null}
+
+      {showJournal ? <DebugJournalPanel onClose={() => setShowJournal(false)} /> : null}
 
       <section className="integration-strip" aria-label="Desktop integration capabilities">
         <div>

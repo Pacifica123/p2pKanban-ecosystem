@@ -545,3 +545,49 @@ textarea {
   font-family: ui-monospace, monospace;
   font-size: 12px;
 }
+
+.debug-journal {
+  display: grid;
+  gap: .5rem;
+  padding: .75rem 1rem;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: .8rem;
+  background: var(--ui-surface);
+}
+
+.debug-journal__head,
+.debug-journal__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem .6rem;
+}
+
+.debug-journal__head span {
+  flex: 1 1 20rem;
+  color: var(--ui-text-muted);
+}
+
+.debug-journal__choice.is-active {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent-soft);
+}
+
+.debug-journal__lines {
+  height: min(55vh, 560px);
+  overflow: auto;
+  margin: 0;
+  padding: .5rem .65rem;
+  border: 1px solid var(--ui-border);
+  border-radius: .5rem;
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.debug-journal__line--warn { color: var(--ui-warning-text); }
+.debug-journal__line--error { color: var(--ui-danger-text); }

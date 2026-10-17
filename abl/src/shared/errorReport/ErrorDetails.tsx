@@ -3,7 +3,7 @@ import { collectReport } from './collect';
 import { renderReport } from './report';
 
 /** Copy text: the async clipboard first, then execCommand, else leave it for manual selection. */
-async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(text);
