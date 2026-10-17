@@ -44,6 +44,8 @@ import {
   setCardLabel,
 } from './features/parity/api/parity';
 import { getBackendVersion } from './features/system/api/version';
+import { ablBuildPatch, buildPatchLabel } from './shared/buildPatch';
+import packageJson from '../package.json';
 import { getIntegrationCapabilities, takeDeepLinkIntents } from './features/system/api/integration';
 import { getLanBridgeStatus, listLanBridgeAddresses, startLanBridge, stopLanBridge } from './features/system/api/lanBridge';
 import { getApiTransportKind } from './shared/api/client';
@@ -496,6 +498,7 @@ export default function App() {
         <div className="status-stack" aria-live="polite">
           <span>mode: <strong>{getApiTransportKind()}</strong></span>
           <span>{health ? `${health.service} ${health.version} · ${health.status}` : 'native IPC…'}</span>
+          <span data-testid="build-patch" title="Патч, из которого собран этот пакет">abl {packageJson.version} · <strong>{buildPatchLabel(ablBuildPatch)}</strong></span>
           <span>vault: <strong>{vault?.mode ?? 'checking'}</strong>{vault ? ` · ${vault.state} · durable secrets ${vault.durable === 'true' ? 'enabled' : 'disabled'}` : ''}</span>
           <span>roaming-capable pending: <strong>{pendingCount}</strong></span>
           <span>roaming/1 unsupported parity changes: <strong>{unsyncedParityCount}</strong></span>

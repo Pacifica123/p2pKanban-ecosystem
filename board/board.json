@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 89,
+        "comments": 90,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:54:00Z",
+    "generatedAt": "2026-10-17T07:55:00Z",
     "selfHosted": true,
-    "boardRevision": 46,
-    "lastPatchId": "2026-10-17-abl-a15-release-receipt",
+    "boardRevision": 47,
+    "lastPatchId": "2026-10-17-abl-build-patch",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -802,11 +802,11 @@
       {
         "id": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Номер патча в версии web, mobile и abl",
         "description": "Зачем: по web UI, телефону и окну abl не видно, из какого патча собран клиент; на приёмке это приходится выяснять вручную (сообщение John 2026-10-17).\n\nГотово, когда: web (низ боковой панели), mobile («Настройки») и abl (шапка окна) показывают «патч N · patchId» последнего патча своей сборки, и это видно на хосте: узел после обновления из GitHub, APK из EAS, пакет из UTS A15.\n\nПравило: board/README.md, «Номер патча в версии клиентов». Номер вшивается при сборке, в «Скопировать подробности» его нет (это было бы изменение error-report/1). Порядок: экосистема → web → mobile → abl.",
         "priority": "medium",
-        "position": 6144,
+        "position": 26624,
         "archivedAt": null
       },
       {
@@ -2691,7 +2691,7 @@
         "id": "01a147cd-4f86-7634-bc02-ae5df220960f",
         "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
         "title": "abl: строка в шапке окна; сборка в .uts-reports",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -3425,6 +3425,12 @@
         "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
         "body": "patch 2026-10-17-abl-a15-release-receipt: по отчётам r8 и r24 карточку принять нельзя: в них видно только pacman -Q = PKGBUILD и подготовку входов, а сборки в чистом chroot, подписи, установки из подписанного репозитория, pacman -Qkk и удаления нет. Теперь это делает один запуск tools/a15_issue_receipt.py: он собирает, подписывает, ставит, проверяет и удаляет пакет и выписывает подписанный ключом выпуска чек с логами и суммами. UTS шаг host.a15-release-receipt только читает чек: PASS закрывает четыре открытых пункта, SKIP называет команду. Карточка ждёт первого чека с хоста.",
         "createdAt": "2026-10-17T02:40:00Z"
+      },
+      {
+        "id": "01a147e8-c6c1-7d5d-ace4-10a34282af20",
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "createdAt": "2026-10-17T03:30:00Z",
+        "body": "patch 2026-10-17-abl-build-patch: шапка окна abl показывает «abl 0.1.0 · патч N · patchId». Код во всех трёх клиентах; ждёт хоста: Docker, телефон, Arch."
       }
     ],
     "boardAppearanceSettings": [],

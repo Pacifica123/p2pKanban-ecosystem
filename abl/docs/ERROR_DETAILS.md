@@ -25,6 +25,18 @@ JSON `p2p-kanban-error-report/1`. Если буфер обмена WebView не�
   не отправляется.
 - `peer` пока `null`: abl не ходит к web-узлу по HTTP.
 
+## Патч сборки
+
+В шапке окна строка «abl 0.1.0 · патч N · <patchId>»: из
+какого devctl-патча собран пакет. Правило общее для клиентов:
+`board/README.md`, «Номер патча в версии клиентов». `vite.config.mjs` берёт
+`P2PKANBAN_PATCH_ID` и `P2PKANBAN_PATCH_REVISION`, затем `BUILD_PATCH.json`
+рядом с собой, затем ближайшую доску монорепозитория выше. Исходный архив A15
+доски не содержит (`tools/a15_prepare_release.py` не менялся: его digest
+закреплён в доказательствах A15), но makepkg собирает в `.uts-reports` того
+же дерева, и доска находится выше. Пакет,
+собранный вне checkout, без переменных покажет «патч неизвестен».
+
 ## Проверка
 
 - `node tools/check_error_report.mjs` — `report.ts` против векторов
