@@ -34,6 +34,14 @@
       "specifiedBy": "2026-10-07-ecosystem-error-report-contract",
       "requires": [],
       "implementations": {"web": {"since": "2.1.0+2026-10-07-web-error-details", "stage": "узел и web UI", "hostAccepted": false}, "mobile": {"since": "2.1.0 (versionCode 25)", "stage": "кнопка и буфер журнала", "hostAccepted": false}, "abl": {"since": "0.1.0+2026-10-07-abl-error-details", "stage": "кнопка и буфер журнала", "hostAccepted": false}}
+    },
+    {
+      "id": "p2p-kanban-project-board/1",
+      "dir": "project-board/1",
+      "status": "specified",
+      "specifiedBy": "2026-10-17-ecosystem-project-board-contract",
+      "requires": [],
+      "implementations": {"web": null, "mobile": null, "abl": null}
     }
   ],
   "legacy": [

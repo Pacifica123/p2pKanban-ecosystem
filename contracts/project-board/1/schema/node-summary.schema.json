@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "project-board/1/schema/node-summary.schema.json",
+  "title": "Ответ web-узла GET /api/v1/project-board/summary",
+  "type": "object",
+  "required": ["protocol", "served", "build", "upstream"],
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {"const": "p2p-kanban-project-board/1"},
+    "served": {
+      "type": "object",
+      "required": ["source", "summary"],
+      "additionalProperties": false,
+      "description": "Что отдаёт GET /api/v1/project-board прямо сейчас",
+      "properties": {
+        "source": {"enum": ["build", "upstream"]},
+        "summary": {"$ref": "summary.schema.json"}
+      }
+    },
+    "build": {"$ref": "summary.schema.json"},
+    "upstream": {
+      "type": "object",
+      "required": ["enabled", "url", "checkedAt", "summary", "error"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "url": {"type": ["string", "null"]},
+        "checkedAt": {"type": ["string", "null"]},
+        "summary": {"anyOf": [{"$ref": "summary.schema.json"}, {"type": "null"}]},
+        "error": {"type": ["string", "null"], "description": "код отказа из SPEC или короткая причина сети; null — последняя проверка удалась"}
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "project-board/1/schema/selection.schema.json",
+  "title": "Результат выбора доски проекта среди кандидатов",
+  "type": "object",
+  "required": ["protocol", "chosen", "revision", "lastPatchId", "sha256", "conflict", "behind", "rejected"],
+  "additionalProperties": false,
+  "$defs": {
+    "source": {"enum": ["build", "cache", "node", "upstream"]}
+  },
+  "properties": {
+    "protocol": {"const": "p2p-kanban-project-board/1"},
+    "chosen": {"anyOf": [{"$ref": "#/$defs/source"}, {"type": "null"}]},
+    "revision": {"type": ["integer", "null"], "minimum": 1},
+    "lastPatchId": {"type": ["string", "null"]},
+    "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "conflict": {"type": "boolean"},
+    "behind": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "revision"],
+        "additionalProperties": false,
+        "properties": {"source": {"$ref": "#/$defs/source"}, "revision": {"type": "integer", "minimum": 1}}
+      }
+    },
+    "rejected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "source": {"$ref": "#/$defs/source"},
+          "reason": {"enum": ["not-json", "too-large", "wrong-format", "foreign-board", "no-revision", "unreachable", "http-error"]}
+        }
+      }
+    }
+  }
+}

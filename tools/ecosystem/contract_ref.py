@@ -2,7 +2,8 @@
 """Эталонная реализация общих контрактов (только стандартная библиотека).
 
 Покрывает `p2p-kanban-account-ring/1`, `p2p-kanban-keyring/1`,
-`p2p-kanban-rendezvous/1` и `p2p-kanban-error-report/1` из `contracts/`. Это не продуктовый код: она медленная
+`p2p-kanban-rendezvous/1`, `p2p-kanban-error-report/1` и
+`p2p-kanban-project-board/1` из `contracts/`. Это не продуктовый код: она медленная
 и нужна, чтобы у web, mobile и abl был один исполняемый ответ на вопрос «как
 правильно». Направления реализуют контракты своими библиотеками и сверяются с
 векторами в `contracts/*/1/vectors/`, которые эта же реализация производит.
@@ -32,6 +33,7 @@ KEYRING = "p2p-kanban-keyring/1"
 RENDEZVOUS = "p2p-kanban-rendezvous/1"
 ROAMING = "p2p-kanban-roaming/1"
 ERROR_REPORT = "p2p-kanban-error-report/1"
+PROJECT_BOARD = "p2p-kanban-project-board/1"
 
 KIND_RING_ENTRY = 27790
 KIND_RENDEZVOUS = 1991
@@ -967,6 +969,94 @@ def parse_node_header(value: str) -> dict:
         if key in ("build", "commit"):
             out[key] = None if val in ("", "unknown") else val
     return out
+
+
+# ---------------------------------------------------------------- встроенная доска проекта
+
+PROJECT_BOARD_ID = "01a10d38-f902-7665-8612-3e74278ceafa"
+PROJECT_WORKSPACE_ID = "01a10d38-f901-746d-92f7-10598bb1cc42"
+PROJECT_BOARD_MAX_BYTES = 10 * 1024 * 1024
+PROJECT_BOARD_SOURCES = ("build", "cache", "node", "upstream")
+
+
+class ProjectBoardRejected(ValueError):
+    """Кандидат не является доской проекта; `reason` — код из SPEC."""
+
+    def __init__(self, reason: str):
+        super().__init__(reason)
+        self.reason = reason
+
+
+def project_board_summary(raw: bytes) -> dict:
+    """Байты переносимой доски → сводка доски проекта или ProjectBoardRejected.
+
+    Проверяется только то, что нужно для выбора: формат, постоянный id доски,
+    ревизия. Полную проверку содержимого делает импортёр направления.
+    """
+    if len(raw) > PROJECT_BOARD_MAX_BYTES:
+        raise ProjectBoardRejected("too-large")
+    try:
+        bundle = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise ProjectBoardRejected("not-json") from None
+    if not isinstance(bundle, dict):
+        raise ProjectBoardRejected("not-json")
+    manifest = bundle.get("manifest.json")
+    origin = bundle.get("origin")
+    if (not isinstance(manifest, dict) or manifest.get("format") != "p2p_planner_bundle"
+            or manifest.get("formatVersion") != 1 or manifest.get("bundleKind") != "portable_export"
+            or manifest.get("scopeKind") != "board"):
+        raise ProjectBoardRejected("wrong-format")
+    if manifest.get("boardId") != PROJECT_BOARD_ID or manifest.get("workspaceId") != PROJECT_WORKSPACE_ID:
+        raise ProjectBoardRejected("foreign-board")
+    if not isinstance(origin, dict) or origin.get("selfHosted") is not True:
+        raise ProjectBoardRejected("foreign-board")
+    revision = origin.get("boardRevision")
+    patch = origin.get("lastPatchId")
+    if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1 \
+            or not isinstance(patch, str) or not patch.strip():
+        raise ProjectBoardRejected("no-revision")
+    generated = origin.get("generatedAt")
+    return {
+        "protocol": PROJECT_BOARD,
+        "boardId": PROJECT_BOARD_ID,
+        "revision": revision,
+        "lastPatchId": patch,
+        "generatedAt": generated if isinstance(generated, str) else None,
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "bytes": len(raw),
+    }
+
+
+def select_project_board(candidates: list[dict]) -> dict:
+    """Выбрать, какую доску проекта показать.
+
+    `candidates` — [{source, summary}] или [{source, rejected}] в порядке,
+    в котором клиент их знает (build первым). Побеждает старшая ревизия; при
+    равной ревизии и разных байтах — меньший sha256 и `conflict: true`; при
+    полном совпадении — первый по списку.
+    """
+    valid = [c for c in candidates if c.get("summary")]
+    rejected = [{"source": c["source"], "reason": c["rejected"]} for c in candidates if not c.get("summary")]
+    if not valid:
+        return {"protocol": PROJECT_BOARD, "chosen": None, "revision": None, "lastPatchId": None,
+                "sha256": None, "conflict": False, "behind": [], "rejected": rejected}
+    top = max(c["summary"]["revision"] for c in valid)
+    leaders = [c for c in valid if c["summary"]["revision"] == top]
+    hashes = sorted({c["summary"]["sha256"] for c in leaders})
+    winner = next(c for c in leaders if c["summary"]["sha256"] == hashes[0])
+    behind = [{"source": c["source"], "revision": c["summary"]["revision"]}
+              for c in valid if c["summary"]["revision"] < top]
+    return {
+        "protocol": PROJECT_BOARD,
+        "chosen": winner["source"],
+        "revision": top,
+        "lastPatchId": winner["summary"]["lastPatchId"],
+        "sha256": hashes[0],
+        "conflict": len(hashes) > 1,
+        "behind": behind,
+        "rejected": rejected,
+    }
 
 
 # ---------------------------------------------------------------- генерация векторов

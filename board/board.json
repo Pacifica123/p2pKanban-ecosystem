@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 71,
-        "comments": 75,
-        "checklists": 28,
+        "cards": 72,
+        "comments": 77,
+        "checklists": 33,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:42:00Z",
+    "generatedAt": "2026-10-17T07:43:00Z",
     "selfHosted": true,
-    "boardRevision": 34,
-    "lastPatchId": "2026-10-17-ecosystem-self-acceptance-plan",
+    "boardRevision": 35,
+    "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -828,6 +828,16 @@
         "priority": "low",
         "position": 15360,
         "archivedAt": null
+      },
+      {
+        "id": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "title": "Доска проекта встроена в каждый клиент, без дублей при подключении узлов",
+        "description": "Зачем: John 2026-10-17: доска проекта должна быть видна в каждом клиенте сразу и не размножаться при подключении узлов. Seed «P2P Planner roadmap» в web создавал обычную доску по имени на каждом узле, и с несколькими узлами это даёт дубли и расхождения.\n\nГотово, когда: web, mobile и abl показывают пункт «Доска проекта» только для чтения со строкой «ревизия N · патч · откуда»; подключение второго узла и телефона не создаёт ни одной новой доски; в мобильной сети без узла видна последняя загруженная ревизия с пометкой «из кеша»; новая ревизия на GitHub появляется на узле без пересборки.\n\nРешение: E-ADR-003, контракт p2p-kanban-project-board/1. Доска не входит в данные пользователя и синхронизацию; побеждает старшая boardRevision. Порядок: web-узлы → mobile → abl.",
+        "priority": "high",
+        "position": 10240,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1456,6 +1466,26 @@
       {
         "cardId": "01a147a1-3c73-7cce-baf3-317f70c74407",
         "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
       }
     ],
     "checklists": [
@@ -1626,6 +1656,36 @@
         "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
         "title": "Этапы",
         "position": 1024
+      },
+      {
+        "id": "01a147cd-4f81-7123-866e-0ef136ecf1eb",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "title": "Решение",
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "title": "web",
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "title": "mobile",
+        "position": 3072
+      },
+      {
+        "id": "01a147cd-4f8e-7528-9b5c-ff307164668b",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "title": "abl",
+        "position": 4096
+      },
+      {
+        "id": "01a147cd-4f92-7d7e-8eb1-045c3f64e695",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "title": "Приёмка на хосте",
+        "position": 5120
       }
     ],
     "checklistItems": [
@@ -2636,6 +2696,118 @@
         "title": "abl: кнопка или решение «только B»",
         "isDone": false,
         "position": 6144
+      },
+      {
+        "id": "01a147cd-4f82-70ef-a0ff-76ea71f0d4b2",
+        "checklistId": "01a147cd-4f81-7123-866e-0ef136ecf1eb",
+        "title": "Контракт project-board/1: признаки, источники, выбор, изоляция",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f83-776a-bdbf-02cdf1192a53",
+        "checklistId": "01a147cd-4f81-7123-866e-0ef136ecf1eb",
+        "title": "Векторы summary и selection, проверка в check_contracts",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f84-73b8-aaaa-e461a99a4b8f",
+        "checklistId": "01a147cd-4f81-7123-866e-0ef136ecf1eb",
+        "title": "Копии в сборках: projectBoard в ecosystem.json, project_board.py vendor/check",
+        "isDone": true,
+        "position": 3072
+      },
+      {
+        "id": "01a147cd-4f86-7b55-990b-4b732ce8b0f4",
+        "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
+        "title": "Копия доски в сборке узла",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f87-7f5c-80c7-a5d7cbc9e097",
+        "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
+        "title": "GET /api/v1/project-board и /summary, проверка main на GitHub",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f88-7796-a055-5c8d39aa3583",
+        "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
+        "title": "Экран «Доска проекта» только для чтения",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a147cd-4f89-796a-b9e5-488d0dbe4cf3",
+        "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
+        "title": "Убрать seed «P2P Planner roadmap»",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a147cd-4f8b-72e9-909b-3dfd5b7c9688",
+        "checklistId": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
+        "title": "Копия доски в APK",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f8c-7f5c-afc2-453638219c48",
+        "checklistId": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
+        "title": "Кеш доски с узла",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f8d-79a0-a09f-9ec147017651",
+        "checklistId": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
+        "title": "Экран «Доска проекта» только для чтения",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a147cd-4f8f-75e4-b672-5535812b0868",
+        "checklistId": "01a147cd-4f8e-7528-9b5c-ff307164668b",
+        "title": "Копия доски в пакете",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f90-75c5-aa66-2ff5379cc50b",
+        "checklistId": "01a147cd-4f8e-7528-9b5c-ff307164668b",
+        "title": "Доска с узла, если он подключён",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f91-7ccd-8d8c-891875fb740a",
+        "checklistId": "01a147cd-4f8e-7528-9b5c-ff307164668b",
+        "title": "Экран «Доска проекта» только для чтения",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a147cd-4f93-7e33-a642-059c662e0380",
+        "checklistId": "01a147cd-4f92-7d7e-8eb1-045c3f64e695",
+        "title": "Два узла и телефон: доска проекта одна, ревизия совпадает",
+        "isDone": false,
+        "position": 1024
+      },
+      {
+        "id": "01a147cd-4f94-7cf3-a534-d2a254cb977a",
+        "checklistId": "01a147cd-4f92-7d7e-8eb1-045c3f64e695",
+        "title": "Мобильная сеть: «из кеша, узел недоступен»",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a147cd-4f95-7a83-8ac4-a049ab5ea8cb",
+        "checklistId": "01a147cd-4f92-7d7e-8eb1-045c3f64e695",
+        "title": "Новый коммит доски в main виден на узле без пересборки",
+        "isDone": false,
+        "position": 3072
       }
     ],
     "comments": [
@@ -3088,6 +3260,18 @@
         "cardId": "01a147a1-3c73-7cce-baf3-317f70c74407",
         "createdAt": "2026-10-17T03:00:00Z",
         "body": "patch 2026-10-17-ecosystem-self-acceptance-plan: идея записана вместе с планом автоприёмки."
+      },
+      {
+        "id": "01a147cd-4f96-791a-851d-d5ee129a8286",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "createdAt": "2026-10-17T03:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-project-board-contract: решение принято (только чтение, выбор John), контракт описан со схемами и векторами, копии в сборках учитываются project_board.py. Клиенты ещё не показывают доску."
+      },
+      {
+        "id": "01a147cd-4f97-726f-845d-137a4904afe1",
+        "cardId": "01a10d38-f933-71c3-b86b-4879e82ea632",
+        "createdAt": "2026-10-17T03:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-project-board-contract: чтобы видеть доску проекта на телефоне, импорт больше не нужен: её показывает встроенная «Доска проекта» (карточка «Доска проекта встроена в каждый клиент…»). Здесь остаётся импорт пользовательских досок."
       }
     ],
     "boardAppearanceSettings": [],

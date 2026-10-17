@@ -1,4 +1,4 @@
-"""Эталонные векторы общих контрактов: кольцо устройств и отчёт об ошибке.
+"""Эталонные векторы общих контрактов: кольцо устройств, отчёт об ошибке и доска проекта.
 
 Вызывается из `contract_ref.py generate` и из `check_contracts.py`, который
 пересобирает векторы в памяти и сравнивает с файлами в `contracts/`. Всё
@@ -8,6 +8,8 @@
 пользоваться.
 """
 from __future__ import annotations
+
+import json
 
 import contract_ref as c
 
@@ -468,8 +470,94 @@ def error_report_vectors() -> dict:
     }
 
 
+def _mini_board(revision: int, patch: str, title: str = "Доска проекта", board_id: str = c.PROJECT_BOARD_ID,
+                fmt: str = "p2p_planner_bundle", self_hosted: bool = True) -> str:
+    """Маленькая, но настоящая переносимая доска: одна колонка, одна карточка."""
+    ws, col, card = c.PROJECT_WORKSPACE_ID, "01a10d38-f903-78da-8167-4cc2859b0f5e", "01a10d38-f912-7000-8000-000000000001"
+    bundle = {
+        "manifest.json": {"format": fmt, "formatVersion": 1, "bundleKind": "portable_export", "scopeKind": "board",
+                          "workspaceId": ws, "boardId": board_id, "includesLocalMetadata": False},
+        "scope": {"scopeKind": "board", "workspaceId": ws, "boardId": board_id},
+        "origin": {"generatedAt": "2026-10-17T03:00:00Z", "selfHosted": self_hosted,
+                   "boardRevision": revision, "lastPatchId": patch, "rules": "docs/ecosystem/development.md"},
+        "payload": {
+            "workspaces": [{"id": ws, "name": "p2pKanban ecosystem"}],
+            "boards": [{"id": board_id, "workspaceId": ws, "name": title}],
+            "columns": [{"id": col, "boardId": board_id, "name": "Идеи", "position": 1024}],
+            "cards": [{"id": card, "boardId": board_id, "columnId": col, "title": "Карточка", "position": 1024}],
+        },
+    }
+    return json.dumps(bundle, ensure_ascii=False, separators=(",", ":"))
+
+
+def project_board_vectors() -> dict:
+    raws = {
+        "rev33": _mini_board(33, "2026-10-17-ecosystem-project-board-contract"),
+        "rev33-other": _mini_board(33, "2026-10-17-web-other-branch", title="Доска проекта (ветка)"),
+        "rev40": _mini_board(40, "2026-10-20-web-something"),
+        "rev32": _mini_board(32, "2026-10-16-ecosystem-textbooks-methodology"),
+    }
+    summary_cases = []
+    for name, raw in raws.items():
+        summary_cases.append({"name": name, "raw": raw, "expected": c.project_board_summary(raw.encode("utf-8"))})
+    rejects = [
+        ("not-json", "{\"manifest.json\": "),
+        ("array-root", "[]"),
+        ("wrong-format", _mini_board(33, "x", fmt="trello_export")),
+        ("foreign-board", _mini_board(33, "x", board_id="01a10d38-f902-7665-8612-000000000000")),
+        ("user-copy-not-self-hosted", _mini_board(33, "x", self_hosted=False)),
+        ("no-revision", _mini_board(33, "x").replace('"boardRevision":33', '"boardRevision":0')),
+        ("no-patch", _mini_board(33, "x").replace('"lastPatchId":"x"', '"lastPatchId":" "')),
+    ]
+    for name, raw in rejects:
+        try:
+            c.project_board_summary(raw.encode("utf-8"))
+            raise AssertionError(name)
+        except c.ProjectBoardRejected as error:
+            summary_cases.append({"name": name, "raw": raw, "rejected": error.reason})
+
+    def cand(source: str, key: str | None = None, rejected: str | None = None) -> dict:
+        if rejected:
+            return {"source": source, "rejected": rejected}
+        return {"source": source, "summary": c.project_board_summary(raws[key].encode("utf-8"))}
+
+    scenarios = [
+        ("only-build", "Узла нет: показывается копия из сборки.", [cand("build", "rev33")]),
+        ("node-newer", "Узел обновился из GitHub раньше, чем телефон пересобран.",
+         [cand("build", "rev33"), cand("cache", "rev33"), cand("node", "rev40")]),
+        ("old-node", "Телефон новее узла: старый узел не откатывает доску.",
+         [cand("build", "rev33"), cand("node", "rev32")]),
+        ("offline-cache", "Мобильная сеть, узел недоступен: побеждает кеш прошлой загрузки.",
+         [cand("build", "rev32"), cand("cache", "rev40"), cand("node", rejected="unreachable")]),
+        ("same-bytes", "Сборка и узел одинаковы: источник — сборка, первая в списке.",
+         [cand("build", "rev33"), cand("node", "rev33")]),
+        ("same-revision-different-bytes", "Две разные доски одной ревизии: детерминированный выбор и conflict.",
+         [cand("build", "rev33"), cand("node", "rev33-other")]),
+        ("foreign-from-node", "Узел отдал не доску проекта: она отброшена.",
+         [cand("build", "rev32"), cand("node", rejected="foreign-board")]),
+        ("nothing", "Ни одного годного кандидата.", [cand("node", rejected="not-json")]),
+    ]
+    selection = [{"name": n, "description": d, "candidates": cs, "expected": c.select_project_board(cs)}
+                 for n, d, cs in scenarios]
+    return {
+        "project-board/1/vectors/summary.json": {
+            "contract": c.PROJECT_BOARD,
+            "description": "Байты переносимой доски (raw, UTF-8) → сводка доски проекта или код отказа. sha256 и bytes считаются по байтам raw как есть.",
+            "projectBoardId": c.PROJECT_BOARD_ID,
+            "projectWorkspaceId": c.PROJECT_WORKSPACE_ID,
+            "cases": summary_cases,
+        },
+        "project-board/1/vectors/selection.json": {
+            "contract": c.PROJECT_BOARD,
+            "description": "Какую доску проекта показать: старшая ревизия побеждает; равная ревизия и разные байты — меньший sha256 и conflict; полное совпадение — первый по списку.",
+            "cases": selection,
+        },
+    }
+
+
 def build() -> dict:
     out = {}
-    for part in (keys_vector, ring_scenarios, sealed_vectors, keyring_vectors, rendezvous_vectors, error_report_vectors):
+    for part in (keys_vector, ring_scenarios, sealed_vectors, keyring_vectors, rendezvous_vectors, error_report_vectors,
+                 project_board_vectors):
         out.update(part())
     return out

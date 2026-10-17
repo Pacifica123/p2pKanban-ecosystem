@@ -18,3 +18,7 @@
 8. Общие контракты лежат в `contracts/`. Векторы не правятся руками: правится
    `tools/ecosystem/contract_vectors.py`, затем
    `python -B tools/ecosystem/contract_ref.py generate`.
+9. Доска проекта встроена в клиенты только для чтения (`contracts/project-board/1/`).
+   Патч направления по умолчанию обновляет свою копию последним шагом,
+   после правки доски: `python -B tools/ecosystem/project_board.py vendor <направление>`,
+   и включает в манифест `python -B tools/ecosystem/project_board.py check`.

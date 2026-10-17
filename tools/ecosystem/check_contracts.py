@@ -10,7 +10,7 @@
 3. векторы проходят свои JSON Schema;
 4. векторы проверяются заново: подписи, свёртка журнала, слияние связки,
    расшифровка конвертов и сообщений встречи, отставание версий, вырезание
-   секретов и текст отчёта об ошибке;
+   секретов, текст отчёта об ошибке, сводка и выбор доски проекта;
 5. векторы в репозитории байт-в-байт равны тому, что даёт
    tools/ecosystem/contract_vectors.py: правка руками без генератора видна сразу.
 """
@@ -353,6 +353,36 @@ def check_http_errors(name: str, data: dict) -> None:
             fail(f"{name}: {case['name']}: заголовок узла разбирается иначе")
 
 
+def check_project_board_summary(name: str, data: dict) -> None:
+    if data.get("projectBoardId") != c.PROJECT_BOARD_ID:
+        fail(f"{name}: projectBoardId расходится с эталоном")
+    for case in data["cases"]:
+        raw = case["raw"].encode("utf-8")
+        try:
+            got = c.project_board_summary(raw)
+        except c.ProjectBoardRejected as error:
+            if case.get("rejected") != error.reason:
+                fail(f"{name}: {case['name']}: отказ {error.reason}, ожидалось {case.get('rejected') or case.get('expected')}")
+            continue
+        if got != case.get("expected"):
+            fail(f"{name}: {case['name']}: сводка расходится с ожиданием")
+        require_schema(got, "project-board/1/schema/summary.schema.json", f"{name}: {case['name']}")
+
+
+def check_project_board_selection(name: str, data: dict) -> None:
+    for case in data["cases"]:
+        got = c.select_project_board(case["candidates"])
+        if got != case["expected"]:
+            fail(f"{name}: {case['name']}: выбор расходится с ожиданием")
+        require_schema(got, "project-board/1/schema/selection.schema.json", f"{name}: {case['name']}")
+    board = ROOT / "board" / "board.json"
+    if board.is_file():
+        try:
+            c.project_board_summary(board.read_bytes())
+        except c.ProjectBoardRejected as error:
+            fail(f"board/board.json не проходит как доска проекта: {error.reason}")
+
+
 def check_vectors() -> int:
     generated = contract_vectors.build()
     on_disk = {p.relative_to(CONTRACTS).as_posix() for p in CONTRACTS.glob("*/*/vectors/*.json")}
@@ -378,6 +408,10 @@ def check_vectors() -> int:
             check_reports(rel, stored)
         elif name == "http-error.json":
             check_http_errors(rel, stored)
+        elif rel.startswith("project-board/") and name == "summary.json":
+            check_project_board_summary(rel, stored)
+        elif rel.startswith("project-board/") and name == "selection.json":
+            check_project_board_selection(rel, stored)
         elif name == "keys.json":
             for key in stored["keys"]:
                 if c.public_key(key["secretKey"]) != key["publicKey"]:

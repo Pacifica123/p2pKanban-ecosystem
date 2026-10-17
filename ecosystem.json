@@ -7,6 +7,7 @@
     {
       "id": "web",
       "dir": "web",
+      "projectBoard": "web/backend/assets/project-board.json",
       "formerRepository": "kanban (github.com/Pacifica123/p2p_planner)",
       "role": "Self-hosted web-узел: React/Vite + Rust/Axum + PostgreSQL в Docker; координатор прав и источник первичной привязки устройств.",
       "platforms": ["linux", "windows", "macos"],
@@ -17,6 +18,7 @@
     {
       "id": "mobile",
       "dir": "mobile",
+      "projectBoard": "mobile/assets/project-board.json",
       "formerRepository": "kanban_mobile",
       "role": "Android-клиент на React Native/Expo: local-first копия и Nostr roaming после привязки к web-узлу.",
       "platforms": ["android"],
@@ -27,6 +29,7 @@
     {
       "id": "abl",
       "dir": "abl",
+      "projectBoard": "abl/src-tauri/assets/project-board.json",
       "formerRepository": "aaa (p2pkanban-archlinux-native)",
       "role": "Нативный клиент для Arch-based Linux: Tauri 2 + WebKitGTK + Rust core + SQLite, без Docker и localhost-backend.",
       "platforms": ["arch-linux"],

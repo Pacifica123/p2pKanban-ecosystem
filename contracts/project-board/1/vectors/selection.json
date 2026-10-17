@@ -1,0 +1,336 @@
+{
+  "contract": "p2p-kanban-project-board/1",
+  "description": "Какую доску проекта показать: старшая ревизия побеждает; равная ревизия и разные байты — меньший sha256 и conflict; полное совпадение — первый по списку.",
+  "cases": [
+    {
+      "name": "only-build",
+      "description": "Узла нет: показывается копия из сборки.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "build",
+        "revision": 33,
+        "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+        "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+        "conflict": false,
+        "behind": [],
+        "rejected": []
+      }
+    },
+    {
+      "name": "node-newer",
+      "description": "Узел обновился из GitHub раньше, чем телефон пересобран.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        },
+        {
+          "source": "cache",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        },
+        {
+          "source": "node",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 40,
+            "lastPatchId": "2026-10-20-web-something",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "40833ffe584990bb88e0724c03944a432b2089e2546a8a1b7dc0bdfbd7e0c80d",
+            "bytes": 1134
+          }
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "node",
+        "revision": 40,
+        "lastPatchId": "2026-10-20-web-something",
+        "sha256": "40833ffe584990bb88e0724c03944a432b2089e2546a8a1b7dc0bdfbd7e0c80d",
+        "conflict": false,
+        "behind": [
+          {
+            "source": "build",
+            "revision": 33
+          },
+          {
+            "source": "cache",
+            "revision": 33
+          }
+        ],
+        "rejected": []
+      }
+    },
+    {
+      "name": "old-node",
+      "description": "Телефон новее узла: старый узел не откатывает доску.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        },
+        {
+          "source": "node",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 32,
+            "lastPatchId": "2026-10-16-ecosystem-textbooks-methodology",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "8a9b20bc012f8f00ce4709b824c55078fb7dec8c562f71beffeb8e5cee15ba74",
+            "bytes": 1152
+          }
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "build",
+        "revision": 33,
+        "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+        "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+        "conflict": false,
+        "behind": [
+          {
+            "source": "node",
+            "revision": 32
+          }
+        ],
+        "rejected": []
+      }
+    },
+    {
+      "name": "offline-cache",
+      "description": "Мобильная сеть, узел недоступен: побеждает кеш прошлой загрузки.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 32,
+            "lastPatchId": "2026-10-16-ecosystem-textbooks-methodology",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "8a9b20bc012f8f00ce4709b824c55078fb7dec8c562f71beffeb8e5cee15ba74",
+            "bytes": 1152
+          }
+        },
+        {
+          "source": "cache",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 40,
+            "lastPatchId": "2026-10-20-web-something",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "40833ffe584990bb88e0724c03944a432b2089e2546a8a1b7dc0bdfbd7e0c80d",
+            "bytes": 1134
+          }
+        },
+        {
+          "source": "node",
+          "rejected": "unreachable"
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "cache",
+        "revision": 40,
+        "lastPatchId": "2026-10-20-web-something",
+        "sha256": "40833ffe584990bb88e0724c03944a432b2089e2546a8a1b7dc0bdfbd7e0c80d",
+        "conflict": false,
+        "behind": [
+          {
+            "source": "build",
+            "revision": 32
+          }
+        ],
+        "rejected": [
+          {
+            "source": "node",
+            "reason": "unreachable"
+          }
+        ]
+      }
+    },
+    {
+      "name": "same-bytes",
+      "description": "Сборка и узел одинаковы: источник — сборка, первая в списке.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        },
+        {
+          "source": "node",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "build",
+        "revision": 33,
+        "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+        "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+        "conflict": false,
+        "behind": [],
+        "rejected": []
+      }
+    },
+    {
+      "name": "same-revision-different-bytes",
+      "description": "Две разные доски одной ревизии: детерминированный выбор и conflict.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+            "bytes": 1153
+          }
+        },
+        {
+          "source": "node",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 33,
+            "lastPatchId": "2026-10-17-web-other-branch",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "b6d42d2c419d4ea5e3b8d530d82dd0d2e42c7e677a566f17e5c3a1cedd41234c",
+            "bytes": 1150
+          }
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "node",
+        "revision": 33,
+        "lastPatchId": "2026-10-17-web-other-branch",
+        "sha256": "b6d42d2c419d4ea5e3b8d530d82dd0d2e42c7e677a566f17e5c3a1cedd41234c",
+        "conflict": true,
+        "behind": [],
+        "rejected": []
+      }
+    },
+    {
+      "name": "foreign-from-node",
+      "description": "Узел отдал не доску проекта: она отброшена.",
+      "candidates": [
+        {
+          "source": "build",
+          "summary": {
+            "protocol": "p2p-kanban-project-board/1",
+            "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+            "revision": 32,
+            "lastPatchId": "2026-10-16-ecosystem-textbooks-methodology",
+            "generatedAt": "2026-10-17T03:00:00Z",
+            "sha256": "8a9b20bc012f8f00ce4709b824c55078fb7dec8c562f71beffeb8e5cee15ba74",
+            "bytes": 1152
+          }
+        },
+        {
+          "source": "node",
+          "rejected": "foreign-board"
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": "build",
+        "revision": 32,
+        "lastPatchId": "2026-10-16-ecosystem-textbooks-methodology",
+        "sha256": "8a9b20bc012f8f00ce4709b824c55078fb7dec8c562f71beffeb8e5cee15ba74",
+        "conflict": false,
+        "behind": [],
+        "rejected": [
+          {
+            "source": "node",
+            "reason": "foreign-board"
+          }
+        ]
+      }
+    },
+    {
+      "name": "nothing",
+      "description": "Ни одного годного кандидата.",
+      "candidates": [
+        {
+          "source": "node",
+          "rejected": "not-json"
+        }
+      ],
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "chosen": null,
+        "revision": null,
+        "lastPatchId": null,
+        "sha256": null,
+        "conflict": false,
+        "behind": [],
+        "rejected": [
+          {
+            "source": "node",
+            "reason": "not-json"
+          }
+        ]
+      }
+    }
+  ]
+}

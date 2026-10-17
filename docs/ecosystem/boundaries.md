@@ -32,7 +32,7 @@
 | Sync envelope `p2p-kanban-sync/1` | web `sync-core` | abl | `web/backend/crates/sync-core/src/envelope.rs`, `abl/docs/evidence/A10_SYNC_ROAMING_COMPATIBILITY.md` |
 | Привязка устройства `p2p-kanban-device-link/2` | web | mobile, abl | `web/backend/src/auth/device_link.rs`, `abl/fixtures/protocol/device-link-grant-v2.json` |
 | Перенос узла `p2p-kanban-web-node-link/1` | web | web, abl | `web/docs/architecture/web-node-link-v1.md` |
-| Переносимая доска `p2p_planner_bundle` v1 | web, abl | web, abl, корневая доска | `web/docs/architecture/import-export-backup-v1.md`, `abl/src-tauri/src/domain/import.rs` |
+| Переносимая доска `p2p_planner_bundle` v1 | web, abl | web, abl, корневая доска, `project-board/1` | `web/docs/architecture/import-export-backup-v1.md`, `abl/src-tauri/src/domain/import.rs` |
 | Отчёт кнопки приёмки `p2p-kanban-acceptance-report/1` | web UI, mobile (позже abl) | человек и агент, разбирающие приёмку; позже UTS | `docs/ecosystem/self-acceptance.md` |
 | Patch manifest и `state.json` | devctl | все направления, `web/tools/devctl_receipt.py` | `devctl/docs/patch-format.md`, `devctl/docs/configuration.md` |
 | devctl receipt и `.p2pkanban/project.json` | `web/tools/devctl_receipt.py` | web API интеграций | `web/docs/integrations/devctl-v2.md` |
@@ -50,6 +50,7 @@
 | Связка ключей `p2p-kanban-keyring/1` | web, mobile, abl | web, mobile, abl | `contracts/keyring/1/` |
 | Встреча по QR `p2p-kanban-rendezvous/1` | web, mobile, abl | web, mobile, abl | `contracts/rendezvous/1/` |
 | Подробности ошибки `p2p-kanban-error-report/1` | web UI, mobile, abl (отчёт); web-узел (`errorId`, заголовок версии) | человек и нейросеть, разбирающие ошибку | `contracts/error-report/1/` |
+| Доска проекта `p2p-kanban-project-board/1` | корень (`board/board.json`), web-узел (`GET /api/v1/project-board`) | web UI, mobile, abl — только чтение, вне синхронизации | `contracts/project-board/1/`, [E-ADR-003](adr/E-ADR-003-project-board-in-clients.md) |
 
 Кто какой контракт уже реализует и с какой версии, записано в
 [`contracts/compatibility.json`](../../contracts/compatibility.json). Порядок

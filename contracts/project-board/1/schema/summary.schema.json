@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "project-board/1/schema/summary.schema.json",
+  "title": "Сводка доски проекта: чем один кандидат отличается от другого",
+  "type": "object",
+  "required": ["protocol", "boardId", "revision", "lastPatchId", "generatedAt", "sha256", "bytes"],
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {"const": "p2p-kanban-project-board/1"},
+    "boardId": {"const": "01a10d38-f902-7665-8612-3e74278ceafa"},
+    "revision": {"type": "integer", "minimum": 1, "description": "origin.boardRevision"},
+    "lastPatchId": {"type": "string", "minLength": 1, "description": "origin.lastPatchId: патч, который сделал эту ревизию"},
+    "generatedAt": {"type": ["string", "null"]},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "sha256 байтов файла как есть"},
+    "bytes": {"type": "integer", "minimum": 1, "maximum": 10485760}
+  }
+}

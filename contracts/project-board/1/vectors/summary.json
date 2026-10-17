@@ -1,0 +1,95 @@
+{
+  "contract": "p2p-kanban-project-board/1",
+  "description": "Байты переносимой доски (raw, UTF-8) → сводка доски проекта или код отказа. sha256 и bytes считаются по байтам raw как есть.",
+  "projectBoardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+  "projectWorkspaceId": "01a10d38-f901-746d-92f7-10598bb1cc42",
+  "cases": [
+    {
+      "name": "rev33",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":33,\"lastPatchId\":\"2026-10-17-ecosystem-project-board-contract\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "revision": 33,
+        "lastPatchId": "2026-10-17-ecosystem-project-board-contract",
+        "generatedAt": "2026-10-17T03:00:00Z",
+        "sha256": "f34ab61f3dace50c42ab9a0afb527898647b171f33643f0e7bc75833d1dacdc7",
+        "bytes": 1153
+      }
+    },
+    {
+      "name": "rev33-other",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":33,\"lastPatchId\":\"2026-10-17-web-other-branch\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта (ветка)\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "revision": 33,
+        "lastPatchId": "2026-10-17-web-other-branch",
+        "generatedAt": "2026-10-17T03:00:00Z",
+        "sha256": "b6d42d2c419d4ea5e3b8d530d82dd0d2e42c7e677a566f17e5c3a1cedd41234c",
+        "bytes": 1150
+      }
+    },
+    {
+      "name": "rev40",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":40,\"lastPatchId\":\"2026-10-20-web-something\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "revision": 40,
+        "lastPatchId": "2026-10-20-web-something",
+        "generatedAt": "2026-10-17T03:00:00Z",
+        "sha256": "40833ffe584990bb88e0724c03944a432b2089e2546a8a1b7dc0bdfbd7e0c80d",
+        "bytes": 1134
+      }
+    },
+    {
+      "name": "rev32",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":32,\"lastPatchId\":\"2026-10-16-ecosystem-textbooks-methodology\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "expected": {
+        "protocol": "p2p-kanban-project-board/1",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "revision": 32,
+        "lastPatchId": "2026-10-16-ecosystem-textbooks-methodology",
+        "generatedAt": "2026-10-17T03:00:00Z",
+        "sha256": "8a9b20bc012f8f00ce4709b824c55078fb7dec8c562f71beffeb8e5cee15ba74",
+        "bytes": 1152
+      }
+    },
+    {
+      "name": "not-json",
+      "raw": "{\"manifest.json\": ",
+      "rejected": "not-json"
+    },
+    {
+      "name": "array-root",
+      "raw": "[]",
+      "rejected": "not-json"
+    },
+    {
+      "name": "wrong-format",
+      "raw": "{\"manifest.json\":{\"format\":\"trello_export\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":33,\"lastPatchId\":\"x\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "rejected": "wrong-format"
+    },
+    {
+      "name": "foreign-board",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-000000000000\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-000000000000\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":33,\"lastPatchId\":\"x\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-000000000000\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-000000000000\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-000000000000\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "rejected": "foreign-board"
+    },
+    {
+      "name": "user-copy-not-self-hosted",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":false,\"boardRevision\":33,\"lastPatchId\":\"x\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "rejected": "foreign-board"
+    },
+    {
+      "name": "no-revision",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":0,\"lastPatchId\":\"x\",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "rejected": "no-revision"
+    },
+    {
+      "name": "no-patch",
+      "raw": "{\"manifest.json\":{\"format\":\"p2p_planner_bundle\",\"formatVersion\":1,\"bundleKind\":\"portable_export\",\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"includesLocalMetadata\":false},\"scope\":{\"scopeKind\":\"board\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\"},\"origin\":{\"generatedAt\":\"2026-10-17T03:00:00Z\",\"selfHosted\":true,\"boardRevision\":33,\"lastPatchId\":\" \",\"rules\":\"docs/ecosystem/development.md\"},\"payload\":{\"workspaces\":[{\"id\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"p2pKanban ecosystem\"}],\"boards\":[{\"id\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"workspaceId\":\"01a10d38-f901-746d-92f7-10598bb1cc42\",\"name\":\"Доска проекта\"}],\"columns\":[{\"id\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"name\":\"Идеи\",\"position\":1024}],\"cards\":[{\"id\":\"01a10d38-f912-7000-8000-000000000001\",\"boardId\":\"01a10d38-f902-7665-8612-3e74278ceafa\",\"columnId\":\"01a10d38-f903-78da-8167-4cc2859b0f5e\",\"title\":\"Карточка\",\"position\":1024}]}}",
+      "rejected": "no-revision"
+    }
+  ]
+}
