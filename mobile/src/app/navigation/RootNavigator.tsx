@@ -18,6 +18,7 @@ import { DebugJournalScreen } from '../../features/settings/DebugJournalScreen';
 import { SettingsScreen } from '../../features/settings/SettingsScreen';
 import { trace } from '../../shared/errorReport/journal';
 import { AcceptanceScreen } from '../../features/acceptance/AcceptanceScreen';
+import { ProjectBoardScreen } from '../../features/projectBoard/ProjectBoardScreen';
 import { useAppearance } from '../../features/appearance/AppearanceProvider';
 import { WorkspacesScreen } from '../../features/workspaces/WorkspacesScreen';
 import { WorkspaceAccessScreen } from '../../features/workspaces/WorkspaceAccessScreen';
@@ -89,6 +90,7 @@ export function RootNavigator() {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="DebugJournal" component={DebugJournalScreen} />
             <Stack.Screen name="Acceptance" component={AcceptanceScreen} />
+            <Stack.Screen name="ProjectBoard" component={ProjectBoardScreen} />
           </>
         )}
       </Stack.Navigator>

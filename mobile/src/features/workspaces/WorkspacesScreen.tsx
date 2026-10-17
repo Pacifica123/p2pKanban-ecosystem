@@ -211,6 +211,12 @@ export function WorkspacesScreen({ navigation }: Props) {
           {formatCountRu(items.length, 'пространство', 'пространства', 'пространств')}
         </Text>
         <Button
+          label="Доска проекта"
+          compact
+          variant="ghost"
+          onPress={() => navigation.navigate('ProjectBoard')}
+        />
+        <Button
           label="Создать"
           compact
           variant="primary"
@@ -336,6 +342,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   summary: {
+    flex: 1,
     fontSize: 13,
   },
   list: {

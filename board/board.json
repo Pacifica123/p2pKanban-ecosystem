@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 87,
+        "comments": 88,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:52:00Z",
+    "generatedAt": "2026-10-17T07:53:00Z",
     "selfHosted": true,
-    "boardRevision": 44,
-    "lastPatchId": "2026-10-17-mobile-acceptance-check",
+    "boardRevision": 45,
+    "lastPatchId": "2026-10-17-mobile-project-board",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2796,21 +2796,21 @@
         "id": "01a147cd-4f8b-72e9-909b-3dfd5b7c9688",
         "checklistId": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
         "title": "Копия доски в APK",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
         "id": "01a147cd-4f8c-7f5c-afc2-453638219c48",
         "checklistId": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
         "title": "Кеш доски с узла",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a147cd-4f8d-79a0-a09f-9ec147017651",
         "checklistId": "01a147cd-4f8a-7d3a-a55e-34bb324373aa",
         "title": "Экран «Доска проекта» только для чтения",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -3406,6 +3406,12 @@
         "cardId": "01a10f95-389f-7344-8ca2-0c1bb072f17c",
         "createdAt": "2026-10-17T07:20:00Z",
         "body": "patch 2026-10-17-mobile-acceptance-check: сценарии этой карточки, кроме фона и Doze, теперь проходит кнопка «Проверка приёмки» на телефоне (шаги mobile-cross-network, mobile-new-board-roaming, mobile-offline-card, mobile-relays). Добавлен сценарий из замечания John 2026-10-17: доска, созданная на узле и не открытая в Wi-Fi, должна появиться в мобильной сети; если нет, шаг net.catalog-new-board даёт FAIL с этим объяснением."
+      },
+      {
+        "id": "01a147df-9f00-7249-a8b5-c3fd46ec5047",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "createdAt": "2026-10-17T03:20:00Z",
+        "body": "patch 2026-10-17-mobile-project-board: Android показывает «Доска проекта» только для чтения: копия в APK, доска с узла по ETag, последняя сохраняется для мобильной сети; экран не ждёт узел. Нужна приёмка на телефоне."
       }
     ],
     "boardAppearanceSettings": [],

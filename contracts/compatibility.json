@@ -41,7 +41,7 @@
       "status": "specified",
       "specifiedBy": "2026-10-17-ecosystem-project-board-contract",
       "requires": [],
-      "implementations": {"web": {"since": "2.1.0+2026-10-17-web-project-board", "stage": "узел и web UI", "hostAccepted": false}, "mobile": null, "abl": null}
+      "implementations": {"web": {"since": "2.1.0+2026-10-17-web-project-board", "stage": "узел и web UI", "hostAccepted": false}, "mobile": {"since": "2.1.0+2026-10-17-mobile-project-board", "stage": "экран, копия в APK, кеш с узла", "hostAccepted": false}, "abl": null}
     }
   ],
   "legacy": [
