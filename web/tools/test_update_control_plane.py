@@ -296,12 +296,41 @@ class UpdateChannelTest(unittest.TestCase):
             self.assertEqual(bootstrap.watch_updates_root(node), node)
             copy = Path(directory) / "copy"  # a UserTestSpace copy: no .dev-bootstrap state
             copy.mkdir()
-            with mock.patch.object(bootstrap, "running_stack_root", return_value=node):
+            with mock.patch.object(bootstrap, "running_stack_roots", return_value=(node, [])):
                 self.assertEqual(bootstrap.watch_updates_root(copy), node)
-            with mock.patch.object(bootstrap, "running_stack_root", return_value=None):
+            with mock.patch.object(bootstrap, "running_stack_roots", return_value=(None, [])):
                 with self.assertRaises(bootstrap.BootstrapError) as raised:
                     bootstrap.watch_updates_root(copy)
-                self.assertIn("UserTestSpace", str(raised.exception))
+                self.assertNotIn("UserTestSpace", str(raised.exception))
+                self.assertIn("python bootstrap.py", str(raised.exception))
+
+    def test_running_node_root_comes_from_web_release_labels_not_old_gateway(self) -> None:
+        # UTS r49 on Manjaro: web/backend were updated from an UTS copy of
+        # 2026-10-16, gateway still carries labels of a copy from 2026-09-13.
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            node = base / "UserTestSpace/project_20261016_212946_after_workspace-sync_74f3418/project/web"
+            write_json(node / ".dev-bootstrap/container-stack.json", {"webPort": 8082})
+            release = node / ".dev-bootstrap/releases/20261017-001929-2.1.0-0a0bb2ef12cd/source/deploy/bootstrap"
+            old = base / "P2PKANBAN_WORK/UserTestSpace/project_20260913/project/.dev-bootstrap/releases/x/source/deploy/bootstrap"
+
+            def container(working_dir: Path) -> dict[str, object]:
+                return {"Config": {"Labels": {
+                    "com.docker.compose.project.config_files": str(working_dir / "compose.yaml"),
+                    "com.docker.compose.project.working_dir": str(working_dir),
+                }}}
+
+            self.assertEqual(bootstrap.compose_deployment_roots(container(release)), [node])
+            services = {"web": container(release), "backend": container(release), "gateway": container(old)}
+            with mock.patch.object(bootstrap, "compose_service_container",
+                                   side_effect=lambda root, service: services[service]):
+                self.assertEqual(bootstrap.watch_updates_root(base / "fresh-copy"), node)
+            services["web"] = services["backend"] = container(old)
+            with mock.patch.object(bootstrap, "compose_service_container",
+                                   side_effect=lambda root, service: services[service]):
+                with self.assertRaises(bootstrap.BootstrapError) as raised:
+                    bootstrap.watch_updates_root(base / "fresh-copy")
+                self.assertIn("P2PKANBAN_WORK", str(raised.exception))
 
     def test_root_without_stack_state_would_not_allow_the_node_origin(self) -> None:
         # Why the copy cannot serve: its updater falls back to port 8080.

@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 98,
+        "comments": 99,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T09:30:00Z",
+    "generatedAt": "2026-10-17T09:50:00Z",
     "selfHosted": true,
-    "boardRevision": 52,
-    "lastPatchId": "2026-10-17-web-update-port-takeover",
+    "boardRevision": 53,
+    "lastPatchId": "2026-10-17-web-watch-updates-node-root",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -3486,6 +3486,12 @@
         "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
         "createdAt": "2026-10-17T09:30:00Z",
         "body": "patch 2026-10-17-web-update-port-takeover: на Manjaro watch-updates остановился: «Локальный порт control plane 8765 занят другим процессом». Порт держал прежний установщик p2pKanban, который не ответил на /health как свой. Теперь bootstrap находит процесс на порту, и если это установщик p2pKanban (update_control_plane.py serve), показывает его pid и каталог и спрашивает y/N; после y останавливает его и запускает установщик для каталога работающего узла. --yes делает то же без вопроса. Чужой процесс не трогается, в ошибке его pid и команда. Ждёт хоста: watch-updates из свежей копии UserTestSpace, затем «Обновить» в web."
+      },
+      {
+        "id": "01a15067-6e2b-72dc-8598-e1c490c708b7",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-17T09:50:00Z",
+        "body": "patch 2026-10-17-web-watch-updates-node-root: на Manjaro watch-updates из свежей копии UTS (699d157) ответил «работающий Docker-стек не найден … а не в копии UserTestSpace». Обе части неверны. Стек работает, но метки Docker указывают на .dev-bootstrap/releases/<id>/source копии UTS от 2026-10-16 (узел обновлялся на месте), а gateway до сих пор помнит копию P2PKANBAN_WORK от 2026-09-13; поиск брал gateway и каталог release, где нет состояния стека. Теперь корень узла берётся из меток web и backend (каталог над .dev-bootstrap/releases), gateway проверяется последним. Сообщения больше не отсылают из UserTestSpace: bootstrap всегда запускается из свежей копии UTS. Ждёт хоста: watch-updates из свежей копии UTS, затем «Обновить» в web."
       }
     ],
     "boardAppearanceSettings": [],

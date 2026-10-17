@@ -1510,33 +1510,76 @@ def command_adopt_running(args: argparse.Namespace, project_root: Path) -> int:
     return 0
 
 
-def running_stack_root(project_root: Path) -> Path | None:
-    """Root of the stack Docker is running now, from its Compose labels."""
-    try:
-        gateway = compose_service_container(project_root, "gateway")
-        root = compose_working_project_root(gateway)
-    except (BootstrapError, OSError, subprocess.TimeoutExpired):
-        return None
-    return root if (root / STATE_RELATIVE_PATH).is_file() else None
+def compose_deployment_roots(container: dict[str, Any]) -> list[Path]:
+    """Roots that keep the stack state of a Compose container, by its labels.
+
+    An in-place update runs Compose from
+    <root>/.dev-bootstrap/releases/<id>/source, so the labels name that release
+    copy; the stack state lives in <root>.
+    """
+    labels = container_labels(container)
+    raw = [item.strip() for item in labels.get("com.docker.compose.project.config_files", "").split(",")]
+    raw.append(labels.get("com.docker.compose.project.working_dir", ""))
+    roots: list[Path] = []
+    for item in filter(None, raw):
+        path = Path(item)
+        parts = path.parts
+        root: Path | None = None
+        for index in range(len(parts) - 1):
+            if parts[index] == ".dev-bootstrap" and parts[index + 1] == "releases":
+                root = Path(*parts[:index])
+                break
+        if root is None:
+            root = find_project_root(path.parent if path.suffix else path)
+        if root is not None and root not in roots:
+            roots.append(root)
+    return roots
+
+
+def running_stack_roots(project_root: Path) -> tuple[Path | None, list[Path]]:
+    """Root of the stack Docker is running now, and every root its labels name.
+
+    web and backend are recreated by every update, gateway only when its
+    image changes, so its labels can name a copy months old.
+    """
+    seen: list[Path] = []
+    for service in ("web", "backend", "gateway"):
+        try:
+            container = compose_service_container(project_root, service)
+        except (BootstrapError, OSError, subprocess.TimeoutExpired):
+            continue
+        for root in compose_deployment_roots(container):
+            if (root / STATE_RELATIVE_PATH).is_file():
+                return root, seen
+            if root not in seen:
+                seen.append(root)
+    return None, seen
 
 
 def watch_updates_root(project_root: Path) -> Path:
     """The updater must serve the root the running node was started from.
 
-    Started anywhere else (a UserTestSpace copy, a fresh clone) it knows
-    neither the web port nor the running build: the browser of the node gets
-    no CORS answer and reports that the installer is not running.
+    Bootstrap runs from a fresh UserTestSpace copy every time, so the node
+    usually lives in an earlier copy. Served from any other root the updater
+    knows neither the web port nor the running build: the browser of the node
+    gets no CORS answer and reports that the installer is not running.
     """
     if (project_root / STATE_RELATIVE_PATH).is_file():
         return project_root
-    running = running_stack_root(project_root)
+    running, seen = running_stack_roots(project_root)
     if running is not None:
-        print(f"В {project_root} узел не запускался; работающий узел запущен из {running}.")
+        print(f"Работающий узел запущен из {running}; установщик будет обслуживать его.")
         return running
+    if seen:
+        listed = "\n".join(f"  - {root}" for root in seen)
+        raise BootstrapError(
+            "Узел p2pKanban работает, но ни в одном каталоге из его меток Docker нет "
+            f"{STATE_RELATIVE_PATH} (копия удалена или узел запускали старой версией):\n{listed}\n"
+            "Перезапустите узел из этой копии: `python bootstrap.py`. Порт, база и секреты сохранятся."
+        )
     raise BootstrapError(
-        f"В {project_root} узел не запускался ({STATE_RELATIVE_PATH} нет), и работающий "
-        "Docker-стек p2pKanban не найден. Выполните watch-updates в каталоге web, из которого "
-        "запускали `python bootstrap.py`, а не в копии UserTestSpace."
+        "Работающий узел p2pKanban в Docker не найден. Запустите его из этой копии: "
+        "`python bootstrap.py`."
     )
 
 
