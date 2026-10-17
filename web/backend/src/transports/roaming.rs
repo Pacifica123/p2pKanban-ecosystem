@@ -211,6 +211,26 @@ async fn ensure_node_authorizations(pool: &PgPool, author_public_key: &str) -> a
         on conflict(board_id,author_public_key) where revoked_at is null do update set
           user_id=excluded.user_id,device_id=excluded.device_id,role=excluded.role,capability_epoch=excluded.capability_epoch
     "#).execute(pool).await?;
+    // A phone that signed in to this node as the owner gets every board it opens over HTTP.
+    // Grant it the owner's workspaces created later too, so the device catalog can bring
+    // them over relay while the phone is away from the LAN. Revoked devices are skipped.
+    sqlx::query(r#"
+      insert into roaming_board_authorizations(id,workspace_id,board_id,user_id,device_id,author_public_key,role,capability_epoch)
+      select gen_random_uuid(),w.id,b.id,w.owner_user_id,k.device_id,k.author_public_key,'owner',w.access_epoch
+      from workspaces w join boards b on b.workspace_id=w.id
+      join lateral (
+        select distinct on (s.author_public_key) s.device_id,s.author_public_key
+        from roaming_board_authorizations s
+        join workspaces sw on sw.id=s.workspace_id and sw.owner_user_id=w.owner_user_id
+        join devices d on d.id=s.device_id and d.user_id=w.owner_user_id
+        where s.user_id=w.owner_user_id and s.role='owner' and s.revoked_at is null
+          and d.revoked_at is null and d.deleted_at is null
+        order by s.author_public_key,s.created_at desc
+      ) k on true
+      where w.deleted_at is null and b.deleted_at is null
+      on conflict(board_id,author_public_key) where revoked_at is null do update set
+        user_id=excluded.user_id,device_id=excluded.device_id,role='owner',capability_epoch=excluded.capability_epoch
+    "#).execute(pool).await?;
     Ok(())
 }
 
