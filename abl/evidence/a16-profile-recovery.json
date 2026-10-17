@@ -69,7 +69,7 @@
     },
     {
       "path": "tools/uts_plan.json",
-      "sha256": "5a1cdb346eddc70bfb0af6a0e8616e93610c7a52aa4cb719460ee5beb402b23a"
+      "sha256": "2c78cf58fd22e25906521999ca13447eeeb709111e40b9a659acb3163aef0359"
     },
     {
       "path": "docs/A16_RECOVERY.md",
@@ -81,7 +81,7 @@
     },
     {
       "path": "docs/IMPLEMENTATION_STATUS.md",
-      "sha256": "139b6b7d49ec28da6fa810424e190d329632d2d06a3833f02b327215a6611cf2"
+      "sha256": "d5b3cbc50456faeb2bff283e797d9f2ad81e9eb83f90c893662cb0d3be219b4c"
     },
     {
       "path": "docs/NEXT_PATCH_SEQUENCE.md",
@@ -89,7 +89,7 @@
     },
     {
       "path": "docs/architecture/08-implementation-corrections-and-debt.md",
-      "sha256": "a63eb701f3845b760a0ef289a4845948212e80529742ed61057a424703640ac8"
+      "sha256": "a9cf8e5dabdbb5896c6d68a567c733aa6a71a912eab8538ab8bbb27d05406730"
     }
   ]
 }

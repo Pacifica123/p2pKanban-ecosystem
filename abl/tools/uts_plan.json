@@ -488,6 +488,16 @@
         ]
       },
       {
+        "id": "a15-release-receipt",
+        "command": [
+          "python3",
+          "-B",
+          "tools/a15_host_receipt_probe.py",
+          "--report",
+          "{report_dir}/a15-receipt.json"
+        ]
+      },
+      {
         "id": "a16-rust-recovery",
         "command": [
           "cargo",
@@ -589,11 +599,10 @@
     "A14 socket evidence: in normal app mode `ss -ltnp` must show no p2pKanban TCP listener; while explicitly active it must show only the selected LAN IPv4/random high port and disappear after stop/TTL/one authenticated request.",
     "A14 cross-client compatibility remains manual evidence: pair from one representative legacy LAN client using the versioned bridge wrapper and confirm the resulting profile reopens with A11 device-link state after the bridge has closed.",
     "A14 must not add or mutate nftables/iptables/firewalld/ufw, mDNS/Avahi or systemd user services.",
-    "A15 clean-chroot: on a fully updated Arch x86_64 build host, build the staged resolved PKGBUILD with devtools/makechrootpkg (or current pkgctl clean-build flow), run check(), and retain the build log/package SHA-256.",
-    "A15 package lint/ownership: run namcap on the built pkg.tar.zst and confirm its file list contains only /usr/bin/p2pkanban plus the package-owned desktop/icon/license files; no /home, XDG profile, keyring, systemd unit or mutable DB is packaged.",
-    "A15 install/upgrade integrity: install from a trusted signed repository on a coherent fully updated system, run pacman -Qkk p2pkanban, launch under Wayland and X11 as applicable, and verify p2pkanban://activate routes through the A13 handler.",
-    "A15 uninstall preservation: after creating representative profile/config/state/cache data and durable SecretVault entries, pacman -R p2pkanban must remove package-owned /usr files without deleting those user-owned XDG/keyring records.",
-    "A15 signing/repository: use a project release key held outside the repository; verify package and repository DB signatures, retain release-manifest.json/key fingerprint, and publish only to project-controlled HTTPS mirrors after replacing example.invalid origins.",
+    "A15 clean-chroot, package namcap and file list: proven by the A15 release receipt. Run `python3 -B tools/a15_issue_receipt.py --signing-key <fingerprint>` in a terminal once per abl source change (it asks for sudo); UTS host.a15-release-receipt then reads it: PASS while the receipt matches this tree and the installed package, SKIP with the command to run otherwise.",
+    "A15 install integrity (install from the signed receipt repository, Validated By Signature, pacman -Qkk p2pkanban) and A15 uninstall preservation (pacman -R keeps XDG data/config/state/cache and SecretVault items): proven by the same receipt.",
+    "A15 signing/repository: the receipt signs package, repository DB and itself with a release key held outside the repository; publishing to project-controlled HTTPS mirrors after replacing example.invalid origins stays a manual release step.",
+    "A15 launch after install: start the installed package under Wayland and X11 as applicable and confirm p2pkanban://activate routes through the A13 handler.",
     "A15 licensing: public AUR/public-mirror publication remains blocked until the rights holder replaces the packaging notice with an approved software license.",
     "A15 rollback: package downgrade alone is not claimed as profile/database rollback; A16 owns backup/doctor/safe-mode recovery and schema-aware rollback evidence.",
     "A16 CLI recovery: with the GUI closed, `p2pkanban doctor` and `p2pkanban safe-mode` must run without starting WebView, relay/Iroh/LAN transport, update activity or an activation socket.",

@@ -232,6 +232,8 @@ The project snapshot supplied to A15 contains no software license. A15 must not 
 
 The canonical UTS can non-root verify release-source binding, `makepkg --verifysource`, `namcap PKGBUILD`, desktop metadata and availability of Arch packaging/signing tools. A real clean chroot requires host package/build infrastructure; pacman install/remove changes package state; official repository signing requires the external release private key. These remain named manual/release evidence and are never emulated with a committed test private key or hidden sudo invocation.
 
+**Status (CORR-A15-003):** the evidence is now collected by an explicit operator command that writes a verifiable receipt; the canonical UTS stays non-root and only reads it.
+
 ### CORR-A15-001 — Arch packaging host-preflight option/lint correction
 
 Canonical A15 UTS on the target Arch-like host proved the packaging commands were installed but exposed two acceptance defects: `makechrootpkg` rejects GNU-style `--help` and documents the short `-h` option, while `namcap PKGBUILD` can emit `E:` diagnostics and still return success. The host probe now uses `makechrootpkg -h`, treats namcap `E:` lines as failure, and the bootstrap PKGBUILD carries a non-routable `https://example.invalid/p2pkanban` metadata URL. This correction changes only packaging acceptance/metadata; runtime, schema, protocol and release-key boundaries remain unchanged. Public publication is still blocked until project-owned origins and an approved software license replace placeholders.
@@ -243,6 +245,15 @@ Canonical A15 UTS on the target Arch-like host proved the packaging commands wer
 **Status:** corrected inside A15; no A15b stage.
 
 The target Arch `makechrootpkg -h` prints the expected usage/flags surface but exits non-zero. CORR-A15-001 corrected the option spelling but still routed the help probe through the generic `run()` helper, incorrectly treating the tool's help exit status as a capability failure. A15 now proves executable presence with the existing `shutil.which` gate and treats `-h` only as a textual sanity-check: output must contain `Usage: makechrootpkg` and `Flags:` regardless of the help command exit code. This preserves fail-closed detection of a wrong/unexpected executable without imposing GNU-style help exit semantics on Arch devtools.
+
+
+### CORR-A15-003 — A15 host evidence as a host-issued receipt
+
+**Classification:** [FACT] UTS r8 (`20261006T110629Z`) and r24 (`20261016T055714Z`): the owner confirmed A15 in the interactive card question, but the report itself showed only `pacman -Q` = PKGBUILD and the non-root packaging probe; clean chroot, package namcap, signed install, `pacman -Qkk` and removal preservation left no trace, so the card could not be accepted from the report.
+**Architecture impact:** acceptance tooling only; package contents, PKGBUILD, schema, IPC and CSP are unchanged.
+**Status:** implemented; accepted when a host run shows `host.a15-release-receipt` PASS.
+
+`tools/a15_issue_receipt.py` performs steps 2–4 of `docs/A15_ARCH_RELEASE.md` in a terminal with explicit, listed-in-advance sudo and records each command, exit code and log hash in `.uts-reports/a15-receipts/<time>/receipt.json`, sealed with the sha256 of its canonical JSON and detached-signed by the external release key. `tools/a15_host_receipt_probe.py` is the canonical UTS side: read-only, it re-derives the release inputs from the tree, compares them, the installed binary and `Validated By` with the receipt, re-runs `pacman -Qkk`, and exits 0/77/1 for PASS/SKIP/FAIL. `tools/uts_verify.py` maps exit 77 of any probe to SKIP with the probe's last line as the note. `--no-build` reuses the package of an earlier receipt for identical release inputs, so an unchanged tree can be re-checked without a rebuild.
 
 ## A16 — verified profile recovery boundary
 

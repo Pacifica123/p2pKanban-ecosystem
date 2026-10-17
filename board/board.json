@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 88,
+        "comments": 89,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:53:00Z",
+    "generatedAt": "2026-10-17T07:54:00Z",
     "selfHosted": true,
-    "boardRevision": 45,
-    "lastPatchId": "2026-10-17-mobile-project-board",
+    "boardRevision": 46,
+    "lastPatchId": "2026-10-17-abl-a15-release-receipt",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -444,7 +444,7 @@
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
         "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "A15: пакет pacman и подписанный репозиторий — приёмка на Arch",
-        "description": "Зачем: упаковка реализована на уровне исходников и детерминированных проверок.\n\nГотово, когда: clean-chroot сборка, namcap, pacman -Qkk, удаление сохраняет XDG-данные, подпись внешним ключом.\n\nИсточник: abl/docs/IMPLEMENTATION_STATUS.md.",
+        "description": "Зачем: упаковка реализована на уровне исходников и детерминированных проверок.\n\nГотово, когда: clean-chroot сборка, namcap, pacman -Qkk, удаление сохраняет XDG-данные, подпись внешним ключом. Доказательство — чек A15, который хост выписывает сам: python3 -B tools/a15_issue_receipt.py --signing-key <отпечаток> (в терминале, просит sudo), UTS показывает host.a15-release-receipt PASS.\n\nИсточник: abl/docs/IMPLEMENTATION_STATUS.md.",
         "priority": "medium",
         "position": 4096,
         "archivedAt": null
@@ -2882,6 +2882,13 @@
         "title": "Принято на телефоне, в браузере у Docker-узла и на Arch",
         "isDone": false,
         "position": 4096
+      },
+      {
+        "id": "01a147bb-0000-7753-9c17-5661ade533e2",
+        "checklistId": "01a11500-4075-700c-b617-4b01ee752b4b",
+        "title": "Чек A15 выписан на хосте: в UTS host.a15-release-receipt PASS",
+        "isDone": false,
+        "position": 6144
       }
     ],
     "comments": [
@@ -3412,6 +3419,12 @@
         "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
         "createdAt": "2026-10-17T03:20:00Z",
         "body": "patch 2026-10-17-mobile-project-board: Android показывает «Доска проекта» только для чтения: копия в APK, доска с узла по ETag, последняя сохраняется для мобильной сети; экран не ждёт узел. Нужна приёмка на телефоне."
+      },
+      {
+        "id": "01a147bb-0001-75d6-9e7e-481733dfed0b",
+        "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
+        "body": "patch 2026-10-17-abl-a15-release-receipt: по отчётам r8 и r24 карточку принять нельзя: в них видно только pacman -Q = PKGBUILD и подготовку входов, а сборки в чистом chroot, подписи, установки из подписанного репозитория, pacman -Qkk и удаления нет. Теперь это делает один запуск tools/a15_issue_receipt.py: он собирает, подписывает, ставит, проверяет и удаляет пакет и выписывает подписанный ключом выпуска чек с логами и суммами. UTS шаг host.a15-release-receipt только читает чек: PASS закрывает четыре открытых пункта, SKIP называет команду. Карточка ждёт первого чека с хоста.",
+        "createdAt": "2026-10-17T02:40:00Z"
       }
     ],
     "boardAppearanceSettings": [],

@@ -250,6 +250,73 @@ for token in ("A15 clean-chroot", "pacman -Qkk", "A15 uninstall preservation", "
     if token not in manual:
         fail("A15 manual/release acceptance missing " + token)
 
+# A15 release receipt: the operator issues it in a terminal (sudo), the canonical
+# UTS only reads it. Keep the privileged side explicit and the UTS side read-only.
+issuer = read("tools/a15_issue_receipt.py")
+for token in (
+    '"makechrootpkg", "-c", "-u", "-n"',
+    '"--lsign-key"',
+    "SigLevel = Required TrustedOnly",
+    "Validated By",
+    '"-Qkk"',
+    '"secret-tool"',
+    "--dry-run",
+    "--no-build",
+    "P2PKANBAN_A15_NO_BUILD",
+    "--detach-sign",
+    "keyOutsideRepository",
+    "os.geteuid() == 0",
+    "privileged_plan",
+):
+    if token not in issuer:
+        fail("A15 receipt issuer missing " + token)
+for forbidden in ("-Syu", '"-Su"', "--passphrase", "export-secret", "TrustAll", "SigLevel = Never", "shell=True",
+                  "rm -rf", "/etc/pacman.conf", "shutil.rmtree", '"-U"'):
+    if forbidden in issuer:
+        fail("A15 receipt issuer contains forbidden system/secret behavior: " + forbidden)
+receipt_probe = read("tools/a15_host_receipt_probe.py")
+for token in ("SKIP_EXIT = 77", "VALIDSIG", "canonical_hash", '"-Qkk"', "logSha256", "a15_prepare_release.py"):
+    if token not in receipt_probe:
+        fail("A15 receipt probe missing " + token)
+for forbidden in ('"sudo"', "makechrootpkg", "mkarchroot", '"-R"', '"-S"', '"-Sy"', '"-U"', "pacman-key", "secret-tool",
+                  "shell=True", "--detach-sign"):
+    if forbidden in receipt_probe:
+        fail("A15 canonical UTS receipt probe must stay read-only: " + forbidden)
+verifier = read("tools/uts_verify.py")
+if "SKIP_EXIT = 77" not in verifier or "p.returncode == SKIP_EXIT" not in verifier:
+    fail("UTS verifier does not map probe exit 77 to SKIP")
+if post.get("a15-release-receipt") != [
+    "python3", "-B", "tools/a15_host_receipt_probe.py", "--report", "{report_dir}/a15-receipt.json"
+]:
+    fail("A15 release receipt probe missing from canonical UTS")
+if "tools/a15_issue_receipt.py" not in manual or "host.a15-release-receipt" not in manual:
+    fail("A15 manual evidence does not point at the release receipt")
+
+sys.path.insert(0, str(ROOT / "tools"))
+import a15_receipt as receipt_format  # noqa: E402
+
+step_ids = [step_id for step_id, _ in receipt_format.STEPS]
+for item, needed in receipt_format.CHECKLIST:
+    if not needed or not set(needed).issubset(step_ids):
+        fail("A15 receipt checklist item refers to unknown steps: " + item)
+sample = receipt_format.seal({"format": receipt_format.FORMAT, "version": receipt_format.VERSION,
+                              "steps": [{"id": step_id, "status": "PASS", "commands": []} for step_id in step_ids]})
+if sample["overall"] != "pass" or any(row["status"] != "PASS" for row in sample["checklist"]):
+    fail("A15 receipt with all steps passed is not sealed as pass")
+if receipt_format.canonical_hash(sample) != sample["receiptSha256"]:
+    fail("A15 receipt hash is not reproducible")
+sample["package"] = {"version": "9.9.9-1"}
+if receipt_format.canonical_hash(sample) == sample["receiptSha256"]:
+    fail("A15 receipt hash does not detect edits")
+broken = receipt_format.seal({"format": receipt_format.FORMAT, "version": receipt_format.VERSION,
+                              "steps": [{"id": step_id, "status": "FAIL" if step_id == "remove-preserves-data" else "PASS",
+                                         "commands": []} for step_id in step_ids]})
+open_items = [row["item"] for row in broken["checklist"] if row["status"] != "PASS"]
+if broken["overall"] != "fail" or open_items != ["pacman -R сохраняет XDG-данные и записи SecretVault"]:
+    fail("A15 receipt does not keep a failed step's checklist item open")
+if "## Пункты приёмки с доски" not in receipt_format.render_markdown(sample):
+    fail("A15 receipt markdown lost the acceptance checklist")
+
 status = read("docs/IMPLEMENTATION_STATUS.md")
 if "A15 PKGBUILD + signed-repo packaging" not in status or "canonical packaging UTS + clean-chroot/release evidence pending" not in status:
     fail("A15 implementation ledger missing/premature")

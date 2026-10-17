@@ -27,6 +27,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_PATH = ROOT / "tools" / "uts_plan.json"
 REPORT_ROOT = ROOT / ".uts-reports"
+# Exit code a probe uses for "evidence not produced on this host yet" (automake convention).
+SKIP_EXIT = 77
 SECRET_PATTERNS = [
     re.compile(r"(?i)(authorization\s*:\s*bearer\s+)[^\s]+"),
     re.compile(r"(?i)((?:token|password|passwd|secret)\s*[=:]\s*)[^\s]+"),
@@ -90,6 +92,10 @@ def run_command(step_id: str, argv: list[str], report_dir: Path, *, env: dict[st
     output = redact(p.stdout or "")
     header = "$ " + " ".join(argv) + "\n"
     log_path.write_text(header + output, encoding="utf-8")
+    if p.returncode == SKIP_EXIT:
+        # The probe has nothing to judge on this host yet; its last line says why.
+        last = next((line for line in reversed(output.splitlines()) if line.strip()), "")
+        return Result(step_id, "SKIP", argv, p.returncode, time.monotonic() - start, log_rel, last.strip())
     return Result(step_id, "PASS" if p.returncode == 0 else "FAIL", argv, p.returncode, time.monotonic() - start, log_rel)
 
 

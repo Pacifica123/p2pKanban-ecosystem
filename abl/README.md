@@ -45,6 +45,14 @@ python3 -B tools/uts_verify.py --allow-network
 
 Reports are written under ignored `.uts-reports/`; send `latest-summary.txt` and the referenced failing log when a check fails. See `docs/UTS_VERIFICATION.md`.
 
+A15 pacman acceptance (clean chroot, signed repository, `pacman -Qkk`, removal keeps user data) is a receipt the host issues for itself, once per abl source change, in a terminal because it needs sudo:
+
+```bash
+python3 -B tools/a15_issue_receipt.py --signing-key <release key fingerprint>
+```
+
+`--dry-run` lists every privileged command first; `--no-build` reuses the package of an earlier receipt for the same sources. The UTS step `host.a15-release-receipt` only reads the receipt: PASS while it matches this tree and the installed package, SKIP with the command to run otherwise. See [A15 Arch release](docs/A15_ARCH_RELEASE.md#0-the-a15-release-receipt).
+
 ## 2026-10-01 correction
 
 See [A17b UTS cache recovery](docs/A17_UTS_CACHE_RECOVERY.md).

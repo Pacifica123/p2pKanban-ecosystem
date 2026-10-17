@@ -73,6 +73,18 @@
     {
       "path": "docs/architecture/adr/ADR-003-packaging-update-and-rollback.md",
       "sha256": "2f73be0579ed1680bcced3cd9a196d43809612c2954d1275ac4f4c68893f1cc2"
+    },
+    {
+      "path": "tools/a15_receipt.py",
+      "sha256": "8539f766c9d19c77ffd9605143d1e5e68cd77a53d1e0146491f6de345e93ae37"
+    },
+    {
+      "path": "tools/a15_issue_receipt.py",
+      "sha256": "667401b11959d427d7aa0a51f1ce50fc50c34c6be761b351fb425a22d4e83ec3"
+    },
+    {
+      "path": "tools/a15_host_receipt_probe.py",
+      "sha256": "6e709f52727e6c2f0ff228e2ae10740f6dfe8c371f8581167703612fb95b775f"
     }
   ],
   "stage": "A15",
