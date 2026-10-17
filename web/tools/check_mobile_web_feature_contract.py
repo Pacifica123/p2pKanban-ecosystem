@@ -58,15 +58,11 @@ def main() -> None:
         "backgroundImage",
         "backgroundSize",
     )
+    # The roadmap seed gave way to the read-only project board (contracts/project-board/1).
     require(
-        "frontend/src/features/bootstrap/lib/projectRoadmapSeed.ts",
-        "ROADMAP_CARDS",
-        "v2: Rich text в карточках",
-        "v2: Интеграция с devctl",
-        "v2: Интеграция с GitHub",
-        "v2: Интеграция с Obsidian",
-        "v2: Пригласительные ссылки и права доступа",
-        "updateCard",
+        "frontend/src/features/projectBoard/pages/ProjectBoardPage.tsx",
+        "project-board-page",
+        "Только чтение",
     )
     require(
         "backend/migrations/0018_workspace_invitations_and_capability_epochs.sql",

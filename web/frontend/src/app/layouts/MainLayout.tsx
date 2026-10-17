@@ -125,6 +125,17 @@ export function MainLayout() {
           </details>
         ) : null}
 
+        <nav className="nav-list" aria-label="Доска проекта">
+          <NavLink
+            to={paths.projectBoard}
+            className={({ isActive }) => `nav-list__item ${isActive ? 'is-active' : ''}`}
+            title="Доска разработки p2pKanban, только чтение"
+          >
+            <span>Доска проекта</span>
+            <span className="nav-list__meta">чтение</span>
+          </NavLink>
+        </nav>
+
         <details className="sidebar-group sidebar-group--settings">
           <summary className="sidebar-group__summary">
             <span>Настройки</span>

@@ -48,6 +48,8 @@
   — режим отладки: журнал клиента в реальном времени, выгрузка в Markdown;
 - [`architecture/acceptance-check-v1.md`](architecture/acceptance-check-v1.md)
   — отладочная кнопка «Проверка приёмки»: шаги, тестовые данные, отчёт в Markdown;
+- [`architecture/project-board-v1.md`](architecture/project-board-v1.md)
+  — «Доска проекта» только для чтения: копия в сборке, проверка main на GitHub, без дублей между узлами;
 - [`dev-bootstrap/devbootstrap-v1-operations.md`](dev-bootstrap/devbootstrap-v1-operations.md)
   — расширенная локальная диагностика.
 

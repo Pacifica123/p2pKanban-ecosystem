@@ -23,7 +23,6 @@ export default defineConfig({
     reuseExistingServer: true,
     env: {
       VITE_API_BASE_URL: apiBaseUrl,
-      VITE_ENABLE_PROJECT_ROADMAP_SEED: 'false',
     },
   },
 });

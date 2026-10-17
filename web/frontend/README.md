@@ -14,7 +14,6 @@ npm run dev
 
 ```bash
 VITE_API_BASE_URL=http://127.0.0.1:18080/api/v1
-VITE_ENABLE_PROJECT_ROADMAP_SEED=true
 ```
 
 ## Что покрыто сейчас

@@ -259,7 +259,7 @@ def start_frontend(project_root: Path, report_dir: Path, *, api_base_url: str, h
     log_path = report_dir / "frontend.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
-    env.update({"VITE_API_BASE_URL": api_base_url.rstrip("/"), "VITE_ENABLE_PROJECT_ROADMAP_SEED": "false"})
+    env.update({"VITE_API_BASE_URL": api_base_url.rstrip("/")})
     requested_command, launch_mode = frontend_dev_launch_command(project_root, host, port)
     launch_command = command_for_subprocess(requested_command)
     with log_path.open("w", encoding="utf-8") as log_handle:

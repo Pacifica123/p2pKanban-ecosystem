@@ -4,6 +4,7 @@ export const paths = {
   network: '/settings/network',
   debugJournal: '/settings/debug',
   acceptance: '/settings/acceptance',
+  projectBoard: '/project-board',
   workspaceBoards: (workspaceId: string) => `/workspaces/${workspaceId}/boards`,
   workspaceAccess: (workspaceId: string) => `/workspaces/${workspaceId}/access`,
   invitation: (token: string) => `/invite/${encodeURIComponent(token)}`,

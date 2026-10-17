@@ -1743,3 +1743,49 @@ input[type='checkbox']:focus-visible{outline:2px solid var(--accent);outline-off
 .acceptance-steps li {
   line-height: 1.45;
 }
+
+/* Доска проекта (contracts/project-board/1): только чтение */
+.project-board-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.project-board-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 7px;
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  color: var(--text-soft);
+  font-size: 0.72rem;
+}
+
+.project-board-label__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.project-board-checklist ul {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.project-board-checklist li.is-done {
+  color: var(--text-soft);
+}
+
+.project-board-comments {
+  display: grid;
+  gap: 10px;
+}
+
+.project-board-comment {
+  padding: 8px 10px;
+  border-left: 3px solid var(--surface-border);
+  background: var(--bg-soft);
+  border-radius: 6px;
+}

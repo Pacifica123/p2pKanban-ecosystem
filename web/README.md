@@ -198,6 +198,7 @@ npm run dev
 - [`docs/deployment/postgresql-backup-restore-v1.md`](docs/deployment/postgresql-backup-restore-v1.md) — PostgreSQL backup/restore;
 - [`docs/architecture/client-uiux-flat-pass-v1.md`](docs/architecture/client-uiux-flat-pass-v1.md) — разбор UI/UX-карты и flat-проход;
 - [`docs/architecture/web-node-link-v1.md`](docs/architecture/web-node-link-v1.md) — перенос identity и досок между двумя web-узлами;
+- [`docs/architecture/project-board-v1.md`](docs/architecture/project-board-v1.md) — встроенная «Доска проекта» только для чтения;
 - [`docs/deployment/free-hosting-transports-v1.md`](docs/deployment/free-hosting-transports-v1.md) — бесплатные transport-варианты;
 - [`docs/adr/ADR-006-homeless-board-transport-stack.md`](docs/adr/ADR-006-homeless-board-transport-stack.md) — выбранная transport-архитектура;
 - [`docs/dev-bootstrap/devbootstrap-v1-operations.md`](docs/dev-bootstrap/devbootstrap-v1-operations.md) — расширенная локальная диагностика;

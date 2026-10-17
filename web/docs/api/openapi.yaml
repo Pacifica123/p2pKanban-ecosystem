@@ -25,6 +25,7 @@ tags:
 - name: sync
 - name: integrations
 - name: ring
+- name: project-board
 components:
   securitySchemes:
     bearerAuth:
@@ -3498,6 +3499,49 @@ components:
         mode:
           type: string
 paths:
+  /project-board:
+    get:
+      tags:
+      - project-board
+      summary: The ecosystem's own board (contracts/project-board/1), read-only
+      description: 'Bytes of the project board the node serves: the copy built into
+        the node or board/board.json on main of the update channel, whichever has the
+        higher boardRevision. Not a user board: never stored, synced or linked. No
+        sign-in needed. ETag is the sha256 of the bytes; a matching If-None-Match
+        gives 304. Header x-p2p-kanban-project-board: rev=<N>; patch=<id>; source=<build|upstream>.'
+      security: []
+      responses:
+        '200':
+          description: Portable board bundle (p2p_planner_bundle v1), byte for byte
+          content:
+            application/json:
+              schema:
+                type: object
+        '304':
+          description: Not modified
+      x-v1Status: real_v1
+      x-frontendUsed: true
+  /project-board/summary:
+    get:
+      tags:
+      - project-board
+      summary: What the node serves as the project board and where it came from
+      description: contracts/project-board/1/schema/node-summary.schema.json inside the usual data envelope.
+      security: []
+      responses:
+        '200':
+          description: Project board summary
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+      x-v1Status: real_v1
+      x-frontendUsed: true
   /auth/device-link/lan/connect:
     post:
       tags: [auth]

@@ -400,7 +400,6 @@ def check_frontend_production_build() -> None:
             {
                 "NPM_CONFIG_CACHE": str(temporary / "npm-cache"),
                 "VITE_API_BASE_URL": "/api/v1",
-                "VITE_ENABLE_PROJECT_ROADMAP_SEED": "true",
             }
         )
         for command in ([npm, "ci"], [npm, "run", "test:run"], [npm, "run", "build"]):

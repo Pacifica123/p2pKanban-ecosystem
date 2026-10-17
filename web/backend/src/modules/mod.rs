@@ -12,6 +12,7 @@ pub mod comments;
 pub mod common;
 pub mod integrations;
 pub mod labels;
+pub mod project_board;
 #[cfg(feature = "nostr-shadow")]
 pub mod ring;
 pub mod sync;
@@ -32,6 +33,7 @@ pub fn router() -> Router<AppState> {
         .merge(comments::router())
         .merge(integrations::router())
         .merge(labels::router())
+        .merge(project_board::router())
         .merge(sync::router())
         .merge(users::router())
         .merge(workspaces::router())

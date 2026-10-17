@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 81,
+        "comments": 82,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:47:00Z",
+    "generatedAt": "2026-10-17T07:48:00Z",
     "selfHosted": true,
-    "boardRevision": 39,
-    "lastPatchId": "2026-10-17-web-acceptance-check",
+    "boardRevision": 40,
+    "lastPatchId": "2026-10-17-web-project-board",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -2768,28 +2768,28 @@
         "id": "01a147cd-4f86-7b55-990b-4b732ce8b0f4",
         "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
         "title": "Копия доски в сборке узла",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
         "id": "01a147cd-4f87-7f5c-80c7-a5d7cbc9e097",
         "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
         "title": "GET /api/v1/project-board и /summary, проверка main на GitHub",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a147cd-4f88-7796-a055-5c8d39aa3583",
         "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
         "title": "Экран «Доска проекта» только для чтения",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
         "id": "01a147cd-4f89-796a-b9e5-488d0dbe4cf3",
         "checklistId": "01a147cd-4f85-7c3f-856f-7bd38e42ac66",
         "title": "Убрать seed «P2P Planner roadmap»",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -3370,6 +3370,12 @@
         "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
         "createdAt": "2026-10-17T03:10:00Z",
         "body": "patch 2026-10-17-web-acceptance-check: в web появилась страница «Настройки → Проверка приёмки» (/settings/acceptance): 20 шагов — версия клиента и узла, сеанс и 60 опросов подключения без 429, тестовое пространство «Приёмка p2pKanban» и доска прогона, CRUD карточек, чек-листов, комментария длиннее 256 байт, метки, удаление, «Встречная доска» с Android, экспорт и импорт копией, отчёт ошибки 404, кольцо (только чтение), канал обновления, четыре темы, уборка. Отчёт p2p-kanban-acceptance-report/1 копируется или сохраняется .md. Проверено vitest против узла в памяти; на Docker-узле не запускалось."
+      },
+      {
+        "id": "01a147d6-7740-7648-904d-fe359c763687",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "createdAt": "2026-10-17T03:10:00Z",
+        "body": "patch 2026-10-17-web-project-board: web-узел отдаёт доску проекта (копия в сборке или main на GitHub, старшая ревизия; без входа, ETag), web UI показывает «Доска проекта · чтение»; seed «P2P Planner roadmap» удалён. Заодно узел ставит крипто-провайдер rustls: без него создание HTTP-клиента паниковало. Нужна приёмка на Docker."
       }
     ],
     "boardAppearanceSettings": [],

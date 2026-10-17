@@ -10,6 +10,9 @@ use p2p_planner_backend::{
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // reqwest uses `rustls-no-provider`: without a process default every HTTPS
+    // (and plain) client build panics. ring is the provider sqlx already links.
+    let _ = rustls::crypto::ring::default_provider().install_default();
     let settings = Settings::load().context("failed to load settings")?;
     init_tracing(settings.app.log_format);
 
@@ -24,6 +27,7 @@ async fn main() -> anyhow::Result<()> {
 
     let state = AppState::new(settings, db);
     spawn_workers(state.settings.clone(), state.db.clone());
+    p2p_planner_backend::modules::project_board::spawn_upstream_worker();
     let app = build_app(state);
 
     let listener = tokio::net::TcpListener::bind(addr)
