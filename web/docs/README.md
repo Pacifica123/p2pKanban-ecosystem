@@ -46,6 +46,8 @@
   — «Скопировать подробности»: errorId узла, заголовок версии, буфер журнала UI;
 - [`architecture/debug-mode-v1.md`](architecture/debug-mode-v1.md)
   — режим отладки: журнал клиента в реальном времени, выгрузка в Markdown;
+- [`architecture/acceptance-check-v1.md`](architecture/acceptance-check-v1.md)
+  — отладочная кнопка «Проверка приёмки»: шаги, тестовые данные, отчёт в Markdown;
 - [`dev-bootstrap/devbootstrap-v1-operations.md`](dev-bootstrap/devbootstrap-v1-operations.md)
   — расширенная локальная диагностика.
 

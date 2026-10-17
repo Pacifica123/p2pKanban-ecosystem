@@ -141,6 +141,9 @@ export function MainLayout() {
               <span>Журнал отладки</span>
               {debugMode ? <span className="nav-list__meta">включён</span> : null}
             </NavLink>
+            <NavLink to={paths.acceptance} className={({ isActive }) => `nav-list__item ${isActive ? 'is-active' : ''}`}>
+              <span>Проверка приёмки</span>
+            </NavLink>
             {workspaceId && boardId ? (
               <NavLink to={paths.boardAppearance(workspaceId, boardId)} className={({ isActive }) => `nav-list__item ${isActive ? 'is-active' : ''}`}>
                 <span>Вид текущей доски</span>

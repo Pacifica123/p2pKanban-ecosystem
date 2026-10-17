@@ -3,6 +3,7 @@ export const paths = {
   userAppearance: '/settings/appearance',
   network: '/settings/network',
   debugJournal: '/settings/debug',
+  acceptance: '/settings/acceptance',
   workspaceBoards: (workspaceId: string) => `/workspaces/${workspaceId}/boards`,
   workspaceAccess: (workspaceId: string) => `/workspaces/${workspaceId}/access`,
   invitation: (token: string) => `/invite/${encodeURIComponent(token)}`,
