@@ -10,8 +10,11 @@
 3. векторы проходят свои JSON Schema;
 4. векторы проверяются заново: подписи, свёртка журнала, слияние связки,
    расшифровка конвертов и сообщений встречи, отставание версий, вырезание
-   секретов, текст отчёта об ошибке, сводка и выбор доски проекта;
-5. векторы в репозитории байт-в-байт равны тому, что даёт
+   секретов, текст отчёта об ошибке, сводка и выбор доски проекта, команды
+   и ответы status объявлений лаунчера;
+5. каждый `<направление>/launcher.json` из ecosystem.json принимается
+   эталоном launcher-entry/1;
+6. векторы в репозитории байт-в-байт равны тому, что даёт
    tools/ecosystem/contract_vectors.py: правка руками без генератора видна сразу.
 """
 from __future__ import annotations
@@ -383,6 +386,67 @@ def check_project_board_selection(name: str, data: dict) -> None:
             fail(f"board/board.json не проходит как доска проекта: {error.reason}")
 
 
+def check_launcher_commands(name: str, data: dict) -> None:
+    entry = data["entry"]
+    require_schema(entry, "launcher-entry/1/schema/entry.schema.json", f"{name}: entry")
+    c.launcher_entry_check(entry)
+    for case in data["cases"]:
+        try:
+            got = c.launcher_command(entry, case["action"], case["values"], case["dryRun"])
+        except c.LauncherRejected as error:
+            if case.get("rejected") != error.reason:
+                fail(f"{name}: {case['name']}: отказ {error.reason}, ожидалось {case.get('rejected') or 'команда'}")
+            continue
+        if got != case.get("expected"):
+            fail(f"{name}: {case['name']}: команда расходится с ожиданием")
+        require_schema(got, "launcher-entry/1/schema/result.schema.json#/$defs/command", f"{name}: {case['name']}")
+
+
+def check_launcher_rejections(name: str, data: dict) -> None:
+    for case in data["cases"]:
+        try:
+            c.launcher_entry_check(case["entry"])
+        except c.LauncherRejected as error:
+            if error.reason != case["rejected"]:
+                fail(f"{name}: {case['name']}: отказ {error.reason}, ожидался {case['rejected']}")
+            continue
+        fail(f"{name}: {case['name']}: объявление принято, ожидался отказ {case['rejected']}")
+
+
+def check_launcher_status(name: str, data: dict) -> None:
+    entry = data["entry"]
+    for case in data["cases"]:
+        got = c.launcher_status(entry, case["exitCode"], case["stdout"])
+        if got != case["expected"]:
+            fail(f"{name}: {case['name']}: состояние расходится с ожиданием")
+        require_schema(got, "launcher-entry/1/schema/result.schema.json#/$defs/status", f"{name}: {case['name']}")
+        if got["state"] != "broken":
+            require_schema(json.loads(case["stdout"]), "launcher-entry/1/schema/status.schema.json", f"{name}: {case['name']}: stdout")
+
+
+def check_launcher_entries() -> int:
+    """Настоящие launcher.json направлений проходят эталон и схему."""
+    ecosystem = load(ROOT / "ecosystem.json")
+    count = 0
+    for component in ecosystem.get("components", []):
+        path = ROOT / component["dir"] / "launcher.json"
+        if not path.is_file():
+            continue
+        entry = load(path)
+        rel = path.relative_to(ROOT).as_posix()
+        require_schema(entry, "launcher-entry/1/schema/entry.schema.json", rel)
+        try:
+            c.launcher_entry_check(entry, component["id"])
+        except c.LauncherRejected as error:
+            fail(f"{rel}: не принимается launcher-entry/1: {error}")
+        for action in entry["actions"]:
+            script = ROOT / component["dir"] / action["argv"][1]
+            if not script.is_file():
+                fail(f"{rel}: действие {action['id']} ссылается на отсутствующий {action['argv'][1]}")
+        count += 1
+    return count
+
+
 def check_vectors() -> int:
     generated = contract_vectors.build()
     on_disk = {p.relative_to(CONTRACTS).as_posix() for p in CONTRACTS.glob("*/*/vectors/*.json")}
@@ -412,6 +476,12 @@ def check_vectors() -> int:
             check_project_board_summary(rel, stored)
         elif rel.startswith("project-board/") and name == "selection.json":
             check_project_board_selection(rel, stored)
+        elif rel.startswith("launcher-entry/") and name == "commands.json":
+            check_launcher_commands(rel, stored)
+        elif rel.startswith("launcher-entry/") and name == "rejections.json":
+            check_launcher_rejections(rel, stored)
+        elif rel.startswith("launcher-entry/") and name == "status.json":
+            check_launcher_status(rel, stored)
         elif name == "keys.json":
             for key in stored["keys"]:
                 if c.public_key(key["secretKey"]) != key["publicKey"]:
@@ -426,10 +496,11 @@ def main() -> int:
         check_crypto()
         compat = check_layout()
         count = check_vectors()
+        entries = check_launcher_entries()
     except CheckError as error:
         print(f"contracts: ОШИБКА: {error}", file=sys.stderr)
         return 1
-    print(f"contracts: OK: контрактов {len(compat['contracts'])}, векторов {count}, криптография сходится с BIP-340 и NIP-44")
+    print(f"contracts: OK: контрактов {len(compat['contracts'])}, векторов {count}, launcher.json {entries}, криптография сходится с BIP-340 и NIP-44")
     return 0
 
 

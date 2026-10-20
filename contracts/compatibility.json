@@ -42,6 +42,16 @@
       "specifiedBy": "2026-10-17-ecosystem-project-board-contract",
       "requires": [],
       "implementations": {"web": {"since": "2.1.0+2026-10-17-web-project-board", "stage": "узел и web UI", "hostAccepted": false}, "mobile": {"since": "2.1.0+2026-10-17-mobile-project-board", "stage": "экран, копия в APK, кеш с узла", "hostAccepted": false}, "abl": {"since": "0.1.0+2026-10-17-abl-project-board", "stage": "панель, копия в бинарнике; без узла", "hostAccepted": false}}
+    },
+    {
+      "id": "p2p-kanban-launcher-entry/1",
+      "dir": "launcher-entry/1",
+      "status": "specified",
+      "specifiedBy": "2026-10-20-ecosystem-launcher-entry-contract",
+      "requires": [],
+      "consumers": ["launcher"],
+      "note": "Производители — направления с командами (web, abl); mobile команд не объявляет: APK приходит из EAS (E-ADR-004 п.6), поэтому mobile здесь всегда null.",
+      "implementations": {"web": null, "mobile": null, "abl": null}
     }
   ],
   "legacy": [

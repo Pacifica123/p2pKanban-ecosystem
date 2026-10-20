@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "launcher-entry/1/schema/entry.schema.json",
+  "title": "<направление>/launcher.json: что лаунчер может запустить и какие настройки показать",
+  "type": "object",
+  "required": ["schema", "component", "actions"],
+  "properties": {
+    "schema": {"const": "p2p-kanban-launcher-entry/1"},
+    "component": {"$ref": "#/$defs/id", "description": "id направления из ecosystem.json; совпадает с каталогом"},
+    "settings": {"type": "array", "items": {"$ref": "#/$defs/setting"}},
+    "actions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/action"}},
+    "profiles": {"type": "array", "items": {"$ref": "#/$defs/profile"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,31}$"},
+    "label": {"type": "string", "minLength": 1, "maxLength": 80},
+    "arg": {"type": "string", "pattern": "^[^\\u0000-\\u001f]{1,200}$"},
+    "setting": {
+      "type": "object",
+      "required": ["id", "label", "type"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "label": {"$ref": "#/$defs/label"},
+        "type": {"enum": ["port", "choice", "bool"]},
+        "help": {"type": "string", "maxLength": 400},
+        "default": {"type": ["integer", "string", "boolean", "null"]},
+        "min": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "max": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "choices": {
+          "type": "array", "minItems": 1,
+          "items": {"type": "object", "required": ["value", "label"],
+                    "properties": {"value": {"type": "string"}, "label": {"$ref": "#/$defs/label"}}}
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["id", "label", "argv"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id", "description": "известные лаунчеру: install, start, stop, update, status, doctor, logs, remove, launch; остальные — в меню «Ещё»"},
+        "label": {"$ref": "#/$defs/label"},
+        "help": {"type": "string", "maxLength": 400},
+        "argv": {
+          "type": "array", "minItems": 2,
+          "prefixItems": [{"const": "{python}"}, {"type": "string", "pattern": "\\.py$"}],
+          "items": {"$ref": "#/$defs/arg"}
+        },
+        "options": {
+          "type": "array",
+          "items": {"type": "object", "required": ["setting", "argv"],
+                    "properties": {"setting": {"$ref": "#/$defs/id"}, "argv": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/arg"}}}}
+        },
+        "dryRun": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/arg"}},
+        "confirm": {"type": "string", "minLength": 1, "maxLength": 400},
+        "privileged": {"type": "boolean", "description": "команда сама попросит пароль администратора (pkexec или sudo)"},
+        "detached": {"type": "boolean", "description": "команда запускает приложение и не ждёт его завершения"},
+        "output": {"enum": ["text", "status"]},
+        "timeoutSeconds": {"type": "integer", "minimum": 1, "maximum": 86400}
+      }
+    },
+    "profile": {
+      "type": "object",
+      "required": ["id", "label", "supported"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "label": {"$ref": "#/$defs/label"},
+        "description": {"type": "string", "maxLength": 400},
+        "supported": {"type": "boolean"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 400},
+        "action": {"$ref": "#/$defs/id"},
+        "ask": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+        "values": {"type": "object"}
+      }
+    }
+  }
+}

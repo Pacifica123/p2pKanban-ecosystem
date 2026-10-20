@@ -15,7 +15,7 @@
 | `mobile/` | Expo-клиент, local-first хранилище, Nostr roaming на Android, сборка APK | backend и миграции |
 | `abl/` | Tauri-оболочка, Rust core, SQLite-профиль, pacman/AppImage-упаковка, UTS-проверки | Docker и localhost-backend |
 | `devctl/` | формат патча, конвейер `start`, приём патчей, эволюционный архив | смысл патчей конкретного продукта |
-| `launcher/` | окно лаунчера, его CLI, реестр установок на машине пользователя, сверка с `main` ([E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md)) | шаги развёртки направлений: лаунчер только вызывает объявленные ими команды |
+| `launcher/` | окно лаунчера, его CLI, реестр установок на машине пользователя, сверка с `main`, лента APK и её GitHub Action `.github/workflows/launcher-*.yml` (этот путь требует GitHub) ([E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md)) | шаги развёртки направлений: лаунчер только вызывает объявленные ими команды |
 | корень | `docs/ecosystem/`, `contracts/`, `board/`, `ecosystem.json`, `tools/ecosystem/`, `.devctl/`, `AGENTS.md` | код и документация направлений |
 
 Изменения внутри каталога направления подчиняются его собственным правилам
@@ -37,8 +37,9 @@
 | Отчёт кнопки приёмки `p2p-kanban-acceptance-report/1` | web UI, mobile (позже abl) | человек и агент, разбирающие приёмку; позже UTS | `docs/ecosystem/self-acceptance.md` |
 | Patch manifest и `state.json` | devctl | все направления, `web/tools/devctl_receipt.py` | `devctl/docs/patch-format.md`, `devctl/docs/configuration.md` |
 | Каталог приложений: `ecosystem.json` (`summary`, `platforms`, `requires`, `install`, `distribution`) | корень | launcher (L1) | [E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md) п.3 |
-| Объявление направления для лаунчера `p2p-kanban-launcher-entry/1` (`<направление>/launcher.json`: команды и настройки) | web, abl (с L2, L3) | launcher | **будущий**, [E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md) п.3; появится в `contracts/` патчем L2 |
-| Сборки APK в EAS (expo.dev): проект `ecosystem.json#mobile.eas`, профиль `preview` | mobile (`eas build`) | launcher (с L4, по токену Expo) | **будущий**, [E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md) п.6 |
+| Объявление направления для лаунчера `p2p-kanban-launcher-entry/1` (`<направление>/launcher.json`: свои Python-команды, настройки, ответ `status`) | web, abl (с L2, L3) | launcher | [contracts/launcher-entry/1](../../contracts/launcher-entry/1/SPEC.md), [E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md) п.3 |
+| Сборки APK в EAS (expo.dev): проект `ecosystem.json#mobile.eas`, профиль `preview` | mobile (`eas build`) | лента APK лаунчера (с L4) | [E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md) п.6 |
+| Лента APK `p2p-kanban-launcher-apk-feed/1`: `apk.json` в ветке `launcher-feed`, её пишет GitHub Action `.github/workflows/launcher-apk-feed.yml` с секретом `EXPO_TOKEN` | launcher (Action и `launcher/feed/apk_feed.py`) | launcher | [E-ADR-004](adr/E-ADR-004-ecosystem-launcher.md) п.6; появляется патчем L4 |
 | devctl receipt и `.p2pkanban/project.json` | `web/tools/devctl_receipt.py` | web API интеграций | `web/docs/integrations/devctl-v2.md` |
 | Номер патча сборки: `origin.boardRevision` и `origin.lastPatchId` доски, `BUILD_PATCH.json`, `P2PKANBAN_PATCH_*` | корень (каждый патч обновляет доску), updater web (`BUILD_PATCH.json`) | сборки web, mobile, abl: строка «патч N · patchId» рядом с версией | `board/README.md`, «Номер патча в версии клиентов» |
 

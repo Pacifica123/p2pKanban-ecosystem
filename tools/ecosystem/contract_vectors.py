@@ -555,9 +555,141 @@ def project_board_vectors() -> dict:
     }
 
 
+def _launcher_sample() -> dict:
+    """Объявление в духе web: порт, доступ, флаг; установка, запуск, статус."""
+    return {
+        "schema": c.LAUNCHER_ENTRY,
+        "component": "sample",
+        "settings": [
+            {"id": "port", "label": "Порт", "type": "port", "default": None, "min": 1024, "max": 65535},
+            {"id": "listen", "label": "Доступ", "type": "choice", "default": "local",
+             "choices": [{"value": "local", "label": "только этот компьютер"}, {"value": "lan", "label": "локальная сеть"}]},
+            {"id": "no-build", "label": "Не пересобирать", "type": "bool", "default": False},
+        ],
+        "actions": [
+            {"id": "install", "label": "Установить и запустить", "argv": ["{python}", "bootstrap.py", "start", "--no-open"],
+             "options": [{"setting": "port", "argv": ["--port", "{value}"]}, {"setting": "listen", "argv": ["--listen", "{value}"]},
+                         {"setting": "no-build", "argv": ["--no-build"]}],
+             "dryRun": ["--dry-run"], "timeoutSeconds": 3600},
+            {"id": "stop", "label": "Остановить", "argv": ["{python}", "bootstrap.py", "stop"], "dryRun": ["--dry-run"]},
+            {"id": "reset", "label": "Удалить вместе с данными", "argv": ["{python}", "bootstrap.py", "reset", "--yes"],
+             "confirm": "Удалить узел и его базу безвозвратно?"},
+            {"id": "status", "label": "Состояние", "argv": ["{python}", "bootstrap.py", "status", "--json"], "output": "status",
+             "timeoutSeconds": 60},
+        ],
+        "profiles": [
+            {"id": "same-node-port", "label": "Тот же узел на другом порту", "supported": True, "action": "install", "ask": ["port"]},
+            {"id": "second-node", "label": "Второй, тестовый узел", "supported": False,
+             "reason": "направление держит один узел на checkout"},
+        ],
+    }
+
+
+def launcher_entry_vectors() -> dict:
+    sample = c.launcher_entry_check(_launcher_sample())
+    command_cases = []
+    for name, action, values, dry in [
+        ("defaults", "install", {}, False),
+        ("port-and-lan", "install", {"port": 8091, "listen": "lan"}, False),
+        ("bool-flag", "install", {"no-build": True}, False),
+        ("dry-run", "install", {"port": 8091}, True),
+        ("stop-dry-run", "stop", {}, True),
+        ("status", "status", {}, False),
+        ("reset-confirm", "reset", {}, False),
+    ]:
+        command_cases.append({"name": name, "action": action, "values": values, "dryRun": dry,
+                              "expected": c.launcher_command(sample, action, values, dry)})
+    for name, action, values, dry in [
+        ("unknown-action", "launch", {}, False),
+        ("port-out-of-range", "install", {"port": 80}, False),
+        ("choice-not-declared", "install", {"listen": "world"}, False),
+        ("unknown-setting", "install", {"colour": "red"}, False),
+        ("no-dry-run-declared", "reset", {}, True),
+    ]:
+        try:
+            c.launcher_command(sample, action, values, dry)
+            raise AssertionError(name)
+        except c.LauncherRejected as error:
+            command_cases.append({"name": name, "action": action, "values": values, "dryRun": dry, "rejected": error.reason})
+
+    def variant(change) -> dict:
+        entry = json.loads(json.dumps(_launcher_sample()))
+        change(entry)
+        return entry
+
+    def action(entry: dict, aid: str) -> dict:
+        return next(a for a in entry["actions"] if a["id"] == aid)
+
+    broken = [
+        ("wrong-schema", lambda e: e.update(schema="p2p-kanban-launcher-entry/2")),
+        ("no-actions", lambda e: e.update(actions=[])),
+        ("no-status", lambda e: e.update(actions=[a for a in e["actions"] if a["id"] != "status"])),
+        ("shell-instead-of-python", lambda e: action(e, "stop").update(argv=["sh", "-c", "docker compose down"])),
+        ("script-outside-direction", lambda e: action(e, "stop").update(argv=["{python}", "../devctl/devctl.py", "stop"])),
+        ("absolute-script", lambda e: action(e, "stop").update(argv=["{python}", "/usr/bin/evil.py"])),
+        ("placeholder-in-argv", lambda e: action(e, "stop").update(argv=["{python}", "bootstrap.py", "{home}"])),
+        ("value-for-bool", lambda e: action(e, "install")["options"][2].update(argv=["--no-build={value}"])),
+        ("option-unknown-setting", lambda e: action(e, "install")["options"].append({"setting": "colour", "argv": ["--c", "{value}"]})),
+        ("duplicate-action", lambda e: e["actions"].append(dict(action(e, "stop")))),
+        ("bad-default", lambda e: e["settings"][0].update(default=70000)),
+        ("unsupported-profile-without-reason", lambda e: e["profiles"][1].pop("reason")),
+        ("profile-unknown-action", lambda e: e["profiles"][0].update(action="launch")),
+    ]
+    rejections = []
+    for name, change in broken:
+        entry = variant(change)
+        try:
+            c.launcher_entry_check(entry)
+            raise AssertionError(name)
+        except c.LauncherRejected as error:
+            rejections.append({"name": name, "entry": entry, "rejected": error.reason})
+
+    def status(**fields) -> str:
+        body = {"schema": c.LAUNCHER_STATUS, "component": "sample", "installed": True, "running": True,
+                "version": "2.1.0", "revision": "9db706cb0abf" + "0" * 28, "url": "http://127.0.0.1:8080",
+                "values": {"port": 8080, "listen": "local"}, "detail": "узел отвечает", "problems": []}
+        body.update(fields)
+        return json.dumps({k: v for k, v in body.items() if v != "-"}, ensure_ascii=False)
+
+    status_cases = []
+    for name, code, out in [
+        ("running", 0, status()),
+        ("stopped", 0, status(running=False, detail="контейнеры остановлены")),
+        ("docker-down", 0, status(running=None, problems=["Docker установлен, но его движок не запущен"])),
+        ("absent", 0, status(installed=False, running=False, version="-", revision="-", url="-", values={})),
+        ("unknown-value-dropped", 0, status(values={"port": 8080, "colour": "red", "listen": "world"})),
+        ("exit-code", 1, "Docker Compose v2 недоступен"),
+        ("not-json", 0, "Web: доступен\nURL: http://127.0.0.1:8080"),
+        ("foreign-component", 0, status(component="web")),
+        ("short-revision", 0, status(revision="9db706c")),
+        ("file-url", 0, status(url="file:///etc/passwd")),
+    ]:
+        status_cases.append({"name": name, "exitCode": code, "stdout": out,
+                             "expected": c.launcher_status(sample, code, out)})
+    return {
+        "launcher-entry/1/vectors/commands.json": {
+            "contract": c.LAUNCHER_ENTRY,
+            "description": "Объявление entry, действие, значения настроек, dryRun → argv и каталог, которые выполнит лаунчер, или код отказа. {python} лаунчер заменяет своим интерпретатором.",
+            "entry": sample,
+            "cases": command_cases,
+        },
+        "launcher-entry/1/vectors/rejections.json": {
+            "contract": c.LAUNCHER_ENTRY,
+            "description": "Объявления, которые лаунчер не принимает целиком, с кодом отказа. Направление с таким launcher.json показывается «только инструкция».",
+            "cases": rejections,
+        },
+        "launcher-entry/1/vectors/status.json": {
+            "contract": c.LAUNCHER_STATUS,
+            "description": "Код выхода и stdout команды status → состояние установки. Неизвестные настройки и недопустимые значения в values отбрасываются.",
+            "entry": sample,
+            "cases": status_cases,
+        },
+    }
+
+
 def build() -> dict:
     out = {}
     for part in (keys_vector, ring_scenarios, sealed_vectors, keyring_vectors, rendezvous_vectors, error_report_vectors,
-                 project_board_vectors):
+                 project_board_vectors, launcher_entry_vectors):
         out.update(part())
     return out

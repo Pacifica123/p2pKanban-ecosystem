@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "launcher-entry/1/schema/result.schema.json",
+  "title": "Что лаунчер выводит из объявления: команда и состояние установки",
+  "$defs": {
+    "command": {
+      "type": "object",
+      "required": ["component", "action", "argv", "cwd", "privileged", "detached", "timeoutSeconds"],
+      "additionalProperties": false,
+      "properties": {
+        "component": {"type": "string"},
+        "action": {"type": "string"},
+        "argv": {"type": "array", "minItems": 2, "items": {"type": "string"}},
+        "cwd": {"type": "string", "description": "каталог направления относительно корня экосистемы"},
+        "privileged": {"type": "boolean"},
+        "detached": {"type": "boolean"},
+        "timeoutSeconds": {"type": "integer", "minimum": 1}
+      }
+    },
+    "status": {
+      "type": "object",
+      "required": ["protocol", "state", "reason", "version", "revision", "url", "values", "detail", "problems"],
+      "additionalProperties": false,
+      "properties": {
+        "protocol": {"const": "p2p-kanban-launcher-status/1"},
+        "state": {"enum": ["absent", "installed", "running", "stopped", "broken"]},
+        "reason": {"enum": [null, "exit-code", "bad-output"]},
+        "version": {"type": ["string", "null"]},
+        "revision": {"type": ["string", "null"]},
+        "url": {"type": ["string", "null"]},
+        "values": {"type": "object"},
+        "detail": {"type": ["string", "null"]},
+        "problems": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

@@ -1,0 +1,305 @@
+{
+  "contract": "p2p-kanban-launcher-status/1",
+  "description": "Код выхода и stdout команды status → состояние установки. Неизвестные настройки и недопустимые значения в values отбрасываются.",
+  "entry": {
+    "schema": "p2p-kanban-launcher-entry/1",
+    "component": "sample",
+    "settings": [
+      {
+        "id": "port",
+        "label": "Порт",
+        "type": "port",
+        "default": null,
+        "min": 1024,
+        "max": 65535
+      },
+      {
+        "id": "listen",
+        "label": "Доступ",
+        "type": "choice",
+        "default": "local",
+        "choices": [
+          {
+            "value": "local",
+            "label": "только этот компьютер"
+          },
+          {
+            "value": "lan",
+            "label": "локальная сеть"
+          }
+        ]
+      },
+      {
+        "id": "no-build",
+        "label": "Не пересобирать",
+        "type": "bool",
+        "default": false
+      }
+    ],
+    "actions": [
+      {
+        "id": "install",
+        "label": "Установить и запустить",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "start",
+          "--no-open"
+        ],
+        "options": [
+          {
+            "setting": "port",
+            "argv": [
+              "--port",
+              "{value}"
+            ]
+          },
+          {
+            "setting": "listen",
+            "argv": [
+              "--listen",
+              "{value}"
+            ]
+          },
+          {
+            "setting": "no-build",
+            "argv": [
+              "--no-build"
+            ]
+          }
+        ],
+        "dryRun": [
+          "--dry-run"
+        ],
+        "timeoutSeconds": 3600
+      },
+      {
+        "id": "stop",
+        "label": "Остановить",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "stop"
+        ],
+        "dryRun": [
+          "--dry-run"
+        ]
+      },
+      {
+        "id": "reset",
+        "label": "Удалить вместе с данными",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "reset",
+          "--yes"
+        ],
+        "confirm": "Удалить узел и его базу безвозвратно?"
+      },
+      {
+        "id": "status",
+        "label": "Состояние",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "status",
+          "--json"
+        ],
+        "output": "status",
+        "timeoutSeconds": 60
+      }
+    ],
+    "profiles": [
+      {
+        "id": "same-node-port",
+        "label": "Тот же узел на другом порту",
+        "supported": true,
+        "action": "install",
+        "ask": [
+          "port"
+        ]
+      },
+      {
+        "id": "second-node",
+        "label": "Второй, тестовый узел",
+        "supported": false,
+        "reason": "направление держит один узел на checkout"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "running",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": true, \"running\": true, \"version\": \"2.1.0\", \"revision\": \"9db706cb0abf0000000000000000000000000000\", \"url\": \"http://127.0.0.1:8080\", \"values\": {\"port\": 8080, \"listen\": \"local\"}, \"detail\": \"узел отвечает\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "running",
+        "reason": null,
+        "version": "2.1.0",
+        "revision": "9db706cb0abf0000000000000000000000000000",
+        "url": "http://127.0.0.1:8080",
+        "values": {
+          "port": 8080,
+          "listen": "local"
+        },
+        "detail": "узел отвечает",
+        "problems": []
+      }
+    },
+    {
+      "name": "stopped",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": true, \"running\": false, \"version\": \"2.1.0\", \"revision\": \"9db706cb0abf0000000000000000000000000000\", \"url\": \"http://127.0.0.1:8080\", \"values\": {\"port\": 8080, \"listen\": \"local\"}, \"detail\": \"контейнеры остановлены\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "stopped",
+        "reason": null,
+        "version": "2.1.0",
+        "revision": "9db706cb0abf0000000000000000000000000000",
+        "url": "http://127.0.0.1:8080",
+        "values": {
+          "port": 8080,
+          "listen": "local"
+        },
+        "detail": "контейнеры остановлены",
+        "problems": []
+      }
+    },
+    {
+      "name": "docker-down",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": true, \"running\": null, \"version\": \"2.1.0\", \"revision\": \"9db706cb0abf0000000000000000000000000000\", \"url\": \"http://127.0.0.1:8080\", \"values\": {\"port\": 8080, \"listen\": \"local\"}, \"detail\": \"узел отвечает\", \"problems\": [\"Docker установлен, но его движок не запущен\"]}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "installed",
+        "reason": null,
+        "version": "2.1.0",
+        "revision": "9db706cb0abf0000000000000000000000000000",
+        "url": "http://127.0.0.1:8080",
+        "values": {
+          "port": 8080,
+          "listen": "local"
+        },
+        "detail": "узел отвечает",
+        "problems": [
+          "Docker установлен, но его движок не запущен"
+        ]
+      }
+    },
+    {
+      "name": "absent",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": false, \"running\": false, \"values\": {}, \"detail\": \"узел отвечает\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "absent",
+        "reason": null,
+        "version": null,
+        "revision": null,
+        "url": null,
+        "values": {},
+        "detail": "узел отвечает",
+        "problems": []
+      }
+    },
+    {
+      "name": "unknown-value-dropped",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": true, \"running\": true, \"version\": \"2.1.0\", \"revision\": \"9db706cb0abf0000000000000000000000000000\", \"url\": \"http://127.0.0.1:8080\", \"values\": {\"port\": 8080, \"colour\": \"red\", \"listen\": \"world\"}, \"detail\": \"узел отвечает\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "running",
+        "reason": null,
+        "version": "2.1.0",
+        "revision": "9db706cb0abf0000000000000000000000000000",
+        "url": "http://127.0.0.1:8080",
+        "values": {
+          "port": 8080
+        },
+        "detail": "узел отвечает",
+        "problems": []
+      }
+    },
+    {
+      "name": "exit-code",
+      "exitCode": 1,
+      "stdout": "Docker Compose v2 недоступен",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "broken",
+        "reason": "exit-code",
+        "version": null,
+        "revision": null,
+        "url": null,
+        "values": {},
+        "detail": null,
+        "problems": []
+      }
+    },
+    {
+      "name": "not-json",
+      "exitCode": 0,
+      "stdout": "Web: доступен\nURL: http://127.0.0.1:8080",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "broken",
+        "reason": "bad-output",
+        "version": null,
+        "revision": null,
+        "url": null,
+        "values": {},
+        "detail": null,
+        "problems": []
+      }
+    },
+    {
+      "name": "foreign-component",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"web\", \"installed\": true, \"running\": true, \"version\": \"2.1.0\", \"revision\": \"9db706cb0abf0000000000000000000000000000\", \"url\": \"http://127.0.0.1:8080\", \"values\": {\"port\": 8080, \"listen\": \"local\"}, \"detail\": \"узел отвечает\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "broken",
+        "reason": "bad-output",
+        "version": null,
+        "revision": null,
+        "url": null,
+        "values": {},
+        "detail": null,
+        "problems": []
+      }
+    },
+    {
+      "name": "short-revision",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": true, \"running\": true, \"version\": \"2.1.0\", \"revision\": \"9db706c\", \"url\": \"http://127.0.0.1:8080\", \"values\": {\"port\": 8080, \"listen\": \"local\"}, \"detail\": \"узел отвечает\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "broken",
+        "reason": "bad-output",
+        "version": null,
+        "revision": null,
+        "url": null,
+        "values": {},
+        "detail": null,
+        "problems": []
+      }
+    },
+    {
+      "name": "file-url",
+      "exitCode": 0,
+      "stdout": "{\"schema\": \"p2p-kanban-launcher-status/1\", \"component\": \"sample\", \"installed\": true, \"running\": true, \"version\": \"2.1.0\", \"revision\": \"9db706cb0abf0000000000000000000000000000\", \"url\": \"file:///etc/passwd\", \"values\": {\"port\": 8080, \"listen\": \"local\"}, \"detail\": \"узел отвечает\", \"problems\": []}",
+      "expected": {
+        "protocol": "p2p-kanban-launcher-status/1",
+        "state": "broken",
+        "reason": "bad-output",
+        "version": null,
+        "revision": null,
+        "url": null,
+        "values": {},
+        "detail": null,
+        "problems": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,334 @@
+{
+  "contract": "p2p-kanban-launcher-entry/1",
+  "description": "Объявление entry, действие, значения настроек, dryRun → argv и каталог, которые выполнит лаунчер, или код отказа. {python} лаунчер заменяет своим интерпретатором.",
+  "entry": {
+    "schema": "p2p-kanban-launcher-entry/1",
+    "component": "sample",
+    "settings": [
+      {
+        "id": "port",
+        "label": "Порт",
+        "type": "port",
+        "default": null,
+        "min": 1024,
+        "max": 65535
+      },
+      {
+        "id": "listen",
+        "label": "Доступ",
+        "type": "choice",
+        "default": "local",
+        "choices": [
+          {
+            "value": "local",
+            "label": "только этот компьютер"
+          },
+          {
+            "value": "lan",
+            "label": "локальная сеть"
+          }
+        ]
+      },
+      {
+        "id": "no-build",
+        "label": "Не пересобирать",
+        "type": "bool",
+        "default": false
+      }
+    ],
+    "actions": [
+      {
+        "id": "install",
+        "label": "Установить и запустить",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "start",
+          "--no-open"
+        ],
+        "options": [
+          {
+            "setting": "port",
+            "argv": [
+              "--port",
+              "{value}"
+            ]
+          },
+          {
+            "setting": "listen",
+            "argv": [
+              "--listen",
+              "{value}"
+            ]
+          },
+          {
+            "setting": "no-build",
+            "argv": [
+              "--no-build"
+            ]
+          }
+        ],
+        "dryRun": [
+          "--dry-run"
+        ],
+        "timeoutSeconds": 3600
+      },
+      {
+        "id": "stop",
+        "label": "Остановить",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "stop"
+        ],
+        "dryRun": [
+          "--dry-run"
+        ]
+      },
+      {
+        "id": "reset",
+        "label": "Удалить вместе с данными",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "reset",
+          "--yes"
+        ],
+        "confirm": "Удалить узел и его базу безвозвратно?"
+      },
+      {
+        "id": "status",
+        "label": "Состояние",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "status",
+          "--json"
+        ],
+        "output": "status",
+        "timeoutSeconds": 60
+      }
+    ],
+    "profiles": [
+      {
+        "id": "same-node-port",
+        "label": "Тот же узел на другом порту",
+        "supported": true,
+        "action": "install",
+        "ask": [
+          "port"
+        ]
+      },
+      {
+        "id": "second-node",
+        "label": "Второй, тестовый узел",
+        "supported": false,
+        "reason": "направление держит один узел на checkout"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "defaults",
+      "action": "install",
+      "values": {},
+      "dryRun": false,
+      "expected": {
+        "component": "sample",
+        "action": "install",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "start",
+          "--no-open",
+          "--listen",
+          "local"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 3600
+      }
+    },
+    {
+      "name": "port-and-lan",
+      "action": "install",
+      "values": {
+        "port": 8091,
+        "listen": "lan"
+      },
+      "dryRun": false,
+      "expected": {
+        "component": "sample",
+        "action": "install",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "start",
+          "--no-open",
+          "--port",
+          "8091",
+          "--listen",
+          "lan"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 3600
+      }
+    },
+    {
+      "name": "bool-flag",
+      "action": "install",
+      "values": {
+        "no-build": true
+      },
+      "dryRun": false,
+      "expected": {
+        "component": "sample",
+        "action": "install",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "start",
+          "--no-open",
+          "--listen",
+          "local",
+          "--no-build"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 3600
+      }
+    },
+    {
+      "name": "dry-run",
+      "action": "install",
+      "values": {
+        "port": 8091
+      },
+      "dryRun": true,
+      "expected": {
+        "component": "sample",
+        "action": "install",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "start",
+          "--no-open",
+          "--port",
+          "8091",
+          "--listen",
+          "local",
+          "--dry-run"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 3600
+      }
+    },
+    {
+      "name": "stop-dry-run",
+      "action": "stop",
+      "values": {},
+      "dryRun": true,
+      "expected": {
+        "component": "sample",
+        "action": "stop",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "stop",
+          "--dry-run"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "name": "status",
+      "action": "status",
+      "values": {},
+      "dryRun": false,
+      "expected": {
+        "component": "sample",
+        "action": "status",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "status",
+          "--json"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 60
+      }
+    },
+    {
+      "name": "reset-confirm",
+      "action": "reset",
+      "values": {},
+      "dryRun": false,
+      "expected": {
+        "component": "sample",
+        "action": "reset",
+        "argv": [
+          "{python}",
+          "bootstrap.py",
+          "reset",
+          "--yes"
+        ],
+        "cwd": "sample",
+        "privileged": false,
+        "detached": false,
+        "timeoutSeconds": 600
+      }
+    },
+    {
+      "name": "unknown-action",
+      "action": "launch",
+      "values": {},
+      "dryRun": false,
+      "rejected": "unknown-action"
+    },
+    {
+      "name": "port-out-of-range",
+      "action": "install",
+      "values": {
+        "port": 80
+      },
+      "dryRun": false,
+      "rejected": "bad-value"
+    },
+    {
+      "name": "choice-not-declared",
+      "action": "install",
+      "values": {
+        "listen": "world"
+      },
+      "dryRun": false,
+      "rejected": "bad-value"
+    },
+    {
+      "name": "unknown-setting",
+      "action": "install",
+      "values": {
+        "colour": "red"
+      },
+      "dryRun": false,
+      "rejected": "bad-value"
+    },
+    {
+      "name": "no-dry-run-declared",
+      "action": "reset",
+      "values": {},
+      "dryRun": true,
+      "rejected": "no-dry-run"
+    }
+  ]
+}

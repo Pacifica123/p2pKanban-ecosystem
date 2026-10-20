@@ -1,0 +1,1629 @@
+{
+  "contract": "p2p-kanban-launcher-entry/1",
+  "description": "Объявления, которые лаунчер не принимает целиком, с кодом отказа. Направление с таким launcher.json показывается «только инструкция».",
+  "cases": [
+    {
+      "name": "wrong-schema",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/2",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "wrong-schema"
+    },
+    {
+      "name": "no-actions",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "no-actions"
+    },
+    {
+      "name": "no-status",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "no-status"
+    },
+    {
+      "name": "shell-instead-of-python",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "sh",
+              "-c",
+              "docker compose down"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-argv"
+    },
+    {
+      "name": "script-outside-direction",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "../devctl/devctl.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-argv"
+    },
+    {
+      "name": "absolute-script",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "/usr/bin/evil.py"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-argv"
+    },
+    {
+      "name": "placeholder-in-argv",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "{home}"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-placeholder"
+    },
+    {
+      "name": "value-for-bool",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build={value}"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-placeholder"
+    },
+    {
+      "name": "option-unknown-setting",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              },
+              {
+                "setting": "colour",
+                "argv": [
+                  "--c",
+                  "{value}"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "unknown-setting"
+    },
+    {
+      "name": "duplicate-action",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "duplicate-id"
+    },
+    {
+      "name": "bad-default",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": 70000,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-setting"
+    },
+    {
+      "name": "unsupported-profile-without-reason",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "install",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false
+          }
+        ]
+      },
+      "rejected": "bad-profile"
+    },
+    {
+      "name": "profile-unknown-action",
+      "entry": {
+        "schema": "p2p-kanban-launcher-entry/1",
+        "component": "sample",
+        "settings": [
+          {
+            "id": "port",
+            "label": "Порт",
+            "type": "port",
+            "default": null,
+            "min": 1024,
+            "max": 65535
+          },
+          {
+            "id": "listen",
+            "label": "Доступ",
+            "type": "choice",
+            "default": "local",
+            "choices": [
+              {
+                "value": "local",
+                "label": "только этот компьютер"
+              },
+              {
+                "value": "lan",
+                "label": "локальная сеть"
+              }
+            ]
+          },
+          {
+            "id": "no-build",
+            "label": "Не пересобирать",
+            "type": "bool",
+            "default": false
+          }
+        ],
+        "actions": [
+          {
+            "id": "install",
+            "label": "Установить и запустить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "start",
+              "--no-open"
+            ],
+            "options": [
+              {
+                "setting": "port",
+                "argv": [
+                  "--port",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "listen",
+                "argv": [
+                  "--listen",
+                  "{value}"
+                ]
+              },
+              {
+                "setting": "no-build",
+                "argv": [
+                  "--no-build"
+                ]
+              }
+            ],
+            "dryRun": [
+              "--dry-run"
+            ],
+            "timeoutSeconds": 3600
+          },
+          {
+            "id": "stop",
+            "label": "Остановить",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "stop"
+            ],
+            "dryRun": [
+              "--dry-run"
+            ]
+          },
+          {
+            "id": "reset",
+            "label": "Удалить вместе с данными",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "reset",
+              "--yes"
+            ],
+            "confirm": "Удалить узел и его базу безвозвратно?"
+          },
+          {
+            "id": "status",
+            "label": "Состояние",
+            "argv": [
+              "{python}",
+              "bootstrap.py",
+              "status",
+              "--json"
+            ],
+            "output": "status",
+            "timeoutSeconds": 60
+          }
+        ],
+        "profiles": [
+          {
+            "id": "same-node-port",
+            "label": "Тот же узел на другом порту",
+            "supported": true,
+            "action": "launch",
+            "ask": [
+              "port"
+            ]
+          },
+          {
+            "id": "second-node",
+            "label": "Второй, тестовый узел",
+            "supported": false,
+            "reason": "направление держит один узел на checkout"
+          }
+        ]
+      },
+      "rejected": "bad-profile"
+    }
+  ]
+}

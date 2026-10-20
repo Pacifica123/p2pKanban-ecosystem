@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "launcher-entry/1/schema/status.schema.json",
+  "title": "stdout команды status направления (код выхода 0)",
+  "type": "object",
+  "required": ["schema", "component", "installed", "running"],
+  "properties": {
+    "schema": {"const": "p2p-kanban-launcher-status/1"},
+    "component": {"type": "string"},
+    "installed": {"type": "boolean"},
+    "running": {"type": ["boolean", "null"], "description": "null — неизвестно (например, не запущен Docker)"},
+    "version": {"type": ["string", "null"], "maxLength": 80},
+    "revision": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$", "description": "коммит монорепозитория, из которого собрана установка"},
+    "url": {"type": ["string", "null"], "pattern": "^https?://"},
+    "values": {"type": "object", "description": "текущие значения объявленных настроек"},
+    "detail": {"type": ["string", "null"]},
+    "problems": {"type": "array", "items": {"type": "string"}}
+  }
+}
