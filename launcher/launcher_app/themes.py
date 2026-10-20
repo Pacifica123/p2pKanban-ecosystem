@@ -203,6 +203,18 @@ QHeaderView, QTableCornerButton::section {{ background: transparent; border: non
 QHeaderView::section {{ background: transparent; color: {c['textMuted']}; border: none; border-bottom: 1px solid {c['border']}; padding: 8px 10px; font-weight: 600; }}
 QTableWidget::item {{ padding: 6px 10px; border-bottom: 1px solid {c['border']}; }}
 
+QDialog {{ background: {c['background']}; }}
+QLabel#dialogTitle {{ font-size: 13pt; font-weight: 700; }}
+QLabel#warnLine {{ background: {soft('warning')}; color: {c['warningText']}; border-radius: 10px; padding: 6px 10px; }}
+QPlainTextEdit#mono {{ background: {c['surface']}; border: 1px solid {c['border']}; border-radius: 12px; padding: 6px; }}
+QSpinBox, QComboBox {{ background: {c['surfaceRaised']}; border: 1px solid {c['border']}; border-radius: 10px; padding: 4px 10px; min-height: 20px; }}
+QComboBox QAbstractItemView {{ background: {c['surfaceRaised']}; selection-background-color: {c['accentSoft']}; selection-color: {c['text']}; }}
+QToolButton#more {{ background: {c['surfaceRaised']}; border: 1px solid {c['border']}; border-radius: 16px; padding: 6px 12px; font-weight: 600; }}
+QToolButton#more::menu-indicator {{ image: none; width: 0; }}
+QMenu {{ background: {c['surfaceRaised']}; border: 1px solid {c['borderStrong']}; border-radius: 10px; padding: 4px; }}
+QMenu::item {{ padding: 6px 18px; border-radius: 8px; }}
+QMenu::item:selected {{ background: {c['accentSoft']}; }}
+
 QFrame#foot {{ background: {c['surfaceMuted']}; border-top: 1px solid {c['border']}; }}
 QScrollBar:vertical {{ background: transparent; width: 10px; margin: 4px; }}
 QScrollBar::handle:vertical {{ background: {c['borderStrong']}; border-radius: 4px; min-height: 30px; }}

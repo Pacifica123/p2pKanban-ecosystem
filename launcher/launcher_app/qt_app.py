@@ -15,11 +15,11 @@ from PySide6.QtCore import QObject, QSize, Qt, QTimer, QUrl, Signal
 from PySide6.QtGui import QColor, QDesktopServices, QIcon
 from PySide6.QtWidgets import (
     QAbstractItemView, QApplication, QFrame, QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout,
-    QHeaderView, QLabel, QMainWindow, QPushButton, QScrollArea, QSizePolicy, QTableWidget,
+    QHeaderView, QLabel, QMainWindow, QMenu, QPushButton, QScrollArea, QSizePolicy, QTableWidget,
     QTableWidgetItem, QToolButton, QVBoxLayout, QWidget,
 )
 
-from . import paths, settings, themes
+from . import entry as entries, local, paths, settings, themes, view
 
 NAMES = {
     "web": ("Web-узел", "W"),
@@ -30,6 +30,7 @@ NAMES = {
 }
 PLATFORM = {"windows": "Windows", "macos": "macOS", "linux": "Linux", "arch-linux": "Arch-based", "android": "Android"}
 VERDICT_KIND = {"current": "ok", "outdated": "warn", "modified": "warn", "ahead": "info"}
+INSTALL_KIND = {"running": "ok", "stopped": "info", "installed": "info", "broken": "bad", "absent": None}
 CARD_WIDTH = 330
 ICON = paths.LAUNCHER_DIR / "assets" / "icon.svg"
 
@@ -75,7 +76,9 @@ def stage_note(row: dict) -> str:
         return "Ссылка на APK из EAS — ступень L4."
     if row["id"] == "launcher":
         return "Самообновление — ступень L5."
-    return f"Установка и настройки из лаунчера — ступень {'L3' if row['id'] == 'abl' else 'L2'}. Пока — по шагам ниже."
+    if row.get("entryError"):
+        return row["entryError"]
+    return "Направление ещё не объявило launcher.json: пока — по шагам ниже."
 
 
 def open_url(url: str) -> None:
@@ -83,7 +86,7 @@ def open_url(url: str) -> None:
 
 
 class Card(QFrame):
-    def __init__(self, row: dict, small: bool = False):
+    def __init__(self, row: dict, small: bool = False, act: Callable[[dict, str], None] | None = None):
         super().__init__()
         self.setObjectName("card")
         off = row["fit"]["fit"] == "no"
@@ -126,10 +129,15 @@ class Card(QFrame):
         chips = QHBoxLayout()
         chips.setSpacing(6)
         chips.addWidget(chip(f"исходники: {row['checkout']['label']}", VERDICT_KIND.get(row["checkout"]["id"]), row["checkout"]["detail"]))
-        if row["fit"]["fit"] == "yes":
+        if row["fit"]["fit"] == "yes" and (small or not row["requires"]):
             chips.addWidget(chip("машина готова" if row["ready"] else "нет предпосылок", "ok" if row["ready"] else "bad"))
         chips.addStretch(1)
         box.addLayout(chips)
+        if row.get("status"):
+            line = QHBoxLayout()
+            line.addWidget(chip(view.installed_text(row), INSTALL_KIND.get(row["status"]["state"]), row["installed"]["detail"]))
+            line.addStretch(1)
+            box.addLayout(line)
 
         if not small:
             for item in row["requires"]:
@@ -169,6 +177,36 @@ class Card(QFrame):
         box.addStretch(1)
         actions = QHBoxLayout()
         actions.setSpacing(8)
+        plan = view.card_actions(row)
+        if plan["buttons"] or plan["menu"]:
+            for item in plan["buttons"]:
+                button = QPushButton(item["label"])
+                if item["main"]:
+                    button.setObjectName("main")
+                button.setEnabled(plan["blocked"] is None or item["id"] == "open")
+                if plan["blocked"]:
+                    button.setToolTip(plan["blocked"])
+                button.clicked.connect(lambda _=False, aid=item["id"]: act and act(row, aid))
+                actions.addWidget(button)
+            if row["entry"].get("settings") or row["entry"].get("profiles"):
+                tune = QPushButton("Настройки")
+                tune.clicked.connect(lambda _=False: act and act(row, "@settings"))
+                actions.addWidget(tune)
+            if plan["menu"]:
+                more = QToolButton()
+                more.setText("Ещё ▾")
+                more.setObjectName("more")
+                more.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+                menu = QMenu(more)
+                for item in plan["menu"]:
+                    menu.addAction(item["label"], lambda aid=item["id"]: act and act(row, aid))
+                more.setMenu(menu)
+                actions.addWidget(more)
+            actions.addStretch(1)
+            box.addLayout(actions)
+            if plan["blocked"]:
+                box.addWidget(label(plan["blocked"], "muted", wrap=True))
+            return
         disabled = []
         if row.get("distribution") == "apk":
             disabled.append(("Скачать APK", True))
@@ -264,6 +302,8 @@ class Window(QMainWindow):
         self.resize(size["width"], size["height"])
         self.setMinimumSize(QSize(*settings.MIN_SIZE))
 
+        self.dialogs: list = []
+        self.last_state: dict = {"ecosystem": {"root": None}}
         self.loader = Loader(provider)
         self.loader.done.connect(self.render)
         self.loader.failed.connect(lambda message: self.show_notice(f"Состояние не собралось: {message}"))
@@ -447,8 +487,9 @@ class Window(QMainWindow):
         order = {"yes": 0, "phone": 1, "no": 2}
         users = sorted((row for row in value["components"] if row.get("audience", "user") == "user"),
                        key=lambda row: order[row["fit"]["fit"]])
-        self.apps.set_cards([Card(row) for row in users])
-        self.dev.set_cards([Card(row, small=True) for row in value["components"] if row.get("audience", "user") != "user"])
+        self.apps.set_cards([Card(row, act=self.act) for row in users])
+        self.dev.set_cards([Card(row, small=True, act=self.act) for row in value["components"]
+                            if row.get("audience", "user") != "user"])
         self.fill_table(value["components"])
 
         source = {"network": "из сети", "cache": "из кеша", "none": "нет данных"}.get(glob.get("source"), glob.get("source"))
@@ -469,7 +510,7 @@ class Window(QMainWindow):
                 commit_text(row.get("remote")),
                 commit_text((row.get("local") or {}).get("commit")),
                 f"{row['checkout']['label']}\n{row['checkout']['detail']}",
-                f"{installed['label']}\n{installed['detail'] if isinstance(installed['detail'], str) else ''}",
+                f"{view.installed_text(row)}\n{installed['detail'] if isinstance(installed['detail'], str) else ''}",
             ]
             for column, text in enumerate(cells):
                 item = QTableWidgetItem(text)
@@ -478,6 +519,48 @@ class Window(QMainWindow):
         self.table.resizeRowsToContents()
         height = self.table.horizontalHeader().height() + sum(self.table.rowHeight(i) for i in range(len(rows))) + 4
         self.table.setFixedHeight(height)
+
+    # --- действия направлений (L2) ---
+
+    def act(self, row: dict, action_id: str) -> None:
+        from . import qt_dialogs
+
+        root = Path(self.last_state["ecosystem"]["root"])
+        registry = paths.registry_file()
+        entry = row["entry"]
+        values = entries.clean_values(entry, local.saved_values(registry, row["id"]))
+        if action_id == "open":
+            url = (row.get("status") or {}).get("url")
+            if url:
+                open_url(url)
+            return
+        if action_id == "@settings":
+            dialog = qt_dialogs.SettingsDialog(self, entry, values, (row.get("status") or {}).get("values"))
+            dialog.saved.connect(lambda chosen: self.save_values(row["id"], chosen))
+            dialog.run_profile.connect(lambda pid, chosen: self.run_action(root, row, entry, next(
+                p for p in entry["profiles"] if p["id"] == pid)["action"], chosen, next(
+                p for p in entry["profiles"] if p["id"] == pid)["label"]))
+            dialog.exec()
+            return
+        self.run_action(root, row, entry, action_id, values)
+
+    def run_action(self, root: Path, row: dict, entry: dict, action_id: str, values: dict, title: str | None = None) -> None:
+        from . import qt_dialogs
+
+        dialog = qt_dialogs.RunDialog(self, root, entry, action_id, values, paths.registry_file(), title)
+        dialog.ran.connect(lambda *_: self.load(False))
+        dialog.setModal(False)
+        dialog.show()
+        self.dialogs.append(dialog)
+        dialog.finished.connect(lambda *_, d=dialog: self.dialogs.remove(d) if d in self.dialogs else None)
+
+    def save_values(self, component: str, values: dict) -> None:
+        try:
+            local.save_values(paths.registry_file(), component, values)
+        except OSError as error:
+            self.show_notice(f"Настройки {component} не сохранились: {error}")
+            return
+        self.load(False)
 
     def closeEvent(self, event) -> None:  # noqa: N802
         self.current["window"] = {"width": self.width(), "height": self.height()}

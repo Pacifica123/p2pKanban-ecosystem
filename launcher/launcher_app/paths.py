@@ -54,6 +54,11 @@ def data_dir() -> Path:
     return Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share") / APP
 
 
+def registry_file() -> Path:
+    """Реестр установок и настройки направлений (p2p-kanban-launcher-installs/1)."""
+    return config_dir() / "installs.json"
+
+
 def venv_dir() -> Path:
     return data_dir() / "venv"
 

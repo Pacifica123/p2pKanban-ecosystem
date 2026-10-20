@@ -4,10 +4,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from . import local, paths, probes, remote
+from . import entry as entries, local, paths, probes, remote, runner as runs
 
 STATE_SCHEMA = "p2p-kanban-launcher-state/1"
-STAGE = "L1"
+STAGE = "L2"
 
 VERDICTS = {
     "current": "актуально",
@@ -67,19 +67,60 @@ def checkout_verdict(root: Path | None, directory: str, local_entry: dict | None
     return {"id": "outdated", "label": VERDICTS["outdated"], "detail": detail}
 
 
-def installed_state(component: dict, registry: dict) -> dict:
+INSTALL_LABELS = {
+    "absent": "не установлено",
+    "installed": "установлено",
+    "running": "работает",
+    "stopped": "остановлено",
+    "broken": "не работает",
+}
+
+
+def installed_state(component: dict, registry: dict, entry_info: dict | None = None,
+                    status_value: dict | None = None) -> dict:
+    """Что установлено: ответ status направления, иначе реестр лаунчера, иначе неизвестно."""
+    if status_value is not None:
+        state_id = status_value["state"]
+        detail = status_value.get("detail") or ""
+        if status_value.get("problems"):
+            detail = "; ".join([detail] + status_value["problems"][:2]) if detail else "; ".join(status_value["problems"][:2])
+        return {"id": state_id, "label": INSTALL_LABELS[state_id], "detail": detail}
     entry = registry.get("installs", {}).get(component["id"])
     if entry:
-        return {"id": "registered", "label": "установлено лаунчером", "detail": entry}
+        last = entry.get("lastAction") or {}
+        return {"id": "registered", "label": "ставил лаунчер",
+                "detail": f"последнее действие: {last.get('action', '?')} {last.get('at', '')}".strip()}
     if component.get("distribution") == "apk":
-        return {"id": "phone", "label": "на телефоне", "detail": "ссылка на APK — ступень L4"}
-    return {"id": "unknown", "label": "неизвестно",
-            "detail": "спросит направление со ступени L2"}
+        return {"id": "phone", "label": "на телефоне", "detail": "ставится на телефон из APK"}
+    if component["id"] == "launcher":
+        return {"id": "self", "label": "это окно", "detail": f"версия {launcher_version()}"}
+    if component.get("audience") == "developer":
+        return {"id": "developer", "label": "для разработки",
+                "detail": f"ставится своей командой: {component.get('entry', '')}".strip()}
+    if entry_info and entry_info.get("error"):
+        return {"id": "unknown", "label": "неизвестно", "detail": entry_info["error"]}
+    return {"id": "unknown", "label": "неизвестно", "detail": "направление ещё не объявило launcher.json"}
+
+
+def freshness(root: Path | None, status_value: dict | None, remote_commit: dict | None) -> dict:
+    """Установка рядом с main: актуальна, если последний коммит каталога в main — её предок."""
+    if not status_value or status_value["state"] in ("absent", "broken"):
+        return {"id": "none", "label": "", "detail": ""}
+    revision = status_value.get("revision")
+    theirs = (remote_commit or {}).get("sha")
+    if not revision:
+        return {"id": "unknown", "label": VERDICTS["unknown"], "detail": "установка не сообщает свой коммит"}
+    if not theirs:
+        return {"id": "unknown", "label": VERDICTS["unknown"], "detail": "нет данных о main"}
+    if revision == theirs or local.is_ancestor(root, theirs, revision):
+        return {"id": "current", "label": VERDICTS["current"], "detail": f"установлен {revision[:7]}, как в main"}
+    return {"id": "outdated", "label": VERDICTS["outdated"],
+            "detail": f"установлен {revision[:7]}; в main новее: {remote_commit.get('subject') or theirs[:7]}"}
 
 
 def build_state(root: Path | None = None, global_state: remote.GlobalState | None = None,
                 force: bool = False, offline: bool = False, runner: probes.Run = probes.run,
-                host: dict | None = None) -> dict:
+                host: dict | None = None, status_run: runs.StatusRun | None = runs.capture) -> dict:
     root = paths.ecosystem_root() if root is None else root
     ecosystem = load_ecosystem(root)
     components = ecosystem.get("components", [])
@@ -95,7 +136,7 @@ def build_state(root: Path | None = None, global_state: remote.GlobalState | Non
         remote_data = {"source": "none", "checkedAt": None, "error": "в ecosystem.json нет repository",
                        "directories": {}, "board": None}
     checkout = local.checkout_state(root, directories)
-    registry = local.read_registry(paths.config_dir() / "installs.json")
+    registry = local.read_registry(paths.registry_file())
     memo: dict = {}
 
     rows = []
@@ -106,6 +147,13 @@ def build_state(root: Path | None = None, global_state: remote.GlobalState | Non
         local_entry = checkout["directories"].get(directory) if checkout["available"] else None
         remote_commit = remote_data.get("directories", {}).get(directory)
         docs = component.get("docs")
+        entry_info = entries.load(root, directory)
+        given = registry["settings"].get(component["id"]) or {}
+        if entry_info["available"]:
+            given = entries.clean_values(entry_info["entry"], given)
+        status_value = None
+        if entry_info["available"] and status_run is not None and fit["fit"] == "yes":
+            status_value = runs.status(root, entry_info["entry"], given, status_run)
         rows.append({
             "id": component["id"],
             "dir": directory,
@@ -124,7 +172,12 @@ def build_state(root: Path | None = None, global_state: remote.GlobalState | Non
             "local": local_entry,
             "checkout": checkout_verdict(root, directory, local_entry, remote_commit) if checkout["available"]
             else {"id": "unknown", "label": VERDICTS["unknown"], "detail": checkout["reason"]},
-            "installed": installed_state(component, registry),
+            "installed": installed_state(component, registry, entry_info, status_value),
+            "status": status_value,
+            "freshness": freshness(root, status_value, remote_commit),
+            "entry": entry_info["entry"],
+            "entryError": entry_info["error"],
+            "values": given,
         })
 
     return {

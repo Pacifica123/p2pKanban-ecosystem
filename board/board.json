@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 85,
-        "comments": 125,
+        "comments": 126,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T13:10:00Z",
+    "generatedAt": "2026-10-20T13:20:00Z",
     "selfHosted": true,
-    "boardRevision": 64,
-    "lastPatchId": "2026-10-20-web-launcher-entry",
+    "boardRevision": 65,
+    "lastPatchId": "2026-10-20-launcher-l2-actions",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -872,11 +872,11 @@
       {
         "id": "01a15878-5ff4-7f63-ac2a-055fd715c478",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L2: контракт launcher-entry/1 и web из лаунчера",
         "description": "Зачем: ставить, запускать, останавливать и обновлять web из окна, а настройки вроде порта и --listen менять в GUI, а не флагами.\n\nГотово, когда: contracts/launcher-entry/1 со схемой и векторами; web/launcher.json объявляет команды bootstrap.py; лаунчер выполняет их с предпросмотром --dry-run и показывает вывод; на Windows и Arch web ставится и обновляется из лаунчера.\n\nНачнётся после L1. Порядок: корень (контракт) → web → launcher. Тестовый web (выбор John 2026-10-20): лаунчер предлагает оба варианта — тот же узел на другом порту или второй узел со своей БД и каталогом; второй требует поддержки в web (патч web до или вместе с L2), E-ADR-004 п.9.",
         "priority": "medium",
-        "position": 14336,
+        "position": 34816,
         "archivedAt": null
       },
       {
@@ -4010,6 +4010,12 @@
         "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
         "createdAt": "2026-10-20T13:10:00Z",
         "body": "patch 2026-10-20-web-launcher-entry: web/launcher.json объявляет bootstrap.py — установить (start со сборкой), запустить (--no-build), остановить, обновить из main, откат, диагностика, логи, удалить с базой; настройки порт и --listen; вариант «тот же узел на другом порту». Новый bootstrap.py status --json (p2p-kanban-launcher-status/1): ничего не меняет, без Docker отвечает running=null с проблемой. Второй узел объявлен supported:false — карточка ниже. Тесты web/tools/test_launcher_entry.py, строка в uts_plan."
+      },
+      {
+        "id": "01a159c2-99e8-7550-bc50-f2fff43581a5",
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "createdAt": "2026-10-20T13:20:00Z",
+        "body": "patch 2026-10-20-launcher-l2-actions: лаунчер 0.2.0 исполняет launcher.json. Своя реализация контракта (launcher_app/entry.py) сверяется с векторами корня; runner запускает только Python-скрипты направления его каталогом, без оболочки; окно запуска показывает команду, даёт пробный прогон, построчный вывод, «Прервать», подтверждение для удаления и отката; окно настроек — порт, --listen и варианты (второй узел серым с причиной). Карточка web: кнопки по ответу status, «Обновить» при коммите web/ в main новее установки. CLI: actions, run, settings. Ждёт хоста: на Windows и Arch web ставится, открывается, переезжает на другой порт, останавливается и обновляется из окна."
       }
     ],
     "boardAppearanceSettings": [],

@@ -1,4 +1,4 @@
-"""Детерминированные проверки лаунчера L1: без сети и Docker; окно — только если есть PySide6.
+"""Детерминированные проверки лаунчера: без сети и Docker; окно — только если есть PySide6.
 
     cd launcher && python -B -m unittest discover -s tests
 """
@@ -13,12 +13,26 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from typing import Callable
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from launcher_app import install, local, paths, probes, remote, settings, state, themes  # noqa: E402
+from launcher_app import entry as entries, install, local, paths, probes, remote, runner, settings, state, themes, view  # noqa: E402
 
 DIRS = ["web", "mobile", "abl", "devctl", "launcher"]
+ROOT = Path(__file__).resolve().parents[2]
+VECTORS = ROOT / "contracts" / "launcher-entry" / "1" / "vectors"
+REVISION = "9db706cb0abf" + "0" * 28
+
+
+def web_status(state_id: str = "running") -> Callable:
+    """Подменный запуск status: отвечает как web, не трогая Docker."""
+    def run(argv, cwd, env, timeout):
+        body = {"schema": entries.STATUS_SCHEMA, "component": Path(cwd).name, "installed": state_id != "absent",
+                "running": {"running": True, "stopped": False}.get(state_id), "version": "2.1.0",
+                "revision": REVISION, "url": "http://127.0.0.1:8080", "values": {"port": 8080}, "detail": "x", "problems": []}
+        return 0, json.dumps(body)
+    return run
 
 
 def fake_commit(sha: str, subject: str) -> bytes:
@@ -205,7 +219,7 @@ class WindowSmokeTest(unittest.TestCase):
     def test_window_renders_state_offscreen(self):
         os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
         try:
-            from PySide6.QtWidgets import QApplication
+            from PySide6.QtWidgets import QApplication, QPushButton
         except ImportError as error:
             self.skipTest(f"PySide6 не загружается: {error}")
         from launcher_app import qt_app
@@ -217,11 +231,15 @@ class WindowSmokeTest(unittest.TestCase):
             fetch = lambda url: (json.dumps({"origin": {"boardRevision": 1, "lastPatchId": "p"}}).encode()
                                  if "raw.githubusercontent.com" in url else fake_commit("d" * 40, "x"))
             value = state.build_state(root, remote.GlobalState(Path(tmp) / "g.json", fetch),
-                                      runner=lambda argv, timeout: (1, ""), host=probes.detect_platform("Windows"))
+                                      runner=lambda argv, timeout: (0, "linux\n"), host=probes.detect_platform("Windows"),
+                                      status_run=web_status("running"))
             window = qt_app.Window(lambda force: value, Path(tmp) / "s.json")
             window.render(value)
             offs = [card for card in window.apps.cards if card.property("off") == "true"]
             self.assertEqual(len(offs), 1)  # abl на Windows
+            texts = [button.text() for card in window.apps.cards for button in card.findChildren(QPushButton)]
+            self.assertIn("Открыть", texts)  # web «работает» — кнопка открыть узел
+            self.assertIn("Обновить", texts)  # main новее установленного коммита
             window.apply_theme("lemon")
             self.assertEqual(settings.load(Path(tmp) / "s.json")["theme"], "lemon")
             window.close()
@@ -240,7 +258,7 @@ class BuildStateTest(unittest.TestCase):
                                      if "raw.githubusercontent.com" in url else fake_commit("d" * 40, "x"))
                 cache = remote.GlobalState(Path(tmp) / "g.json", fetch)
                 value = state.build_state(root, cache, runner=lambda argv, timeout: (1, ""),
-                                          host=probes.detect_platform("Windows"))
+                                          host=probes.detect_platform("Windows"), status_run=web_status("stopped"))
             finally:
                 del os.environ["P2PKANBAN_LAUNCHER_HOME"]
         rows = {row["id"]: row for row in value["components"]}
@@ -251,6 +269,136 @@ class BuildStateTest(unittest.TestCase):
         self.assertEqual(rows["mobile"]["installed"]["id"], "phone")
         self.assertTrue(rows["web"]["install"])
         self.assertEqual(value["global"]["source"], "network")
+        self.assertEqual(rows["web"]["status"]["state"], "stopped")
+        self.assertEqual(rows["web"]["installed"]["label"], "остановлено")
+        self.assertIsNone(rows["abl"]["status"])  # abl на Windows не спрашивают
+        self.assertEqual(rows["launcher"]["installed"]["id"], "self")
+
+
+@unittest.skipUnless(VECTORS.is_dir(), "лаунчер взят без корня экосистемы: векторы контракта недоступны")
+class EntryVectorsTest(unittest.TestCase):
+    """Своя реализация launcher-entry/1 даёт то же, что эталон корня."""
+
+    def load(self, name: str) -> dict:
+        return json.loads((VECTORS / name).read_text(encoding="utf-8"))
+
+    def test_commands(self):
+        data = self.load("commands.json")
+        entry = entries.check(data["entry"])
+        for case in data["cases"]:
+            with self.subTest(case["name"]):
+                if "rejected" in case:
+                    with self.assertRaises(entries.Rejected) as caught:
+                        entries.command(entry, case["action"], case["values"], case["dryRun"])
+                    self.assertEqual(caught.exception.reason, case["rejected"])
+                else:
+                    self.assertEqual(entries.command(entry, case["action"], case["values"], case["dryRun"]), case["expected"])
+
+    def test_rejections(self):
+        for case in self.load("rejections.json")["cases"]:
+            with self.subTest(case["name"]):
+                with self.assertRaises(entries.Rejected) as caught:
+                    entries.check(case["entry"])
+                self.assertEqual(caught.exception.reason, case["rejected"])
+
+    def test_status(self):
+        data = self.load("status.json")
+        for case in data["cases"]:
+            with self.subTest(case["name"]):
+                self.assertEqual(entries.parse_status(data["entry"], case["exitCode"], case["stdout"]), case["expected"])
+
+    def test_real_entries_of_the_tree_load(self):
+        for directory in ("web",):
+            info = entries.load(ROOT, directory)
+            self.assertTrue(info["available"], info["error"])
+
+
+class RunnerTest(unittest.TestCase):
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        (self.root / "demo").mkdir()
+        (self.root / "demo" / "tool.py").write_text(
+            "import json, sys\n"
+            "if sys.argv[1] == 'status':\n"
+            "    print(json.dumps({'schema': 'p2p-kanban-launcher-status/1', 'component': 'demo', 'installed': True,"
+            " 'running': None, 'values': {'port': 9000}}))\n"
+            "else:\n"
+            "    print('аргументы:', ' '.join(sys.argv[1:]))\n"
+            "    sys.exit(3 if '--fail' in sys.argv else 0)\n", encoding="utf-8")
+        self.entry = entries.check({
+            "schema": entries.ENTRY_SCHEMA, "component": "demo",
+            "settings": [{"id": "port", "label": "Порт", "type": "port"},
+                         {"id": "fail", "label": "Упасть", "type": "bool"}],
+            "actions": [
+                {"id": "install", "label": "Поставить", "argv": ["{python}", "tool.py", "install"],
+                 "options": [{"setting": "port", "argv": ["--port", "{value}"]}, {"setting": "fail", "argv": ["--fail"]}],
+                 "dryRun": ["--dry-run"]},
+                {"id": "status", "label": "Состояние", "argv": ["{python}", "tool.py", "status"], "output": "status"},
+            ]})
+        self.registry = self.root / "installs.json"
+
+    def tearDown(self):
+        shutil.rmtree(self.root, ignore_errors=True)
+
+    def test_command_runs_in_direction_with_our_python_and_records(self):
+        command = runner.resolve(self.root, entries.command(self.entry, "install", {"port": 9001}), sys.executable)
+        self.assertEqual(command["argv"][0], sys.executable)
+        self.assertEqual(Path(command["cwd"]), (self.root / "demo").resolve())
+        lines: list[str] = []
+        self.assertEqual(runner.stream(command, lines.append), 0)
+        self.assertEqual(lines, ["аргументы: install --port 9001"])
+        runner.record(self.registry, command, 0, False, {"port": 9001})
+        saved = local.read_registry(self.registry)["installs"]["demo"]
+        self.assertEqual((saved["lastAction"]["action"], saved["values"]), ("install", {"port": 9001}))
+
+    def test_failure_and_dry_run(self):
+        command = runner.resolve(self.root, entries.command(self.entry, "install", {"fail": True}, dry_run=True))
+        self.assertEqual(runner.stream(command, lambda line: None), 3)
+        runner.record(self.registry, command, 3, True, {})
+        self.assertEqual(local.read_registry(self.registry)["installs"], {})  # пробный прогон — не установка
+
+    def test_status_through_real_process(self):
+        value = runner.status(self.root, self.entry)
+        self.assertEqual((value["state"], value["values"]), ("installed", {"port": 9000}))
+
+    def test_status_timeout_is_broken_not_crash(self):
+        value = runner.status(self.root, self.entry, run=lambda argv, cwd, env, timeout: (124, ""))
+        self.assertEqual((value["state"], value["detail"]), ("broken", "status не ответил вовремя"))
+
+    def test_saved_values_survive_changed_entry(self):
+        local.save_values(self.registry, "demo", {"port": 9002, "gone": 1, "fail": "да"})
+        self.assertEqual(entries.clean_values(self.entry, local.saved_values(self.registry, "demo")), {"port": 9002})
+
+
+class CardActionsTest(unittest.TestCase):
+    def row(self, state_id: str | None, freshness: str = "current", ready: bool = True) -> dict:
+        entry = json.loads((ROOT / "web" / "launcher.json").read_text(encoding="utf-8")) \
+            if (ROOT / "web" / "launcher.json").is_file() else None
+        if entry is None:
+            self.skipTest("нет web/launcher.json")
+        status = None if state_id is None else {"state": state_id, "url": "http://127.0.0.1:8080"}
+        return {"entry": entry, "fit": {"fit": "yes"}, "status": status, "freshness": {"id": freshness},
+                "ready": ready, "requires": [{"label": "Docker", "ok": ready}]}
+
+    def ids(self, row: dict) -> list[str]:
+        return [item["id"] for item in view.card_actions(row)["buttons"]]
+
+    def test_buttons_follow_state(self):
+        self.assertEqual(self.ids(self.row("absent")), ["install"])
+        self.assertEqual(self.ids(self.row("running")), ["open", "stop"])
+        self.assertEqual(self.ids(self.row("stopped")), ["start"])
+        self.assertEqual(self.ids(self.row("running", "outdated")), ["update", "open", "stop"])
+        self.assertEqual(self.ids(self.row("broken")), ["doctor", "install"])
+
+    def test_menu_has_the_rest_but_not_status(self):
+        plan = view.card_actions(self.row("running"))
+        menu = [item["id"] for item in plan["menu"]]
+        self.assertIn("remove", menu)
+        self.assertNotIn("status", menu)
+        self.assertNotIn("stop", menu)
+
+    def test_missing_docker_blocks_but_names_it(self):
+        self.assertEqual(view.card_actions(self.row("absent", ready=False))["blocked"], "Сначала нужно: Docker")
 
 
 if __name__ == "__main__":

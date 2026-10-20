@@ -7,6 +7,7 @@ Checkout читается только через git корня (какой к�
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -70,11 +71,47 @@ def is_ancestor(root: Path | None, older: str | None, newer: str | None) -> bool
 
 
 def read_registry(path: Path) -> dict:
-    """Реестр установок лаунчера; пустой, пока лаунчер ничего не ставил (до L2)."""
+    """Реестр установок лаунчера: что он запускал (installs) и настройки направлений (settings)."""
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return {"schema": REGISTRY_SCHEMA, "installs": {}}
+        value = {}
     if not isinstance(value, dict) or not isinstance(value.get("installs"), dict):
-        return {"schema": REGISTRY_SCHEMA, "installs": {}}
+        value = {"schema": REGISTRY_SCHEMA, "installs": {}}
+    if not isinstance(value.get("settings"), dict):
+        value["settings"] = {}
+    value["schema"] = REGISTRY_SCHEMA
     return value
+
+
+def write_registry(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix(".tmp")
+    temp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(temp, path)
+
+
+def record_install(path: Path, component: str, fields: dict) -> dict:
+    registry = read_registry(path)
+    entry = dict(registry["installs"].get(component) or {})
+    entry.update(fields)
+    registry["installs"][component] = entry
+    write_registry(path, registry)
+    return entry
+
+
+def forget_install(path: Path, component: str) -> None:
+    registry = read_registry(path)
+    registry["installs"].pop(component, None)
+    write_registry(path, registry)
+
+
+def saved_values(path: Path, component: str) -> dict:
+    value = read_registry(path)["settings"].get(component)
+    return dict(value) if isinstance(value, dict) else {}
+
+
+def save_values(path: Path, component: str, values: dict) -> None:
+    registry = read_registry(path)
+    registry["settings"][component] = dict(values)
+    write_registry(path, registry)
