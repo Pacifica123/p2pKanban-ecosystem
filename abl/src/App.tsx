@@ -5,6 +5,7 @@ import { notePlatform, trace } from './shared/errorReport/journal';
 import { DebugJournalPanel } from './shared/debug/DebugJournalPanel';
 import { useDebugMode } from './shared/debug/debugMode';
 import { ProjectBoardPanel } from './features/projectBoard/ProjectBoardPanel';
+import { VaultPassphrasePanel } from './features/system/VaultPassphrasePanel';
 import type { FormEvent } from 'react';
 import {
   createBoard,
@@ -536,6 +537,8 @@ export default function App() {
       {error ? <div className="error-banner" role="alert">{error}<ErrorDetails message={error} /></div> : null}
 
       {showJournal ? <DebugJournalPanel onClose={() => setShowJournal(false)} /> : null}
+
+      <VaultPassphrasePanel vault={vault} onVault={setVault} />
 
       <section className="integration-strip" aria-label="Desktop integration capabilities">
         <div>

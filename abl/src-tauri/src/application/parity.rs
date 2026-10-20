@@ -17,7 +17,6 @@ const LOCAL_APPEND_STEP: f64 = 1000.0;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ParityRepositoryError {
-    WorkspaceNotFound,
     BoardNotFound,
     CardNotFound,
     LabelNotFound,

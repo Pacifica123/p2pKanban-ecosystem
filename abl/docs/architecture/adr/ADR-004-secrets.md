@@ -32,3 +32,7 @@ A07 established the `SecretVault` application interface and a session-only provi
 ## A09 implementation note
 
 A09 implements the Linux provider/storage boundary: an unlocked freedesktop Secret Service protects a random vault root; typed secrets live in an authenticated XChaCha20-Poly1305 profile vault; a versioned Argon2id passphrase provider is available as the explicit durable fallback; locked/absent/corrupt providers degrade fail-closed to session-only status. The passphrase provider is exercised from Rust and intentionally has no generic WebView secret bridge before a real credential-provisioning flow exists. Full planner database encryption is still not claimed.
+
+## Passphrase provisioning (CORR-A09-002, 2026-10-20)
+
+The passphrase provider is now reachable from the WebView through a real credential-provisioning flow: when Secret Service is unavailable and the profile holds no provider-sealed vault, the UI offers a write-only setup; a profile with a passphrase root wrap asks for the passphrase at every launch. Two IPC commands accept the passphrase and return only the vault status or a stable error code; there is still no secret read/write IPC. Locked or corrupt providers do not offer the fallback. Full planner database encryption is still not claimed.

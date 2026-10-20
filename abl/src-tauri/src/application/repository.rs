@@ -62,6 +62,9 @@ pub trait PlannerRepository {
 
     fn get_card(&self, card_id: &CardId) -> Result<Option<CardRecord>, RepositoryError>;
 
+    // Read only by the A04/A08 repository contract suites: tombstones are asserted there,
+    // the planner itself never reads them back.
+    #[cfg_attr(not(test), allow(dead_code))]
     fn get_card_tombstone(
         &self,
         card_id: &CardId,

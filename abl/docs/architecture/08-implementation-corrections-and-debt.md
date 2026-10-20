@@ -294,3 +294,43 @@ A16 does not run `pacman`, `sudo`, `pkexec`, download replacement WebKit librari
 `Cargo.toml` pinned only `tauri =2.11.5` and `tauri-build =2.6.3`. `tauri 2.11.5` depends on `tauri-runtime`, `tauri-runtime-wry`, `tauri-macros`, `tauri-codegen` and `tauri-utils` with caret requirements, so the mandatory fresh lock re-resolution selected `tauri-runtime 2.12.1`, `tauri-runtime-wry 2.12.1` and `tauri-macros`/`tauri-codegen 2.7.1`. Those belong to the tauri 2.12 line: `cargo.build` failed inside `tauri-2.11.5/src/app.rs` (`Option<Monitor>` vs `Vec<Monitor>` in `primary_monitor`/`available_monitors`) and generated code failed with `UnexpectedMenuKind`; `cargo.test` failed the same way, and every host probe and the launch probe were BLOCKED behind the build.
 
 The correction keeps the accepted 2.11 line instead of moving to 2.12 and exact-pins the family members to the versions tauri 2.11.5 was released with: `tauri-runtime =2.11.3`, `tauri-runtime-wry =2.11.4`, `tauri-macros =2.6.3`, `tauri-codegen =2.6.3`, `tauri-utils =2.9.3`. Fresh resolution then selects `wry 0.55.1` and `tao 0.35.3`. Verified in a cloud non-Arch Linux build host with WebKitGTK 4.1: `cargo generate-lockfile`, `cargo build --locked` and `cargo test --locked` (121 tests) pass. `evidence/a14-bounded-lan-bridge.json` carries the new `src-tauri/Cargo.toml` digest. Canonical host UTS remains the acceptance gate.
+
+## CORR-A09-002 — the passphrase vault was implemented but unreachable
+
+**Classification:** [FACT] from `cargo check` on main `d235fc6`: 120 `dead_code` warnings in the application build, 28 of them in the passphrase provider (`PassphraseVault`, `Passphrase`, Argon2id/root-wrap helpers, `VaultMode::Passphrase`).
+**Architecture impact:** vault provisioning UX and one IPC pair; storage format, KDF parameters and Secret Service behaviour are unchanged.
+**Status:** corrected in source; host acceptance pending (see below).
+
+`bootstrap_vault` already detected a passphrase root wrap and reported `passphrase-required`, and `vault_status` always reported `passphraseFallbackAvailable: true`, but nothing could create or unlock the passphrase vault. On a host without a usable Secret Service the profile stayed session-only forever and the A14 bridge refused provisioning with `LAN_BRIDGE_DURABLE_VAULT_REQUIRED`.
+
+The correction:
+
+- `VaultService` swaps its provider at runtime behind a lock; `ImportService` and `LanBridgeService` share the same `Arc<VaultService>` and see the durable provider immediately.
+- `passphraseFallbackAvailable` is now computed: true only for `provider-unavailable` with neither a root wrap nor a provider-sealed `secrets.vault` in the profile (so a passphrase vault can never shadow secrets sealed by Secret Service), and for `passphrase-required`. `provider-locked` and `provider-corrupt` do not offer it: unlock the keyring or run `p2pkanban doctor`.
+- Two write-only IPC commands, `desktop_api_vault_set_up_passphrase` and `desktop_api_vault_unlock_passphrase`: the passphrase goes in, only the safe vault status or a stable code (`VAULT_PASSPHRASE_LENGTH`, `VAULT_PASSPHRASE_REJECTED`, `VAULT_PASSPHRASE_NOT_APPLICABLE`, `VAULT_CORRUPT`, `VAULT_STORAGE_FAILURE`) comes back. No secret get/put/delete IPC exists.
+- `VaultPassphrasePanel` in the WebView appears only while the core reports the fallback as applicable; it clears the fields after a successful transition and never stores the passphrase.
+- `VaultError::Unavailable`/`Locked` (never constructed) are replaced by `WeakPassphrase`/`NotApplicable`; `Passphrase::new` reports a bad length as `WeakPassphrase` instead of `AuthenticationFailed`.
+
+Host acceptance: on an Arch session without `org.freedesktop.secrets` (for example a bare X11/Wayland WM session), start abl, set a passphrase, restart, unlock, and start the A14 bridge. A wrong passphrase must keep the profile session-only.
+
+## DEBT-A10-002 — sync-core has no runtime consumer
+
+**Classification:** [FACT] from the same `cargo check`: `SqliteSyncRepository`, `SyncService` and all of `domain/sync.rs` are never constructed outside tests (66 warnings).
+**Architecture impact:** none in this patch; this records the actual product state.
+**Status:** open; board card «abl: живая синхронизация доски по roaming/1».
+
+A10 deliberately stopped at the local protocol layer (outbox, merge, replay, capability epochs). No relay transport or coordinator exists, and `Cargo.toml` has no network client, so the running app neither sends local changes (they accumulate in `pending_local_changes`) nor receives remote ones. Data enters abl only through one-shot imports (A14 bridge provisioning into an empty profile). The three sync modules carry an explicit `#[allow(dead_code)]` on their `mod` declarations with this reference.
+
+## Dead-code gate
+
+`main.rs` sets `#![cfg_attr(debug_assertions, deny(dead_code))]`: any never-used item fails dev and test builds, including the UTS `cargo test`. Release builds (PKGBUILD, AppImage) only warn, so a newer rustc on the rolling host cannot break packaging. Code that is staged on purpose carries `#[allow(dead_code)]` with the reason and the card that will wire it:
+
+| Staged item | Wired by |
+|---|---|
+| `domain/sync`, `application/sync`, `infrastructure/sqlite/sync` | «abl: живая синхронизация доски по roaming/1» |
+| `ImportService::import_portable_bundle`, `import_web_node_link_v1`, `validate_web_node_link_envelope`, `serialize_portable_bundle_v1`, `ImportSourceKind::WebNodeLinkV1` | Gate G «реальная миграция Docker→desktop» |
+| `DEVICE_LINK_GRANT/REQUEST/RESPONSE_KIND` | R6 «нативные адаптеры кольца» |
+| `LAN_BRIDGE_DEFAULT_TTL_SECS` | protocol default mirrored by the UI |
+| repository `get_*_tombstone` | read only by the A04/A08 contract suites (`cfg_attr(not(test), …)`) |
+
+Removed as never used: `LanBridgeRuntimeError::AlreadyStopped`, `LanBridgeServiceError::InvalidPackage`/`ImportFailed`, `ParityRepositoryError::WorkspaceNotFound`, `ParityValueError::InvalidJson` with `BoardAppearanceRecord::settings`, `SqlitePlannerRepository::schema_info` and its field, `SqliteRecoveryBackend::layout`, `SecretKind::stable_name`. `project_board::PROTOCOL` is test-only. The evidence digests of the touched A08/A09/A10/A12/A14/A16 sources are re-pinned; their structural guards are unchanged.

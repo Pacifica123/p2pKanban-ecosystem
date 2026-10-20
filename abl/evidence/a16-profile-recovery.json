@@ -41,11 +41,11 @@
     },
     {
       "path": "src-tauri/src/infrastructure/sqlite/recovery.rs",
-      "sha256": "54655a9460eec01638066fd27db35bdd7978f0fcbf4b82e77036cc93f69ec332"
+      "sha256": "2ba63db68d3518535a9197fdb2614ade6cfbbe6d685a8066e2d1315688f94f96"
     },
     {
       "path": "src-tauri/src/infrastructure/sqlite/mod.rs",
-      "sha256": "45e9cf78d84e54612125d525317850db2cca7fa221f33d084e8f3dc778bc3728"
+      "sha256": "2adb36ec50d5d41f13d356390e6b05d05c2b676d7d6b34d288c623a8b8f42401"
     },
     {
       "path": "src-tauri/src/infrastructure/linux/recovery_lock.rs",
@@ -57,7 +57,7 @@
     },
     {
       "path": "src-tauri/src/main.rs",
-      "sha256": "c866e05bc015209d74603eb7f903903e95d0b54d213ce37b6b8a4f131f509108"
+      "sha256": "1f12c92a71b4cc0f3b8d4f23d578707988b3e157eaecd3b6ef8bf075b7830463"
     },
     {
       "path": "tools/a16_host_recovery_probe.py",
@@ -81,7 +81,7 @@
     },
     {
       "path": "docs/IMPLEMENTATION_STATUS.md",
-      "sha256": "d5b3cbc50456faeb2bff283e797d9f2ad81e9eb83f90c893662cb0d3be219b4c"
+      "sha256": "79ce14b79714a405428feb5acf484cbaf303b6303bfd25f327bf3463fec30b8e"
     },
     {
       "path": "docs/NEXT_PATCH_SEQUENCE.md",
@@ -89,7 +89,7 @@
     },
     {
       "path": "docs/architecture/08-implementation-corrections-and-debt.md",
-      "sha256": "a9cf8e5dabdbb5896c6d68a567c733aa6a71a912eab8538ab8bbb27d05406730"
+      "sha256": "4f1ad50c3f21c4441695a2f7142231e473eeeece73a2cd63d525cfd65b3ba13b"
     }
   ]
 }

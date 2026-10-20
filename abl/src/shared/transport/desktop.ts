@@ -28,6 +28,8 @@ import { requestMethod } from './types';
 const DESKTOP_HEALTH_COMMAND = 'desktop_api_health' as const;
 const DESKTOP_PROFILE_DIAGNOSTICS_COMMAND = 'desktop_api_profile_diagnostics' as const;
 const DESKTOP_VAULT_STATUS_COMMAND = 'desktop_api_vault_status' as const;
+const DESKTOP_VAULT_SET_UP_PASSPHRASE_COMMAND = 'desktop_api_vault_set_up_passphrase' as const;
+const DESKTOP_VAULT_UNLOCK_PASSPHRASE_COMMAND = 'desktop_api_vault_unlock_passphrase' as const;
 const DESKTOP_INTEGRATION_CAPABILITIES_COMMAND = 'desktop_api_integration_capabilities' as const;
 const DESKTOP_TAKE_DEEP_LINK_INTENTS_COMMAND = 'desktop_api_take_deep_link_intents' as const;
 const DESKTOP_LAN_BRIDGE_ADDRESSES_COMMAND = 'desktop_api_lan_bridge_addresses' as const;
@@ -111,6 +113,14 @@ export const desktopTransport: ApiTransport = {
     }
     if (method === 'GET' && path === '/system/vault-status') {
       return (await invoke<VaultStatus>(DESKTOP_VAULT_STATUS_COMMAND)) as T;
+    }
+    if (method === 'POST' && path === '/system/vault/passphrase/set-up') {
+      const body = jsonBody<{ passphrase: string }>(init);
+      return (await invoke<VaultStatus>(DESKTOP_VAULT_SET_UP_PASSPHRASE_COMMAND, { passphrase: body.passphrase })) as T;
+    }
+    if (method === 'POST' && path === '/system/vault/passphrase/unlock') {
+      const body = jsonBody<{ passphrase: string }>(init);
+      return (await invoke<VaultStatus>(DESKTOP_VAULT_UNLOCK_PASSPHRASE_COMMAND, { passphrase: body.passphrase })) as T;
     }
     if (method === 'GET' && path === '/system/integration-capabilities') {
       return (await invoke<IntegrationCapabilities>(DESKTOP_INTEGRATION_CAPABILITIES_COMMAND)) as T;

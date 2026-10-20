@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 81,
-        "comments": 117,
-        "checklists": 35,
+        "cards": 84,
+        "comments": 123,
+        "checklists": 37,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T11:40:00Z",
+    "generatedAt": "2026-10-20T12:40:00Z",
     "selfHosted": true,
-    "boardRevision": 60,
-    "lastPatchId": "2026-10-20-abl-a15-chroot-lto",
+    "boardRevision": 62,
+    "lastPatchId": "2026-10-20-abl-dead-code-passphrase",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -928,6 +928,36 @@
         "priority": null,
         "position": 16384,
         "archivedAt": null
+      },
+      {
+        "id": "01a15913-7034-7aa1-802f-ef2a40894961",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Android: редкие паузы JS-потока при недоступном узле и «чёрный ящик» зависаний",
+        "description": "Зачем: John на телефоне 2026-10-20 (сборка 28, мобильная сеть, узел 192.168.0.101 недоступен): затыки реже и тоньше, но есть; журнал — 4 паузы «JS-поток не отвечал 13.4–13.8 с», каждая при нескольких запросах к недоступному узлу в полёте (refresh, labels, comments, PUT /me/appearance ×3). Один раз после короткого простоя зависло всё приложение, журнал было не скопировать.\n\nЧто известно: равные паузы ~14 с не похожи на тяжёлую работу JS; на Android таймеры JS идут от UI-потока, так что держать мог и он. Точная причина по журналу не доказана.\n\nСделано в исходниках: запросы к узлу, который не может ответить, не отправляются (LAN-узел из мобильной сети; узел, промолчавший 12 с, — пауза 30 с → 2 мин); оформление не откатывается через 12 с и шлётся одним запросом; строка паузы называет запросы в полёте, тяжёлую работу, экран, долю сборки мусора и писал ли JS во время паузы; предвестники ≥ 0,7 с; «чёрный ящик» (пульс раз в 2 с и хвост журнала) на диске всегда, а не только в режиме отладки; при следующем запуске — вердикт, если прошлый оборвался на экране; экран журнала не пере-редактирует 5000 строк на каждую перерисовку.\n\nГотово, когда: на телефоне с APK versionCode 29 в мобильной сети с LAN-узлом нет пауз JS-потока, запросы к узлу не висят по 12 с; после принудительного закрытия зависшего приложения «Журнал → Прошлый запуск» показывает последние строки и вердикт.\n\nРазбор: mobile/docs/architecture/stall-watch-20261020.md.",
+        "priority": "high",
+        "position": 32768,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15950-6e8b-7c36-89bc-0ef045a48274",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "abl: парольное хранилище без Secret Service и сборка без неиспользуемого кода",
+        "description": "Зачем: при подписании abl компилятор выдавал 120 предупреждений «never used». Разбор: 28 из них — парольное хранилище ADR-004, которое было написано, но недостижимо. На Arch без Secret Service (сеанс без GNOME Keyring/KWallet) abl навсегда оставался session-only: ключи не переживали перезапуск, LAN-мост отказывал в привязке, а статус при этом обещал «passphraseFallbackAvailable: true».\n\nСделано в исходниках: VaultService меняет провайдера на лету; две write-only команды IPC (задать пароль, открыть хранилище) — пароль внутрь, наружу только статус или код; панель «Хранилище секретов» в UI показывается, только когда пароль действительно применим (Secret Service недоступен и в профиле нет хранилища, запечатанного им, либо профиль уже под паролем). Мелкие неиспользуемые остатки удалены, задел помечен явно (синхронизация A10, импорт A11 под Gate G). Dev/test-сборка теперь падает на непомеченном dead_code, release только предупреждает.\n\nГотово, когда: на Arch без org.freedesktop.secrets abl предлагает задать пароль, после перезапуска просит его, неверный пароль оставляет session-only, верный открывает хранилище и LAN-мост стартует; сборка пакета без предупреждений dead_code; UTS зелёный.\n\nРазбор: abl/docs/architecture/08-implementation-corrections-and-debt.md (CORR-A09-002, DEBT-A10-002, «Dead-code gate»).",
+        "priority": "medium",
+        "position": 33792,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15950-6e95-7da7-8d10-d273eb53120a",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "abl: живая синхронизация доски по roaming/1",
+        "description": "Зачем: abl сейчас не синхронизируется ни с кем. Слой A10 (outbox, merge, replay, эпохи) готов и покрыт тестами, но в рантайме его никто не создаёт, а сетевого клиента в abl нет. Правки на abl копятся в pending_local_changes и никуда не уходят; правки с телефона и web в abl не приходят. Данные попадают в abl только разовым импортом через LAN-мост в пустой профиль.\n\nГотово, когда: abl отправляет и принимает события доски по p2p-kanban-roaming/1 через relay кольца; матрица web ↔ abl и Android ↔ abl (create, edit, move, archive, delete, чек-листы) сходится на хосте; помета allow(dead_code) с модулей sync снята.\n\nНачинается после R6 (ключи досок и relay приходят из кольца). Контракт roaming/1 не меняется. Источник: DEBT-A10-002 в abl/docs/architecture/08-implementation-corrections-and-debt.md.",
+        "priority": "high",
+        "position": 17408,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1659,6 +1689,22 @@
       {
         "cardId": "01a15878-5ff4-76ce-9cd6-30a1e6f980e2",
         "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a15913-7034-7aa1-802f-ef2a40894961",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a15950-6e8b-7c36-89bc-0ef045a48274",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a15950-6e95-7da7-8d10-d273eb53120a",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a15950-6e95-7da7-8d10-d273eb53120a",
+        "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
       }
     ],
     "checklists": [
@@ -1870,6 +1916,18 @@
         "id": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "cardId": "01a15878-5ff4-761c-9127-26310812aa01",
         "title": "Шаги",
+        "position": 1024
+      },
+      {
+        "id": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "cardId": "01a15913-7034-7aa1-802f-ef2a40894961",
+        "title": "Приёмка на телефоне",
+        "position": 1024
+      },
+      {
+        "id": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "cardId": "01a15950-6e8b-7c36-89bc-0ef045a48274",
+        "title": "Приёмка на Arch",
         "position": 1024
       }
     ],
@@ -3084,6 +3142,104 @@
         "title": "status --json и тесты",
         "isDone": true,
         "position": 7168
+      },
+      {
+        "id": "01a15913-7036-7750-86fc-07e6bb452ca8",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "Исходники: предохранитель узла, оформление без отката, сторож со снимком, чёрный ящик; jest 35/35, tsc, check-core-crud-contract",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a15913-7037-7858-b812-d719c1be589f",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "APK versionCode 29 поставлен поверх, в «Настройки → Версии» сборка 29",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a15913-7038-7c2b-8f7f-2aaedc49312c",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "Мобильная сеть, узел в LAN: в журнале одна строка «запросы к узлу не отправляются», нет «JS-поток не отвечал»",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a15913-7039-7896-a007-34b21cbe83d2",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "Wi-Fi, узел выключен: после первого тайм-аута «узел молчит, следующие 30 с…», экраны отвечают сразу",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a15913-703a-7b9f-8d87-ea95a7fb874e",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "Оформление (плотность/анимации) без узла остаётся выбранным и уходит на узел после подключения",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a15913-703b-76ce-8aab-090bf811f182",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "Если пауза повторилась: строка паузы содержит «перед паузой … запросов в полёте», «сборка мусора за паузу», «JS писал/не писал журнал»",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a15913-703c-7904-a39e-e5e3c2be2ca9",
+        "checklistId": "01a15913-7035-7e2e-b81f-b25a04b82a47",
+        "title": "Закрыть зависшее приложение из недавних → при запуске «Журнал → Прошлый запуск» и строка «Прошлый запуск закончился, пока приложение было на экране…»",
+        "isDone": false,
+        "position": 7168
+      },
+      {
+        "id": "01a15950-6e8d-73ed-8ab0-b2d254de1b07",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "Исходники: смена провайдера, IPC, панель, уборка; cargo test 131/131, release-сборка 0 предупреждений, check_a00…a18, tsc",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a15950-6e8e-76c0-aee1-c2b7f7efb8a3",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "UTS: python3 -B tools/uts_verify.py зелёный (cargo test с deny(dead_code))",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a15950-6e8f-74d5-8741-e5e5e66ad768",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "Пакет/подпись: сборка без «is never used»",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a15950-6e90-793b-b02b-5e7514eb1e65",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "Сеанс без Secret Service: панель «Secret Service недоступен», задать пароль (≥ 12 байт) → vault: passphrase, durable enabled",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a15950-6e91-75a7-ad63-8eea784b0ae5",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "Перезапуск: «Хранилище закрыто паролем»; неверный пароль → «Пароль не подошёл», durable disabled; верный → durable enabled",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a15950-6e92-711b-9704-836ee13bcc6e",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "После разблокировки LAN-мост стартует (нет LAN_BRIDGE_DURABLE_VAULT_REQUIRED)",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a15950-6e93-7e09-b799-fde96c0058ec",
+        "checklistId": "01a15950-6e8c-7822-a5e7-59818d0ef2e0",
+        "title": "Сеанс с GNOME Keyring/KWallet: панели нет, vault: secret-service как раньше",
+        "isDone": false,
+        "position": 7168
       }
     ],
     "comments": [
@@ -3788,6 +3944,42 @@
         "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
         "createdAt": "2026-10-20T11:40:00Z",
         "body": "patch 2026-10-20-abl-a15-chroot-lto: Первый чек A15 на хосте (2026-10-20T10:58Z, EndeavourOS, d235fc6) не выписан: входы выпуска PASS, makechrootpkg -c -u -n — код 255 через 593 с, остальные 8 шагов не запускались. Причина — линковка: undefined sqlite3_* из встроенного SQLite (libsqlite3-sys bundled). makepkg.conf чистого chroot из devtools включает lto, C-код SQLite компилируется в GCC LTO-объекты, а rustc 1.92 линкует через rust-lld (-fuse-ld=lld в строке линковки), который их не читает. В UTS cargo build зелёный, потому что флагов makepkg там нет. Исправление: options=('!lto') в packaging/arch/PKGBUILD (как в Rust package guidelines ArchWiki), check_a15 требует эту строку, CORR-A15-002 в docs/evidence/A15_PACMAN_PACKAGING.md. Release-LTO самого Cargo не меняется. Карточка остаётся в «Ждёт хоста»: перевыписать чек python3 -B tools/a15_issue_receipt.py --signing-key 7AF1F7D178540EA5C721127A513BC895EBE583D6, затем UTS: host.a15-release-receipt PASS."
+      },
+      {
+        "id": "01a15913-703d-7835-a5a8-ef11a1c3207d",
+        "cardId": "01a15913-7034-7aa1-802f-ef2a40894961",
+        "createdAt": "2026-10-20T11:50:00Z",
+        "body": "patch 2026-10-20-mobile-stall-watch: в исходниках mobile — запросы к недоступному узлу не отправляются (LAN из мобильной сети, пауза после молчания 30 с → 2 мин), оформление без отката и одним запросом, сторож JS-потока каждые 0,5 с со снимком паузы (запросы в полёте, тяжёлая работа, экран, сборка мусора, строки журнала внутри паузы) и предвестниками, «чёрный ящик» на диске во всех режимах и вердикт прошлого запуска; журнал редактируется один раз при записи. versionCode 28 → 29, нужен новый APK. Ждёт телефона."
+      },
+      {
+        "id": "01a15913-703e-77cb-ace6-91418a779dfa",
+        "cardId": "01a14330-47c0-735a-958d-4b8c66ef8ea5",
+        "createdAt": "2026-10-20T11:50:00Z",
+        "body": "patch 2026-10-20-mobile-stall-watch: 2026-10-20 затыки вернулись реже и короче (паузы ~13.5 с при недоступном узле, сборка 28); продолжение — карточка «Android: редкие паузы JS-потока при недоступном узле и «чёрный ящик» зависаний»."
+      },
+      {
+        "id": "01a15950-6e94-7508-9d52-a44e9da4b7c7",
+        "cardId": "01a15950-6e8b-7c36-89bc-0ef045a48274",
+        "createdAt": "2026-10-20T12:40:00Z",
+        "body": "patch 2026-10-20-abl-dead-code-passphrase: в abl подключено парольное хранилище ADR-004 (VaultService меняет провайдера, IPC desktop_api_vault_set_up_passphrase / desktop_api_vault_unlock_passphrase, панель «Хранилище секретов»), passphraseFallbackAvailable стал честным. Удалены неиспользуемые остатки, задел A10/A11 помечен allow(dead_code) с карточкой. main.rs: deny(dead_code) в dev/test-сборке. 120 → 0 предупреждений, cargo test 131/131. Ждёт хоста."
+      },
+      {
+        "id": "01a15950-6e96-78a5-9486-b78e2959e262",
+        "cardId": "01a15950-6e95-7da7-8d10-d273eb53120a",
+        "createdAt": "2026-10-20T12:40:00Z",
+        "body": "patch 2026-10-20-abl-dead-code-passphrase: карточка заведена по разбору предупреждений dead_code: SqliteSyncRepository, SyncService и весь domain/sync никогда не создаются вне тестов (66 предупреждений). Модули помечены явно, пока эта карточка их не подключит."
+      },
+      {
+        "id": "01a15950-6e97-7829-85a8-64c71cb15d7e",
+        "cardId": "01a10f95-38a8-7a94-9e9b-4b3541ec4d0d",
+        "createdAt": "2026-10-20T12:40:00Z",
+        "body": "patch 2026-10-20-abl-dead-code-passphrase: приёмник миграции web-узел → abl и portable bundle (import_web_node_link_v1, import_portable_bundle, serialize_portable_bundle_v1) есть только в Rust core, входа из UI/IPC нет; помечен allow(dead_code) как задел под «реальную миграцию Docker→desktop»."
+      },
+      {
+        "id": "01a15950-6e98-7918-86a0-98a6b98521e4",
+        "cardId": "01a10f95-389c-79bd-afda-fd40e83dfc1e",
+        "createdAt": "2026-10-20T12:40:00Z",
+        "body": "patch 2026-10-20-abl-dead-code-passphrase: после R6 — карточка «abl: живая синхронизация доски по roaming/1»: без неё abl после привязки остаётся локальным клиентом. Константы событий device-link (DEVICE_LINK_*_KIND) помечены как задел R6."
       }
     ],
     "boardAppearanceSettings": [],

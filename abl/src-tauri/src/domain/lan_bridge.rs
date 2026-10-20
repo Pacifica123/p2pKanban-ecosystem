@@ -12,6 +12,8 @@ pub const LAN_BRIDGE_AAD: &[u8] = b"p2p-kanban-lan-bridge/1\0POST\0/v1/p2pkanban
 pub const LAN_BRIDGE_TOKEN_BYTES: usize = 32;
 pub const LAN_BRIDGE_NONCE_BYTES: usize = 24;
 pub const LAN_BRIDGE_MIN_TTL_SECS: u64 = 30;
+// Protocol default; the UI offers it as the preselected TTL (App.tsx `lanBridgeTtl`).
+#[allow(dead_code)]
 pub const LAN_BRIDGE_DEFAULT_TTL_SECS: u64 = 300;
 pub const LAN_BRIDGE_MAX_TTL_SECS: u64 = 600;
 pub const LAN_BRIDGE_MAX_PLAINTEXT_BYTES: usize = 8 * 1024 * 1024;

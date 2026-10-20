@@ -1,4 +1,3 @@
-use serde_json::Value;
 
 use crate::domain::planner::{BoardId, CardId, OrderKey, WorkspaceId};
 
@@ -56,7 +55,6 @@ impl ActivityEntryId {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ParityValueError {
     EmptyId(&'static str),
-    InvalidJson,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -93,12 +91,6 @@ pub struct BoardAppearanceRecord {
     pub board_id: BoardId,
     pub settings_json: String,
     pub updated_at: String,
-}
-
-impl BoardAppearanceRecord {
-    pub fn settings(&self) -> Result<Value, ParityValueError> {
-        serde_json::from_str(&self.settings_json).map_err(|_| ParityValueError::InvalidJson)
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -5,6 +5,10 @@ pub mod planner;
 pub mod recovery;
 pub mod repository;
 pub mod system;
+// Staged (A10): sync-core/roaming layer is complete and covered by tests, but no relay
+// transport or coordinator constructs it yet, so the running app neither sends nor
+// receives board events. Board card: «abl: живая синхронизация доски по roaming/1».
+#[allow(dead_code)]
 pub mod sync;
 pub mod vault;
 pub mod workspace;

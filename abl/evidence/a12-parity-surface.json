@@ -47,11 +47,11 @@
     },
     {
       "path": "src-tauri/src/domain/parity.rs",
-      "sha256": "c008d6dc0ac71f5894e74a0933cd1dba13be8b370a6b8f6c4b432bffdef419cd"
+      "sha256": "25e120507f5a69109c7826c244b643747c4414d75659043c2d7444e38795ddc2"
     },
     {
       "path": "src-tauri/src/application/parity.rs",
-      "sha256": "ed8621986059bf7dc25508b495e96334930dd986ac639ac8085ca5e6dfcdb8ea"
+      "sha256": "8bbdb14bbc1e584242a5f25172cb4398e14a59d80b21b266be2523562e38517a"
     },
     {
       "path": "src-tauri/src/infrastructure/sqlite/parity.rs",

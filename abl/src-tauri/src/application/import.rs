@@ -112,6 +112,9 @@ impl ImportService {
         }
     }
 
+    // Staged (A11, Gate G «реальная миграция Docker→desktop»): no UI or IPC entry calls
+    // this yet.
+    #[allow(dead_code)]
     pub fn import_portable_bundle(&self, raw: &str) -> Result<ImportApplyReport, ImportServiceError> {
         let plan = parse_portable_bundle_v1(raw).map_err(|_| ImportServiceError::Validation)?;
         self.apply_without_secrets(plan)
@@ -176,6 +179,9 @@ impl ImportService {
         )
     }
 
+    // Staged (A11, Gate G «реальная миграция Docker→desktop»): no UI or IPC entry calls
+    // this yet.
+    #[allow(dead_code)]
     /// Applies destination semantics for the existing web-node-link v1 contract.
     /// Source HTTP/session/Docker mechanics stay outside the native runtime. The
     /// caller supplies a normalized plan plus capability material obtained by the
@@ -223,6 +229,7 @@ impl ImportService {
         self.apply_with_secrets(plan, identity, board_capabilities, vault)
     }
 
+    #[allow(dead_code)] // used by import_portable_bundle (staged)
     fn apply_without_secrets(&self, plan: ImportPlan) -> Result<ImportApplyReport, ImportServiceError> {
         plan.validate_graph().map_err(|_| ImportServiceError::Validation)?;
         let mut repository = self

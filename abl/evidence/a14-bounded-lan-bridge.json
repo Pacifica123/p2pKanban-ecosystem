@@ -38,11 +38,11 @@
     },
     {
       "path": "src-tauri/src/domain/lan_bridge.rs",
-      "sha256": "befe44e6bfb1b369523a8c8ecc06e73d1b2d0bb10876d634e997cba89fcd9213"
+      "sha256": "17a8a17d09ef10420bf6119eef4ce6be9b71f4ec1a0be9bffac8fec03a4004e3"
     },
     {
       "path": "src-tauri/src/application/lan_bridge.rs",
-      "sha256": "c2909aee73e297deec7a2226b5d5d7cd2fdcdc10d74aa9d2e1a6cf0fd4223f1a"
+      "sha256": "5408138d9a112fcc9b80451dda9676129423fd2ee11f77c1c3cb53940871aad6"
     },
     {
       "path": "src-tauri/src/infrastructure/linux/lan_bridge.rs",

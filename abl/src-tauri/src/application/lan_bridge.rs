@@ -24,7 +24,6 @@ pub enum LanBridgeRuntimeError {
     BindUnavailable,
     Io,
     UnsupportedAddress,
-    AlreadyStopped,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -34,8 +33,6 @@ pub enum LanBridgeServiceError {
     Runtime(LanBridgeRuntimeError),
     Randomness,
     VaultNotDurable,
-    InvalidPackage,
-    ImportFailed,
     Poisoned,
 }
 

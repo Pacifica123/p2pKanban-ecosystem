@@ -84,7 +84,7 @@
     },
     {
       "path": "src-tauri/src/infrastructure/sqlite/repository.rs",
-      "sha256": "b6d4222b1796bee120e8d5c34759d3240a4523b033c6da06d91744d28c45d2eb"
+      "sha256": "77cd6242c09fcbe32a6c2884a81023b1e88a9af962489588fee49b7fbb8a78f3"
     },
     {
       "path": "src-tauri/src/infrastructure/sqlite/migration.rs",

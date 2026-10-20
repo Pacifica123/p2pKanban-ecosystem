@@ -16,8 +16,8 @@ use secret_service::{blocking::SecretService, EncryptionType};
 
 use crate::{
     application::vault::{
-        SecretKind, SecretRecordKey, SecretValue, SecretVault, VaultError, VaultMode, VaultService,
-        VaultState, VaultStatus,
+        PassphraseVaultProvider, SecretKind, SecretRecordKey, SecretValue, SecretVault, VaultError,
+        VaultMode, VaultService, VaultState, VaultStatus,
     },
     infrastructure::profile::ProfileStoragePaths,
 };
@@ -105,7 +105,7 @@ impl Passphrase {
     pub fn new(value: impl Into<Vec<u8>>) -> Result<Self, VaultError> {
         let value = value.into();
         if value.len() < 12 || value.len() > 1024 {
-            return Err(VaultError::AuthenticationFailed);
+            return Err(VaultError::WeakPassphrase);
         }
         Ok(Self(value))
     }
@@ -188,18 +188,50 @@ impl SecretVault for EncryptedFileVault {
 pub struct PassphraseVault;
 
 impl PassphraseVault {
-    pub fn open_or_create(
+    /// Seals a fresh vault root with the passphrase. Refuses when a wrap already exists or a
+    /// vault sealed by another provider is present, so it never shadows existing secrets.
+    pub fn create(
         profile: &ProfileStoragePaths,
         passphrase: &Passphrase,
     ) -> Result<EncryptedFileVault, VaultError> {
-        let root = if profile.passphrase_root_wrap().exists() {
-            unwrap_root_with_passphrase(profile.passphrase_root_wrap(), passphrase)?
-        } else {
-            let root = VaultRoot::random()?;
-            write_passphrase_root_wrap(profile.passphrase_root_wrap(), passphrase, &root)?;
-            root
-        };
+        if profile.passphrase_root_wrap().exists() || profile.encrypted_vault().exists() {
+            return Err(VaultError::NotApplicable);
+        }
+        let root = VaultRoot::random()?;
+        write_passphrase_root_wrap(profile.passphrase_root_wrap(), passphrase, &root)?;
         EncryptedFileVault::open(profile.encrypted_vault().to_path_buf(), root, VaultMode::Passphrase)
+    }
+
+    pub fn unlock(
+        profile: &ProfileStoragePaths,
+        passphrase: &Passphrase,
+    ) -> Result<EncryptedFileVault, VaultError> {
+        if !profile.passphrase_root_wrap().is_file() {
+            return Err(VaultError::NotApplicable);
+        }
+        let root = unwrap_root_with_passphrase(profile.passphrase_root_wrap(), passphrase)?;
+        EncryptedFileVault::open(profile.encrypted_vault().to_path_buf(), root, VaultMode::Passphrase)
+    }
+}
+
+/// Wires the passphrase provider into `VaultService` for the profile it was bootstrapped for.
+pub struct LinuxPassphraseVaultProvider {
+    profile: ProfileStoragePaths,
+}
+
+impl PassphraseVaultProvider for LinuxPassphraseVaultProvider {
+    fn can_create(&self) -> bool {
+        !self.profile.passphrase_root_wrap().exists() && !self.profile.encrypted_vault().exists()
+    }
+
+    fn create(&self, passphrase: &[u8]) -> Result<Box<dyn SecretVault>, VaultError> {
+        let passphrase = Passphrase::new(passphrase.to_vec())?;
+        Ok(Box::new(PassphraseVault::create(&self.profile, &passphrase)?))
+    }
+
+    fn unlock(&self, passphrase: &[u8]) -> Result<Box<dyn SecretVault>, VaultError> {
+        let passphrase = Passphrase::new(passphrase.to_vec())?;
+        Ok(Box::new(PassphraseVault::unlock(&self.profile, &passphrase)?))
     }
 }
 
@@ -260,11 +292,13 @@ fn secret_service_root(
 }
 
 pub fn bootstrap_vault(profile: &ProfileStoragePaths, profile_name: &str) -> VaultService {
+    let passphrase = Box::new(LinuxPassphraseVaultProvider { profile: profile.clone() });
     if profile.passphrase_root_wrap().is_file() {
-        return VaultService::session_only_with_state(VaultState::PassphraseRequired);
+        return VaultService::session_only_with_state(VaultState::PassphraseRequired)
+            .with_passphrase_provider(passphrase);
     }
 
-    match secret_service_root(profile_name, profile.encrypted_vault().is_file()) {
+    let service = match secret_service_root(profile_name, profile.encrypted_vault().is_file()) {
         Ok(root) => match EncryptedFileVault::open(
             profile.encrypted_vault().to_path_buf(), root, VaultMode::SecretService,
         ) {
@@ -274,7 +308,8 @@ pub fn bootstrap_vault(profile: &ProfileStoragePaths, profile_name: &str) -> Vau
         Err(SecretServiceRootState::Locked) => VaultService::session_only_with_state(VaultState::ProviderLocked),
         Err(SecretServiceRootState::Unavailable) => VaultService::session_only_with_state(VaultState::ProviderUnavailable),
         Err(SecretServiceRootState::Corrupt) => VaultService::session_only_with_state(VaultState::ProviderCorrupt),
-    }
+    };
+    service.with_passphrase_provider(passphrase)
 }
 
 fn argon2id(params: PassphraseKdfParams) -> Result<Argon2<'static>, VaultError> {
@@ -527,14 +562,14 @@ mod tests {
         let canary = std::env::var("P2PKANBAN_UTS_SECRET_CANARY")
             .unwrap_or_else(|_| "a09-runtime-secret-canary".to_owned());
         {
-            let vault = PassphraseVault::open_or_create(&profile, &test_passphrase()).unwrap();
+            let vault = PassphraseVault::create(&profile, &test_passphrase()).unwrap();
             vault.put(key.clone(), SecretValue::new(canary.as_bytes().to_vec()).unwrap()).unwrap();
             assert_eq!(vault.status().mode, VaultMode::Passphrase);
             assert!(vault.status().durable);
         }
         let raw = fs::read(profile.encrypted_vault()).unwrap();
         assert!(!raw.windows(canary.len()).any(|window| window == canary.as_bytes()));
-        let reopened = PassphraseVault::open_or_create(&profile, &test_passphrase()).unwrap();
+        let reopened = PassphraseVault::unlock(&profile, &test_passphrase()).unwrap();
         assert_eq!(reopened.get(&key).unwrap().unwrap().expose(), canary.as_bytes());
         let mode = fs::metadata(profile.encrypted_vault()).unwrap().permissions().mode() & 0o777;
         assert_eq!(mode, 0o600);
@@ -544,30 +579,36 @@ mod tests {
     #[test]
     fn a09_wrong_passphrase_and_corruption_fail_closed() {
         let (root, profile) = temp_profile("wrong-passphrase");
-        let vault = PassphraseVault::open_or_create(&profile, &test_passphrase()).unwrap();
+        let vault = PassphraseVault::create(&profile, &test_passphrase()).unwrap();
         let key = SecretRecordKey::new(SecretKind::RefreshToken, "account-a").unwrap();
         vault.put(key, SecretValue::new(b"refresh-secret".to_vec()).unwrap()).unwrap();
         drop(vault);
 
         let wrong = Passphrase::new(b"definitely wrong passphrase".to_vec()).unwrap();
-        assert!(matches!(PassphraseVault::open_or_create(&profile, &wrong), Err(VaultError::AuthenticationFailed)));
+        assert!(matches!(PassphraseVault::unlock(&profile, &wrong), Err(VaultError::AuthenticationFailed)));
+        assert!(matches!(PassphraseVault::create(&profile, &test_passphrase()), Err(VaultError::NotApplicable)));
 
         let mut bytes = fs::read(profile.encrypted_vault()).unwrap();
         let last = bytes.len() - 1;
         bytes[last] ^= 0x55;
         atomic_private_write(profile.encrypted_vault(), &bytes).unwrap();
-        assert!(matches!(PassphraseVault::open_or_create(&profile, &test_passphrase()), Err(VaultError::Corrupt)));
+        assert!(matches!(PassphraseVault::unlock(&profile, &test_passphrase()), Err(VaultError::Corrupt)));
         let _ = fs::remove_dir_all(root);
     }
 
     #[test]
     fn a09_existing_passphrase_wrapper_blocks_automatic_provider_rebinding() {
         let (root, profile) = temp_profile("passphrase-marker");
-        let _vault = PassphraseVault::open_or_create(&profile, &test_passphrase()).unwrap();
+        let _vault = PassphraseVault::create(&profile, &test_passphrase()).unwrap();
         let service = bootstrap_vault(&profile, "default");
         assert_eq!(service.status().mode, VaultMode::SessionOnly);
         assert_eq!(service.status().state, VaultState::PassphraseRequired);
         assert!(!service.status().durable);
+        assert!(service.status().passphrase_fallback_available);
+        assert!(matches!(service.unlock_passphrase(b"definitely wrong passphrase"), Err(VaultError::AuthenticationFailed)));
+        let unlocked = service.unlock_passphrase(b"correct horse battery staple").unwrap();
+        assert_eq!(unlocked.mode, VaultMode::Passphrase);
+        assert!(unlocked.durable);
         let _ = fs::remove_dir_all(root);
     }
 
@@ -580,13 +621,44 @@ mod tests {
         assert_eq!(params.params().p_cost(), ARGON2_P);
 
         let (root, profile) = temp_profile("kdf-format");
-        let _vault = PassphraseVault::open_or_create(&profile, &test_passphrase()).unwrap();
+        let _vault = PassphraseVault::create(&profile, &test_passphrase()).unwrap();
         let bytes = fs::read(profile.passphrase_root_wrap()).unwrap();
         let start = ROOT_WRAP_MAGIC.len();
         assert_eq!(
             decode_kdf_params(&bytes[start..start + KDF_PARAMS_BYTES]).unwrap(),
             PassphraseKdfParams::CURRENT,
         );
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn passphrase_provider_never_shadows_a_vault_sealed_by_another_provider() {
+        let (root, profile) = temp_profile("foreign-vault");
+        let provider = LinuxPassphraseVaultProvider { profile: profile.clone() };
+        assert!(provider.can_create());
+        atomic_private_write(profile.encrypted_vault(), b"sealed-by-secret-service").unwrap();
+        assert!(!provider.can_create());
+        assert!(matches!(provider.create(b"correct horse battery staple"), Err(VaultError::NotApplicable)));
+        assert!(!profile.passphrase_root_wrap().exists());
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn passphrase_set_up_through_service_persists_across_bootstrap() {
+        let (root, profile) = temp_profile("service-setup");
+        let service = VaultService::session_only_with_state(VaultState::ProviderUnavailable)
+            .with_passphrase_provider(Box::new(LinuxPassphraseVaultProvider { profile: profile.clone() }));
+        assert!(service.status().passphrase_fallback_available);
+        let status = service.set_up_passphrase(b"correct horse battery staple").unwrap();
+        assert_eq!(status.mode, VaultMode::Passphrase);
+        let key = SecretRecordKey::new(SecretKind::BoardCapability, "board-a").unwrap();
+        service.provider().put(key.clone(), SecretValue::new(b"board-secret".to_vec()).unwrap()).unwrap();
+        drop(service);
+
+        let restarted = bootstrap_vault(&profile, "default");
+        assert_eq!(restarted.status().state, VaultState::PassphraseRequired);
+        restarted.unlock_passphrase(b"correct horse battery staple").unwrap();
+        assert_eq!(restarted.provider().get(&key).unwrap().unwrap().expose(), b"board-secret");
         let _ = fs::remove_dir_all(root);
     }
 }

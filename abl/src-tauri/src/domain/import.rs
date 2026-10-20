@@ -6,10 +6,19 @@ use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 pub const DEVICE_LINK_PROTOCOL_V2: &str = "p2p-kanban-device-link/2";
+// Staged (A11): Nostr event kinds for the live device-link transport, which abl does not
+// run yet (ring adapters, card R6).
+#[allow(dead_code)]
 pub const DEVICE_LINK_GRANT_KIND: u16 = 27_780;
+#[allow(dead_code)]
 pub const DEVICE_LINK_REQUEST_KIND: u16 = 27_781;
+#[allow(dead_code)]
 pub const DEVICE_LINK_RESPONSE_KIND: u16 = 27_782;
+// Staged (A11, Gate G «реальная миграция Docker→desktop»): no UI or IPC entry imports a
+// web-node-link or portable bundle file yet.
+#[allow(dead_code)]
 pub const WEB_NODE_LINK_FORMAT: &str = "p2p-kanban-web-node-link";
+#[allow(dead_code)]
 pub const WEB_NODE_LINK_VERSION: u32 = 1;
 pub const WEB_NODE_LINK_MAX_BYTES: usize = 32 * 1024 * 1024;
 pub const PORTABLE_BUNDLE_FORMAT: &str = "p2p_planner_bundle";
@@ -22,6 +31,8 @@ const MAX_TEXT_BYTES: usize = 1_048_576;
 pub enum ImportSourceKind {
     PortableBundleV1,
     DeviceLinkV2,
+    // Staged (A11, Gate G): produced only by the web-node-link import path.
+    #[allow(dead_code)]
     WebNodeLinkV1,
 }
 
@@ -835,6 +846,8 @@ pub fn parse_portable_bundle_v1(raw: &str) -> Result<ImportPlan, ImportValidatio
 }
 
 
+// Staged (Gate G): portable bundle export has no UI or IPC entry yet.
+#[allow(dead_code)]
 pub fn serialize_portable_bundle_v1(plan: &ImportPlan) -> Result<String, ImportValidationError> {
     plan.validate_graph()?;
     if plan.receipt.source_kind != ImportSourceKind::PortableBundleV1
@@ -982,6 +995,7 @@ pub fn serialize_portable_bundle_v1(plan: &ImportPlan) -> Result<String, ImportV
     serde_json::to_string_pretty(&value).map_err(|_| ImportValidationError::InvalidJson)
 }
 
+#[allow(dead_code)] // helper of serialize_portable_bundle_v1 (staged)
 fn extension_object(
     extensions: &BTreeMap<(String, String), Map<String, Value>>,
     entity_type: &str,
@@ -993,12 +1007,14 @@ fn extension_object(
         .unwrap_or_default()
 }
 
+#[allow(dead_code)] // helper of serialize_portable_bundle_v1 (staged)
 fn finite_number(value: f64) -> Result<Value, ImportValidationError> {
     serde_json::Number::from_f64(value)
         .map(Value::Number)
         .ok_or(ImportValidationError::InvalidPosition)
 }
 
+#[allow(dead_code)] // helper of serialize_portable_bundle_v1 (staged)
 fn opaque_value(plan: &ImportPlan, name: &str, default: Value) -> Result<Value, ImportValidationError> {
     let Some(section) = plan.opaque_sections.iter().find(|section| section.section_name == name) else {
         return Ok(default);
@@ -1006,11 +1022,15 @@ fn opaque_value(plan: &ImportPlan, name: &str, default: Value) -> Result<Value, 
     serde_json::from_str(&section.payload_json).map_err(|_| ImportValidationError::InvalidJson)
 }
 
+#[allow(dead_code)] // helper of serialize_portable_bundle_v1 (staged)
 fn opaque_object(plan: &ImportPlan, name: &str) -> Result<Map<String, Value>, ImportValidationError> {
     let value = opaque_value(plan, name, Value::Object(Map::new()))?;
     value.as_object().cloned().ok_or(ImportValidationError::InvalidJson)
 }
 
+// Staged (A11, Gate G «реальная миграция Docker→desktop»): no UI or IPC entry imports a
+// web-node-link or portable bundle file yet.
+#[allow(dead_code)]
 pub fn validate_web_node_link_envelope(raw: &str) -> Result<Value, ImportValidationError> {
     if raw.len() > WEB_NODE_LINK_MAX_BYTES {
         return Err(ImportValidationError::Oversized);
@@ -1099,6 +1119,7 @@ fn is_hex_32_byte_key(value: &str) -> bool {
     value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
 }
 
+#[allow(dead_code)] // helper of validate_web_node_link_envelope (staged)
 fn reject_web_node_link_forbidden_keys(value: &Value) -> Result<(), ImportValidationError> {
     const FORBIDDEN: &[&str] = &[
         "passwordhash",

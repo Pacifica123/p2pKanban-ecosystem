@@ -82,10 +82,6 @@ impl SqliteRecoveryBackend {
     pub fn new(layout: ProfileStoragePaths) -> Self {
         Self { layout }
     }
-
-    pub fn layout(&self) -> &ProfileStoragePaths {
-        &self.layout
-    }
 }
 
 fn epoch_millis() -> i64 {

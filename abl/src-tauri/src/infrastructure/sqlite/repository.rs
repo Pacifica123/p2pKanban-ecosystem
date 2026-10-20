@@ -18,21 +18,16 @@ use crate::{
 
 use crate::infrastructure::profile::ProfileStoragePaths;
 
-use super::migration::{open_profile, ProfileOpenError, ProfileSchemaInfo};
+use super::migration::{open_profile, ProfileOpenError};
 
 pub struct SqlitePlannerRepository {
     connection: Connection,
-    schema: ProfileSchemaInfo,
 }
 
 impl SqlitePlannerRepository {
     pub fn open(layout: &ProfileStoragePaths) -> Result<Self, ProfileOpenError> {
-        let (connection, schema) = open_profile(layout)?;
-        Ok(Self { connection, schema })
-    }
-
-    pub fn schema_info(&self) -> ProfileSchemaInfo {
-        self.schema
+        let (connection, _schema) = open_profile(layout)?;
+        Ok(Self { connection })
     }
 
     #[cfg(test)]

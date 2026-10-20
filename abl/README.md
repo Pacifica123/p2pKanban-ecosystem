@@ -8,6 +8,8 @@ This repository follows the implementation sequence `A00 … A19` from the accep
 
 A00–A16 code is present. The latest supplied archive includes A16 doctor/backup/safe-mode/recovery; its real-binary host acceptance remains separately recorded. A17 now adds the optional AppImage build channel and signed offline installation/recovery kit. The normal pacman path remains A15.
 
+abl does not sync with other devices yet: the A10 sync-core is implemented and tested, but no relay transport runs it, so local edits stay local and remote edits arrive only through a one-shot import (see DEBT-A10-002 in `docs/architecture/08-implementation-corrections-and-debt.md`). On a host without Secret Service, abl offers an explicit passphrase vault (CORR-A09-002).
+
 See [A17 offline-kit instructions](docs/A17_OFFLINE_KIT.md) and [A16 recovery](docs/A16_RECOVERY.md). A17 signature/tamper behavior is tested with synthetic artifacts; an actual built AppImage, FUSE/extract launch, WebKitGTK and distribution baseline must pass the explicit release/host gates before a binary is described as supported. A18 adds measured budgets, a rolling-release canary and chaos probes to the UTS: see [A18](docs/A18_PERFORMANCE_POWER_ROLLING.md). Budgets stay proposed until a release-profile run on the reference laptop; next gate: **Gate G — GA candidate**.
 
 ## Source layout

@@ -53,10 +53,14 @@ pub trait PlannerFeatureRepository: PlannerRepository {
         &self,
         checklist_id: &ChecklistId,
     ) -> Result<Vec<ChecklistItemRecord>, RepositoryError>;
+    // Read only by the A04/A08 repository contract suites: tombstones are asserted there,
+    // the planner itself never reads them back.
+    #[cfg_attr(not(test), allow(dead_code))]
     fn get_checklist_tombstone(
         &self,
         checklist_id: &ChecklistId,
     ) -> Result<Option<ChecklistTombstone>, RepositoryError>;
+    #[cfg_attr(not(test), allow(dead_code))]
     fn get_checklist_item_tombstone(
         &self,
         item_id: &ChecklistItemId,

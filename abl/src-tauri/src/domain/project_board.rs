@@ -10,6 +10,7 @@
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 
+#[cfg(test)]
 pub const PROTOCOL: &str = "p2p-kanban-project-board/1";
 pub const PROJECT_BOARD_ID: &str = "01a10d38-f902-7665-8612-3e74278ceafa";
 pub const PROJECT_WORKSPACE_ID: &str = "01a10d38-f901-746d-92f7-10598bb1cc42";

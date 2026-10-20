@@ -11,7 +11,7 @@ use crate::{
             CardView, ChecklistItemView, ChecklistView, ColumnView, PlannerService, PlannerServiceError,
         },
         system::HealthView,
-        vault::{VaultMode, VaultService, VaultState, VaultStatus},
+        vault::{VaultError, VaultMode, VaultService, VaultState, VaultStatus},
         workspace::{BoardView, WorkspaceService, WorkspaceServiceError, WorkspaceView},
         ApplicationServices,
     },
@@ -108,8 +108,6 @@ fn lan_bridge_error_code(error: LanBridgeServiceError) -> String {
         Runtime(_) => "LAN_BRIDGE_RUNTIME_FAILURE",
         Randomness => "LAN_BRIDGE_RANDOMNESS_UNAVAILABLE",
         VaultNotDurable => "LAN_BRIDGE_DURABLE_VAULT_REQUIRED",
-        InvalidPackage => "LAN_BRIDGE_INVALID_PACKAGE",
-        ImportFailed => "LAN_BRIDGE_IMPORT_FAILED",
         Poisoned => "LAN_BRIDGE_UNAVAILABLE",
     }.to_owned()
 }
@@ -223,7 +221,6 @@ fn parity_error_code(error: ParityServiceError) -> String {
         ParityServiceError::InvalidJson => "INVALID_JSON",
         ParityServiceError::RepositoryPoisoned => "PARITY_SERVICE_UNAVAILABLE",
         ParityServiceError::Repository(inner) => match inner {
-            crate::application::parity::ParityRepositoryError::WorkspaceNotFound => "WORKSPACE_NOT_FOUND",
             crate::application::parity::ParityRepositoryError::BoardNotFound => "BOARD_NOT_FOUND",
             crate::application::parity::ParityRepositoryError::CardNotFound => "CARD_NOT_FOUND",
             crate::application::parity::ParityRepositoryError::LabelNotFound => "LABEL_NOT_FOUND",
@@ -285,6 +282,31 @@ fn vault_status_to_wire(status: VaultStatus) -> BTreeMap<&'static str, String> {
     ])
 }
 
+fn vault_error_code(error: VaultError) -> String {
+    match error {
+        VaultError::WeakPassphrase => "VAULT_PASSPHRASE_LENGTH",
+        VaultError::AuthenticationFailed => "VAULT_PASSPHRASE_REJECTED",
+        VaultError::NotApplicable => "VAULT_PASSPHRASE_NOT_APPLICABLE",
+        VaultError::Corrupt => "VAULT_CORRUPT",
+        VaultError::Io => "VAULT_STORAGE_FAILURE",
+        VaultError::InvalidKey | VaultError::EmptySecret | VaultError::Crypto | VaultError::Poisoned => {
+            "VAULT_UNAVAILABLE"
+        }
+    }
+    .to_owned()
+}
+
+/// Write-only: the passphrase goes in, only the safe vault status comes back.
+fn vault_passphrase_transition(
+    passphrase: String,
+    transition: impl FnOnce(&[u8]) -> Result<VaultStatus, VaultError>,
+) -> Result<BTreeMap<&'static str, String>, String> {
+    let mut bytes = passphrase.into_bytes();
+    let result = transition(&bytes);
+    bytes.fill(0);
+    result.map(vault_status_to_wire).map_err(vault_error_code)
+}
+
 fn workspace_error_code(error: WorkspaceServiceError) -> String {
     match error {
         WorkspaceServiceError::EmptyTitle => "TITLE_REQUIRED",
@@ -319,6 +341,22 @@ pub fn desktop_api_vault_status(
     vault: State<'_, Arc<VaultService>>,
 ) -> BTreeMap<&'static str, String> {
     vault_status_to_wire(vault.status())
+}
+
+#[tauri::command]
+pub fn desktop_api_vault_set_up_passphrase(
+    vault: State<'_, Arc<VaultService>>,
+    passphrase: String,
+) -> Result<BTreeMap<&'static str, String>, String> {
+    vault_passphrase_transition(passphrase, |value| vault.set_up_passphrase(value))
+}
+
+#[tauri::command]
+pub fn desktop_api_vault_unlock_passphrase(
+    vault: State<'_, Arc<VaultService>>,
+    passphrase: String,
+) -> Result<BTreeMap<&'static str, String>, String> {
+    vault_passphrase_transition(passphrase, |value| vault.unlock_passphrase(value))
 }
 
 #[tauri::command]
@@ -730,12 +768,12 @@ pub fn desktop_api_stop_lan_bridge(
 mod tests {
     use super::{
         deep_link_intent_to_wire, health_to_wire, integration_capabilities_to_wire,
-        lan_bridge_status_to_wire, profile_diagnostics_to_wire, project_board_to_wire, vault_status_to_wire,
+        lan_bridge_status_to_wire, profile_diagnostics_to_wire, project_board_to_wire, vault_passphrase_transition, vault_status_to_wire,
     };
     use crate::{
         application::{
             system::HealthView,
-            vault::{VaultState, VaultStatus},
+            vault::{VaultError, VaultMode, VaultState, VaultStatus},
         },
         domain::{
             integration::{parse_deep_link, CapabilityState, IntegrationCapabilities, SessionKind},
@@ -798,9 +836,24 @@ mod tests {
         assert_eq!(payload.get("durable").map(String::as_str), Some("false"));
         assert_eq!(
             payload.get("passphraseFallbackAvailable").map(String::as_str),
-            Some("true")
+            Some("false")
         );
         assert_eq!(payload.len(), 4);
+    }
+
+    #[test]
+    fn vault_passphrase_transition_returns_status_or_stable_code_only() {
+        let ok = vault_passphrase_transition("correct horse battery".into(), |value| {
+            assert_eq!(value, b"correct horse battery");
+            Ok(VaultStatus::durable(VaultMode::Passphrase))
+        })
+        .unwrap();
+        assert_eq!(ok.get("mode").map(String::as_str), Some("passphrase"));
+        assert!(!ok.values().any(|value| value.contains("horse")));
+        let rejected = vault_passphrase_transition("wrong horse battery".into(), |_| {
+            Err(VaultError::AuthenticationFailed)
+        });
+        assert_eq!(rejected, Err("VAULT_PASSPHRASE_REJECTED".to_owned()));
     }
 
     #[test]

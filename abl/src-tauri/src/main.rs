@@ -1,3 +1,8 @@
+// Dead code fails dev and test builds (UTS `cargo test`); release builds only warn, so a newer
+// rustc on the rolling host cannot break packaging. Staged code carries an explicit
+// `allow(dead_code)` with the board card that will wire it.
+#![cfg_attr(debug_assertions, deny(dead_code))]
+
 mod application;
 mod desktop_api;
 mod domain;
@@ -448,6 +453,8 @@ fn run() -> Result<(), String> {
             desktop_api::desktop_api_health,
             desktop_api::desktop_api_profile_diagnostics,
             desktop_api::desktop_api_vault_status,
+            desktop_api::desktop_api_vault_set_up_passphrase,
+            desktop_api::desktop_api_vault_unlock_passphrase,
             desktop_api::desktop_api_list_workspaces,
             desktop_api::desktop_api_create_workspace,
             desktop_api::desktop_api_list_boards,
