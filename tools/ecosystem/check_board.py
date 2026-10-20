@@ -26,7 +26,7 @@ ECOSYSTEM = "ecosystem.json"
 MAX_BYTES = 10 * 1024 * 1024
 UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 PRIORITIES = {None, "low", "medium", "high", "urgent"}
-DIRECTION_LABELS = {"web", "mobile", "abl", "devctl", "экосистема"}
+DIRECTION_LABELS = {"web", "mobile", "abl", "devctl", "launcher", "экосистема"}
 FORBIDDEN_KEYS = {
     "accesstoken", "refreshtoken", "sessiontoken", "passwordhash", "boardkey",
     "deviceprivatekey", "privatekey", "jwtsecret", "globalmasterkey",
@@ -262,7 +262,7 @@ def validate_board(raw: bytes) -> dict:
 
     unlabelled = [card["title"] for card in cards if not (labelled.get(card["id"], set()) & DIRECTION_LABELS)]
     if unlabelled:
-        fail("у карточек нет метки направления (web/mobile/abl/devctl/экосистема): " + "; ".join(unlabelled))
+        fail("у карточек нет метки направления (web/mobile/abl/devctl/launcher/экосистема): " + "; ".join(unlabelled))
 
     return {"revision": revision, "lastPatchId": origin["lastPatchId"], "cards": len(cards), "columns": len(columns)}
 

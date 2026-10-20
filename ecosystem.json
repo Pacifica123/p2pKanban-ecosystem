@@ -1,51 +1,93 @@
 {
   "schemaVersion": 1,
   "name": "p2pKanban ecosystem",
+  "repository": "Pacifica123/p2pKanban-ecosystem",
+  "branch": "main",
   "board": "board/board.json",
   "metadocs": "docs/ecosystem/README.md",
   "components": [
     {
       "id": "web",
       "dir": "web",
+      "summary": "Свой узел канбана в Docker: браузерный клиент и координатор для телефона и Linux-клиента.",
       "projectBoard": "web/backend/assets/project-board.json",
       "formerRepository": "kanban (github.com/Pacifica123/p2p_planner)",
       "role": "Self-hosted web-узел: React/Vite + Rust/Axum + PostgreSQL в Docker; координатор прав и источник первичной привязки устройств.",
       "platforms": ["linux", "windows", "macos"],
       "versionSource": "web/VERSION",
       "entry": "python bootstrap.py",
-      "docs": "web/README.md"
+      "docs": "web/README.md",
+      "requires": ["python3.11", "docker"],
+      "install": [
+        "Установить и запустить Docker Desktop (Windows, macOS: режим Linux containers) или Docker Engine с Compose v2 (Linux).",
+        "Из каталога web/: python bootstrap.py — узел соберётся, выберет свободный порт и откроется в браузере."
+      ]
     },
     {
       "id": "mobile",
       "dir": "mobile",
+      "summary": "Канбан на Android: local-first, работает без сети, синхронизируется с узлом и через Nostr relay.",
       "projectBoard": "mobile/assets/project-board.json",
       "formerRepository": "kanban_mobile",
       "role": "Android-клиент на React Native/Expo: local-first копия и Nostr roaming после привязки к web-узлу.",
       "platforms": ["android"],
       "versionSource": "mobile/package.json#version",
       "entry": "npm ci && npm run apk",
-      "docs": "mobile/README.md"
+      "docs": "mobile/README.md",
+      "requires": [],
+      "install": [
+        "Скачать APK последней сборки на телефон и установить (разрешить установку из этого источника).",
+        "Сборка из исходников: из каталога mobile/ — npm ci && npm run apk."
+      ],
+      "distribution": "apk",
+      "eas": {"owner": "pacifica123program", "slug": "p2pkanban-mobile", "projectId": "19e01039-73f2-4df3-ac5b-ebe8a587b807", "profile": "preview"}
     },
     {
       "id": "abl",
       "dir": "abl",
+      "summary": "Нативный канбан для Arch-based Linux без Docker и локального сервера: Tauri, WebKitGTK, SQLite.",
       "projectBoard": "abl/src-tauri/assets/project-board.json",
       "formerRepository": "aaa (p2pkanban-archlinux-native)",
       "role": "Нативный клиент для Arch-based Linux: Tauri 2 + WebKitGTK + Rust core + SQLite, без Docker и localhost-backend.",
       "platforms": ["arch-linux"],
       "versionSource": "abl/docs/IMPLEMENTATION_STATUS.md",
       "entry": "python3 -B tools/uts_verify.py",
-      "docs": "abl/README.md"
+      "docs": "abl/README.md",
+      "requires": ["pacman", "webkit2gtk-4.1"],
+      "install": [
+        "Только Arch-based Linux (Arch, Manjaro, EndeavourOS).",
+        "Пакет pacman из подписанного репозитория или AppImage; путь сборки и проверки — abl/README.md."
+      ]
     },
     {
       "id": "devctl",
       "dir": "devctl",
+      "summary": "Конвейер zip-патчей: применяет патчи к экосистеме, проверяет, коммитит и пушит.",
       "formerRepository": "devctl",
       "role": "Конвейер zip-патчей: проверка, применение, commit/push и след для всех направлений.",
       "platforms": ["linux", "windows", "macos"],
       "versionSource": "devctl/README.md",
       "entry": "python3 devctl.py self install",
-      "docs": "devctl/README.md"
+      "docs": "devctl/README.md",
+      "requires": ["python3.11", "git"],
+      "install": ["python3 devctl/devctl.py self install"],
+      "audience": "developer"
+    },
+    {
+      "id": "launcher",
+      "dir": "launcher",
+      "summary": "Лаунчер экосистемы: показывает приложения, ставит, запускает и обновляет их собственными командами направлений, сверяет установленное с main.",
+      "role": "Дирижёр, а не замена: вызывает только команды, объявленные направлениями; ядро на стандартной библиотеке Python, окно на PySide6 из своего venv (E-ADR-004).",
+      "platforms": ["linux", "windows", "macos"],
+      "versionSource": "launcher/VERSION",
+      "entry": "python launcher/launcher.py",
+      "docs": "launcher/README.md",
+      "requires": ["python3.11"],
+      "audience": "self",
+      "install": [
+        "Один раз: sh launcher/install.sh (Windows: launcher\\install.bat) — ставит окно на PySide6 в venv лаунчера.",
+        "Дальше: python launcher/launcher.py (на Windows — py launcher\\launcher.py)."
+      ]
     }
   ]
 }

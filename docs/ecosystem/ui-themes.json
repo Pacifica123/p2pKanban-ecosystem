@@ -141,6 +141,7 @@
   "implementations": {
     "web": "web/frontend/src/app/styles/themes.css",
     "mobile": "mobile/src/app/uiThemes.ts",
-    "abl": "abl/src/themes.css"
+    "abl": "abl/src/themes.css",
+    "launcher": "launcher/launcher_app/themes.py"
   }
 }

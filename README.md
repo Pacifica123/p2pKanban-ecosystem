@@ -1,6 +1,6 @@
 # p2pKanban — экосистема
 
-Один репозиторий, четыре самостоятельных направления. Снаружи это одно место,
+Один репозиторий, пять самостоятельных направлений. Снаружи это одно место,
 где живёт весь канбан; внутри каждое направление остаётся собой: со своим
 стеком, своими командами, своей документацией и своей философией.
 
@@ -10,6 +10,7 @@
 | [`mobile/`](mobile/README.md) | Android | React Native/Expo-клиент, local-first + Nostr roaming | `cd mobile && npm ci && npm run apk` |
 | [`abl/`](abl/README.md) | Arch-based Linux | Нативный Tauri 2 + Rust + SQLite клиент без Docker | `cd abl && python3 -B tools/uts_verify.py` |
 | [`devctl/`](devctl/README.md) | devctl | Конвейер zip-патчей для всех направлений | `python3 devctl/devctl.py self install` |
+| [`launcher/`](launcher/README.md) | launcher | Лаунчер экосистемы: витрина приложений, установка, обновление и сверка с `main` своими командами направлений ([E-ADR-004](docs/ecosystem/adr/E-ADR-004-ecosystem-launcher.md), ступень L0) | `sh launcher/install.sh` (Windows: `launcher\install.bat`), затем `python launcher/launcher.py` (с L1) |
 
 Каждая команда выполняется **из каталога своего направления**, ровно как раньше
 из корня отдельного репозитория. Монорепозиторий ничего не меняет для конечного
@@ -27,8 +28,9 @@ cd abl
 ```
 
 Так же работает `web`, `mobile` или любой их набор (`git sparse-checkout set web mobile`).
-Удобный метаустановщик, который скачивает разом, а разворачивает выборочно и
-настраиваемо, записан на [доске](board/board.json) как следующий шаг.
+Удобную выборочную и настраиваемую установку берёт на себя [лаунчер](launcher/README.md)
+(отдельное направление, [E-ADR-004](docs/ecosystem/adr/E-ADR-004-ecosystem-launcher.md));
+его ступени — на [доске](board/board.json) с меткой `launcher`.
 
 ## Что лежит в корне
 
