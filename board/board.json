@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 81,
-        "comments": 103,
+        "comments": 105,
         "checklists": 35,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T09:12:00Z",
+    "generatedAt": "2026-10-20T09:13:00Z",
     "selfHosted": true,
-    "boardRevision": 57,
-    "lastPatchId": "2026-10-20-ecosystem-launcher-direction",
+    "boardRevision": 58,
+    "lastPatchId": "2026-10-20-launcher-l1-showcase",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -862,11 +862,11 @@
       {
         "id": "01a15878-5ff4-761c-9127-26310812aa01",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L1: витрина приложений и сверка с main, только чтение",
         "description": "Зачем: увидеть, что есть в экосистеме, что подходит этой машине, что уже стоит и что устарело, до того как лаунчер начнёт что-то выполнять.\n\nГотово, когда: install.sh (Arch) и install.bat (Windows) ставят PySide6 в venv лаунчера, python launcher/launcher.py открывает окно; abl на Windows серый с причиной; web без Docker — с предупреждением; глобальное состояние main и состояние checkout видны и без сети берутся из кеша; четыре темы переключаются и запоминаются; status --json отдаёт то же для UTS.\n\nЭпик: «Лаунчер экосистемы». Ничего не устанавливает и не запускает.",
         "priority": "high",
-        "position": 5120,
+        "position": 32768,
         "archivedAt": null
       },
       {
@@ -3040,49 +3040,49 @@
         "id": "01a15878-5ff4-7978-a5fc-0fd802d1493f",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "Каталог из ecosystem.json, платформа и предпосылки",
-        "isDone": false,
+        "isDone": true,
         "position": 1024
       },
       {
         "id": "01a15878-5ff4-77af-9063-9171685412c9",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "Глобальное состояние: коммиты main по каталогам, ревизия доски, кеш",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a15878-5ff4-747a-851f-987c04d1f641",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "Состояние checkout: локальный коммит каталога, незакоммиченные правки",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
         "id": "01a15878-5ff4-7384-aceb-713c360afffe",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "Сверка и вердикты",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
         "id": "01a15878-5ff4-76d1-be80-5b2b1b0e88cf",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "Окно PySide6 и install.sh / install.bat",
-        "isDone": false,
+        "isDone": true,
         "position": 5120
       },
       {
         "id": "01a15878-5ff4-76af-b6c9-8a92378be5ad",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "Темы и каркас «пастельный пластик»",
-        "isDone": false,
+        "isDone": true,
         "position": 6144
       },
       {
         "id": "01a15878-5ff4-7ab4-890c-28fffc79bcb3",
         "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
         "title": "status --json и тесты",
-        "isDone": false,
+        "isDone": true,
         "position": 7168
       }
     ],
@@ -3704,6 +3704,18 @@
         "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
         "createdAt": "2026-10-20T08:20:00Z",
         "body": "patch 2026-10-20-ecosystem-launcher-direction: метабутстрапер стал лаунчером (просьба John 2026-10-20). Решение записано E-ADR-004 (принято John): пятое направление launcher/, ядро на стандартной библиотеке Python, окно на PySide6 в своём venv через install.sh / install.bat; каталог — ecosystem.json, действия — будущий контракт launcher-entry/1 (<направление>/launcher.json), APK — последняя сборка EAS по токену Expo (выбор John). Тестовый web: оба варианта на выбор (выбор John). Направление зарегистрировано: ecosystem.json, boundaries.md, метка launcher в check_board.py. Ступени L1–L6 заведены карточками. Открытые пункты чек-листа переехали в ступени: профиль и делегирование — L2/L3, --dry-run — L2, скачивание и doctor — L5."
+      },
+      {
+        "id": "01a15878-995d-77a9-ac58-caa2c85f15c0",
+        "cardId": "01a15878-5ff4-761c-9127-26310812aa01",
+        "createdAt": "2026-10-20T08:40:00Z",
+        "body": "patch 2026-10-20-launcher-l1-showcase: окно на PySide6 (выбор John): sh launcher/install.sh или launcher\\install.bat ставят PySide6-Essentials 6.11.2 в venv в каталоге данных пользователя (не в checkout и не в системный Python), python launcher/launcher.py сам находит этот venv; без него — подсказка и состояние в терминале. Ядро на стандартной библиотеке: каталог из ecosystem.json, abl вне Arch серый с причиной, Android — «на телефон», Docker — установлен/запущен/Linux containers/Compose v2; коммиты main по каталогам и origin доски через GitHub, кеш 10 минут, без сети — кеш; сверка checkout. Четыре темы словаря → QSS «пастельный пластик», тема и размер окна в settings.json. Ничего не ставит из направлений: кнопки подписаны ступенями L2–L5. Проверено у агента: install.sh на Ubuntu (Python 3.13) поставил Qt, 19 unittest на 3.11 и в venv (вместе с окном offscreen), uts.py --only launcher PASS, снимки окна в трёх темах. Ждёт хоста: install.bat и окно на Windows, install.sh и окно на Arch, затем uts.py --interactive."
+      },
+      {
+        "id": "01a15878-995d-7bec-8f67-71c56d82d201",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "createdAt": "2026-10-20T08:40:00Z",
+        "body": "patch 2026-10-20-launcher-l1-showcase: ступень L1 в «Ждёт хоста»."
       }
     ],
     "boardAppearanceSettings": [],

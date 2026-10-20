@@ -511,6 +511,40 @@
           "probe": "devctl-installed"
         }
       ]
+    },
+    {
+      "id": "launcher",
+      "title": "launcher",
+      "dir": "launcher",
+      "checks": [
+        {
+          "id": "unittest",
+          "title": "Тесты лаунчера (без сети, Docker и браузера)",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests"
+          ]
+        },
+        {
+          "id": "status-offline",
+          "title": "launcher.py status --json --offline отвечает",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "launcher.py",
+            "status",
+            "--json",
+            "--offline"
+          ]
+        }
+      ]
     }
   ]
 }

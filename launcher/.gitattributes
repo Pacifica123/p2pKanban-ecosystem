@@ -1,0 +1,3 @@
+# install.bat хранится с CRLF как есть: cmd.exe путает метки при LF.
+*.bat -text
+*.sh text eol=lf

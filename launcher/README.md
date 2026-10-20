@@ -1,11 +1,47 @@
 # p2pKanban Launcher
 
+Дата: 2026-10-20. Решение о направлении — [E-ADR-004](../docs/ecosystem/adr/E-ADR-004-ecosystem-launcher.md)
+(предложено, ждёт подтверждения John).
+
 Лаунчер экосистемы p2pKanban: одно окно, из которого видно, какие приложения
 экосистемы есть, какие подходят этой машине, что установлено, что устарело
 относительно `main`, и откуда их поставить, запустить и обновить.
 
-Дата: 2026-10-20. Решение о направлении — [E-ADR-004](../docs/ecosystem/adr/E-ADR-004-ecosystem-launcher.md)
-(принято John 2026-10-20).
+## Запуск
+
+Нужен Python 3.11–3.14. Один раз поставить окно (PySide6 в отдельный venv,
+системный Python не трогается, около 70 МБ):
+
+```bash
+sh launcher/install.sh          # Linux, macOS
+launcher\install.bat            # Windows (можно двойным щелчком)
+```
+
+Дальше из корня checkout экосистемы:
+
+```bash
+python launcher/launcher.py            # окно
+python launcher/launcher.py status     # то же в терминале
+python launcher/launcher.py status --json --offline
+```
+
+На Windows вместо `python` можно `py`. `launcher.py` сам находит venv с
+PySide6; если окна ещё нет, он говорит, какой скрипт запустить, и показывает
+состояние в терминале. Повторный `install.sh` ничего не скачивает, если всё
+уже стоит; `--force` пересоздаёт venv.
+
+На Linux Qt нужны системные библиотеки графики. На Arch обычно всё есть; если
+окно не открывается с ошибкой про платформу `xcb` —
+`sudo pacman -S --needed libglvnd libxkbcommon fontconfig xcb-util-cursor`.
+
+| Флаг | Что делает |
+|---|---|
+| `--offline` | не ходить в сеть, показать кеш `main` |
+| `status --refresh` | спросить `main` заново, не дожидаясь кеша |
+| `install-gui [--force]` | то, что делают `install.sh` и `install.bat` |
+
+`GITHUB_TOKEN` в окружении необязателен: без него GitHub даёт 60 запросов в
+час, а лаунчер делает шесть не чаще раза в 10 минут.
 
 ## Принцип
 
@@ -15,15 +51,63 @@ mobile — APK. Лаунчер выполняет только команды, �
 объявило, и показывает только то, что направление само опубликовало.
 
 - Только стандартная библиотека Python 3.11+.
-- Окно — PySide6 в собственном venv лаунчера, который ставит
-  `install.sh` / `install.bat`; ядро и CLI работают и без него.
 - Всё, что видно в окне, доступно из CLI (`status --json`) для UTS и агента.
 - «Актуально» в лаунчере не значит «принято»: приёмку даёт UTS на хосте.
 
-## Состояние на 2026-10-20
+## Состояние на 2026-10-20: ступень L1, только чтение, окно на PySide6
 
-Ступень **L0**: направление зарегистрировано, кода ещё нет. Ступени и
-критерии — [docs/ROADMAP.md](docs/ROADMAP.md).
+| Что | Откуда |
+|---|---|
+| Каталог: описание, платформы, шаги развёртки | `ecosystem.json` корня (`summary`, `platforms`, `requires`, `install`, `docs`) |
+| Подходит ли машине | платформа хоста против `platforms`; abl вне Arch-based Linux — серый с причиной, Android — «на телефон» |
+| Предпосылки | короткие пробы `requires`: Python, Docker (установлен, запущен, Linux containers, Compose v2), git, pacman, WebKitGTK |
+| Глобальное состояние | GitHub: последний коммит `main` по каталогу каждого направления, `origin` доски; кеш 10 минут, без сети — кеш с пометкой |
+| Состояние checkout | git корня: последний локальный коммит каталога, незакоммиченные правки; в файлы соседних направлений лаунчер не заглядывает |
+| Сверка | актуально, устарело (сколько коммитов, если `main` уже скачан), впереди main, изменено локально, нет в checkout, неизвестно |
+| Установлено | реестр `installs.json` пока пуст: о своей установке направление расскажет с L2 (`launcher.json`) |
+| Темы | четыре темы словаря `p2p-kanban-ui-themes/1` (`launcher_app/themes.py`, из них же QSS окна); выбор и размер окна — в `settings.json` |
+
+Кнопки «Установить», «Настройки», «Скачать APK» видны, но неактивны и
+подписаны ступенью, на которой оживут. Ступени —
+[docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Где лаунчер хранит своё
+
+| Что | Windows | Linux | macOS |
+|---|---|---|---|
+| `settings.json`, `installs.json` | `%APPDATA%\p2pkanban\launcher` | `$XDG_CONFIG_HOME/p2pkanban/launcher` | `~/Library/Application Support/p2pkanban/launcher` |
+| кеш `main` | `%LOCALAPPDATA%\p2pkanban\launcher\cache` | `$XDG_CACHE_HOME/p2pkanban/launcher` | `~/Library/Caches/p2pkanban/launcher` |
+| venv с PySide6 | `%LOCALAPPDATA%\p2pkanban\launcher\data\venv` | `$XDG_DATA_HOME/p2pkanban/launcher/venv` | `~/Library/Application Support/p2pkanban/launcher/data/venv` |
+
+`P2PKANBAN_LAUNCHER_HOME` переносит всё это в один каталог (тесты, UTS). venv
+намеренно не в checkout: его не захватят снимки devctl.
+
+## Проверки
+
+```bash
+cd launcher
+python -B -m unittest discover -s tests
+```
+
+Без сети и Docker. Проверка окна (offscreen) идёт, только если тесты запущены
+интерпретатором venv с PySide6, иначе пропускается. Те же проверки — раздел
+`launcher` в `tools/ecosystem/uts_plan.json`.
+
+## Устройство
+
+| Файл | Что делает |
+|---|---|
+| `launcher.py` | CLI, поиск venv и запуск окна |
+| `install.sh`, `install.bat` | ищут Python 3.11–3.14 и вызывают `launcher.py install-gui` |
+| `requirements-gui.txt` | зафиксированная версия PySide6 |
+| `launcher_app/install.py` | venv и установка PySide6 |
+| `launcher_app/probes.py` | платформа и предпосылки |
+| `launcher_app/remote.py` | `main` на GitHub и кеш |
+| `launcher_app/local.py` | checkout и реестр установок |
+| `launcher_app/state.py` | сборка состояния и сверка |
+| `launcher_app/qt_app.py` | окно PySide6: только рисует состояние ядра |
+| `launcher_app/themes.py` | копия словаря тем и QSS «пастельный пластик» |
+| `launcher_app/settings.py` | тема и размер окна |
 
 ## Чем лаунчер не является
 
