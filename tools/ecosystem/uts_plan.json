@@ -138,6 +138,16 @@
           ]
         },
         {
+          "id": "test-launcher-entry",
+          "title": "launcher.json и status --json для лаунчера",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_launcher_entry.py"
+          ]
+        },
+        {
           "id": "contract-replica-catalog",
           "title": "Контракт каталога реплик",
           "level": "static",

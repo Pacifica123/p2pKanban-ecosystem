@@ -2338,7 +2338,69 @@ def command_start(args: argparse.Namespace, project_root: Path) -> int:
     return 0
 
 
+LAUNCHER_STATUS_SCHEMA = "p2p-kanban-launcher-status/1"
+
+
+def launcher_status_payload(project_root: Path) -> dict[str, Any]:
+    """Ответ `status --json` по контракту p2p-kanban-launcher-entry/1.
+
+    Ничего не запускает и не меняет; без Docker отвечает running=null и
+    проблемой, а не ошибкой: лаунчер вызывает его при каждом обновлении окна.
+    """
+    state = load_state(project_root)
+    payload: dict[str, Any] = {
+        "schema": LAUNCHER_STATUS_SCHEMA,
+        "component": "web",
+        "installed": bool(state),
+        "running": False,
+        "version": None,
+        "revision": None,
+        "url": None,
+        "values": {},
+        "detail": "узел ещё не запускался из этого checkout",
+        "problems": [],
+    }
+    if not state:
+        return payload
+    web_port = configured_web_port(state)
+    bind_address = str(state.get("bindAddress") or "127.0.0.1")
+    revision = state.get("activeRevision")
+    version = state.get("appVersion")
+    public_url = f"http://127.0.0.1:{web_port}"
+    payload.update(
+        {
+            "version": str(version) if isinstance(version, str) and version.strip() else None,
+            "revision": revision if isinstance(revision, str) and re.fullmatch(r"[0-9a-f]{40}", revision) else None,
+            "url": public_url,
+            "values": {"port": web_port, "listen": "lan" if bind_address == "0.0.0.0" else "local"},
+        }
+    )
+    if http_ready(public_url + "/healthz"):
+        payload["running"] = True
+        payload["detail"] = "узел отвечает"
+        return payload
+    try:
+        ensure_docker_ready(project_root, compose_environment(web_port, bind_address, configured_image_tag(state)))
+    except BootstrapError as exc:
+        payload["running"] = None
+        payload["detail"] = "Docker недоступен: работает ли узел, неизвестно"
+        payload["problems"].append(str(exc))
+        return payload
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        payload["running"] = None
+        payload["detail"] = "Docker не ответил: работает ли узел, неизвестно"
+        payload["problems"].append(str(exc))
+        return payload
+    payload["detail"] = "узел остановлен" if state.get("status") == "stopped" else "контейнеры есть, но web не отвечает"
+    if state.get("lastError"):
+        payload["problems"].append(str(state["lastError"]))
+    return payload
+
+
 def command_status(args: argparse.Namespace, project_root: Path) -> int:
+    if getattr(args, "json", False):
+        print(json.dumps(launcher_status_payload(project_root), ensure_ascii=False, indent=2))
+        return 0
     state = load_state(project_root)
     source_root = active_source_root(project_root, state)
     web_port = configured_web_port(state)
@@ -3048,6 +3110,11 @@ def build_parser() -> argparse.ArgumentParser:
     adopt.set_defaults(func=command_adopt_running)
 
     status = subparsers.add_parser("status", help="Показать контейнеры и доступность web.")
+    status.add_argument(
+        "--json",
+        action="store_true",
+        help="Ответ для лаунчера экосистемы (p2p-kanban-launcher-status/1); ничего не меняет.",
+    )
     status.set_defaults(func=command_status)
 
     doctor = subparsers.add_parser("doctor", help="Сохранить диагностику Docker и контрольных сумм миграций без изменения БД.")

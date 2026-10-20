@@ -47,8 +47,16 @@ Bootstrap сам:
 | Посмотреть последние логи | `python bootstrap.py logs` |
 | Следить за логами | `python bootstrap.py logs --follow` |
 | Остановить, сохранив данные | `python bootstrap.py stop` |
+| Состояние для лаунчера экосистемы (JSON) | `python bootstrap.py status --json` |
 
 После `stop` БД остаётся в Docker volume и вернётся при следующем запуске.
+
+Те же команды есть кнопками в лаунчере экосистемы (`python launcher/launcher.py`
+из корня): web объявляет их в [`launcher.json`](launcher.json) по контракту
+[`p2p-kanban-launcher-entry/1`](../contracts/launcher-entry/1/SPEC.md) — порт и
+доступ (`--listen`) там настройки, а «тот же узел на другом порту» — вариант
+установки. Второй, тестовый узел со своей базой web пока не умеет: лаунчер
+показывает его серым.
 
 Полный сброс удаляет локальные данные и потому требует явного подтверждения:
 

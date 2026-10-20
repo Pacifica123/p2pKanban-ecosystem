@@ -13,8 +13,8 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 84,
-        "comments": 124,
+        "cards": 85,
+        "comments": 125,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T13:00:00Z",
+    "generatedAt": "2026-10-20T13:10:00Z",
     "selfHosted": true,
-    "boardRevision": 63,
-    "lastPatchId": "2026-10-20-ecosystem-launcher-entry-contract",
+    "boardRevision": 64,
+    "lastPatchId": "2026-10-20-web-launcher-entry",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -958,6 +958,16 @@
         "priority": "high",
         "position": 17408,
         "archivedAt": null
+      },
+      {
+        "id": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Второй, тестовый web-узел: своя база, секреты и порт",
+        "description": "Зачем: John (2026-10-20, E-ADR-004 п.9) хочет на выбор тестовый web рядом с рабочим, не трогая рабочий.\n\nГотово, когда: bootstrap.py умеет второй узел со своим Compose-проектом, томами, секретами, каталогом состояния и портом (например, start --instance test); status --json и launcher.json знают про экземпляр; web/launcher.json переводит профиль second-node в supported:true; лаунчер показывает оба узла.\n\nСегодня: один узел на checkout — Compose-проект p2pkanban-bootstrap захардкожен, его тома и .dev-bootstrap/container-stack.json общие для start, update, rollback, reset и updater UI. Поэтому это отдельный патч web с приёмкой на хосте, а не часть L2.",
+        "priority": "medium",
+        "position": 18432,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1705,6 +1715,14 @@
       {
         "cardId": "01a15950-6e95-7da7-8d10-d273eb53120a",
         "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
       }
     ],
     "checklists": [
@@ -3986,6 +4004,12 @@
         "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
         "createdAt": "2026-10-20T13:00:00Z",
         "body": "patch 2026-10-20-ecosystem-launcher-entry-contract: контракт p2p-kanban-launcher-entry/1 описан в contracts/launcher-entry/1 — SPEC, схемы entry/status/result, эталон launcher_entry_check / launcher_command / launcher_status в contract_ref.py, 23 вектора (команды, 13 отказов объявления, 10 ответов status). Правило безопасности: только Python-скрипты самого направления, интерпретатором лаунчера, без оболочки. check_contracts.py проверяет каждый <направление>/launcher.json из ecosystem.json. E-ADR-004 п.6 переписан под ленту APK от GitHub Action (токен — секрет репозитория), п.9 — второй узел web пока не поддержан. Дальше в той же пачке: web, launcher, abl."
+      },
+      {
+        "id": "01a159b8-23e4-7202-9294-4714a2023868",
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "createdAt": "2026-10-20T13:10:00Z",
+        "body": "patch 2026-10-20-web-launcher-entry: web/launcher.json объявляет bootstrap.py — установить (start со сборкой), запустить (--no-build), остановить, обновить из main, откат, диагностика, логи, удалить с базой; настройки порт и --listen; вариант «тот же узел на другом порту». Новый bootstrap.py status --json (p2p-kanban-launcher-status/1): ничего не меняет, без Docker отвечает running=null с проблемой. Второй узел объявлен supported:false — карточка ниже. Тесты web/tools/test_launcher_entry.py, строка в uts_plan."
       }
     ],
     "boardAppearanceSettings": [],

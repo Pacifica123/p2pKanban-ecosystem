@@ -51,7 +51,7 @@
       "requires": [],
       "consumers": ["launcher"],
       "note": "Производители — направления с командами (web, abl); mobile команд не объявляет: APK приходит из EAS (E-ADR-004 п.6), поэтому mobile здесь всегда null.",
-      "implementations": {"web": null, "mobile": null, "abl": null}
+      "implementations": {"web": {"since": "2.1.0+2026-10-20-web-launcher-entry", "stage": "launcher.json и status --json; второй узел — нет", "hostAccepted": false}, "mobile": null, "abl": null}
     }
   ],
   "legacy": [

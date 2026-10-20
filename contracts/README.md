@@ -21,7 +21,7 @@ contracts/
 | `p2p-kanban-rendezvous/1` | [rendezvous/1](rendezvous/1/SPEC.md) | добавление устройства по QR в двух режимах через почтовый ящик на relay | описан (R1), не реализован |
 | `p2p-kanban-error-report/1` | [error-report/1](error-report/1/SPEC.md) | «Скопировать подробности» у любой ошибки в web, mobile и abl: форма отчёта, вырезание секретов, id ошибки и версия в ответах web-узла | описан; web, mobile, abl реализовали, на хосте не принят |
 | `p2p-kanban-project-board/1` | [project-board/1](project-board/1/SPEC.md) | доска проекта, встроенная в каждый клиент только для чтения: как её узнать, откуда брать, какую показать; маршруты web-узла | описан; web, mobile и abl реализовали, на хосте не принят |
-| `p2p-kanban-launcher-entry/1` | [launcher-entry/1](launcher-entry/1/SPEC.md) | `<направление>/launcher.json`: какие свои Python-команды направление даёт лаунчеру, какие настройки показать, ответ `status` | описан; web и abl — их патчами L2 и L3, на хосте не принят |
+| `p2p-kanban-launcher-entry/1` | [launcher-entry/1](launcher-entry/1/SPEC.md) | `<направление>/launcher.json`: какие свои Python-команды направление даёт лаунчеру, какие настройки показать, ответ `status` | описан; web реализовал, abl — патчем L3; на хосте не принят |
 
 Зачем кольцо, рассказывает [docs/ecosystem/trusted-devices.md](../docs/ecosystem/trusted-devices.md);
 зачем отчёт об ошибке — его [SPEC](error-report/1/SPEC.md) и карточка «Сборщик логов» на доске.

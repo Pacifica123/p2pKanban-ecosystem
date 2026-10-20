@@ -1,0 +1,48 @@
+{
+  "schema": "p2p-kanban-launcher-entry/1",
+  "component": "web",
+  "settings": [
+    {"id": "port", "label": "Порт", "type": "port", "default": null, "min": 1024, "max": 65535,
+     "help": "Пусто — прежний порт узла или первый свободный от 8080."},
+    {"id": "listen", "label": "Доступ", "type": "choice", "default": null,
+     "help": "Пусто — как при прошлом запуске.",
+     "choices": [{"value": "local", "label": "только этот компьютер"}, {"value": "lan", "label": "доверенная локальная сеть"}]}
+  ],
+  "actions": [
+    {"id": "install", "label": "Установить и запустить",
+     "help": "Собрать образы из этого checkout и запустить узел в Docker. Первый раз — несколько минут.",
+     "argv": ["{python}", "bootstrap.py", "start", "--no-open"],
+     "options": [{"setting": "port", "argv": ["--port", "{value}"]}, {"setting": "listen", "argv": ["--listen", "{value}"]}],
+     "dryRun": ["--dry-run"], "timeoutSeconds": 3600},
+    {"id": "start", "label": "Запустить",
+     "help": "Запустить узел из уже собранных образов; порт и доступ — из настроек.",
+     "argv": ["{python}", "bootstrap.py", "start", "--no-open", "--no-build"],
+     "options": [{"setting": "port", "argv": ["--port", "{value}"]}, {"setting": "listen", "argv": ["--listen", "{value}"]}],
+     "dryRun": ["--dry-run"], "timeoutSeconds": 900},
+    {"id": "stop", "label": "Остановить", "help": "Остановить контейнеры; база и секреты остаются в томах Docker.",
+     "argv": ["{python}", "bootstrap.py", "stop"], "dryRun": ["--dry-run"], "timeoutSeconds": 300},
+    {"id": "update", "label": "Обновить из main",
+     "help": "Взять последний коммит main из GitHub, собрать и переключить узел, сохранив базу; при сбое — откат.",
+     "argv": ["{python}", "bootstrap.py", "update"], "dryRun": ["--dry-run"], "timeoutSeconds": 3600},
+    {"id": "rollback", "label": "Вернуть прошлую версию",
+     "help": "Образы предыдущей версии; база не восстанавливается из старой копии.",
+     "argv": ["{python}", "bootstrap.py", "rollback"], "dryRun": ["--dry-run"], "timeoutSeconds": 1800,
+     "confirm": "Вернуть узел к предыдущей версии кода? База останется текущей."},
+    {"id": "status", "label": "Состояние", "argv": ["{python}", "bootstrap.py", "status", "--json"], "output": "status",
+     "timeoutSeconds": 90},
+    {"id": "doctor", "label": "Диагностика", "help": "Сохранить диагностику Docker и миграций, ничего не меняя.",
+     "argv": ["{python}", "bootstrap.py", "doctor"], "timeoutSeconds": 600},
+    {"id": "logs", "label": "Последние логи", "argv": ["{python}", "bootstrap.py", "logs", "--tail", "200"], "timeoutSeconds": 120},
+    {"id": "remove", "label": "Удалить вместе с базой",
+     "help": "Остановить узел и удалить его тома: базу и секреты. Восстановить нельзя.",
+     "argv": ["{python}", "bootstrap.py", "reset", "--yes"], "dryRun": ["--dry-run"], "timeoutSeconds": 600,
+     "confirm": "Удалить web-узел вместе с базой и секретами? Это нельзя отменить."}
+  ],
+  "profiles": [
+    {"id": "same-node-port", "label": "Тот же узел на другом порту", "supported": true, "action": "start", "ask": ["port"],
+     "description": "Рабочий узел перезапускается на выбранном порту: та же база, те же данные. Вернуть — так же, прежним портом."},
+    {"id": "second-node", "label": "Второй, тестовый узел", "supported": false,
+     "description": "Своя база, свои секреты и порт; рабочий узел не трогается.",
+     "reason": "web пока держит один узел на checkout (Compose-проект p2pkanban-bootstrap и его тома); второй узел — отдельный патч web, карточка на доске."}
+  ]
+}
