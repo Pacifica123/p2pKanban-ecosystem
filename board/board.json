@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 101,
+        "comments": 102,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T09:10:00Z",
+    "generatedAt": "2026-10-20T09:11:00Z",
     "selfHosted": true,
-    "boardRevision": 55,
-    "lastPatchId": "2026-10-20-web-openapi-parity",
+    "boardRevision": 56,
+    "lastPatchId": "2026-10-20-ecosystem-anchor-drift",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -182,11 +182,11 @@
       {
         "id": "01a10d38-f931-7932-ab01-88e49268c31c",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Измерять дрейф якорей abl относительно web, mobile и devctl",
         "description": "Зачем: abl/evidence/source-anchors.json заморозил sha256 файлов соседей на 2026-09-12; сейчас изменилась половина (15 из 30). Раньше сравнить было не с чем, теперь соседи в одном дереве.\n\nГотово, когда: корневая проверка выводит, какие якоря разошлись, без изменения замороженных файлов abl; отчёт попадает в лог devctl.",
         "priority": "medium",
-        "position": 3072,
+        "position": 23552,
         "archivedAt": null
       },
       {
@@ -1526,6 +1526,10 @@
       {
         "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
         "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
       }
     ],
     "checklists": [
@@ -3504,6 +3508,12 @@
         "cardId": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
         "createdAt": "2026-10-20T08:00:00Z",
         "body": "patch 2026-10-20-web-openapi-parity: contract_parity_sweep.py --check зелёный на 66d4ca6: backend 120, OpenAPI 120, frontend 92 и все есть в backend и OpenAPI. Восемь маршрутов описал ещё 2026-10-16-web-static-checks, он же научил сверку шаблонным строкам (${encodeURIComponent(…)} → {param}); карточку тогда не сдвинули. POST /auth/device-link/lan/inbox смонтирован (backend/src/auth/mod.rs), поэтому остаётся в OpenAPI. Этот патч закрывает последний пункт: info.version 0.2.0 → 2.1.0, и сверка теперь краснеет, если info.version расходится с web/VERSION. Тесты сверки: tools/test_contract_parity_sweep.py. Приёмка — проверки манифеста в devctl start; хост не нужен."
+      },
+      {
+        "id": "01a1585c-33c0-7f31-9157-d2e3f091468b",
+        "cardId": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "createdAt": "2026-10-20T08:10:00Z",
+        "body": "patch 2026-10-20-ecosystem-anchor-drift: python -B tools/ecosystem/anchor_drift.py сравнивает abl/evidence/source-anchors.json с текущими файлами web, mobile (источник android) и devctl и выводит, что разошлось; рядом с якорем — проверки abl, которые на него опираются. Замороженные файлы abl не меняются, дрейф не роняет проверку. Проверка добавлена в шаблон манифеста, так что отчёт лежит в логе каждого devctl start; --self-test входит в UTS экосистемы. На 66d4ca6 разошлись 16 из 30: web 5 из 15, mobile 9 из 12, devctl 2 из 3. Решать по каждому якорю — патчами abl. Сверка общих фикстур (ступень 2 integration-path.md) — следующий шаг."
       }
     ],
     "boardAppearanceSettings": [],

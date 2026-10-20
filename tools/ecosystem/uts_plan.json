@@ -29,6 +29,17 @@
           ]
         },
         {
+          "id": "anchor-drift",
+          "title": "Проверка дрейфа якорей abl исправна",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/ecosystem/anchor_drift.py",
+            "--self-test"
+          ]
+        },
+        {
           "id": "uts-self-test",
           "title": "Сам тестер UTS исправен",
           "level": "static",

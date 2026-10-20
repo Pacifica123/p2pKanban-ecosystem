@@ -23,6 +23,13 @@
       "command": "python -B tools/ecosystem/check_board.py --require-changed",
       "requiredCommands": ["python", "git"],
       "timeoutSeconds": 120
+    },
+    {
+      "name": "Дрейф якорей abl (отчёт, не гейт)",
+      "cwd": ".",
+      "command": "python -B tools/ecosystem/anchor_drift.py",
+      "requiredCommands": ["python"],
+      "timeoutSeconds": 60
     }
   ],
   "commit": {"message": "направление: что сделано"},
