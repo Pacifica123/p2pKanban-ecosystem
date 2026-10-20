@@ -8,6 +8,11 @@ pkgdesc='Local-first peer-to-peer Kanban desktop client'
 url='https://example.invalid/p2pkanban'
 arch=('x86_64')
 license=('custom')
+# makepkg lto (on in the devtools clean-chroot makepkg.conf) compiles the bundled
+# SQLite from libsqlite3-sys into GCC LTO objects; rustc links with rust-lld,
+# which cannot read them, and every sqlite3_* symbol stays undefined (A15
+# receipt 2026-10-20). Cargo's own release LTO in Cargo.toml is unaffected.
+options=('!lto')
 depends=(
   'gcc-libs'
   'glib2'

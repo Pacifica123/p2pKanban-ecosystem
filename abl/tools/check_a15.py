@@ -57,6 +57,7 @@ for token in (
     "pkgrel=1",
     "url=\'https://example.invalid/p2pkanban\'",
     "arch=('x86_64')",
+    "options=('!lto')",
     "'webkit2gtk-4.1'",
     "'gtk3'",
     "'glib2'",

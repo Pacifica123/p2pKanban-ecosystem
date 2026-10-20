@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 81,
-        "comments": 116,
+        "comments": 117,
         "checklists": 35,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T11:30:00Z",
+    "generatedAt": "2026-10-20T11:40:00Z",
     "selfHosted": true,
-    "boardRevision": 59,
-    "lastPatchId": "2026-10-20-ecosystem-host-acceptance-r58",
+    "boardRevision": 60,
+    "lastPatchId": "2026-10-20-abl-a15-chroot-lto",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -3782,6 +3782,12 @@
         "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
         "createdAt": "2026-10-20T11:30:00Z",
         "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6, ноутбук): abl PASS 91, SKIP 1; runtime.a18-runtime-budgets и runtime.a18-chaos PASS (FAIL бюджетов, на который ссылается ответ владельца, был в прежнем прогоне). Не сделаны ручные пункты: release-прогон бюджетов от сети и от батареи, systemctl suspend, Manjaro PC на Wayland."
+      },
+      {
+        "id": "01a158a1-f487-7c00-8dd7-dd92da270509",
+        "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
+        "createdAt": "2026-10-20T11:40:00Z",
+        "body": "patch 2026-10-20-abl-a15-chroot-lto: Первый чек A15 на хосте (2026-10-20T10:58Z, EndeavourOS, d235fc6) не выписан: входы выпуска PASS, makechrootpkg -c -u -n — код 255 через 593 с, остальные 8 шагов не запускались. Причина — линковка: undefined sqlite3_* из встроенного SQLite (libsqlite3-sys bundled). makepkg.conf чистого chroot из devtools включает lto, C-код SQLite компилируется в GCC LTO-объекты, а rustc 1.92 линкует через rust-lld (-fuse-ld=lld в строке линковки), который их не читает. В UTS cargo build зелёный, потому что флагов makepkg там нет. Исправление: options=('!lto') в packaging/arch/PKGBUILD (как в Rust package guidelines ArchWiki), check_a15 требует эту строку, CORR-A15-002 в docs/evidence/A15_PACMAN_PACKAGING.md. Release-LTO самого Cargo не меняется. Карточка остаётся в «Ждёт хоста»: перевыписать чек python3 -B tools/a15_issue_receipt.py --signing-key 7AF1F7D178540EA5C721127A513BC895EBE583D6, затем UTS: host.a15-release-receipt PASS."
       }
     ],
     "boardAppearanceSettings": [],

@@ -62,6 +62,8 @@ Canonical UTS runs `tools/a15_host_packaging_probe.py` after the normal native b
 
 CORR-A15-001 hardens the non-root host preflight after real Arch devtools evidence: `makechrootpkg` is probed with its supported short `-h` option, and `namcap PKGBUILD` output is fail-closed on `E:` diagnostics. The bootstrap PKGBUILD now carries a deliberately non-routable `https://example.invalid/p2pkanban` project URL so internal package lint is structurally complete without inventing a public project origin; release publication must replace that placeholder together with the example repository mirrors.
 
+CORR-A15-002 comes from the first host receipt (2026-10-20, EndeavourOS, d235fc6): `makechrootpkg -c -u -n` failed at the final link with undefined `sqlite3_*` symbols. The devtools clean-chroot `makepkg.conf` enables `lto`, so the C compiler flags makepkg exports turn the bundled SQLite of `libsqlite3-sys` into GCC LTO objects; rustc links with `rust-lld` (`-fuse-ld=lld` in the failing link line), which cannot read GCC LTO objects. The host UTS `cargo build` never sees makepkg flags and stayed green. The PKGBUILD now sets `options=('!lto')`, as the Rust package guidelines recommend; Cargo's own `[profile.release] lto = true` is unchanged.
+
 Final release evidence remains intentionally external/manual because it changes host package state or needs the real release key: clean-chroot build, `namcap` on the produced package, signed repository publication/verification, pacman install/upgrade/`-Qkk`, and uninstall preserving XDG/keyring data.
 
 ## Explicit non-claims

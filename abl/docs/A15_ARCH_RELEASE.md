@@ -49,6 +49,8 @@ namcap PKGBUILD
 namcap p2pkanban-0.1.0-1-x86_64.pkg.tar.zst
 ```
 
+The PKGBUILD sets `options=('!lto')`. The clean-chroot `makepkg.conf` from devtools enables `lto`, which turns the bundled SQLite of `libsqlite3-sys` into GCC LTO objects; rustc links with `rust-lld`, which cannot read them, so the link fails with undefined `sqlite3_*` symbols (A15 receipt 2026-10-20). A host `cargo build` does not see this because it gets no makepkg flags. Cargo's own release LTO (`[profile.release] lto = true`) is unaffected.
+
 A release operator may use the current `pkgctl build` equivalent instead. Do not build against a deliberately partial-upgrade system and do not work around dependency transitions with private copied system libraries.
 
 ## 3. Sign package and repository

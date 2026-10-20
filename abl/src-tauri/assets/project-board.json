@@ -13,9 +13,9 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 74,
-        "comments": 92,
-        "checklists": 34,
+        "cards": 81,
+        "comments": 117,
+        "checklists": 35,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T07:57:00Z",
+    "generatedAt": "2026-10-20T11:40:00Z",
     "selfHosted": true,
-    "boardRevision": 49,
-    "lastPatchId": "2026-10-17-abl-project-board",
+    "boardRevision": 60,
+    "lastPatchId": "2026-10-20-abl-a15-chroot-lto",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -143,8 +143,8 @@
         "id": "01a10d38-f921-7009-b275-60e6cec1fc08",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
         "columnId": "01a10d38-f905-7498-9234-5378892b360e",
-        "title": "Метабутстрапер: скачать разом, развернуть выборочно и настраиваемо",
-        "description": "Зачем: пользователь хочет одной командой получить нужное: только abl для Linux, только web, или всё вместе, с настройками.\n\nГотово, когда: в корне есть установщик, который по профилю или флагам выбирает направления и для каждого вызывает его собственный bootstrap, не подменяя его.\n\nПринципы: установщик — дирижёр, а не замена. web по-прежнему ставится python bootstrap.py, abl — своим pacman/AppImage-путём, mobile — сборкой или скачиванием APK. Только стандартная библиотека Python, как у devctl.",
+        "title": "Лаунчер экосистемы: показать, поставить, обновить, сверить с main",
+        "description": "Зачем: одним окном получить нужное приложение экосистемы на этой машине: увидеть, что есть и что подходит платформе, поставить и запустить его, вовремя обновить и понять, норм ли установленное относительно main. Бывший «метабутстрапер»; John 2026-10-20 расширил его до лаунчера и склоняется к отдельному продукту.\n\nГотово, когда: ступени L1–L5 из launcher/docs/ROADMAP.md приняты на Windows и Arch (L6 — после решения по E-ADR-002).\n\nПринципы: дирижёр, а не замена — лаунчер вызывает только команды, объявленные направлением (web — python bootstrap.py, abl — pacman/AppImage, mobile — APK). Только стандартная библиотека Python. Решение — E-ADR-004 (принято John 2026-10-20): пятое направление launcher/, ядро на стандартной библиотеке, окно на PySide6, зависимости ставит install.sh / install.bat.",
         "priority": "high",
         "position": 1024,
         "archivedAt": null
@@ -182,21 +182,21 @@
       {
         "id": "01a10d38-f931-7932-ab01-88e49268c31c",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Измерять дрейф якорей abl относительно web, mobile и devctl",
         "description": "Зачем: abl/evidence/source-anchors.json заморозил sha256 файлов соседей на 2026-09-12; сейчас изменилась половина (15 из 30). Раньше сравнить было не с чем, теперь соседи в одном дереве.\n\nГотово, когда: корневая проверка выводит, какие якоря разошлись, без изменения замороженных файлов abl; отчёт попадает в лог devctl.",
         "priority": "medium",
-        "position": 3072,
+        "position": 23552,
         "archivedAt": null
       },
       {
         "id": "01a10d38-f932-79de-a74e-9d120add6abc",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Устаревшие статические проверки web",
         "description": "Зачем: на исходном снапшоте web часть tools/check_*.py падает без связи с монорепозиторием: check_zero_config_bootstrap (README became dense again), check_mobile_web_feature_contract (ждёт VERSION 1.0.0), check_cross_client_crud_contract и check_web_customization_part2_contract (v1 versions are not aligned), check_card_deletion_scope_contract, check_release_prep. После переноса результаты те же.\n\nГотово, когда: у каждой проверки решение: обновить под 2.1.0, пометить исторической или удалить; список проверок для манифеста web-патча зелёный.",
         "priority": "medium",
-        "position": 20480,
+        "position": 21504,
         "archivedAt": null
       },
       {
@@ -652,11 +652,11 @@
       {
         "id": "01a114f8-cc77-7001-b7e7-09884e7db90f",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "devctl 0.9.0 в монорепозитории: пачки патчей",
         "description": "Зачем: владелец поставил devctl 0.9.0 из devctl-universal (50f4324): пачки патчей, реестр workspace машины, проверка base.expectedHead и base.after. Гостевая копия devctl/ оставалась на 0.8.0, поэтому UTS показал бы расхождение «установлено ≠ исходники», а devctl/docs/patch-format.md, на который ссылаются правила проекта, не знал expectedHead/after.\n\nГотово, когда: первая пачка экосистемы применена на хосте через devctl batch start, а следующий UTS показывает devctl 0.9.0 «совпадает» с установленным.",
         "priority": "high",
-        "position": 13312,
+        "position": 19456,
         "archivedAt": null
       },
       {
@@ -692,11 +692,11 @@
       {
         "id": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "web: OpenAPI отстал от узла на 8 маршрутов",
         "description": "Зачем: web/tools/contract_parity_sweep.py --check красный на 6cef464. В OpenAPI нет 8 смонтированных маршрутов: POST /auth/device-link/prepare (им пользуется Android), /request, /supplement-request, /accept, /approve, GET /integrations/projects, GET /integrations/projects/{projectId}/receipts, POST …/receipts/preview. Описан несмонтированный POST /auth/device-link/lan/inbox. info.version 0.2.0 при web 2.1.0. Часть строк «frontend calls missing in backend» — шаблонные строки, которые сверка не разбирает (GET /ring и др.).\n\nГотово, когда: contract_parity_sweep.py --check зелёный; ложные срабатывания на шаблонных путях устранены в самой сверке; info.version совпадает с web/VERSION.\n\nПервый шаг E-ADR-001; полезен при любом решении по нему.",
         "priority": "medium",
-        "position": 5120,
+        "position": 22528,
         "archivedAt": null
       },
       {
@@ -742,11 +742,11 @@
       {
         "id": "01a14382-ad80-7fac-abcd-2c199683fed2",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Темы интерфейса приложения: Графит, Лимон, Лазурь, Серебро во всех направлениях",
         "description": "Зачем: владелец убирает прежнюю тёмно-синюю тему приложения (причина эстетическая) и хочет в каждом приложении экосистемы одинаковый набор тем интерфейса самого приложения, не доски.\n\nТемы (словарь p2p-kanban-ui-themes/1, docs/ecosystem/ui-themes.md): Графит — тёмно-серая рабочая, как KDE Breeze Dark (по умолчанию); Лимон — светло-жёлтая flat, как AppFlowy Lemonade; Лазурь — светло-синяя flat, как Word; Серебро — светло-серая flat, как стандартная тема AppFlowy.\n\nРешения: значения цветов описаны один раз в docs/ecosystem/ui-themes.json, каждое направление держит свою копию; выбор темы — настройка устройства, через узел не синхронизируется; поле appTheme на узле остаётся для старых клиентов. Контракт между направлениями не меняется.\n\nГотово, когда: четыре темы переключаются в web, mobile и abl; тёмно-синей нигде нет; принято на Docker, телефоне и Arch.",
         "priority": "medium",
-        "position": 21504,
+        "position": 24576,
         "archivedAt": null
       },
       {
@@ -782,11 +782,11 @@
       {
         "id": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "devctl: пачка привязана к id workspace одной машины",
         "description": "Зачем: batch.json называет workspace по id из реестра машины, а id у одного и того же репозитория на разных машинах разный: на ноутбуке p2p-ecosystem, на ПК с Manjaro p2pkanban_ecosystem (projectDir p2pKanban_MANJAROHOST). Пачку 2026-10-16-host-fixes пришлось пересобирать под ПК. John давно отмечал эту проблему при работе с workspace на разных машинах и ОС.\n\nВарианты: сопоставлять workspace по remote и ветке (origin + main) или по id из .devctl/workspace.json в самом репозитории, а id реестра оставить псевдонимом; либо разрешить в batch.json список допустимых id; batch plan показывает, какой workspace выбран и почему.\n\nГотово, когда: одна и та же пачка проходит batch plan на ноутбуке и на ПК без правки batch.json. Делается в devctl-universal, затем гостевая копия devctl/ в монорепо.",
         "priority": "medium",
-        "position": 15360,
+        "position": 31744,
         "archivedAt": null
       },
       {
@@ -802,11 +802,11 @@
       {
         "id": "01a147cd-4f81-7a28-a0e2-2624e686d336",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Номер патча в версии web, mobile и abl",
         "description": "Зачем: по web UI, телефону и окну abl не видно, из какого патча собран клиент; на приёмке это приходится выяснять вручную (сообщение John 2026-10-17).\n\nГотово, когда: web (низ боковой панели), mobile («Настройки») и abl (шапка окна) показывают «патч N · patchId» последнего патча своей сборки, и это видно на хосте: узел после обновления из GitHub, APK из EAS, пакет из UTS A15.\n\nПравило: board/README.md, «Номер патча в версии клиентов». Номер вшивается при сборке, в «Скопировать подробности» его нет (это было бы изменение error-report/1). Порядок: экосистема → web → mobile → abl.",
         "priority": "medium",
-        "position": 26624,
+        "position": 25600,
         "archivedAt": null
       },
       {
@@ -852,11 +852,81 @@
       {
         "id": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "Режим отладки: живой журнал без секретов в mobile, web и abl",
         "description": "Зачем: «Скопировать подробности» отдаёт 50 строк в момент ошибки, а странное поведение без ошибки (после перехода на мобильную сеть новые доски не появляются, «Офлайн-копия») не видно ничем. John попросил «режим отладки» в каждом клиенте: может чуть сильнее нагружать клиент, но в реальном времени ведёт всё, что происходило в канбане, вычищая чувствительное.\n\nГотово, когда: в mobile, web и abl есть переключатель режима и экран журнала, строки появляются по мере работы, журнал выгружается в Markdown; в журнале нет паролей, токенов и ключей (redact из error-report/1) и нет текстов карточек (только id, виды операций и числа); принято на телефоне, в браузере и на Arch.\n\nНе контракт: журнал не уходит между направлениями. Форма строки и вырезание — из p2p-kanban-error-report/1, Markdown-выгрузка одинаковой формы во всех клиентах («# p2pKanban: журнал отладки», программа, платформа, строки). Автоприёмка может читать тот же журнал внутри клиента.",
         "priority": "medium",
-        "position": 28672,
+        "position": 26624,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-761c-9127-26310812aa01",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
+        "title": "Лаунчер L1: витрина приложений и сверка с main, только чтение",
+        "description": "Зачем: увидеть, что есть в экосистеме, что подходит этой машине, что уже стоит и что устарело, до того как лаунчер начнёт что-то выполнять.\n\nГотово, когда: install.sh (Arch) и install.bat (Windows) ставят PySide6 в venv лаунчера, python launcher/launcher.py открывает окно; abl на Windows серый с причиной; web без Docker — с предупреждением; глобальное состояние main и состояние checkout видны и без сети берутся из кеша; четыре темы переключаются и запоминаются; status --json отдаёт то же для UTS.\n\nЭпик: «Лаунчер экосистемы». Ничего не устанавливает и не запускает.",
+        "priority": "high",
+        "position": 27648,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Лаунчер L2: контракт launcher-entry/1 и web из лаунчера",
+        "description": "Зачем: ставить, запускать, останавливать и обновлять web из окна, а настройки вроде порта и --listen менять в GUI, а не флагами.\n\nГотово, когда: contracts/launcher-entry/1 со схемой и векторами; web/launcher.json объявляет команды bootstrap.py; лаунчер выполняет их с предпросмотром --dry-run и показывает вывод; на Windows и Arch web ставится и обновляется из лаунчера.\n\nНачнётся после L1. Порядок: корень (контракт) → web → launcher. Тестовый web (выбор John 2026-10-20): лаунчер предлагает оба варианта — тот же узел на другом порту или второй узел со своей БД и каталогом; второй требует поддержки в web (патч web до или вместе с L2), E-ADR-004 п.9.",
+        "priority": "medium",
+        "position": 13312,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Лаунчер L3: abl из лаунчера",
+        "description": "Зачем: на Arch ставить и обновлять abl тем же окном.\n\nГотово, когда: abl/launcher.json объявляет установку и обновление пакетным путём abl; лаунчер ставит abl на Arch.\n\nНачнётся после L2. Ограничение: сегодня у abl есть путь сборки и приёмки (A15, A17), но нет одной пользовательской команды установки — её создаёт патч abl, не лаунчер.",
+        "priority": "medium",
+        "position": 14336,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-7c61-aca1-5461df814646",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Лаунчер L4: ссылка на APK и «ожидайте APK»",
+        "description": "Зачем: на компьютере всегда видна ссылка на свежий APK из expo.dev, а коммит в mobile без новой сборки сразу заметен, чтобы вовремя собрать и не сидеть на неактуалке.\n\nГотово, когда: по токену Expo (EXPO_TOKEN или поле в окне, хранится только на машине) лаунчер берёт у EAS последнюю завершённую Android-сборку профиля preview проекта ecosystem.json#mobile.eas: ссылку на APK, версию, коммит; плашка «ожидайте APK», когда коммит в mobile/ новее сборки, и «собирается», пока сборка идёт; без токена — ссылка на страницу сборок. Проверено на хосте, что ссылка на APK внутренней сборки открывается без входа.\n\nНачнётся после L1. Выбор John 2026-10-20: EAS по токену, а не файл-указатель через патч (E-ADR-004 п.6). Патч mobile не нужен.",
+        "priority": "medium",
+        "position": 15360,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-795a-bd8c-288379f34ac3",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Лаунчер L5: скачивание, самообновление, doctor",
+        "description": "Зачем: новая машина получает лаунчер и выбранные направления одной командой, а сам лаунчер обновляется, как web.\n\nГотово, когда: полный клон или sparse по выбранным направлениям (без git — архив коммита); лаунчер обновляет свой checkout по коммитам в launcher/; doctor собирает предпосылки всех направлений.\n\nНачнётся после L2.",
+        "priority": "low",
+        "position": 16384,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-7272-bd51-5de311a49e66",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "title": "Лаунчер L6: вступление устройства в кольцо при установке",
+        "description": "Зачем: E-ADR-002 п.4 — профиль установки любого направления включает вступление устройства в кольцо аккаунта, а не привязку к одному узлу.\n\nГотово, когда: лаунчер при установке web или abl ведёт к вступлению в кольцо (rendezvous/1) или явно говорит, что направление этого ещё не умеет.\n\nЖдёт решения John по E-ADR-002 и этапов кольца R3–R6.",
+        "priority": "low",
+        "position": 16384,
+        "archivedAt": null
+      },
+      {
+        "id": "01a15878-5ff4-76ce-9cd6-30a1e6f980e2",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f903-78da-8167-4cc2859b0f5e",
+        "title": "Пастельная тема в словаре ui-themes",
+        "description": "Зачем: John хочет для лаунчера «пастельный пластик». Каркас (скругления, тени) лаунчер делает сам, а цвета берёт из общего словаря, поэтому пастельная тема, если нужна, добавляется в словарь для всех направлений сразу.\n\nГотово, когда: тема в docs/ecosystem/ui-themes.json проходит контрасты check_ui_themes.py и появилась в копиях направлений.",
+        "priority": null,
+        "position": 16384,
         "archivedAt": null
       }
     ],
@@ -916,6 +986,13 @@
         "name": "долг",
         "color": "#828282",
         "description": "Наследство, которое мешает, но не горит"
+      },
+      {
+        "id": "01a15878-5ff4-745f-bf7f-c892478000fa",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "name": "launcher",
+        "color": "#56ccf2",
+        "description": "Направление launcher/ (лаунчер экосистемы)"
       }
     ],
     "cardLabels": [
@@ -1526,6 +1603,62 @@
       {
         "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
         "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-761c-9127-26310812aa01",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "labelId": "01a10d38-f90f-7280-90b7-fa74f8206796"
+      },
+      {
+        "cardId": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
+        "labelId": "01a10d38-f90c-7600-92f4-91ab461e2ef5"
+      },
+      {
+        "cardId": "01a15878-5ff4-7c61-aca1-5461df814646",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-7c61-aca1-5461df814646",
+        "labelId": "01a10d38-f90b-767e-92c8-3fda5e1c1561"
+      },
+      {
+        "cardId": "01a15878-5ff4-795a-bd8c-288379f34ac3",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-7272-bd51-5de311a49e66",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a15878-5ff4-7272-bd51-5de311a49e66",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
+      },
+      {
+        "cardId": "01a15878-5ff4-76ce-9cd6-30a1e6f980e2",
+        "labelId": "01a10d38-f90e-737d-b098-e3e4f59f29d1"
       }
     ],
     "checklists": [
@@ -1731,6 +1864,12 @@
         "id": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
         "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
         "title": "Этапы",
+        "position": 1024
+      },
+      {
+        "id": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "cardId": "01a15878-5ff4-761c-9127-26310812aa01",
+        "title": "Шаги",
         "position": 1024
       }
     ],
@@ -2292,14 +2431,14 @@
         "id": "01a114f8-cc78-7004-adcc-281a2b2a9fba",
         "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
         "title": "devctl batch plan и batch start прошли на хосте владельца",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
         "id": "01a114f8-cc78-7005-b40a-1fed64ca30c7",
         "checklistId": "01a114f8-cc78-7002-833c-268d84049f95",
         "title": "UTS: devctl.installed совпадает с исходниками",
-        "isDone": false,
+        "isDone": true,
         "position": 3072
       },
       {
@@ -2600,7 +2739,7 @@
         "id": "01a14382-ad80-7a0e-a742-77f6ce6c5b6a",
         "checklistId": "01a14382-ad80-7bfa-bd7b-a39708b053bc",
         "title": "Приёмка: Docker, телефон, Arch",
-        "isDone": false,
+        "isDone": true,
         "position": 5120
       },
       {
@@ -2698,7 +2837,7 @@
         "id": "01a147cd-4f87-7f43-9fd4-2a4e1f7f1887",
         "checklistId": "01a147cd-4f82-71d3-b0d2-b78ac371f2c8",
         "title": "Хост: Docker после обновления, APK из EAS, пакет из UTS показывают свой патч",
-        "isDone": false,
+        "isDone": true,
         "position": 5120
       },
       {
@@ -2733,7 +2872,7 @@
         "id": "01a147a1-3c73-746c-9076-37252e20e2c6",
         "checklistId": "01a147a1-3c73-7ee6-b934-9c41d44cc870",
         "title": "Первый отчёт с телефона",
-        "isDone": false,
+        "isDone": true,
         "position": 5120
       },
       {
@@ -2880,7 +3019,7 @@
         "id": "01a14b00-d0a0-7d06-d4e5-8c6e5b4d7e06",
         "checklistId": "01a14b00-d0a0-7d02-9b1c-4e2a1d0f3a02",
         "title": "Принято на телефоне, в браузере у Docker-узла и на Arch",
-        "isDone": false,
+        "isDone": true,
         "position": 4096
       },
       {
@@ -2889,6 +3028,62 @@
         "title": "Чек A15 выписан на хосте: в UTS host.a15-release-receipt PASS",
         "isDone": false,
         "position": 6144
+      },
+      {
+        "id": "01a1507a-b00a-7f07-81b8-df05b491af9d",
+        "checklistId": "01a11120-7a01-72b7-8f68-b39aed41a291",
+        "title": "Manjaro PC с GPU: окно открывается на Wayland, после выхода не остаётся процессов WebKit",
+        "isDone": false,
+        "position": 6144
+      },
+      {
+        "id": "01a15878-5ff4-7978-a5fc-0fd802d1493f",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "Каталог из ecosystem.json, платформа и предпосылки",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a15878-5ff4-77af-9063-9171685412c9",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "Глобальное состояние: коммиты main по каталогам, ревизия доски, кеш",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a15878-5ff4-747a-851f-987c04d1f641",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "Состояние checkout: локальный коммит каталога, незакоммиченные правки",
+        "isDone": true,
+        "position": 3072
+      },
+      {
+        "id": "01a15878-5ff4-7384-aceb-713c360afffe",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "Сверка и вердикты",
+        "isDone": true,
+        "position": 4096
+      },
+      {
+        "id": "01a15878-5ff4-76d1-be80-5b2b1b0e88cf",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "Окно PySide6 и install.sh / install.bat",
+        "isDone": true,
+        "position": 5120
+      },
+      {
+        "id": "01a15878-5ff4-76af-b6c9-8a92378be5ad",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "Темы и каркас «пастельный пластик»",
+        "isDone": true,
+        "position": 6144
+      },
+      {
+        "id": "01a15878-5ff4-7ab4-890c-28fffc79bcb3",
+        "checklistId": "01a15878-5ff4-7f05-a3e6-d80678a1035d",
+        "title": "status --json и тесты",
+        "isDone": true,
+        "position": 7168
       }
     ],
     "comments": [
@@ -3443,6 +3638,156 @@
         "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
         "createdAt": "2026-10-17T03:30:00Z",
         "body": "patch 2026-10-17-abl-project-board: abl показывает «Доска проекта · только чтение»: копия вшита в бинарник, сводка и выбор по контракту в Rust. С узла abl доску не берёт: связи abl с web-узлом пока нет, пункт ждёт её. Все три клиента готовы; нужна приёмка на телефоне, Arch и Docker."
+      },
+      {
+        "id": "01a1502e-134e-74fc-81f6-f09b74cdf279",
+        "cardId": "01a114f8-cc77-7001-b7e7-09884e7db90f",
+        "createdAt": "2026-10-17T09:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: пачка 2026-10-17 (17 патчей) применена на Manjaro через devctl batch start. 17-й патч упал на проверке (в abl/ нет node_modules), исправленная пачка повторена: 16 применённых пропущены, push выполнен, HEAD 3099444. UTS r49: devctl 0.9.0 · сборка d81be06c6a3d совпадает с исходниками. Карточка в «Сделано»."
+      },
+      {
+        "id": "01a150fb-6b4a-7636-8da9-405896bbf854",
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "createdAt": "2026-10-17T09:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: UTS r49 на Manjaro (3099444): шесть прежде падавших проверок web — zero-config bootstrap, mobile-web feature, cross-client CRUD, customization part 2, card deletion scope, release prep — PASS. Упала соседняя contract-workspace-access: патч 2026-10-17-web-project-board убрал из roadmap строку, которую она ищет; возвращена патчем 2026-10-17-web-r49-fixes. Карточка в «Сделано»."
+      },
+      {
+        "id": "01a15062-ff30-78c3-8845-3166df9b5ab0",
+        "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
+        "createdAt": "2026-10-17T09:00:00Z",
+        "body": "patch 2026-10-17-ecosystem-host-acceptance-r49: UTS r49 на Manjaro PC (первый прогон abl на этом ПК, r24 был на ноутбуке): abl PASS 87, FAIL 4. host.a15-package-prep: нет namcap и makechrootpkg (пакеты devtools, namcap). host.a13-desktop-integration: окно падает на Wayland «Error 71 (Ошибка протокола)». runtime.a18-runtime-budgets и runtime.a18-chaos: после выхода остаётся 1 процесс (freeze-thaw, hard-kill, instance-storm, fixture), wakeups 248/с при пороге 150; в каждом запуске WebKit пишет «Failed to create GBM buffer». Тот же код в облаке под Xvfb: бюджеты PASS (0 процессов после выхода, 3 wakeups/с), хаос PASS. Предположение: дефект проявляется только с GPU-рендерером WebKit этого ПК; проверить — повтор проб с WEBKIT_DISABLE_DMABUF_RENDERER=1."
+      },
+      {
+        "id": "01a15067-7bf3-72c7-86f3-c4f1f166aba8",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-17T09:10:00Z",
+        "body": "patch 2026-10-17-web-r49-fixes: по UTS r49 узел на :8082 работает на сборке 0a0bb2e, обновление из UI не шло. watch-updates был запущен в копии UserTestSpace: там нет .dev-bootstrap, установщик решил, что узел на :8080, и не отвечал странице узла (CORS), а она писала «установщик не запущен». Теперь watch-updates берёт каталог работающего узла из меток Docker Compose и останавливает установщик, запущенный для другого каталога; текст ошибки называет обе причины. Ждёт хоста: watch-updates, затем «Обновить» в web."
+      },
+      {
+        "id": "01a150ff-4bf5-724b-8f9f-9238be9d439c",
+        "cardId": "01a10d38-f932-79de-a74e-9d120add6abc",
+        "createdAt": "2026-10-17T09:10:00Z",
+        "body": "patch 2026-10-17-web-r49-fixes: в web/docs/product/v1-execution-roadmap.md вернулась строка «Пригласительные ссылки и права доступа» — «Готово»; check_workspace_access_contract.py снова OK."
+      },
+      {
+        "id": "01a15023-af1a-7c47-82f8-44cc08dcbecc",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-17T09:30:00Z",
+        "body": "patch 2026-10-17-web-update-port-takeover: на Manjaro watch-updates остановился: «Локальный порт control plane 8765 занят другим процессом». Порт держал прежний установщик p2pKanban, который не ответил на /health как свой. Теперь bootstrap находит процесс на порту, и если это установщик p2pKanban (update_control_plane.py serve), показывает его pid и каталог и спрашивает y/N; после y останавливает его и запускает установщик для каталога работающего узла. --yes делает то же без вопроса. Чужой процесс не трогается, в ошибке его pid и команда. Ждёт хоста: watch-updates из свежей копии UserTestSpace, затем «Обновить» в web."
+      },
+      {
+        "id": "01a15067-6e2b-72dc-8598-e1c490c708b7",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-17T09:50:00Z",
+        "body": "patch 2026-10-17-web-watch-updates-node-root: на Manjaro watch-updates из свежей копии UTS (699d157) ответил «работающий Docker-стек не найден … а не в копии UserTestSpace». Обе части неверны. Стек работает, но метки Docker указывают на .dev-bootstrap/releases/<id>/source копии UTS от 2026-10-16 (узел обновлялся на месте), а gateway до сих пор помнит копию P2PKANBAN_WORK от 2026-09-13; поиск брал gateway и каталог release, где нет состояния стека. Теперь корень узла берётся из меток web и backend (каталог над .dev-bootstrap/releases), gateway проверяется последним. Сообщения больше не отсылают из UserTestSpace: bootstrap всегда запускается из свежей копии UTS. Ждёт хоста: watch-updates из свежей копии UTS, затем «Обновить» в web."
+      },
+      {
+        "id": "01a15889-fa80-7195-a6b4-168ea3d6217e",
+        "cardId": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
+        "createdAt": "2026-10-20T09:00:00Z",
+        "body": "patch 2026-10-20-devctl-repo-identity: devctl 0.10.0. В batch.json workspace называется репозиторием: \"repo\": \"Pacifica123/p2pKanban-ecosystem\" (owner/repo, host/owner/repo или URL). batch plan/start ищут в реестре workspace, у которого remote (git.remote, по умолчанию origin) указывает на этот репозиторий, и печатают, какой выбран и почему; id реестра (p2p-ecosystem на ноутбуке, p2pkanban_ecosystem на ПК) остаётся локальным псевдонимом и нужен, только если репозиторий склонирован на машине дважды. Перерегистрация не нужна: репозиторий читается из .git/config при каждом запуске. Старые пачки с workspace = id работают как раньше; пачка с repo требует devctl ≥ 0.10.0, 0.9.0 честно откажется. workspace list / --for-agent показывают repo; target.repo в манифесте — подсказка складу. Тесты: devctl/tests/test_repo_identity.py (две «машины» с разными id одного репозитория), всего 28 OK. Ждёт хоста: пересобранная пачка 2026-10-20-openapi-anchors-launcher проходит batch plan на ноутбуке и на ПК без правки batch.json. Тот же код — патчем в devctl-universal."
+      },
+      {
+        "id": "01a15853-0c00-7d37-8eef-404bf031a94f",
+        "cardId": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
+        "createdAt": "2026-10-20T08:00:00Z",
+        "body": "patch 2026-10-20-web-openapi-parity: contract_parity_sweep.py --check зелёный на 66d4ca6: backend 120, OpenAPI 120, frontend 92 и все есть в backend и OpenAPI. Восемь маршрутов описал ещё 2026-10-16-web-static-checks, он же научил сверку шаблонным строкам (${encodeURIComponent(…)} → {param}); карточку тогда не сдвинули. POST /auth/device-link/lan/inbox смонтирован (backend/src/auth/mod.rs), поэтому остаётся в OpenAPI. Этот патч закрывает последний пункт: info.version 0.2.0 → 2.1.0, и сверка теперь краснеет, если info.version расходится с web/VERSION. Тесты сверки: tools/test_contract_parity_sweep.py. Приёмка — проверки манифеста в devctl start; хост не нужен."
+      },
+      {
+        "id": "01a1585c-33c0-7f31-9157-d2e3f091468b",
+        "cardId": "01a10d38-f931-7932-ab01-88e49268c31c",
+        "createdAt": "2026-10-20T08:10:00Z",
+        "body": "patch 2026-10-20-ecosystem-anchor-drift: python -B tools/ecosystem/anchor_drift.py сравнивает abl/evidence/source-anchors.json с текущими файлами web, mobile (источник android) и devctl и выводит, что разошлось; рядом с якорем — проверки abl, которые на него опираются. Замороженные файлы abl не меняются, дрейф не роняет проверку. Проверка добавлена в шаблон манифеста, так что отчёт лежит в логе каждого devctl start; --self-test входит в UTS экосистемы. На 66d4ca6 разошлись 16 из 30: web 5 из 15, mobile 9 из 12, devctl 2 из 3. Решать по каждому якорю — патчами abl. Сверка общих фикстур (ступень 2 integration-path.md) — следующий шаг."
+      },
+      {
+        "id": "01a15878-5ff4-7a24-9c42-922de7b91647",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "createdAt": "2026-10-20T08:20:00Z",
+        "body": "patch 2026-10-20-ecosystem-launcher-direction: метабутстрапер стал лаунчером (просьба John 2026-10-20). Решение записано E-ADR-004 (принято John): пятое направление launcher/, ядро на стандартной библиотеке Python, окно на PySide6 в своём venv через install.sh / install.bat; каталог — ecosystem.json, действия — будущий контракт launcher-entry/1 (<направление>/launcher.json), APK — последняя сборка EAS по токену Expo (выбор John). Тестовый web: оба варианта на выбор (выбор John). Направление зарегистрировано: ecosystem.json, boundaries.md, метка launcher в check_board.py. Ступени L1–L6 заведены карточками. Открытые пункты чек-листа переехали в ступени: профиль и делегирование — L2/L3, --dry-run — L2, скачивание и doctor — L5."
+      },
+      {
+        "id": "01a15878-995d-77a9-ac58-caa2c85f15c0",
+        "cardId": "01a15878-5ff4-761c-9127-26310812aa01",
+        "createdAt": "2026-10-20T08:40:00Z",
+        "body": "patch 2026-10-20-launcher-l1-showcase: окно на PySide6 (выбор John): sh launcher/install.sh или launcher\\install.bat ставят PySide6-Essentials 6.11.2 в venv в каталоге данных пользователя (не в checkout и не в системный Python), python launcher/launcher.py сам находит этот venv; без него — подсказка и состояние в терминале. Ядро на стандартной библиотеке: каталог из ecosystem.json, abl вне Arch серый с причиной, Android — «на телефон», Docker — установлен/запущен/Linux containers/Compose v2; коммиты main по каталогам и origin доски через GitHub, кеш 10 минут, без сети — кеш; сверка checkout. Четыре темы словаря → QSS «пастельный пластик», тема и размер окна в settings.json. Ничего не ставит из направлений: кнопки подписаны ступенями L2–L5. Проверено у агента: install.sh на Ubuntu (Python 3.13) поставил Qt, 19 unittest на 3.11 и в venv (вместе с окном offscreen), uts.py --only launcher PASS, снимки окна в трёх темах. Ждёт хоста: install.bat и окно на Windows, install.sh и окно на Arch, затем uts.py --interactive."
+      },
+      {
+        "id": "01a15878-995d-7bec-8f67-71c56d82d201",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "createdAt": "2026-10-20T08:40:00Z",
+        "body": "patch 2026-10-20-launcher-l1-showcase: ступень L1 в «Ждёт хоста»."
+      },
+      {
+        "id": "01a158a0-4f77-79bc-a947-0ae55fd220bf",
+        "cardId": "01a14382-ad80-7fac-abcd-2c199683fed2",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS uts_20261020T101408Z_r58_d235fc6 (d235fc6, ноутбук): владелец подтвердил четыре темы во всех направлениях; проверка приёмки Android (прогон ouhd2akn) — шаг ui.themes PASS: Графит, Лимон, Лазурь, Серебро. Принято."
+      },
+      {
+        "id": "01a158a0-6ee9-7f6f-8a4f-49d93afefcc3",
+        "cardId": "01a147cd-4f81-7a28-a0e2-2624e686d336",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): владелец подтвердил номер патча в версии клиентов (ответ к карточке «UTS: контракт на хосте…» в этом прогоне он отозвал как перепутанный с этой). Принято."
+      },
+      {
+        "id": "01a158a0-2b20-7b3e-bb63-c8f97ad9702e",
+        "cardId": "01a14b00-d0a0-7d01-8a6e-3b1f0c9d2e01",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): владелец подтвердил режим отладки; приложен журнал Android 2.1.0 · сборка 28 · d235fc6 (33 строки, скрыто 0, текстов карточек нет). Принято. Сам журнал — материал карточки о зависаниях Android: строки «JS-поток не отвечал 13,4–13,8 с» совпадают с таймаутами запросов к узлу."
+      },
+      {
+        "id": "01a158a0-b255-7aeb-8ee3-e958f35ff74b",
+        "cardId": "01a15878-5ff4-761c-9127-26310812aa01",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): launcher PASS (unittest, status --json --offline), владелец подтвердил витрину L1. Принято."
+      },
+      {
+        "id": "01a158a0-1603-77c8-b140-31f5db93af5b",
+        "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): владелец подтвердил, что узел видит обновление по коммиту web/ — первая половина критерия. Вторая — обновиться из GitHub без потери данных — ещё не показана: узел на 127.0.0.1:8080 работает на сборке f5d187667317 из копии UTS от 2026-10-16 (74f3418), поэтому web.node-build FAIL. Следующий шаг на хосте: обновить узел плашкой (или python bootstrap.py update) и перезапустить UTS: node-build PASS и данные на месте закроют карточку."
+      },
+      {
+        "id": "01a158a0-cd77-7782-b8fe-a106d816a131",
+        "cardId": "01a11070-f28c-7792-b21a-f96b2924fb4d",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): владелец ещё раз подтвердил Android; web подтверждён в r24. Осталось abl на Arch: показать «Скопировать подробности» у ошибки в окне abl."
+      },
+      {
+        "id": "01a158a0-e191-7c25-a8c0-5bd879b44992",
+        "cardId": "01a145a8-c6a6-78d2-bbab-26881f47779c",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): ответ владельца «PASS» отозван — перепутан с карточкой «Номер патча». Карточку проверяет сам UTS, глазами смотреть не нужно: в r58 таблица «Контракты на хосте» у abl пишет «стоит 0.1.0-1, сборка этого дерева — есть» — половина критерия выполнена; у web — «другая сборка — по версии не различить», и это верно, пока узел на сборке от 2026-10-16. После обновления узла UTS должен написать «есть» и у web."
+      },
+      {
+        "id": "01a158a0-853d-7409-8dac-64e9300ad9b7",
+        "cardId": "01a147a1-3c73-732f-b520-148243e5f550",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: Первый отчёт с телефона получен: прогон ouhd2akn, Android 12, mobile 2.1.0 · сборка 28 · d235fc6. Кнопка отработала и выдала отчёт p2p-kanban-acceptance-report/1, но прогон грязный: телефон начинал в мобильной сети без узла рядом, env.node FAIL (таймаут), дальше 23 SKIP. Нужен повтор в Wi-Fi той же сети, что узел; затем первый отчёт с Docker-узла (web «Настройки → Проверка приёмки»)."
+      },
+      {
+        "id": "01a158a0-e7f4-78a6-8bc0-5c51e000cf91",
+        "cardId": "01a147cd-4f80-78cc-ba44-b8670d522120",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6): владелец подтвердил, что «Доска проекта» есть в каждом клиенте. Не проверены пункты «Приёмка на хосте»: два узла и телефон без дублей, «из кеша» в мобильной сети, новая ревизия на узле без пересборки."
+      },
+      {
+        "id": "01a158a0-992c-7b20-9523-9e1ba814cbee",
+        "cardId": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58: стоит devctl 0.10.0, тот же файл, что в исходниках; пачка r2 (batch_20261020_091500) с \"repo\" вместо id прошла на ноутбуке. Формулировка карточки описывает проблему до 0.10.0; критерий тот же: та же пачка проходит devctl batch plan и на ПК с Manjaro без правки batch.json."
+      },
+      {
+        "id": "01a158a0-4b6e-7eb7-8b85-c58622057682",
+        "cardId": "01a10f95-38a7-74c5-b00b-fc6ead09f24a",
+        "createdAt": "2026-10-20T11:30:00Z",
+        "body": "patch 2026-10-20-ecosystem-host-acceptance-r58: UTS r58 (d235fc6, ноутбук): abl PASS 91, SKIP 1; runtime.a18-runtime-budgets и runtime.a18-chaos PASS (FAIL бюджетов, на который ссылается ответ владельца, был в прежнем прогоне). Не сделаны ручные пункты: release-прогон бюджетов от сети и от батареи, systemctl suspend, Manjaro PC на Wayland."
+      },
+      {
+        "id": "01a158a1-f487-7c00-8dd7-dd92da270509",
+        "cardId": "01a10f95-38a4-70d2-b8fd-192758ce4465",
+        "createdAt": "2026-10-20T11:40:00Z",
+        "body": "patch 2026-10-20-abl-a15-chroot-lto: Первый чек A15 на хосте (2026-10-20T10:58Z, EndeavourOS, d235fc6) не выписан: входы выпуска PASS, makechrootpkg -c -u -n — код 255 через 593 с, остальные 8 шагов не запускались. Причина — линковка: undefined sqlite3_* из встроенного SQLite (libsqlite3-sys bundled). makepkg.conf чистого chroot из devtools включает lto, C-код SQLite компилируется в GCC LTO-объекты, а rustc 1.92 линкует через rust-lld (-fuse-ld=lld в строке линковки), который их не читает. В UTS cargo build зелёный, потому что флагов makepkg там нет. Исправление: options=('!lto') в packaging/arch/PKGBUILD (как в Rust package guidelines ArchWiki), check_a15 требует эту строку, CORR-A15-002 в docs/evidence/A15_PACMAN_PACKAGING.md. Release-LTO самого Cargo не меняется. Карточка остаётся в «Ждёт хоста»: перевыписать чек python3 -B tools/a15_issue_receipt.py --signing-key 7AF1F7D178540EA5C721127A513BC895EBE583D6, затем UTS: host.a15-release-receipt PASS."
       }
     ],
     "boardAppearanceSettings": [],
