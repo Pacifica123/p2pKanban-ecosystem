@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 99,
+        "comments": 100,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-17T09:50:00Z",
+    "generatedAt": "2026-10-20T09:00:00Z",
     "selfHosted": true,
-    "boardRevision": 53,
-    "lastPatchId": "2026-10-17-web-watch-updates-node-root",
+    "boardRevision": 54,
+    "lastPatchId": "2026-10-20-devctl-repo-identity",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -782,11 +782,11 @@
       {
         "id": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f904-7176-addf-d8b91c9b4737",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "devctl: пачка привязана к id workspace одной машины",
         "description": "Зачем: batch.json называет workspace по id из реестра машины, а id у одного и того же репозитория на разных машинах разный: на ноутбуке p2p-ecosystem, на ПК с Manjaro p2pkanban_ecosystem (projectDir p2pKanban_MANJAROHOST). Пачку 2026-10-16-host-fixes пришлось пересобирать под ПК. John давно отмечал эту проблему при работе с workspace на разных машинах и ОС.\n\nВарианты: сопоставлять workspace по remote и ветке (origin + main) или по id из .devctl/workspace.json в самом репозитории, а id реестра оставить псевдонимом; либо разрешить в batch.json список допустимых id; batch plan показывает, какой workspace выбран и почему.\n\nГотово, когда: одна и та же пачка проходит batch plan на ноутбуке и на ПК без правки batch.json. Делается в devctl-universal, затем гостевая копия devctl/ в монорепо.",
         "priority": "medium",
-        "position": 15360,
+        "position": 31744,
         "archivedAt": null
       },
       {
@@ -3492,6 +3492,12 @@
         "cardId": "01a10d38-f929-72d4-96d0-73cfecee0dbe",
         "createdAt": "2026-10-17T09:50:00Z",
         "body": "patch 2026-10-17-web-watch-updates-node-root: на Manjaro watch-updates из свежей копии UTS (699d157) ответил «работающий Docker-стек не найден … а не в копии UserTestSpace». Обе части неверны. Стек работает, но метки Docker указывают на .dev-bootstrap/releases/<id>/source копии UTS от 2026-10-16 (узел обновлялся на месте), а gateway до сих пор помнит копию P2PKANBAN_WORK от 2026-09-13; поиск брал gateway и каталог release, где нет состояния стека. Теперь корень узла берётся из меток web и backend (каталог над .dev-bootstrap/releases), gateway проверяется последним. Сообщения больше не отсылают из UserTestSpace: bootstrap всегда запускается из свежей копии UTS. Ждёт хоста: watch-updates из свежей копии UTS, затем «Обновить» в web."
+      },
+      {
+        "id": "01a15889-fa80-7195-a6b4-168ea3d6217e",
+        "cardId": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
+        "createdAt": "2026-10-20T09:00:00Z",
+        "body": "patch 2026-10-20-devctl-repo-identity: devctl 0.10.0. В batch.json workspace называется репозиторием: \"repo\": \"Pacifica123/p2pKanban-ecosystem\" (owner/repo, host/owner/repo или URL). batch plan/start ищут в реестре workspace, у которого remote (git.remote, по умолчанию origin) указывает на этот репозиторий, и печатают, какой выбран и почему; id реестра (p2p-ecosystem на ноутбуке, p2pkanban_ecosystem на ПК) остаётся локальным псевдонимом и нужен, только если репозиторий склонирован на машине дважды. Перерегистрация не нужна: репозиторий читается из .git/config при каждом запуске. Старые пачки с workspace = id работают как раньше; пачка с repo требует devctl ≥ 0.10.0, 0.9.0 честно откажется. workspace list / --for-agent показывают repo; target.repo в манифесте — подсказка складу. Тесты: devctl/tests/test_repo_identity.py (две «машины» с разными id одного репозитория), всего 28 OK. Ждёт хоста: пересобранная пачка 2026-10-20-openapi-anchors-launcher проходит batch plan на ноутбуке и на ПК без правки batch.json. Тот же код — патчем в devctl-universal."
       }
     ],
     "boardAppearanceSettings": [],
