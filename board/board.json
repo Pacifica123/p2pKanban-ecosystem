@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 85,
-        "comments": 127,
+        "comments": 128,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T13:30:00Z",
+    "generatedAt": "2026-10-20T13:40:00Z",
     "selfHosted": true,
-    "boardRevision": 66,
-    "lastPatchId": "2026-10-20-abl-launcher-entry",
+    "boardRevision": 67,
+    "lastPatchId": "2026-10-20-launcher-l4-apk-feed",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -892,11 +892,11 @@
       {
         "id": "01a15878-5ff4-7c61-aca1-5461df814646",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L4: ссылка на APK и «ожидайте APK»",
         "description": "Зачем: на компьютере всегда видна ссылка на свежий APK из expo.dev, а коммит в mobile без новой сборки сразу заметен, чтобы вовремя собрать и не сидеть на неактуалке.\n\nГотово, когда: по токену Expo (EXPO_TOKEN или поле в окне, хранится только на машине) лаунчер берёт у EAS последнюю завершённую Android-сборку профиля preview проекта ecosystem.json#mobile.eas: ссылку на APK, версию, коммит; плашка «ожидайте APK», когда коммит в mobile/ новее сборки, и «собирается», пока сборка идёт; без токена — ссылка на страницу сборок. Проверено на хосте, что ссылка на APK внутренней сборки открывается без входа.\n\nНачнётся после L1. Выбор John 2026-10-20: EAS по токену, а не файл-указатель через патч (E-ADR-004 п.6). Патч mobile не нужен.",
         "priority": "medium",
-        "position": 15360,
+        "position": 36864,
         "archivedAt": null
       },
       {
@@ -4022,6 +4022,12 @@
         "cardId": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
         "createdAt": "2026-10-20T13:30:00Z",
         "body": "patch 2026-10-20-abl-launcher-entry: у abl появилась одна пользовательская команда установки — tools/user_install.py: install (входы a15_prepare_release → makepkg --nocheck → sudo/pkexec pacman -U), update (только если checkout новее установленного), remove, launch, status --json. Это не релизный путь A15: пакет не подписан, сборка без clean chroot. abl/launcher.json объявляет их лаунчеру; недостающие пакеты сборки называются строкой sudo pacman -S --needed. Тесты tools/test_user_install.py без pacman. Ждёт хоста: на Arch лаунчер ставит abl, запускает и видит «актуально» после сборки."
+      },
+      {
+        "id": "01a159ca-bb00-7035-be9a-ad8cc77efbc8",
+        "cardId": "01a15878-5ff4-7c61-aca1-5461df814646",
+        "createdAt": "2026-10-20T13:40:00Z",
+        "body": "patch 2026-10-20-launcher-l4-apk-feed: по уточнению John токен Expo живёт только в секретах репозитория. GitHub Action .github/workflows/launcher-apk-feed.yml (push в main по mobile/, раз в 20 минут, вручную) запускает launcher/feed/apk_feed.py и публикует apk.json (p2p-kanban-launcher-apk-feed/1) в ветку launcher-feed одним коммитом без истории; в main бот не пишет. Лаунчер 0.3.0 читает ленту без токена: «Скачать APK», копировать ссылку, страница сборки; вердикты свежий APK / ожидайте APK / собирается / ссылка истекла; без ленты — ссылка на страницу сборок. Запасной путь — EXPO_TOKEN на машине. Ждёт хоста: John кладёт секрет EXPO_TOKEN, запускает Action, лаунчер показывает свежую ссылку; после коммита в mobile/ без сборки — «ожидайте APK»."
       }
     ],
     "boardAppearanceSettings": [],

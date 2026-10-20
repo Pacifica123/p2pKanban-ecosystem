@@ -8,6 +8,7 @@
     python launcher/launcher.py actions web     # что объявило направление
     python launcher/launcher.py run web install --set port=8091 --dry-run
     python launcher/launcher.py settings web --set listen=lan
+    python launcher/launcher.py apk             # ссылка на свежий APK и «ожидайте APK»
 
 Ядро — только стандартная библиотека Python 3.11+; окну нужен PySide6 из venv
 лаунчера (E-ADR-004 п.2). Лаунчер выполняет только команды, которые
@@ -72,6 +73,13 @@ def print_status(value: dict) -> None:
                 print(f"      {installed['detail']}")
         elif row.get("entryError"):
             print(f"    {row['entryError']}")
+        if row.get("apk"):
+            value = row["apk"]
+            print(f"    APK: {value['label']}" + (f" · {value['version']}" if value.get("version") else "") + f" — {value['detail']}")
+            if value.get("apkUrl"):
+                print(f"    скачать: {value['apkUrl']}")
+            elif value.get("page"):
+                print(f"    сборки: {value['page']}")
     print("\n«Актуально» — исходники как в main, а не «принято»: приёмку даёт tools/ecosystem/uts.py.")
 
 
@@ -271,7 +279,22 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--dry-run", action="store_true", help="пробный прогон, если направление его объявило")
     run.add_argument("--yes", action="store_true", help="не спрашивать подтверждение")
 
+    apk_cmd = commands.add_parser("apk", help="ссылка на последнюю APK из ленты и её свежесть")
+    apk_cmd.add_argument("--json", action="store_true")
+    apk_cmd.add_argument("--offline", action="store_true")
+
     args = parser.parse_args(argv)
+    if args.command == "apk":
+        value = state.build_state(offline=args.offline)
+        rows = [row for row in value["components"] if row.get("apk")]
+        if args.json:
+            print(json.dumps({row["id"]: row["apk"] for row in rows}, ensure_ascii=False, indent=2))
+        for row in rows if not args.json else []:
+            item = row["apk"]
+            print(f"{row['id']}: {item['label']}" + (f" · {item['version']}" if item.get("version") else ""))
+            print(f"  {item['detail']}")
+            print(f"  {item.get('apkUrl') or item.get('page') or 'ссылки нет'}")
+        return 0
     if args.command == "actions":
         return cmd_actions(args)
     if args.command == "settings":

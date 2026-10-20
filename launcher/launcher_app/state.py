@@ -4,10 +4,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from . import entry as entries, local, paths, probes, remote, runner as runs
+from . import apk, entry as entries, local, paths, probes, remote, runner as runs
 
 STATE_SCHEMA = "p2p-kanban-launcher-state/1"
-STAGE = "L2"
+STAGE = "L4"
 
 VERDICTS = {
     "current": "актуально",
@@ -120,7 +120,8 @@ def freshness(root: Path | None, status_value: dict | None, remote_commit: dict 
 
 def build_state(root: Path | None = None, global_state: remote.GlobalState | None = None,
                 force: bool = False, offline: bool = False, runner: probes.Run = probes.run,
-                host: dict | None = None, status_run: runs.StatusRun | None = runs.capture) -> dict:
+                host: dict | None = None, status_run: runs.StatusRun | None = runs.capture,
+                apk_feed: apk.Feed | None = None) -> dict:
     root = paths.ecosystem_root() if root is None else root
     ecosystem = load_ecosystem(root)
     components = ecosystem.get("components", [])
@@ -136,6 +137,12 @@ def build_state(root: Path | None = None, global_state: remote.GlobalState | Non
         remote_data = {"source": "none", "checkedAt": None, "error": "в ecosystem.json нет repository",
                        "directories": {}, "board": None}
     checkout = local.checkout_state(root, directories)
+    feed_value = None
+    if repository and any(item.get("distribution") == "apk" for item in components):
+        apk_feed = apk_feed or apk.Feed(paths.cache_dir() / "apk-feed.json")
+        feed_value = apk_feed.get(repository, force=force, offline=offline)
+        if feed_value["feed"] is None and not offline and root is not None:
+            feed_value = apk.local_feed(root, ecosystem) or feed_value
     registry = local.read_registry(paths.registry_file())
     memo: dict = {}
 
@@ -174,6 +181,8 @@ def build_state(root: Path | None = None, global_state: remote.GlobalState | Non
             else {"id": "unknown", "label": VERDICTS["unknown"], "detail": checkout["reason"]},
             "installed": installed_state(component, registry, entry_info, status_value),
             "status": status_value,
+            "apk": apk.verdict(feed_value or {}, remote_commit, component.get("eas"))
+            if component.get("distribution") == "apk" else None,
             "freshness": freshness(root, status_value, remote_commit),
             "entry": entry_info["entry"],
             "entryError": entry_info["error"],

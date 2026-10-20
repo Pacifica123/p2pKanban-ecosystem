@@ -1,0 +1,56 @@
+# Лента APK для лаунчера экосистемы (E-ADR-004 п.6). Владелец — launcher/.
+#
+# Спрашивает EAS (expo.dev) о сборках Android и публикует apk.json в ветку
+# launcher-feed одним коммитом без истории. В main не пишет.
+# Нужен секрет репозитория EXPO_TOKEN (Settings → Secrets and variables → Actions):
+# personal access token со страницы expo.dev. Без него лента честно пишет,
+# что токена нет.
+name: launcher-apk-feed
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - "launcher/feed/**"
+      - "ecosystem.json"
+      - ".github/workflows/launcher-apk-feed.yml"
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: launcher-apk-feed
+  cancel-in-progress: false
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main with full history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Build apk.json from EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: python3 -B launcher/feed/apk_feed.py --root . --out "$RUNNER_TEMP/launcher-feed/apk.json"
+
+      - name: Publish to the launcher-feed branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp launcher/feed/FEED_README.md "$RUNNER_TEMP/launcher-feed/README.md"
+          cd "$RUNNER_TEMP/launcher-feed"
+          git init -q -b launcher-feed
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apk.json README.md
+          git commit -q -m "apk feed $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" launcher-feed

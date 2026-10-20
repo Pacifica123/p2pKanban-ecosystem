@@ -17,7 +17,7 @@ from typing import Callable
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from launcher_app import entry as entries, install, local, paths, probes, remote, runner, settings, state, themes, view  # noqa: E402
+from launcher_app import apk, entry as entries, install, local, paths, probes, remote, runner, settings, state, themes, view  # noqa: E402
 
 DIRS = ["web", "mobile", "abl", "devctl", "launcher"]
 ROOT = Path(__file__).resolve().parents[2]
@@ -232,7 +232,7 @@ class WindowSmokeTest(unittest.TestCase):
                                  if "raw.githubusercontent.com" in url else fake_commit("d" * 40, "x"))
             value = state.build_state(root, remote.GlobalState(Path(tmp) / "g.json", fetch),
                                       runner=lambda argv, timeout: (0, "linux\n"), host=probes.detect_platform("Windows"),
-                                      status_run=web_status("running"))
+                                      status_run=web_status("running"), apk_feed=apk.Feed(Path(tmp) / "a.json", fetch))
             window = qt_app.Window(lambda force: value, Path(tmp) / "s.json")
             window.render(value)
             offs = [card for card in window.apps.cards if card.property("off") == "true"]
@@ -258,7 +258,8 @@ class BuildStateTest(unittest.TestCase):
                                      if "raw.githubusercontent.com" in url else fake_commit("d" * 40, "x"))
                 cache = remote.GlobalState(Path(tmp) / "g.json", fetch)
                 value = state.build_state(root, cache, runner=lambda argv, timeout: (1, ""),
-                                          host=probes.detect_platform("Windows"), status_run=web_status("stopped"))
+                                          host=probes.detect_platform("Windows"), status_run=web_status("stopped"),
+                                          apk_feed=apk.Feed(Path(tmp) / "a.json", fetch))
             finally:
                 del os.environ["P2PKANBAN_LAUNCHER_HOME"]
         rows = {row["id"]: row for row in value["components"]}
@@ -273,6 +274,8 @@ class BuildStateTest(unittest.TestCase):
         self.assertEqual(rows["web"]["installed"]["label"], "остановлено")
         self.assertIsNone(rows["abl"]["status"])  # abl на Windows не спрашивают
         self.assertEqual(rows["launcher"]["installed"]["id"], "self")
+        self.assertEqual(rows["mobile"]["apk"]["id"], "unknown")  # подменный GitHub отдал не ленту
+        self.assertTrue(rows["mobile"]["apk"]["page"].startswith("https://expo.dev/accounts/"))
 
 
 @unittest.skipUnless(VECTORS.is_dir(), "лаунчер взят без корня экосистемы: векторы контракта недоступны")
@@ -308,7 +311,7 @@ class EntryVectorsTest(unittest.TestCase):
                 self.assertEqual(entries.parse_status(data["entry"], case["exitCode"], case["stdout"]), case["expected"])
 
     def test_real_entries_of_the_tree_load(self):
-        for directory in ("web",):
+        for directory in ("web", "abl"):
             info = entries.load(ROOT, directory)
             self.assertTrue(info["available"], info["error"])
 

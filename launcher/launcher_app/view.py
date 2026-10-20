@@ -20,6 +20,16 @@ def card_actions(row: dict) -> dict:
 
     `open` — не действие направления, а «открыть url из status».
     """
+    apk_value = row.get("apk")
+    if apk_value is not None:
+        if apk_value.get("apkUrl"):
+            menu = [{"id": "@copy", "label": "Копировать ссылку на APK"}]
+            if apk_value.get("page"):
+                menu.append({"id": "@page", "label": "Страница сборки на expo.dev"})
+            return {"buttons": [{"id": "@apk", "label": "Скачать APK", "main": True}], "menu": menu, "blocked": None}
+        if apk_value.get("page"):
+            return {"buttons": [{"id": "@page", "label": "Сборки на expo.dev ↗", "main": False}], "menu": [], "blocked": None}
+        return {"buttons": [], "menu": [], "blocked": None}
     entry = row.get("entry")
     if not entry or row["fit"]["fit"] != "yes":
         return {"buttons": [], "menu": [], "blocked": None}
@@ -54,9 +64,15 @@ def card_actions(row: dict) -> dict:
     return {"buttons": result, "menu": menu, "blocked": blocked}
 
 
+APK_KIND = {"current": "ok", "awaiting": "warn", "building": "info", "expired": "warn", "none": None, "unknown": None}
+
+
 def installed_text(row: dict) -> str:
     """Строка «Установлено» для таблицы и карточки."""
     installed = row["installed"]
+    apk_value = row.get("apk")
+    if apk_value is not None:
+        return " · ".join(part for part in (apk_value["label"], apk_value.get("version")) if part)
     parts = [installed["label"]]
     url = (row.get("status") or {}).get("url")
     if url and installed["id"] == "running":

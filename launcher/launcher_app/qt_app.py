@@ -73,7 +73,7 @@ def shadow(widget: QWidget) -> None:
 
 def stage_note(row: dict) -> str:
     if row.get("distribution") == "apk":
-        return "Ссылка на APK из EAS — ступень L4."
+        return (row.get("apk") or {}).get("detail") or "Лента APK недоступна."
     if row["id"] == "launcher":
         return "Самообновление — ступень L5."
     if row.get("entryError"):
@@ -133,6 +133,12 @@ class Card(QFrame):
             chips.addWidget(chip("машина готова" if row["ready"] else "нет предпосылок", "ok" if row["ready"] else "bad"))
         chips.addStretch(1)
         box.addLayout(chips)
+        if row.get("apk"):
+            line = QHBoxLayout()
+            line.addWidget(chip(view.installed_text(row), view.APK_KIND.get(row["apk"]["id"]), row["apk"]["detail"]))
+            line.addStretch(1)
+            box.addLayout(line)
+            box.addWidget(label(row["apk"]["detail"], "muted", wrap=True))
         if row.get("status"):
             line = QHBoxLayout()
             line.addWidget(chip(view.installed_text(row), INSTALL_KIND.get(row["status"]["state"]), row["installed"]["detail"]))
@@ -188,7 +194,7 @@ class Card(QFrame):
                     button.setToolTip(plan["blocked"])
                 button.clicked.connect(lambda _=False, aid=item["id"]: act and act(row, aid))
                 actions.addWidget(button)
-            if row["entry"].get("settings") or row["entry"].get("profiles"):
+            if row.get("entry") and (row["entry"].get("settings") or row["entry"].get("profiles")):
                 tune = QPushButton("Настройки")
                 tune.clicked.connect(lambda _=False: act and act(row, "@settings"))
                 actions.addWidget(tune)
@@ -525,13 +531,22 @@ class Window(QMainWindow):
     def act(self, row: dict, action_id: str) -> None:
         from . import qt_dialogs
 
-        root = Path(self.last_state["ecosystem"]["root"])
+        root = Path(self.last_state["ecosystem"]["root"] or ".")
         registry = paths.registry_file()
-        entry = row["entry"]
+        entry = row.get("entry") or {}
         values = entries.clean_values(entry, local.saved_values(registry, row["id"]))
         if action_id == "open":
             url = (row.get("status") or {}).get("url")
             if url:
+                open_url(url)
+            return
+        if action_id in ("@apk", "@page", "@copy"):
+            value = row.get("apk") or {}
+            url = value.get("apkUrl") if action_id != "@page" else value.get("page")
+            if url and action_id == "@copy":
+                QApplication.clipboard().setText(url)
+                self.show_notice("Ссылка на APK скопирована: откройте её на телефоне.")
+            elif url:
                 open_url(url)
             return
         if action_id == "@settings":
