@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 85,
-        "comments": 126,
+        "comments": 127,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T13:20:00Z",
+    "generatedAt": "2026-10-20T13:30:00Z",
     "selfHosted": true,
-    "boardRevision": 65,
-    "lastPatchId": "2026-10-20-launcher-l2-actions",
+    "boardRevision": 66,
+    "lastPatchId": "2026-10-20-abl-launcher-entry",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -882,11 +882,11 @@
       {
         "id": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L3: abl из лаунчера",
         "description": "Зачем: на Arch ставить и обновлять abl тем же окном.\n\nГотово, когда: abl/launcher.json объявляет установку и обновление пакетным путём abl; лаунчер ставит abl на Arch.\n\nНачнётся после L2. Ограничение: сегодня у abl есть путь сборки и приёмки (A15, A17), но нет одной пользовательской команды установки — её создаёт патч abl, не лаунчер.",
         "priority": "medium",
-        "position": 14336,
+        "position": 35840,
         "archivedAt": null
       },
       {
@@ -4016,6 +4016,12 @@
         "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
         "createdAt": "2026-10-20T13:20:00Z",
         "body": "patch 2026-10-20-launcher-l2-actions: лаунчер 0.2.0 исполняет launcher.json. Своя реализация контракта (launcher_app/entry.py) сверяется с векторами корня; runner запускает только Python-скрипты направления его каталогом, без оболочки; окно запуска показывает команду, даёт пробный прогон, построчный вывод, «Прервать», подтверждение для удаления и отката; окно настроек — порт, --listen и варианты (второй узел серым с причиной). Карточка web: кнопки по ответу status, «Обновить» при коммите web/ в main новее установки. CLI: actions, run, settings. Ждёт хоста: на Windows и Arch web ставится, открывается, переезжает на другой порт, останавливается и обновляется из окна."
+      },
+      {
+        "id": "01a159c5-a378-778f-86c3-e6f498eef06a",
+        "cardId": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
+        "createdAt": "2026-10-20T13:30:00Z",
+        "body": "patch 2026-10-20-abl-launcher-entry: у abl появилась одна пользовательская команда установки — tools/user_install.py: install (входы a15_prepare_release → makepkg --nocheck → sudo/pkexec pacman -U), update (только если checkout новее установленного), remove, launch, status --json. Это не релизный путь A15: пакет не подписан, сборка без clean chroot. abl/launcher.json объявляет их лаунчеру; недостающие пакеты сборки называются строкой sudo pacman -S --needed. Тесты tools/test_user_install.py без pacman. Ждёт хоста: на Arch лаунчер ставит abl, запускает и видит «актуально» после сборки."
       }
     ],
     "boardAppearanceSettings": [],

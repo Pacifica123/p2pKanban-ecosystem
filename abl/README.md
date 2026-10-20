@@ -12,6 +12,20 @@ abl does not sync with other devices yet: the A10 sync-core is implemented and t
 
 See [A17 offline-kit instructions](docs/A17_OFFLINE_KIT.md) and [A16 recovery](docs/A16_RECOVERY.md). A17 signature/tamper behavior is tested with synthetic artifacts; an actual built AppImage, FUSE/extract launch, WebKitGTK and distribution baseline must pass the explicit release/host gates before a binary is described as supported. A18 adds measured budgets, a rolling-release canary and chaos probes to the UTS: see [A18](docs/A18_PERFORMANCE_POWER_ROLLING.md). Budgets stay proposed until a release-profile run on the reference laptop; next gate: **Gate G — GA candidate**.
 
+## Install for yourself (from this checkout)
+
+Not the A15 release path: this builds an unsigned package on your machine with plain `makepkg` and installs it with pacman. The build inputs are the same — `tools/a15_prepare_release.py` stages them from this tree.
+
+```bash
+python3 tools/user_install.py install --dry-run   # plan: commit, stage, missing packages
+python3 tools/user_install.py install             # makepkg, then sudo/pkexec pacman -U
+python3 tools/user_install.py update              # rebuild only if the checkout is newer than the install
+python3 tools/user_install.py status --json       # for the ecosystem launcher
+python3 tools/user_install.py remove              # pacman -R p2pkanban; profile data stays
+```
+
+Missing build packages are named with the exact `sudo pacman -S --needed …` line. The ecosystem launcher (`python launcher/launcher.py` from the monorepo root) shows the same commands as buttons: abl declares them in [`launcher.json`](launcher.json) (`p2p-kanban-launcher-entry/1`). The commit the package was built from is kept in `$XDG_STATE_HOME/p2pkanban/abl-user-install.json`, so the launcher can tell whether the install is behind `main`.
+
 ## Source layout
 
 - `src/` — React presentation source.

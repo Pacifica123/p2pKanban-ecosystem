@@ -1,0 +1,28 @@
+{
+  "schema": "p2p-kanban-launcher-entry/1",
+  "component": "abl",
+  "settings": [
+    {"id": "check", "label": "Прогнать тесты при сборке", "type": "bool", "default": false,
+     "help": "cargo test внутри makepkg: дольше, но пакет проверен на этой машине."}
+  ],
+  "actions": [
+    {"id": "install", "label": "Собрать и установить",
+     "help": "Собрать пакет pacman из этого checkout (makepkg) и поставить его. Первая сборка — десятки минут: cargo и npm скачивают зависимости.",
+     "argv": ["{python}", "tools/user_install.py", "install"],
+     "options": [{"setting": "check", "argv": ["--check"]}],
+     "dryRun": ["--dry-run"], "privileged": true, "timeoutSeconds": 7200},
+    {"id": "update", "label": "Обновить из checkout",
+     "help": "Пересобрать и поставить, если checkout новее установленного пакета. Сначала обновите checkout.",
+     "argv": ["{python}", "tools/user_install.py", "update"],
+     "options": [{"setting": "check", "argv": ["--check"]}],
+     "dryRun": ["--dry-run"], "privileged": true, "timeoutSeconds": 7200},
+    {"id": "launch", "label": "Запустить p2pkanban", "argv": ["{python}", "tools/user_install.py", "launch"],
+     "timeoutSeconds": 30},
+    {"id": "status", "label": "Состояние", "argv": ["{python}", "tools/user_install.py", "status", "--json"],
+     "output": "status", "timeoutSeconds": 60},
+    {"id": "remove", "label": "Удалить пакет",
+     "help": "pacman -R p2pkanban. Профиль, доски и секреты в хранилище остаются.",
+     "argv": ["{python}", "tools/user_install.py", "remove"], "dryRun": ["--dry-run"], "privileged": true,
+     "timeoutSeconds": 600, "confirm": "Удалить пакет p2pkanban? Данные профиля останутся."}
+  ]
+}

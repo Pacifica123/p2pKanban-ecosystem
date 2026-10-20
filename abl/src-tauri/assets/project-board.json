@@ -13,8 +13,8 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 84,
-        "comments": 123,
+        "cards": 85,
+        "comments": 127,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T12:40:00Z",
+    "generatedAt": "2026-10-20T13:30:00Z",
     "selfHosted": true,
-    "boardRevision": 62,
-    "lastPatchId": "2026-10-20-abl-dead-code-passphrase",
+    "boardRevision": 66,
+    "lastPatchId": "2026-10-20-abl-launcher-entry",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -872,21 +872,21 @@
       {
         "id": "01a15878-5ff4-7f63-ac2a-055fd715c478",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L2: контракт launcher-entry/1 и web из лаунчера",
         "description": "Зачем: ставить, запускать, останавливать и обновлять web из окна, а настройки вроде порта и --listen менять в GUI, а не флагами.\n\nГотово, когда: contracts/launcher-entry/1 со схемой и векторами; web/launcher.json объявляет команды bootstrap.py; лаунчер выполняет их с предпросмотром --dry-run и показывает вывод; на Windows и Arch web ставится и обновляется из лаунчера.\n\nНачнётся после L1. Порядок: корень (контракт) → web → launcher. Тестовый web (выбор John 2026-10-20): лаунчер предлагает оба варианта — тот же узел на другом порту или второй узел со своей БД и каталогом; второй требует поддержки в web (патч web до или вместе с L2), E-ADR-004 п.9.",
         "priority": "medium",
-        "position": 13312,
+        "position": 34816,
         "archivedAt": null
       },
       {
         "id": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L3: abl из лаунчера",
         "description": "Зачем: на Arch ставить и обновлять abl тем же окном.\n\nГотово, когда: abl/launcher.json объявляет установку и обновление пакетным путём abl; лаунчер ставит abl на Arch.\n\nНачнётся после L2. Ограничение: сегодня у abl есть путь сборки и приёмки (A15, A17), но нет одной пользовательской команды установки — её создаёт патч abl, не лаунчер.",
         "priority": "medium",
-        "position": 14336,
+        "position": 35840,
         "archivedAt": null
       },
       {
@@ -957,6 +957,16 @@
         "description": "Зачем: abl сейчас не синхронизируется ни с кем. Слой A10 (outbox, merge, replay, эпохи) готов и покрыт тестами, но в рантайме его никто не создаёт, а сетевого клиента в abl нет. Правки на abl копятся в pending_local_changes и никуда не уходят; правки с телефона и web в abl не приходят. Данные попадают в abl только разовым импортом через LAN-мост в пустой профиль.\n\nГотово, когда: abl отправляет и принимает события доски по p2p-kanban-roaming/1 через relay кольца; матрица web ↔ abl и Android ↔ abl (create, edit, move, archive, delete, чек-листы) сходится на хосте; помета allow(dead_code) с модулей sync снята.\n\nНачинается после R6 (ключи досок и relay приходят из кольца). Контракт roaming/1 не меняется. Источник: DEBT-A10-002 в abl/docs/architecture/08-implementation-corrections-and-debt.md.",
         "priority": "high",
         "position": 17408,
+        "archivedAt": null
+      },
+      {
+        "id": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "title": "Второй, тестовый web-узел: своя база, секреты и порт",
+        "description": "Зачем: John (2026-10-20, E-ADR-004 п.9) хочет на выбор тестовый web рядом с рабочим, не трогая рабочий.\n\nГотово, когда: bootstrap.py умеет второй узел со своим Compose-проектом, томами, секретами, каталогом состояния и портом (например, start --instance test); status --json и launcher.json знают про экземпляр; web/launcher.json переводит профиль second-node в supported:true; лаунчер показывает оба узла.\n\nСегодня: один узел на checkout — Compose-проект p2pkanban-bootstrap захардкожен, его тома и .dev-bootstrap/container-stack.json общие для start, update, rollback, reset и updater UI. Поэтому это отдельный патч web с приёмкой на хосте, а не часть L2.",
+        "priority": "medium",
+        "position": 18432,
         "archivedAt": null
       }
     ],
@@ -1705,6 +1715,14 @@
       {
         "cardId": "01a15950-6e95-7da7-8d10-d273eb53120a",
         "labelId": "01a10d38-f911-7b6c-a164-7928c51ddcfd"
+      },
+      {
+        "cardId": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "labelId": "01a10d38-f90a-7e3f-977a-c94d264b5e5d"
+      },
+      {
+        "cardId": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
       }
     ],
     "checklists": [
@@ -3980,6 +3998,30 @@
         "cardId": "01a10f95-389c-79bd-afda-fd40e83dfc1e",
         "createdAt": "2026-10-20T12:40:00Z",
         "body": "patch 2026-10-20-abl-dead-code-passphrase: после R6 — карточка «abl: живая синхронизация доски по roaming/1»: без неё abl после привязки остаётся локальным клиентом. Константы событий device-link (DEVICE_LINK_*_KIND) помечены как задел R6."
+      },
+      {
+        "id": "01a159b3-6dd2-7081-9c8e-c80c9f7f0d33",
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "createdAt": "2026-10-20T13:00:00Z",
+        "body": "patch 2026-10-20-ecosystem-launcher-entry-contract: контракт p2p-kanban-launcher-entry/1 описан в contracts/launcher-entry/1 — SPEC, схемы entry/status/result, эталон launcher_entry_check / launcher_command / launcher_status в contract_ref.py, 23 вектора (команды, 13 отказов объявления, 10 ответов status). Правило безопасности: только Python-скрипты самого направления, интерпретатором лаунчера, без оболочки. check_contracts.py проверяет каждый <направление>/launcher.json из ecosystem.json. E-ADR-004 п.6 переписан под ленту APK от GitHub Action (токен — секрет репозитория), п.9 — второй узел web пока не поддержан. Дальше в той же пачке: web, launcher, abl."
+      },
+      {
+        "id": "01a159b8-23e4-7202-9294-4714a2023868",
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "createdAt": "2026-10-20T13:10:00Z",
+        "body": "patch 2026-10-20-web-launcher-entry: web/launcher.json объявляет bootstrap.py — установить (start со сборкой), запустить (--no-build), остановить, обновить из main, откат, диагностика, логи, удалить с базой; настройки порт и --listen; вариант «тот же узел на другом порту». Новый bootstrap.py status --json (p2p-kanban-launcher-status/1): ничего не меняет, без Docker отвечает running=null с проблемой. Второй узел объявлен supported:false — карточка ниже. Тесты web/tools/test_launcher_entry.py, строка в uts_plan."
+      },
+      {
+        "id": "01a159c2-99e8-7550-bc50-f2fff43581a5",
+        "cardId": "01a15878-5ff4-7f63-ac2a-055fd715c478",
+        "createdAt": "2026-10-20T13:20:00Z",
+        "body": "patch 2026-10-20-launcher-l2-actions: лаунчер 0.2.0 исполняет launcher.json. Своя реализация контракта (launcher_app/entry.py) сверяется с векторами корня; runner запускает только Python-скрипты направления его каталогом, без оболочки; окно запуска показывает команду, даёт пробный прогон, построчный вывод, «Прервать», подтверждение для удаления и отката; окно настроек — порт, --listen и варианты (второй узел серым с причиной). Карточка web: кнопки по ответу status, «Обновить» при коммите web/ в main новее установки. CLI: actions, run, settings. Ждёт хоста: на Windows и Arch web ставится, открывается, переезжает на другой порт, останавливается и обновляется из окна."
+      },
+      {
+        "id": "01a159c5-a378-778f-86c3-e6f498eef06a",
+        "cardId": "01a15878-5ff4-773e-9b1f-a188bdb4ce6a",
+        "createdAt": "2026-10-20T13:30:00Z",
+        "body": "patch 2026-10-20-abl-launcher-entry: у abl появилась одна пользовательская команда установки — tools/user_install.py: install (входы a15_prepare_release → makepkg --nocheck → sudo/pkexec pacman -U), update (только если checkout новее установленного), remove, launch, status --json. Это не релизный путь A15: пакет не подписан, сборка без clean chroot. abl/launcher.json объявляет их лаунчеру; недостающие пакеты сборки называются строкой sudo pacman -S --needed. Тесты tools/test_user_install.py без pacman. Ждёт хоста: на Arch лаунчер ставит abl, запускает и видит «актуально» после сборки."
       }
     ],
     "boardAppearanceSettings": [],

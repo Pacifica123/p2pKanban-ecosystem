@@ -437,6 +437,16 @@
       "dir": "abl",
       "checks": [
         {
+          "id": "test-user-install",
+          "title": "Пользовательская установка и launcher.json (без pacman)",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "tools/test_user_install.py"
+          ]
+        },
+        {
           "id": "uts-verify",
           "title": "Собственный UTS abl (tools/uts_verify.py)",
           "level": "host",
