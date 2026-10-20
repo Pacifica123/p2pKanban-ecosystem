@@ -24,7 +24,20 @@
 
 ```bash
 python tools/contract_parity_sweep.py --check
+python -B tools/test_contract_parity_sweep.py
 ```
+
+## Состояние на 2026-10-20 (web 2.1.0)
+
+- backend routes: 120 operations; OpenAPI operations: 120; frontend API calls: 92, все есть в backend и OpenAPI.
+- Маршруты подключения устройства (`/auth/device-link/prepare`, `/request`, `/supplement-request`,
+  `/accept`, `/approve`), `GET /integrations/projects`, receipts и `POST …/receipts/preview` описаны
+  в OpenAPI (патч `2026-10-16-web-static-checks`). `POST /auth/device-link/lan/inbox` смонтирован
+  (`backend/src/auth/mod.rs`: `get(lan_link::inbox).post(lan_link::receive)`), поэтому остаётся в OpenAPI.
+- Шаблонные строки frontend (`${encodeURIComponent(token)}`, `${request.id}`) сверка сводит к параметру
+  `{param}`, а имена параметров не сравнивает: сравнивается форма пути.
+- `info.version` в `openapi.yaml` обязан совпадать с `web/VERSION`; при расхождении `--check` красный.
+  При смене версии web правится и `info.version`.
 
 ## Статусы routes
 

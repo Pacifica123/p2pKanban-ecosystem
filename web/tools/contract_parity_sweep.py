@@ -3,7 +3,7 @@
 
 The check is intentionally lightweight and dependency-free. It focuses on the
 HTTP method + path surface; response/body details still belong to review and
-smoke/integration tests.
+smoke/integration tests. OpenAPI info.version must match web/VERSION.
 """
 from __future__ import annotations
 
@@ -136,6 +136,27 @@ def extract_openapi_routes(root: Path) -> set[Route]:
     return routes
 
 
+def openapi_info_version(root: Path) -> str | None:
+    """info.version из docs/api/openapi.yaml: строка `  version:` в блоке `info:`."""
+    in_info = False
+    for raw_line in (root / "docs/api/openapi.yaml").read_text(encoding="utf-8").splitlines():
+        line = raw_line.rstrip()
+        if line == "info:":
+            in_info = True
+            continue
+        if in_info and line and not line.startswith(" "):
+            break
+        match = re.match(r"^  version:\s*['\"]?([^'\"\s]+)['\"]?\s*$", line) if in_info else None
+        if match:
+            return match.group(1)
+    return None
+
+
+def product_version(root: Path) -> str | None:
+    path = root / "VERSION"
+    return path.read_text(encoding="utf-8").strip() or None if path.is_file() else None
+
+
 def sorted_render(routes: set[Route]) -> list[str]:
     return [route.render() for route in sorted(routes)]
 
@@ -168,6 +189,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Backend routes: {len(backend)}")
     print(f"Frontend API calls: {len(frontend)}")
     print(f"OpenAPI routes: {len(openapi)}")
+    spec_version = openapi_info_version(root)
+    web_version = product_version(root)
+    print(f"OpenAPI info.version: {spec_version} (VERSION: {web_version})")
 
     if args.verbose:
         print_section("Backend routes", backend)
@@ -182,13 +206,16 @@ def main(argv: list[str] | None = None) -> int:
     ]
 
     has_mismatch = False
+    if spec_version != web_version:
+        has_mismatch = True
+        print(f"\nOpenAPI info.version {spec_version} != VERSION {web_version}")
     for title, routes in mismatches:
         if routes:
             has_mismatch = True
             print_section(title, routes)
 
     if not has_mismatch:
-        print("OK: backend routes, frontend API calls and OpenAPI paths are in parity.")
+        print("OK: backend routes, frontend API calls and OpenAPI paths are in parity; info.version matches VERSION.")
         return 0
 
     if args.check:

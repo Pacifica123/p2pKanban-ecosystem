@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 74,
-        "comments": 100,
+        "comments": 101,
         "checklists": 34,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T09:00:00Z",
+    "generatedAt": "2026-10-20T09:10:00Z",
     "selfHosted": true,
-    "boardRevision": 54,
-    "lastPatchId": "2026-10-20-devctl-repo-identity",
+    "boardRevision": 55,
+    "lastPatchId": "2026-10-20-web-openapi-parity",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -692,11 +692,11 @@
       {
         "id": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f905-7498-9234-5378892b360e",
+        "columnId": "01a10d38-f908-7b4c-984d-17f3db36c31c",
         "title": "web: OpenAPI отстал от узла на 8 маршрутов",
         "description": "Зачем: web/tools/contract_parity_sweep.py --check красный на 6cef464. В OpenAPI нет 8 смонтированных маршрутов: POST /auth/device-link/prepare (им пользуется Android), /request, /supplement-request, /accept, /approve, GET /integrations/projects, GET /integrations/projects/{projectId}/receipts, POST …/receipts/preview. Описан несмонтированный POST /auth/device-link/lan/inbox. info.version 0.2.0 при web 2.1.0. Часть строк «frontend calls missing in backend» — шаблонные строки, которые сверка не разбирает (GET /ring и др.).\n\nГотово, когда: contract_parity_sweep.py --check зелёный; ложные срабатывания на шаблонных путях устранены в самой сверке; info.version совпадает с web/VERSION.\n\nПервый шаг E-ADR-001; полезен при любом решении по нему.",
         "priority": "medium",
-        "position": 5120,
+        "position": 22528,
         "archivedAt": null
       },
       {
@@ -3498,6 +3498,12 @@
         "cardId": "01a145a8-52c4-7bd9-bc42-62a6762a501a",
         "createdAt": "2026-10-20T09:00:00Z",
         "body": "patch 2026-10-20-devctl-repo-identity: devctl 0.10.0. В batch.json workspace называется репозиторием: \"repo\": \"Pacifica123/p2pKanban-ecosystem\" (owner/repo, host/owner/repo или URL). batch plan/start ищут в реестре workspace, у которого remote (git.remote, по умолчанию origin) указывает на этот репозиторий, и печатают, какой выбран и почему; id реестра (p2p-ecosystem на ноутбуке, p2pkanban_ecosystem на ПК) остаётся локальным псевдонимом и нужен, только если репозиторий склонирован на машине дважды. Перерегистрация не нужна: репозиторий читается из .git/config при каждом запуске. Старые пачки с workspace = id работают как раньше; пачка с repo требует devctl ≥ 0.10.0, 0.9.0 честно откажется. workspace list / --for-agent показывают repo; target.repo в манифесте — подсказка складу. Тесты: devctl/tests/test_repo_identity.py (две «машины» с разными id одного репозитория), всего 28 OK. Ждёт хоста: пересобранная пачка 2026-10-20-openapi-anchors-launcher проходит batch plan на ноутбуке и на ПК без правки batch.json. Тот же код — патчем в devctl-universal."
+      },
+      {
+        "id": "01a15853-0c00-7d37-8eef-404bf031a94f",
+        "cardId": "01a1434b-bf0b-78a1-80d3-f82a4d0e7ddc",
+        "createdAt": "2026-10-20T08:00:00Z",
+        "body": "patch 2026-10-20-web-openapi-parity: contract_parity_sweep.py --check зелёный на 66d4ca6: backend 120, OpenAPI 120, frontend 92 и все есть в backend и OpenAPI. Восемь маршрутов описал ещё 2026-10-16-web-static-checks, он же научил сверку шаблонным строкам (${encodeURIComponent(…)} → {param}); карточку тогда не сдвинули. POST /auth/device-link/lan/inbox смонтирован (backend/src/auth/mod.rs), поэтому остаётся в OpenAPI. Этот патч закрывает последний пункт: info.version 0.2.0 → 2.1.0, и сверка теперь краснеет, если info.version расходится с web/VERSION. Тесты сверки: tools/test_contract_parity_sweep.py. Приёмка — проверки манифеста в devctl start; хост не нужен."
       }
     ],
     "boardAppearanceSettings": [],

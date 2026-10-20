@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: p2pKanban Backend API
-  version: 0.2.0
+  version: 2.1.0
   description: 'HTTP API v1 для web-first local-first Kanban planner с sync-ready
     foundation. Контракт выровнен с MVP scope: workspace / board / column / card плюс
     labels, checklists, comments, минимальная коллаборация, session/device/replica-aware
