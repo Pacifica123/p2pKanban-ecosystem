@@ -3,7 +3,7 @@
 // itself: lines go into a report or a debug export, and those only into the
 // clipboard or a share sheet, on a tap. Only the debug mode keeps a redacted
 // tail on disk, so the next start can show how the previous run ended.
-import { NODE_HEADER, parseNodeHeader, type ErrorReport, type NodeIdentity } from './report';
+import { NODE_HEADER, parseNodeHeader, redact, type ErrorReport, type NodeIdentity } from './report';
 
 /** Ordinary mode: enough for «Скопировать подробности». */
 export const NORMAL_CAPACITY = 200;
@@ -18,6 +18,10 @@ export type JournalEntry = {
   source: string;
   /** `<UTC time> <level> <source>: <text>` — the form the contract recommends. */
   line: string;
+  /** The same line redacted once, when written: viewers and the disk tail reuse it. */
+  clean: string;
+  /** Epoch ms of `line`, for the stall watch. */
+  at: number;
 };
 
 let entries: JournalEntry[] = [];
@@ -41,8 +45,9 @@ function capacity() {
 }
 
 function push(level: JournalLevel, source: string, text: string) {
-  const line = `${new Date().toISOString()} ${level} ${source}: ${text}`;
-  entries.push({ seq: nextSeq++, level, source, line });
+  const at = Date.now();
+  const line = `${new Date(at).toISOString()} ${level} ${source}: ${text}`;
+  entries.push({ seq: nextSeq++, level, source, line, clean: redact(line.replace(/\r\n|\r|\n/g, ' '))[0], at });
   if (entries.length > capacity()) entries.splice(0, entries.length - capacity());
   for (const listener of listeners) listener();
 }
@@ -66,6 +71,16 @@ export function trace(source: string, describe: () => string) {
 
 export function journalLines(): string[] {
   return entries.map((entry) => entry.line);
+}
+
+/** Redacted lines, old first; `count` takes the tail. */
+export function journalCleanLines(count = entries.length): string[] {
+  return entries.slice(-count).map((entry) => entry.clean);
+}
+
+/** Sequence number of the newest line, 0 when empty. */
+export function lastJournalSeq() {
+  return entries[entries.length - 1]?.seq ?? 0;
 }
 
 export function journalEntries(): JournalEntry[] {

@@ -28,25 +28,7 @@ export function normalizeNodeOrigin(input: string) {
   return parsed.origin;
 }
 
-export function isPrivateNodeOrigin(origin: string | null) {
-  if (!origin) return false;
-  let hostname: string;
-  try {
-    hostname = new URL(origin).hostname.toLowerCase().replace(/^\[|\]$/g, '');
-  } catch {
-    return false;
-  }
-  if (hostname === 'localhost' || hostname.endsWith('.local')) return true;
-  if (hostname === '::1' || hostname.startsWith('fc') || hostname.startsWith('fd')) return true;
-  const octets = hostname.split('.').map(Number);
-  if (octets.length !== 4 || octets.some((value) => !Number.isInteger(value))) return false;
-  const [first = -1, second = -1] = octets;
-  return first === 10
-    || first === 127
-    || (first === 172 && second >= 16 && second <= 31)
-    || (first === 192 && second === 168)
-    || (first === 169 && second === 254);
-}
+export { isPrivateNodeOrigin } from '../../shared/api/nodeReach';
 
 interface ProbeResponse {
   ok: boolean;

@@ -17,6 +17,7 @@ import { ConnectionScreen } from '../../features/connection/ConnectionScreen';
 import { DebugJournalScreen } from '../../features/settings/DebugJournalScreen';
 import { SettingsScreen } from '../../features/settings/SettingsScreen';
 import { trace } from '../../shared/errorReport/journal';
+import { noteScreen } from '../../shared/lib/stallWatch';
 import { AcceptanceScreen } from '../../features/acceptance/AcceptanceScreen';
 import { ProjectBoardScreen } from '../../features/projectBoard/ProjectBoardScreen';
 import { useAppearance } from '../../features/appearance/AppearanceProvider';
@@ -70,7 +71,11 @@ export function RootNavigator() {
       ref={navigationRef}
       theme={theme}
       onReady={() => flushReminderTarget(auth.status === 'authenticated')}
-      onStateChange={() => trace('nav', () => `экран ${navigationRef.getCurrentRoute()?.name ?? 'неизвестен'}`)}
+      onStateChange={() => {
+        const name = navigationRef.getCurrentRoute()?.name ?? null;
+        noteScreen(name);
+        trace('nav', () => `экран ${name ?? 'неизвестен'}`);
+      }}
     >
       <Stack.Navigator screenOptions={{
         headerShown: false,

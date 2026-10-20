@@ -3,6 +3,7 @@ import { onlineManager } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
+import { setApiNetworkType } from '../shared/api/nodeReach';
 import { logLine } from '../shared/errorReport/journal';
 
 interface NetworkContextValue {
@@ -24,6 +25,8 @@ let lastLogged = '';
 
 /** One journal line per real change: switching Wi-Fi to mobile data explains most sync surprises. */
 function noteNetwork(type: string, online: boolean) {
+  // A new network may reach the node again: forget its silence right away.
+  setApiNetworkType(type);
   const text = `сеть: ${type}, ${online ? 'есть подключение' : 'нет подключения'}`;
   if (text === lastLogged) return;
   lastLogged = text;

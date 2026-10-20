@@ -5,10 +5,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
 import { useNetwork } from '../../app/NetworkProvider';
+import { isNetworkError } from '../../shared/api/client';
 import { getMyAppearance, updateMyAppearance } from '../../shared/api/endpoints';
 import {
   readSessionJson,
@@ -65,7 +67,8 @@ export function AppearanceProvider({ children }: PropsWithChildren) {
       PENDING_KEY,
       null,
     );
-    if (!isOnline) {
+    // An offline session waits for the node to confirm the sign-in; then this runs again.
+    if (!isOnline || auth.isOfflineSession) {
       if (!cached) setPreferences(defaults(auth.user.id));
       setHydrated(true);
       return;
@@ -82,46 +85,60 @@ export function AppearanceProvider({ children }: PropsWithChildren) {
     } finally {
       setHydrated(true);
     }
-  }, [auth.status, auth.user?.id, isOnline]);
+  }, [auth.isOfflineSession, auth.status, auth.user?.id, isOnline]);
 
   useEffect(() => {
     setHydrated(false);
     void refresh();
   }, [refresh]);
 
+  // One request at a time: taps made while it is on the way are merged into the
+  // pending patch and go in the next request. A node that does not answer keeps
+  // the change on the device (as the settings screen promises) instead of
+  // reverting it 12 s later.
+  const sendingRef = useRef(false);
   const savePreferences = useCallback(async (
     patch: UpdateUserAppearancePreferencesRequest,
   ) => {
-    const previous = preferences;
     const optimistic = {
-      ...previous,
+      ...preferences,
       ...patch,
       isCustomized: true,
       updatedAt: new Date().toISOString(),
     };
     setPreferences(optimistic);
-    setSaving(true);
     await writeSessionJson(CACHE_KEY, optimistic);
     const queued = await readSessionJson<UpdateUserAppearancePreferencesRequest>(
       PENDING_KEY,
       {},
     );
-    const request = { ...queued, ...patch };
-    await writeSessionJson(PENDING_KEY, request);
+    await writeSessionJson(PENDING_KEY, { ...queued, ...patch });
+    if (!isOnline || auth.isOfflineSession || sendingRef.current) return;
+    sendingRef.current = true;
+    setSaving(true);
     try {
-      if (!isOnline) return;
-      const saved = await updateMyAppearance(request);
-      await writeSessionJson(CACHE_KEY, saved);
-      await removeSessionValue(PENDING_KEY);
-      setPreferences(saved);
+      for (;;) {
+        const request = await readSessionJson<UpdateUserAppearancePreferencesRequest | null>(PENDING_KEY, null);
+        if (!request || !Object.keys(request).length) return;
+        const saved = await updateMyAppearance(request);
+        const after = await readSessionJson<UpdateUserAppearancePreferencesRequest | null>(PENDING_KEY, null);
+        if (JSON.stringify(after) !== JSON.stringify(request)) continue;
+        await writeSessionJson(CACHE_KEY, saved);
+        await removeSessionValue(PENDING_KEY);
+        setPreferences(saved);
+        return;
+      }
     } catch (error) {
-      setPreferences(previous);
-      await writeSessionJson(CACHE_KEY, previous);
+      if (isNetworkError(error)) return;
+      // The node refused the change: show what it keeps.
+      await removeSessionValue(PENDING_KEY);
+      void refresh();
       throw error;
     } finally {
+      sendingRef.current = false;
       setSaving(false);
     }
-  }, [isOnline, preferences]);
+  }, [auth.isOfflineSession, isOnline, preferences, refresh]);
 
   const value = useMemo<AppearanceContextValue>(() => ({
     preferences,

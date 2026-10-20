@@ -1,5 +1,6 @@
-import { logLine, noteApiFailure, notePeer } from '../errorReport/journal';
+import { logLine, noteApiFailure, notePeer, trace } from '../errorReport/journal';
 import { ERROR_ID_HEADER } from '../errorReport/report';
+import { nodeBlock, noteNodeAnswered, noteNodeSilent, resetNodeReach } from './nodeReach';
 
 interface ApiEnvelope<T> {
   data: T;
@@ -45,7 +46,19 @@ let refreshInFlight: Promise<string | null> | null = null;
 
 export function setApiNodeOrigin(origin: string | null) {
   nodeOrigin = origin?.replace(/\/+$/, '') || null;
+  resetNodeReach();
 }
+
+type InFlight = { method: string; path: string; startedAt: number };
+const inFlight = new Map<number, InFlight>();
+let nextRequestId = 1;
+
+/** Requests to the node that have not settled yet, oldest first (for the stall watch). */
+export function inFlightRequests(now = Date.now()) {
+  return [...inFlight.values()].map((item) => ({ method: item.method, path: item.path, ageMs: now - item.startedAt }));
+}
+
+let lastBlockReason: string | null = null;
 
 export function getApiNodeOrigin() {
   return nodeOrigin;
@@ -89,6 +102,24 @@ async function performRequest<T>(
     });
   }
 
+  const method = (init.method ?? 'GET').toUpperCase();
+  const requestPath = `/api/v1${path}`;
+  const block = nodeBlock(nodeOrigin);
+  if (block) {
+    // One line per reason, not per request: a board screen asks every few seconds.
+    if (block.reason !== lastBlockReason) {
+      lastBlockReason = block.reason;
+      logLine('info', 'api', `${nodeOrigin}: запросы к узлу не отправляются — ${block.message}`);
+    }
+    trace('api', () => `${method} ${requestPath} → не отправлен: ${block.message}`);
+    throw new ApiError(block.message, {
+      status: 0,
+      code: 'NODE_UNREACHABLE',
+      http: { method, path: requestPath, body: null, errorId: null },
+    });
+  }
+  lastBlockReason = null;
+
   const headers = new Headers(init.headers);
   if (init.body !== undefined && init.body !== null && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
@@ -104,18 +135,21 @@ async function performRequest<T>(
   if (init.signal?.aborted) abort();
   else init.signal?.addEventListener('abort', abort, { once: true });
 
-  const method = (init.method ?? 'GET').toUpperCase();
-  const requestPath = `/api/v1${path}`;
   const startedAt = Date.now();
+  const requestId = nextRequestId++;
+  inFlight.set(requestId, { method, path: requestPath, startedAt });
   let response: Response;
   let payload: unknown;
   let text = '';
+  let answered = false;
   try {
     response = await fetch(`${nodeOrigin}/api/v1${path}`, {
       ...init,
       headers,
       signal: controller.signal,
     });
+    answered = true;
+    if (noteNodeAnswered()) logLine('info', 'api', `${nodeOrigin}: узел снова отвечает`);
     // Reading the body is part of the request deadline too (RN may cancel here).
     ({ text, payload } = await parsePayload(response));
   } catch (error) {
@@ -124,6 +158,9 @@ async function performRequest<T>(
     if (code !== 'CANCELED') {
       logLine('error', 'api', `${method} ${nodeOrigin}${requestPath} → нет ответа (${code}): ${errorMessage(error)}`);
       noteApiFailure({ method, path: requestPath, status: 0, requestId: null, errorId: null, body: null });
+      // Headers came but the body did not: the node is there, only slow.
+      const pause = answered ? 0 : noteNodeSilent();
+      if (pause) logLine('warn', 'api', `${nodeOrigin}: узел молчит, следующие ${Math.round(pause / 1000)} с запросы к нему не отправляются`);
     }
     throw new ApiError(
       timedOut ? 'Узел не ответил вовремя.' : aborted ? 'Запрос отменён вызывающим экраном.' : `Не удалось связаться с узлом: ${errorMessage(error)}.`,
@@ -135,6 +172,7 @@ async function performRequest<T>(
       },
     );
   } finally {
+    inFlight.delete(requestId);
     clearTimeout(timeout);
     init.signal?.removeEventListener('abort', abort);
   }

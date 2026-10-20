@@ -11,14 +11,13 @@ import { previousRunLines, setDebugMode, useDebugMode } from '../../shared/debug
 import { debugJournalFilename, renderDebugJournal } from '../../shared/debug/export';
 import { mobilePlatform, mobileSoftware } from '../../shared/errorReport/collect';
 import { journalEntries, subscribeJournal, type JournalEntry } from '../../shared/errorReport/journal';
-import { redact } from '../../shared/errorReport/report';
 import { Button, Screen, ScreenHeader } from '../../shared/ui/primitives';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DebugJournal'>;
 type Filter = 'all' | 'problems';
 type Source = 'now' | 'previous';
 
-const REDRAW_MS = 300;
+const REDRAW_MS = 500;
 
 function useJournal(paused: boolean) {
   const [entries, setEntries] = useState<JournalEntry[]>(journalEntries);
@@ -70,7 +69,7 @@ export function DebugJournalScreen({ navigation }: Props) {
       return filter === 'all' ? previous : previous.filter((line) => / (warn|error) /.test(line));
     }
     const shown = filter === 'all' ? entries : entries.filter((entry) => entry.level === 'warn' || entry.level === 'error');
-    return shown.map((entry) => redact(entry.line)[0]);
+    return shown.map((entry) => entry.clean);
   }, [entries, filter, previous, source]);
 
   function exportText() {
@@ -123,7 +122,8 @@ export function DebugJournalScreen({ navigation }: Props) {
         />
         {!debugMode ? (
           <Text style={[styles.caption, { color: colors.muted }]}>
-            Без режима отладки здесь только запросы к узлу и ошибки, последние 200 строк.
+            Без режима отладки здесь только запросы к узлу, ошибки и паузы JS-потока, последние 200 строк.
+            Они же хранятся на телефоне и после зависания видны в «Прошлый запуск».
           </Text>
         ) : null}
         <View style={styles.row}>

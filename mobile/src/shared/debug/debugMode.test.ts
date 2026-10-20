@@ -1,6 +1,7 @@
 import {
   DEBUG_CAPACITY,
   NORMAL_CAPACITY,
+  journalCleanLines,
   journalEntries,
   journalLines,
   logLine,
@@ -85,5 +86,17 @@ describe('debug journal export', () => {
 
   it('names the file by direction and time without colons', () => {
     expect(debugJournalFilename('mobile', '2026-10-17T03:00:00.000Z')).toBe('p2pkanban-mobile-debug-2026-10-17T03-00-00-000Z.md');
+  });
+});
+
+describe('journal lines for viewers and the disk', () => {
+  beforeEach(() => resetJournalForTests());
+
+  it('are redacted once, when written', () => {
+    logLine('info', 'auth', 'Authorization: Bearer abc.def');
+    expect(journalCleanLines()).toHaveLength(1);
+    expect(journalCleanLines()[0]).not.toContain('abc.def');
+    expect(journalLines()[0]).toContain('abc.def');
+    expect(journalEntries()[0]?.at).toBeGreaterThan(0);
   });
 });

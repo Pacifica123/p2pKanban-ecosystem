@@ -31,7 +31,7 @@ if (
   || packageLock.version !== packageJson.version
   || packageLock.packages?.['']?.version !== packageJson.version
   || appJson.expo.version !== packageJson.version
-  || appJson.expo.android.versionCode !== 28
+  || appJson.expo.android.versionCode !== 29
 ) {
   throw new Error('Версии Android package, lock и Expo не согласованы.');
 }
@@ -204,7 +204,7 @@ requireText('src/features/sync/syncService.ts', [
 requireText('src/shared/debug/debugMode.ts', ['setJournalDebugMode', 'TAIL_LINES']);
 requireText('src/features/settings/SettingsScreen.tsx', ["navigation.navigate('DebugJournal')"]);
 requireText('android/app/build.gradle', [
-  'versionCode 28',
+  'versionCode 29',
   'versionName "2.1.0"',
 ]);
 
@@ -216,3 +216,8 @@ requireText('src/features/deviceLink/service.ts', ['decryptPackSliced', 'prepare
 forbidText('src/features/deviceLink/service.ts', ['decryptPack(', 'encryptPack(', 'await fetch(`']);
 requireText('src/features/boards/BoardsScreen.tsx', ['!focused', 'primedKey']);
 requireText('index.ts', ['installStallWatch()']);
+// A node that cannot answer costs nothing; the stall watch names what was in flight
+// and keeps a black box on disk (docs/architecture/stall-watch-20261020.md).
+requireText('src/shared/api/client.ts', ['nodeBlock(nodeOrigin)', 'noteNodeSilent()', 'inFlightRequests']);
+requireText('src/shared/lib/stallWatch.ts', ['writeBlackBox', 'previousRunVerdict', 'describePause']);
+requireText('src/features/appearance/AppearanceProvider.tsx', ['isNetworkError(error)', 'sendingRef']);

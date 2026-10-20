@@ -15,7 +15,7 @@
     },
     "android": {
       "package": "dev.p2pkanban.mobile",
-      "versionCode": 28,
+      "versionCode": 29,
       "allowBackup": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
