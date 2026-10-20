@@ -563,6 +563,18 @@
             "--json",
             "--offline"
           ]
+        },
+        {
+          "id": "self-status",
+          "title": "launcher.py self-status --json отвечает по launcher-entry/1",
+          "level": "static",
+          "run": [
+            "{python}",
+            "-B",
+            "launcher.py",
+            "self-status",
+            "--json"
+          ]
         }
       ]
     }

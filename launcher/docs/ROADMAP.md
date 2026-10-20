@@ -22,7 +22,12 @@
 Второй тестовый узел web — отдельная карточка web. L3 — патч abl
 `2026-10-20-abl-launcher-entry`: ждёт хоста (abl ставится из окна на Arch).
 L4 — патч `2026-10-20-launcher-l4-apk-feed`: ждёт секрета `EXPO_TOKEN` в
-репозитории и первого прогона Action.
+репозитории и первого прогона Action. L5 — патч
+`2026-10-20-launcher-l5-get-update-doctor`: `get.py` (клон, sparse или архив
+одной командой), `self-update` (fast-forward чистого checkout или архив `main`
+поверх), `doctor`; лаунчер объявляет и себя в `launcher.json`. Ждёт хоста:
+новая машина получает лаунчер одной командой на Windows и Arch. L6 — ждёт
+решения John по E-ADR-002.
 
 ## Вердикты сверки
 

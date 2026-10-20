@@ -7,6 +7,27 @@
 экосистемы есть, какие подходят этой машине, что установлено, что устарело
 относительно `main`, и откуда их поставить, запустить и обновить.
 
+## Новая машина: одной командой
+
+Нужен только Python 3.11+ (git желателен, но не обязателен):
+
+```bash
+# Linux, macOS
+curl -fsSL https://raw.githubusercontent.com/Pacifica123/p2pKanban-ecosystem/main/launcher/get.py | python3 -
+# только лаунчер и web (sparse checkout), в свой каталог
+curl -fsSL https://raw.githubusercontent.com/Pacifica123/p2pKanban-ecosystem/main/launcher/get.py | python3 - --only web --dir ~/p2p
+```
+
+```bat
+:: Windows (cmd или PowerShell)
+py -c "import urllib.request as u; exec(u.urlopen('https://raw.githubusercontent.com/Pacifica123/p2pKanban-ecosystem/main/launcher/get.py').read())"
+```
+
+[`get.py`](get.py) клонирует экосистему в `~/p2pkanban-ecosystem` (`--only` —
+sparse по выбранным направлениям; без git или с `--archive` — zip последнего
+коммита `main`), ставит окно (`install-gui`, `--no-gui` — пропустить) и пишет,
+как запустить. Повторный запуск на том же каталоге его обновляет.
+
 ## Запуск
 
 Нужен Python 3.11–3.14. Один раз поставить окно (PySide6 в отдельный venv,
@@ -29,6 +50,9 @@ python launcher/launcher.py run web install --set port=8091 # установит
 python launcher/launcher.py settings web --set listen=lan   # запомнить настройку
 python launcher/launcher.py run web --profile same-node-port --set port=8095
 python launcher/launcher.py apk                             # ссылка на свежий APK и его свежесть
+python launcher/launcher.py self-update --dry-run           # что придёт из main
+python launcher/launcher.py self-update                     # обновить checkout (только чистый, fast-forward)
+python launcher/launcher.py doctor                          # диагностика, отчёт JSON в кеше
 ```
 
 На Windows вместо `python` можно `py`. `launcher.py` сам находит venv с
@@ -49,6 +73,9 @@ PySide6; если окна ещё нет, он говорит, какой скр
 | `run <направление> [действие] [--set k=v] [--profile id] [--dry-run] [--yes]` | выполнить объявленное действие; без действия — `status` |
 | `settings <направление> [--set k=v]` | показать или запомнить настройки (пустое значение — «решает направление») |
 | `apk [--json]` | ссылка на последнюю APK из ленты, «ожидайте APK», «собирается» |
+| `self-update [--dry-run]` | обновить checkout, из которого запущен лаунчер: `git pull --ff-only` или архив `main` поверх |
+| `self-status [--json]` | ответ `status` лаунчера о себе (лаунчер объявляет и себя в `launcher.json`) |
+| `doctor [--json] [--offline]` | Python, окно, предпосылки всех направлений, их `status`, доступ к GitHub и ленте APK |
 
 `GITHUB_TOKEN` в окружении необязателен: без него GitHub даёт 60 запросов в
 час, а лаунчер делает шесть не чаще раза в 10 минут.
@@ -64,7 +91,7 @@ mobile — APK. Лаунчер выполняет только команды, �
 - Всё, что видно в окне, доступно из CLI (`status --json`) для UTS и агента.
 - «Актуально» в лаунчере не значит «принято»: приёмку даёт UTS на хосте.
 
-## Состояние на 2026-10-20: ступени L2–L4 — web и abl из лаунчера, ссылка на APK
+## Состояние на 2026-10-20: ступени L2–L5 — web и abl из лаунчера, ссылка на APK, самообновление
 
 | Что | Откуда |
 |---|---|
@@ -121,7 +148,23 @@ abl объявил `tools/user_install.py`: «Установить» собир�
 не задан секрет), карточка ведёт на страницу сборок expo.dev и пишет, что
 свежесть неизвестна. Что сделать один раз — [feed/README.md](feed/README.md).
 
-Ступени — [docs/ROADMAP.md](docs/ROADMAP.md).
+### Сам лаунчер
+
+Лаунчер объявляет и себя тем же контрактом ([`launcher.json`](launcher.json)):
+его карточка в «Для разработки» показывает «Обновить», когда в `main` есть
+коммит `launcher/` новее checkout. Обновление — только чистого checkout на
+`main` и только fast-forward: свои правки и коммиты лаунчер не сливает и не
+откатывает, а называет. Каталог, распакованный архивом, обновляется архивом
+`main` поверх: файлы перезаписываются, состояние направлений (например,
+`web/.dev-bootstrap`) остаётся, удалённые в `main` файлы остаются у вас.
+Установленный web этим не обновляется — у него своя кнопка «Обновить»; abl
+после обновления checkout пересобирается своей.
+
+«Диагностика» (`doctor`) ничего не меняет и сохраняет отчёт
+`doctor-<время>.json` в кеше лаунчера; токены в нём только «задан / не задан».
+
+L6 (вступление устройства в кольцо аккаунта при установке) ждёт решения John
+по E-ADR-002. Ступени — [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Где лаунчер хранит своё
 
@@ -151,6 +194,8 @@ python -B -m unittest discover -s tests
 | Файл | Что делает |
 |---|---|
 | `launcher.py` | CLI, поиск venv и запуск окна |
+| `get.py` | новая машина одной командой: клон, sparse или архив, затем `install-gui` (не импортирует `launcher_app`) |
+| `launcher.json` | объявление лаунчера о себе: обновить checkout, диагностика, `self-status` |
 | `install.sh`, `install.bat` | ищут Python 3.11–3.14 и вызывают `launcher.py install-gui` |
 | `requirements-gui.txt` | зафиксированная версия PySide6 |
 | `launcher_app/install.py` | venv и установка PySide6 |
@@ -163,6 +208,8 @@ python -B -m unittest discover -s tests
 | `launcher_app/qt_dialogs.py` | окна запуска действия и настроек направления |
 | `launcher_app/apk.py` | лента APK: загрузка, кеш, вердикт для карточки Android |
 | `feed/apk_feed.py` | сборка ленты из EAS; его запускает `.github/workflows/launcher-apk-feed.yml` |
+| `launcher_app/selfupdate.py` | обновление checkout: git fast-forward или архив `main` |
+| `launcher_app/doctor.py` | диагностика и её отчёт |
 | `launcher_app/state.py` | сборка состояния и сверка |
 | `launcher_app/qt_app.py` | окно PySide6: только рисует состояние ядра |
 | `launcher_app/themes.py` | копия словаря тем и QSS «пастельный пластик» |

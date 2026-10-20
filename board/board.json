@@ -14,7 +14,7 @@
         "boards": 1,
         "columns": 8,
         "cards": 85,
-        "comments": 128,
+        "comments": 130,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T13:40:00Z",
+    "generatedAt": "2026-10-20T13:50:00Z",
     "selfHosted": true,
-    "boardRevision": 67,
-    "lastPatchId": "2026-10-20-launcher-l4-apk-feed",
+    "boardRevision": 68,
+    "lastPatchId": "2026-10-20-launcher-l5-get-update-doctor",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -902,11 +902,11 @@
       {
         "id": "01a15878-5ff4-795a-bd8c-288379f34ac3",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "Лаунчер L5: скачивание, самообновление, doctor",
         "description": "Зачем: новая машина получает лаунчер и выбранные направления одной командой, а сам лаунчер обновляется, как web.\n\nГотово, когда: полный клон или sparse по выбранным направлениям (без git — архив коммита); лаунчер обновляет свой checkout по коммитам в launcher/; doctor собирает предпосылки всех направлений.\n\nНачнётся после L2.",
         "priority": "low",
-        "position": 16384,
+        "position": 37888,
         "archivedAt": null
       },
       {
@@ -4028,6 +4028,18 @@
         "cardId": "01a15878-5ff4-7c61-aca1-5461df814646",
         "createdAt": "2026-10-20T13:40:00Z",
         "body": "patch 2026-10-20-launcher-l4-apk-feed: по уточнению John токен Expo живёт только в секретах репозитория. GitHub Action .github/workflows/launcher-apk-feed.yml (push в main по mobile/, раз в 20 минут, вручную) запускает launcher/feed/apk_feed.py и публикует apk.json (p2p-kanban-launcher-apk-feed/1) в ветку launcher-feed одним коммитом без истории; в main бот не пишет. Лаунчер 0.3.0 читает ленту без токена: «Скачать APK», копировать ссылку, страница сборки; вердикты свежий APK / ожидайте APK / собирается / ссылка истекла; без ленты — ссылка на страницу сборок. Запасной путь — EXPO_TOKEN на машине. Ждёт хоста: John кладёт секрет EXPO_TOKEN, запускает Action, лаунчер показывает свежую ссылку; после коммита в mobile/ без сборки — «ожидайте APK»."
+      },
+      {
+        "id": "01a159d1-281e-7b00-9d00-674b012a5b7a",
+        "cardId": "01a15878-5ff4-795a-bd8c-288379f34ac3",
+        "createdAt": "2026-10-20T13:50:00Z",
+        "body": "patch 2026-10-20-launcher-l5-get-update-doctor: launcher/get.py — новая машина одной командой (curl … | python3 - или py -c …): git clone --filter=blob:none, --only → sparse, без git или --archive — zip main с отметкой коммита; затем install-gui. launcher.py self-update: только чистый checkout на main и только fast-forward, иначе называет причину; архивный каталог — архив main поверх, состояние направлений не трогается. doctor: Python, окно, предпосылки всех направлений, их status, GitHub и лента APK, отчёт JSON в кеше. Лаунчер объявляет и себя в launcher/launcher.json, поэтому его «Обновить» видно, когда в main есть коммит launcher/. Лаунчер 0.4.0, 49 тестов."
+      },
+      {
+        "id": "01a159d1-281e-7383-8690-72be72aa3cc0",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "createdAt": "2026-10-20T13:50:00Z",
+        "body": "patch 2026-10-20-launcher-l5-get-update-doctor: пачкой 2026-10-20 L2–L5 написаны и ждут хоста — контракт launcher-entry/1, web и abl из окна, лента APK через GitHub Action (нужен секрет EXPO_TOKEN), get.py, self-update, doctor. Не сделано: второй тестовый web-узел (своя карточка web) и L6 (ждёт E-ADR-002)."
       }
     ],
     "boardAppearanceSettings": [],

@@ -9,6 +9,10 @@
     python launcher/launcher.py run web install --set port=8091 --dry-run
     python launcher/launcher.py settings web --set listen=lan
     python launcher/launcher.py apk             # ссылка на свежий APK и «ожидайте APK»
+    python launcher/launcher.py self-update     # обновить этот checkout из main (--dry-run — план)
+    python launcher/launcher.py doctor          # диагностика: окно, предпосылки, направления, сеть
+
+Новая машина — одной командой, см. launcher/get.py.
 
 Ядро — только стандартная библиотека Python 3.11+; окну нужен PySide6 из venv
 лаунчера (E-ADR-004 п.2). Лаунчер выполняет только команды, которые
@@ -33,7 +37,7 @@ for stream in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-from launcher_app import entry as entries, install, local, paths, runner, state  # noqa: E402
+from launcher_app import doctor, entry as entries, install, local, paths, runner, selfupdate, state  # noqa: E402
 
 REEXEC_MARK = "P2PKANBAN_LAUNCHER_REEXEC"
 
@@ -283,7 +287,33 @@ def main(argv: list[str] | None = None) -> int:
     apk_cmd.add_argument("--json", action="store_true")
     apk_cmd.add_argument("--offline", action="store_true")
 
+    update = commands.add_parser("self-update", help="обновить checkout лаунчера из main")
+    update.add_argument("--dry-run", action="store_true")
+    self_status = commands.add_parser("self-status", help="ответ status лаунчера о себе (launcher-entry/1)")
+    self_status.add_argument("--json", action="store_true")
+    check = commands.add_parser("doctor", help="диагностика: ничего не меняет, отчёт JSON в кеше")
+    check.add_argument("--json", action="store_true")
+    check.add_argument("--offline", action="store_true")
+
     args = parser.parse_args(argv)
+    if args.command == "self-update":
+        root = paths.ecosystem_root()
+        branch = state.load_ecosystem(root).get("branch", "main") if root else "main"
+        return selfupdate.update(root, branch, args.dry_run)
+    if args.command == "self-status":
+        payload = selfupdate.status_payload(paths.ecosystem_root(), state.launcher_version())
+        print(json.dumps(payload, ensure_ascii=False, indent=2) if args.json else
+              f"лаунчер {payload['version']}: {payload['detail']} {(payload['revision'] or '')[:12]}")
+        return 0
+    if args.command == "doctor":
+        report = doctor.collect(offline=args.offline)
+        path = doctor.save(report)
+        if args.json:
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+        else:
+            print("\n".join(doctor.summary(report)))
+            print(f"\nОтчёт: {path}")
+        return 0
     if args.command == "apk":
         value = state.build_state(offline=args.offline)
         rows = [row for row in value["components"] if row.get("apk")]

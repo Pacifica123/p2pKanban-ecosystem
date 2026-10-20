@@ -74,8 +74,6 @@ def shadow(widget: QWidget) -> None:
 def stage_note(row: dict) -> str:
     if row.get("distribution") == "apk":
         return (row.get("apk") or {}).get("detail") or "Лента APK недоступна."
-    if row["id"] == "launcher":
-        return "Самообновление — ступень L5."
     if row.get("entryError"):
         return row["entryError"]
     return "Направление ещё не объявило launcher.json: пока — по шагам ниже."
@@ -564,6 +562,9 @@ class Window(QMainWindow):
 
         dialog = qt_dialogs.RunDialog(self, root, entry, action_id, values, paths.registry_file(), title)
         dialog.ran.connect(lambda *_: self.load(False))
+        if row["id"] == "launcher" and action_id == "update":
+            dialog.ran.connect(lambda _aid, code: code == 0 and self.show_notice(
+                "Checkout обновлён. Перезапустите лаунчер, чтобы взять его новую версию."))
         dialog.setModal(False)
         dialog.show()
         self.dialogs.append(dialog)

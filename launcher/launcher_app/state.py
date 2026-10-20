@@ -7,7 +7,7 @@ from pathlib import Path
 from . import apk, entry as entries, local, paths, probes, remote, runner as runs
 
 STATE_SCHEMA = "p2p-kanban-launcher-state/1"
-STAGE = "L4"
+STAGE = "L5"
 
 VERDICTS = {
     "current": "актуально",
@@ -79,6 +79,8 @@ INSTALL_LABELS = {
 def installed_state(component: dict, registry: dict, entry_info: dict | None = None,
                     status_value: dict | None = None) -> dict:
     """Что установлено: ответ status направления, иначе реестр лаунчера, иначе неизвестно."""
+    if status_value is not None and component["id"] == "launcher" and status_value["state"] == "running":
+        return {"id": "self", "label": "это окно", "detail": status_value.get("detail") or ""}
     if status_value is not None:
         state_id = status_value["state"]
         detail = status_value.get("detail") or ""
@@ -97,6 +99,8 @@ def installed_state(component: dict, registry: dict, entry_info: dict | None = N
     if component.get("audience") == "developer":
         return {"id": "developer", "label": "для разработки",
                 "detail": f"ставится своей командой: {component.get('entry', '')}".strip()}
+    if entry_info and entry_info.get("available"):
+        return {"id": "unknown", "label": "неизвестно", "detail": "на этой платформе не спрашивали"}
     if entry_info and entry_info.get("error"):
         return {"id": "unknown", "label": "неизвестно", "detail": entry_info["error"]}
     return {"id": "unknown", "label": "неизвестно", "detail": "направление ещё не объявило launcher.json"}

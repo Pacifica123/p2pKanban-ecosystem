@@ -273,7 +273,7 @@ class BuildStateTest(unittest.TestCase):
         self.assertEqual(rows["web"]["status"]["state"], "stopped")
         self.assertEqual(rows["web"]["installed"]["label"], "остановлено")
         self.assertIsNone(rows["abl"]["status"])  # abl на Windows не спрашивают
-        self.assertEqual(rows["launcher"]["installed"]["id"], "self")
+        self.assertIsNotNone(rows["launcher"]["entry"])  # лаунчер объявляет и себя (L5)
         self.assertEqual(rows["mobile"]["apk"]["id"], "unknown")  # подменный GitHub отдал не ленту
         self.assertTrue(rows["mobile"]["apk"]["page"].startswith("https://expo.dev/accounts/"))
 
