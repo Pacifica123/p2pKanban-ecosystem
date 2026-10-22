@@ -20,6 +20,7 @@ const mockSecrets = {A: new Uint8Array(32).fill(2), P: new Uint8Array(32).fill(3
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('expo-crypto', () => ({randomUUID: () => require('crypto').randomUUID(), getRandomBytes: (n: number) => new Uint8Array(require('crypto').randomBytes(n))}));
 jest.mock('../../shared/storage/storage', () => ({sessionStorageKey: (key: string) => `${mockPeer}/${key}`}));
+jest.mock('../ring/writers', () => ({ringWriters: async () => new Set<string>()}));
 jest.mock('./storage', () => ({
   getOrCreateRoamingDeviceSecret: async () => mockSecrets[mockPeer as 'A'|'P'],
   loadRoamingCapability: async () => mockCap,

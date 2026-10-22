@@ -20,6 +20,9 @@ import { trace } from '../../shared/errorReport/journal';
 import { noteScreen } from '../../shared/lib/stallWatch';
 import { AcceptanceScreen } from '../../features/acceptance/AcceptanceScreen';
 import { ProjectBoardScreen } from '../../features/projectBoard/ProjectBoardScreen';
+import { RingMeetingScreen } from '../../features/ring/RingMeetingScreen';
+import { RingScanScreen } from '../../features/ring/RingScanScreen';
+import { RingScreen } from '../../features/ring/RingScreen';
 import { useAppearance } from '../../features/appearance/AppearanceProvider';
 import { WorkspacesScreen } from '../../features/workspaces/WorkspacesScreen';
 import { WorkspaceAccessScreen } from '../../features/workspaces/WorkspaceAccessScreen';
@@ -96,6 +99,9 @@ export function RootNavigator() {
             <Stack.Screen name="DebugJournal" component={DebugJournalScreen} />
             <Stack.Screen name="Acceptance" component={AcceptanceScreen} />
             <Stack.Screen name="ProjectBoard" component={ProjectBoardScreen} />
+            <Stack.Screen name="Ring" component={RingScreen} />
+            <Stack.Screen name="RingScan" component={RingScanScreen} />
+            <Stack.Screen name="RingMeeting" component={RingMeetingScreen} />
           </>
         )}
       </Stack.Navigator>

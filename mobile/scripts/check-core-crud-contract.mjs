@@ -31,7 +31,7 @@ if (
   || packageLock.version !== packageJson.version
   || packageLock.packages?.['']?.version !== packageJson.version
   || appJson.expo.version !== packageJson.version
-  || appJson.expo.android.versionCode !== 29
+  || appJson.expo.android.versionCode !== 30
 ) {
   throw new Error('Версии Android package, lock и Expo не согласованы.');
 }
@@ -204,7 +204,7 @@ requireText('src/features/sync/syncService.ts', [
 requireText('src/shared/debug/debugMode.ts', ['setJournalDebugMode', 'TAIL_LINES']);
 requireText('src/features/settings/SettingsScreen.tsx', ["navigation.navigate('DebugJournal')"]);
 requireText('android/app/build.gradle', [
-  'versionCode 29',
+  'versionCode 30',
   'versionName "2.1.0"',
 ]);
 

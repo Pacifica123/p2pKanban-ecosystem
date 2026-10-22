@@ -9,7 +9,7 @@
       "status": "specified",
       "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
       "requires": [],
-      "implementations": {"web": {"since": "2.1.0+2026-10-07-web-ring-r2", "stage": "R2", "hostAccepted": false}, "mobile": null, "abl": null}
+      "implementations": {"web": {"since": "2.1.0+2026-10-07-web-ring-r2", "stage": "R2", "hostAccepted": false}, "mobile": {"since": "2.1.0+2026-10-22-mobile-ring-r3-r4-qr", "stage": "R3: журнал, запечатанные копии и присутствие на телефоне", "hostAccepted": false}, "abl": null}
     },
     {
       "id": "p2p-kanban-keyring/1",
@@ -17,7 +17,7 @@
       "status": "specified",
       "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
       "requires": ["p2p-kanban-account-ring/1"],
-      "implementations": {"web": {"since": "2.1.0+2026-10-07-web-ring-r2", "stage": "R2", "hostAccepted": false}, "mobile": null, "abl": null}
+      "implementations": {"web": {"since": "2.1.0+2026-10-07-web-ring-r2", "stage": "R2", "hostAccepted": false}, "mobile": {"since": "2.1.0+2026-10-22-mobile-ring-r3-r4-qr", "stage": "R3: связка на телефоне, доски из неё ставятся сами", "hostAccepted": false}, "abl": null}
     },
     {
       "id": "p2p-kanban-rendezvous/1",
@@ -25,7 +25,7 @@
       "status": "specified",
       "specifiedBy": "2026-10-06-ecosystem-ring-contracts-r1",
       "requires": ["p2p-kanban-account-ring/1", "p2p-kanban-keyring/1"],
-      "implementations": {"web": {"since": "2.1.0+2026-10-22-web-ring-r4-rendezvous", "stage": "R4: узел показывает QR в обоих режимах", "hostAccepted": false}, "mobile": null, "abl": null}
+      "implementations": {"web": {"since": "2.1.0+2026-10-22-web-ring-r4-rendezvous", "stage": "R4: узел показывает QR в обоих режимах", "hostAccepted": false}, "mobile": {"since": "2.1.0+2026-10-22-mobile-ring-r3-r4-qr", "stage": "R4: телефон сканирует QR в обоих режимах", "hostAccepted": false}, "abl": null}
     },
     {
       "id": "p2p-kanban-error-report/1",

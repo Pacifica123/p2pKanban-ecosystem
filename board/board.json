@@ -14,8 +14,8 @@
         "boards": 1,
         "columns": 8,
         "cards": 87,
-        "comments": 135,
-        "checklists": 38,
+        "comments": 138,
+        "checklists": 39,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-22T11:00:00Z",
+    "generatedAt": "2026-10-22T11:30:00Z",
     "selfHosted": true,
-    "boardRevision": 71,
-    "lastPatchId": "2026-10-22-web-ring-r4-rendezvous",
+    "boardRevision": 72,
+    "lastPatchId": "2026-10-22-mobile-ring-r3-r4-qr",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -372,7 +372,7 @@
       {
         "id": "01a10f95-3899-7ea3-ac56-f67f0af90da8",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "R3: mobile: кольцо, связка ключей, отметки присутствия, экран «Кольцо устройств»",
         "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R2. Порядок обновления контрактов: web-узлы → mobile → abl.\n\nПроверка: тесты mobile читают векторы contracts/account-ring/1 и contracts/keyring/1 (в том числе presence.json: отставание версий на экране «Кольцо устройств»).",
         "priority": "medium",
@@ -382,7 +382,7 @@
       {
         "id": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
         "title": "R4: добавление устройства по QR в двух режимах через relay, затем короткий код",
         "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: телефон входит в кольцо, сканируя QR узла, и добавляет узел в своё кольцо, сканируя его QR; в обоих режимах новое устройство получает всё кольцо и все доски; этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.\n\nПроверка: тесты web и mobile читают векторы contracts/rendezvous/1 (invite-mode, join-mode, refuse-ring-merge).",
         "priority": "medium",
@@ -1981,6 +1981,12 @@
         "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
         "title": "Приёмка",
         "position": 1024
+      },
+      {
+        "id": "01a1660d-0001-7667-a7c7-ddf9ccba25b6",
+        "cardId": "01a10f95-3899-7ea3-ac56-f67f0af90da8",
+        "title": "Приёмка",
+        "position": 1024
       }
     ],
     "checklistItems": [
@@ -3304,7 +3310,7 @@
         "id": "01a1660c-0003-7380-ac3b-11cf1666dd40",
         "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
         "title": "Тесты mobile читают contracts/rendezvous/1",
-        "isDone": false,
+        "isDone": true,
         "position": 2048
       },
       {
@@ -3325,6 +3331,41 @@
         "id": "01a1660c-0006-7622-a27a-fa56497c9d46",
         "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
         "title": "Новое устройство получает всё кольцо и все доски (в обоих режимах)",
+        "isDone": false,
+        "position": 5120
+      },
+      {
+        "id": "01a1660d-0002-775c-af18-5557ebce2537",
+        "checklistId": "01a1660d-0001-7667-a7c7-ddf9ccba25b6",
+        "title": "Тесты mobile читают contracts/account-ring/1 и keyring/1, включая presence.json",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a1660d-0003-7784-a341-bf32310a7d9e",
+        "checklistId": "01a1660d-0001-7667-a7c7-ddf9ccba25b6",
+        "title": "implementations.mobile заполнено в contracts/compatibility.json",
+        "isDone": true,
+        "position": 2048
+      },
+      {
+        "id": "01a1660d-0004-7729-a873-41063822a355",
+        "checklistId": "01a1660d-0001-7667-a7c7-ddf9ccba25b6",
+        "title": "Телефон (APK 30): «Настройки → Кольцо устройств» показывает устройства и отставание",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a1660d-0005-7ce0-ad94-0399c9ecde51",
+        "checklistId": "01a1660d-0001-7667-a7c7-ddf9ccba25b6",
+        "title": "Телефон: «Обменяться сейчас» собирает кворум, доски узла ставятся сами и идут через relay без узла",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a1660d-0006-7636-a6c6-97943f7c6d93",
+        "checklistId": "01a1660d-0001-7667-a7c7-ddf9ccba25b6",
+        "title": "Правки с телефона на досках кольца видны на узле и наоборот",
         "isDone": false,
         "position": 5120
       }
@@ -4139,6 +4180,24 @@
         "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
         "createdAt": "2026-10-22T11:00:00Z",
         "body": "patch 2026-10-22-web-ring-r4-rendezvous: R4 на web готов в исходниках — узел показывает QR и сам ведёт встречу. Телефонная сторона R3+R4 — следующий патч пачки."
+      },
+      {
+        "id": "01a1660d-0007-7202-a8f9-38cfc56660a4",
+        "cardId": "01a10f95-3899-7ea3-ac56-f67f0af90da8",
+        "createdAt": "2026-10-22T11:30:00Z",
+        "body": "patch 2026-10-22-mobile-ring-r3-r4-qr: телефон держит свою копию журнала кольца и связки ключей (AsyncStorage сеанса), публикует запечатанные копии и присутствие на relay кольца и забирает чужие; записи журнала берутся из любой копии, связки и присутствия — только от участников. Доски из связки ставятся сами как roaming-доски (relay — кольца и известные, писатели — участники), пространства приходят даже пустые. Связка телефона ничего не удаляет сама: потеря кеша не должна удалять доску во всём кольце (удаление с ротацией — R5). Участники кольца — писатели всех досок аккаунта. Экран «Настройки → Кольцо устройств»: устройства, роль, присутствие, отставание журнала и протоколов, relay, отчёт последнего обмена; кольцо можно начать на самом телефоне. Проверено: векторы account-ring/1, keyring/1, правила state.ts; полный Jest 220/220, tsc, check-core-crud-contract, сборка JS-бандла. На телефоне не запускалось; versionCode 29 → 30."
+      },
+      {
+        "id": "01a1660d-0008-72d0-a66d-5a5957d2f01a",
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "createdAt": "2026-10-22T11:30:00Z",
+        "body": "patch 2026-10-22-mobile-ring-r3-r4-qr: телефон сканирует QR узла камерой (expo-camera, ML Kit, разрешение CAMERA, без звука) или вставкой текста: на invite — входит в кольцо (hello, код, проверка welcome, ack, сразу обмен и установка досок), на join — добавляет узел (код, «Код совпадает — принять» или «Только участник», запись add, welcome, ждёт ack). В режиме join входящим может быть только показавшее QR устройство. Проверено: векторы rendezvous/1 и сквозная встреча в обоих режимах через relay в памяти (вторая сторона — те же функции rendezvous/1). Ждёт хоста: Docker-узел с патчем web этой пачки и телефон с APK 30, сценарий — mobile/docs/architecture/device-ring-r3-r4-20261022.md."
+      },
+      {
+        "id": "01a1660d-0009-76fe-a62c-237de57b9d0b",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "createdAt": "2026-10-22T11:30:00Z",
+        "body": "patch 2026-10-22-mobile-ring-r3-r4-qr: R3 и R4 на телефоне готовы в исходниках, вместе с web R4 — QR-подключение в обоих режимах. Ждёт приёмки: Docker + телефон. Дальше по плану R5 (удаление устройства и ротация ключей), затем R6 (abl)."
       }
     ],
     "boardAppearanceSettings": [],

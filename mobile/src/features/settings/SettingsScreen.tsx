@@ -248,6 +248,15 @@ export function SettingsScreen({ navigation }: Props) {
       </Panel>
 
       <Panel style={styles.panel}>
+        <SectionTitle title="Кольцо устройств" />
+        <Text style={[styles.caption, { color: colors.muted }]}>
+          Ваши устройства одного аккаунта: доски и ключи переходят между ними через relay. Новое устройство добавляется
+          по QR с экрана узла.
+        </Text>
+        <Button label="Открыть кольцо" onPress={() => navigation.navigate('Ring')} />
+      </Panel>
+
+      <Panel style={styles.panel}>
         <SectionTitle title="Сеансы" />
         <Button
           label="Выйти на этом устройстве"

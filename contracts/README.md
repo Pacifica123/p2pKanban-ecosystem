@@ -16,9 +16,9 @@ contracts/
 
 | Контракт | Каталог | Что описывает | Статус (точно — в [compatibility.json](compatibility.json)) |
 |---|---|---|---|
-| `p2p-kanban-account-ring/1` | [account-ring/1](account-ring/1/SPEC.md) | журнал кольца устройств аккаунта, запечатанные записи на relay, отметки присутствия | описан (R1); web — R2, не принят на хосте |
-| `p2p-kanban-keyring/1` | [keyring/1](keyring/1/SPEC.md) | связка ключей аккаунта: пространства и доски с ключами | описан (R1); web — R2, не принят на хосте |
-| `p2p-kanban-rendezvous/1` | [rendezvous/1](rendezvous/1/SPEC.md) | добавление устройства по QR в двух режимах через почтовый ящик на relay | описан (R1); web — R4, не принят на хосте |
+| `p2p-kanban-account-ring/1` | [account-ring/1](account-ring/1/SPEC.md) | журнал кольца устройств аккаунта, запечатанные записи на relay, отметки присутствия | описан (R1); web — R2, mobile — R3, не приняты на хосте |
+| `p2p-kanban-keyring/1` | [keyring/1](keyring/1/SPEC.md) | связка ключей аккаунта: пространства и доски с ключами | описан (R1); web — R2, mobile — R3, не приняты на хосте |
+| `p2p-kanban-rendezvous/1` | [rendezvous/1](rendezvous/1/SPEC.md) | добавление устройства по QR в двух режимах через почтовый ящик на relay | описан (R1); web и mobile — R4, не приняты на хосте |
 | `p2p-kanban-error-report/1` | [error-report/1](error-report/1/SPEC.md) | «Скопировать подробности» у любой ошибки в web, mobile и abl: форма отчёта, вырезание секретов, id ошибки и версия в ответах web-узла | описан; web, mobile, abl реализовали, на хосте не принят |
 | `p2p-kanban-project-board/1` | [project-board/1](project-board/1/SPEC.md) | доска проекта, встроенная в каждый клиент только для чтения: как её узнать, откуда брать, какую показать; маршруты web-узла | описан; web, mobile и abl реализовали, на хосте не принят |
 | `p2p-kanban-launcher-entry/1` | [launcher-entry/1](launcher-entry/1/SPEC.md) | `<направление>/launcher.json`: какие свои Python-команды направление даёт лаунчеру, какие настройки показать, ответ `status` | описан; web и abl реализовали, на хосте не принят |

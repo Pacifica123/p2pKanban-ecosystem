@@ -28,4 +28,7 @@ export type RootStackParamList = {
   DebugJournal: undefined;
   Acceptance: undefined;
   ProjectBoard: undefined;
+  Ring: undefined;
+  RingScan: undefined;
+  RingMeeting: { qrText: string };
 };

@@ -66,7 +66,8 @@ function matchesFilter(event: NostrEvent, filter: Filter) {
     && Array.isArray(event.tags)
     && (!filter.kinds || filter.kinds.includes(event.kind))
     && (!filter['#d'] || event.tags.some(tag => tag[0] === 'd' && tag[1] !== undefined && filter['#d']!.includes(tag[1])))
-    && (!filter['#p'] || event.tags.some(tag => tag[0] === 'p' && tag[1] !== undefined && filter['#p']!.includes(tag[1]))));
+    && (!filter['#p'] || event.tags.some(tag => tag[0] === 'p' && tag[1] !== undefined && filter['#p']!.includes(tag[1])))
+    && (!filter['#s'] || event.tags.some(tag => tag[0] === 's' && tag[1] !== undefined && filter['#s']!.includes(tag[1]))));
 }
 
 /**
@@ -207,4 +208,25 @@ export async function fetchDeviceCatalogEvents(input: {
   }
   const { events } = await verifyCollected(settled, input);
   return {events, relayCount};
+}
+
+/** Ring records (account-ring/1) and meeting mail (rendezvous/1): any filter, deduplicated and verified. */
+export async function fetchTagged(relays: string[], filter: Filter, options: RelayFetchOptions = {}) {
+  const settled = await Promise.allSettled(relays.map(relay => fetchOne(relay, filter)));
+  const relayCount = settled.filter(result => result.status === 'fulfilled').length;
+  const errors = settled.flatMap((r, i) => r.status === 'rejected' ? [`${relays[i]}: ${r.reason instanceof Error ? r.reason.message : 'ошибка WebSocket'}`] : []);
+  trace('relay', () => `кольцо: kind ${(filter.kinds || []).join(',')}: ответили ${relayCount} из ${relays.length}${errors.length ? `; ${errors.join('; ')}` : ''}`);
+  if (!relayCount) throw new Error(`Ни один relay не ответил. ${errors.join('; ')}`);
+  const { events } = await verifyCollected(settled, options);
+  return { events, relayCount, errors };
+}
+
+/** Publish to every relay; the caller decides what quorum means. */
+export async function publishEach(relays: string[], event: NostrEvent) {
+  relays = [...new Set(relays)];
+  const settled = await Promise.allSettled(relays.map(relay => publishOne(relay, event)));
+  const accepted = settled.flatMap(result => result.status === 'fulfilled' ? [result.value] : []);
+  const errors = settled.flatMap((r, i) => r.status === 'rejected' ? [`${relays[i]}: ${r.reason instanceof Error ? r.reason.message : 'ошибка WebSocket'}`] : []);
+  trace('relay', () => `кольцо: отправка kind ${event.kind} ${event.id.slice(0, 12)}: приняли ${accepted.length} из ${relays.length}`);
+  return { accepted, failed: relays.filter(relay => !accepted.includes(relay)), errors };
 }

@@ -2,6 +2,7 @@ import {operationActivity} from './activity';
 import {verifyReplicationChain} from '../deviceLink/protocol';
 import * as Crypto from 'expo-crypto';
 import { getPublicKey, generateSecretKey } from 'nostr-tools/pure';
+import { ringWriters } from '../ring/writers';
 
 import type { Card } from '../../shared/types/api';
 import {
@@ -420,6 +421,7 @@ export async function pullRoamingBoard(
     signal,
   });
   const rejectedIds: string[] = [];
+  const ringMembers = await ringWriters();
   const decoded = await mapInSlices(response.events, (nostr) => {
     let event: RoamingBoardEvent;
     try {
@@ -433,7 +435,8 @@ export async function pullRoamingBoard(
     }
     // Authority is not cached as rejected: the trusted writer set may grow.
     try {
-      const knownWriter = capability.writerPublicKeys.includes(nostr.pubkey.toLowerCase());
+      const knownWriter = capability.writerPublicKeys.includes(nostr.pubkey.toLowerCase())
+        || ringMembers.has(nostr.pubkey.toLowerCase());
       const proof = event.payload._deviceDelegation;
       if (!knownWriter && proof) {
         // Validate authority at signing time: a peer may receive stored work later.
