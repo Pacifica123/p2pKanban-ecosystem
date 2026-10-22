@@ -1,4 +1,5 @@
 pub mod device_link;
+pub mod rendezvous;
 pub mod ring;
 use std::time::Duration;
 

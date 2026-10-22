@@ -4,7 +4,10 @@
 //! devices it already trusts (`device-link/2`, `web-node-link/1` peers in
 //! `trusted_device_peers`) into the ring with `add via: migration`, keeps its
 //! own keyring copy, and exchanges sealed copies and presences with the ring's
-//! relays. Adding a new device by QR is R4; removal and key rotation are R5.
+//! relays. Adding a device by QR (R4) lives in `ring_rendezvous`: every ring
+//! member is a writer of the user's boards here, and spaces and boards other
+//! members published are created on this node with their keys, so roaming
+//! brings their content. Removal and key rotation are R5.
 
 use std::{
     collections::{BTreeMap, BTreeSet, HashSet},
@@ -34,7 +37,7 @@ use crate::{
 };
 
 /// Protocols this node speaks; mobile and abl see the rest as missing.
-pub const PROTOCOLS: [&str; 3] = [ring::RING, ring::KEYRING, ring::ROAMING];
+pub const PROTOCOLS: [&str; 4] = [ring::RING, ring::KEYRING, ring::RENDEZVOUS, ring::ROAMING];
 /// How often the background worker re-publishes copies and presence.
 pub const SYNC_INTERVAL: Duration = Duration::from_secs(600);
 const NAME_LIMIT: usize = 200;
@@ -48,11 +51,11 @@ pub fn router() -> Router<AppState> {
         .route("/ring/sync", post(sync))
 }
 
-fn invalid(e: impl std::fmt::Display) -> AppError {
+pub(crate) fn invalid(e: impl std::fmt::Display) -> AppError {
     AppError::bad_request(format!("Кольцо устройств: {e}"))
 }
 
-fn node_keys(settings: &Settings) -> AppResult<(String, ring::DeviceKeys)> {
+pub(crate) fn node_keys(settings: &Settings) -> AppResult<(String, ring::DeviceKeys)> {
     let nostr = &settings.transports.nostr;
     if !nostr.enabled {
         return Err(AppError::conflict("Кольцу устройств нужен включённый Nostr-роуминг узла"));
@@ -62,7 +65,7 @@ fn node_keys(settings: &Settings) -> AppResult<(String, ring::DeviceKeys)> {
     Ok((secret, keys))
 }
 
-fn now() -> u64 {
+pub(crate) fn now() -> u64 {
     std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0)
 }
 
@@ -70,7 +73,7 @@ fn clip(text: &str) -> String {
     text.chars().take(NAME_LIMIT).collect()
 }
 
-fn device_name(name: &str) -> AppResult<String> {
+pub(crate) fn device_name(name: &str) -> AppResult<String> {
     let name = name.trim();
     let length = name.chars().count();
     if !(1..=64).contains(&length) {
@@ -89,7 +92,7 @@ fn hex64(value: &str) -> AppResult<String> {
 
 /// Relays a new ring starts with: the node's own `wss://` relays (the contract
 /// forbids plain `ws://`), at most 16, with the node's acknowledgement quorum.
-pub fn genesis_relays(settings: &Settings) -> AppResult<Value> {
+pub(crate) fn genesis_relays(settings: &Settings) -> AppResult<Value> {
     let nostr = &settings.transports.nostr;
     let urls: Vec<String> = nostr.relays.iter().map(|r| r.trim().to_string())
         .filter(|r| r.starts_with("wss://")).take(16).collect();
@@ -102,7 +105,7 @@ pub fn genesis_relays(settings: &Settings) -> AppResult<Value> {
 
 // ---------------------------------------------------------------- storage
 
-async fn account_of(db: &PgPool, user: Uuid) -> AppResult<Option<String>> {
+pub(crate) async fn account_of(db: &PgPool, user: Uuid) -> AppResult<Option<String>> {
     Ok(sqlx::query_scalar("select account_id from account_rings where user_id=$1").bind(user).fetch_optional(db).await?)
 }
 
@@ -111,23 +114,23 @@ async fn entries_of(db: &PgPool, account: &str) -> AppResult<Vec<Value>> {
         .bind(account).fetch_all(db).await?)
 }
 
-async fn folded(db: &PgPool, account: &str) -> AppResult<(Vec<Value>, Value)> {
+pub(crate) async fn folded(db: &PgPool, account: &str) -> AppResult<(Vec<Value>, Value)> {
     let entries = entries_of(db, account).await?;
     let state = ring::fold_ring(&entries, Some(account)).map_err(invalid)?;
     Ok((entries, state))
 }
 
-fn member_keys(state: &Value) -> Vec<String> {
+pub(crate) fn member_keys(state: &Value) -> Vec<String> {
     state["members"].as_array().into_iter().flatten()
         .filter_map(|m| m["publicKey"].as_str().map(str::to_string)).collect()
 }
 
-fn heads(state: &Value) -> Vec<String> {
+pub(crate) fn heads(state: &Value) -> Vec<String> {
     state["heads"].as_array().into_iter().flatten().filter_map(Value::as_str).map(str::to_string).collect()
 }
 
 /// Sign `body` with the node key and keep it only when the fold accepts it.
-async fn append(db: &PgPool, keys: &ring::DeviceKeys, account: &str, mut body: Map<String, Value>) -> AppResult<Value> {
+pub(crate) async fn append(db: &PgPool, keys: &ring::DeviceKeys, account: &str, mut body: Map<String, Value>) -> AppResult<Value> {
     let (entries, state) = folded(db, account).await?;
     let parents: Vec<String> = heads(&state).into_iter().take(ring::MAX_PARENTS).collect();
     body.insert("accountId".into(), json!(account));
@@ -239,18 +242,18 @@ pub fn next_own_items(stored: &BTreeMap<(String, String), Value>, current: &BTre
     out
 }
 
-async fn copies_of(db: &PgPool, account: &str) -> AppResult<Vec<Value>> {
+pub(crate) async fn copies_of(db: &PgPool, account: &str) -> AppResult<Vec<Value>> {
     Ok(sqlx::query_scalar("select keyring_json from account_keyring_copies where account_id=$1 order by author_public_key")
         .bind(account).fetch_all(db).await?)
 }
 
-async fn stored_own(db: &PgPool, account: &str) -> AppResult<BTreeMap<(String, String), Value>> {
+pub(crate) async fn stored_own(db: &PgPool, account: &str) -> AppResult<BTreeMap<(String, String), Value>> {
     let rows = sqlx::query("select kind, id, item_json from account_keyring_items where account_id=$1")
         .bind(account).fetch_all(db).await?;
     rows.into_iter().map(|r| Ok(((r.try_get("kind")?, r.try_get("id")?), r.try_get("item_json")?))).collect()
 }
 
-async fn refresh_own_keyring(settings: &Settings, db: &PgPool, user: Uuid, account: &str, node: &str) -> AppResult<Vec<Value>> {
+pub(crate) async fn refresh_own_keyring(settings: &Settings, db: &PgPool, user: Uuid, account: &str, node: &str) -> AppResult<Vec<Value>> {
     let stored = stored_own(db, account).await?;
     let current = local_items(settings, db, user).await?;
     let mut seen = BTreeMap::new();
@@ -273,9 +276,79 @@ async fn refresh_own_keyring(settings: &Settings, db: &PgPool, user: Uuid, accou
     Ok(next.into_values().collect())
 }
 
-fn keyring_summary(items: &[Value]) -> Value {
+pub(crate) fn keyring_summary(items: &[Value]) -> Value {
     let live = |kind: &str| items.iter().filter(|i| i["kind"] == kind && i["deleted"] != true).count();
     json!({"digest": ring::keyring_digest(items), "items": items.len(), "boards": live("board")})
+}
+
+/// In the ring, writers of the user's boards are the ring members
+/// (contracts/keyring/1): the roaming worker authorizes `trusted_device_peers`
+/// on every board the user owns, so members land there.
+pub(crate) async fn trust_members(db: &PgPool, user: Uuid, state: &Value, node: &str) -> AppResult<usize> {
+    let mut added = 0;
+    for key in member_keys(state).into_iter().filter(|k| k != node) {
+        added += sqlx::query("insert into trusted_device_peers(user_id,public_key) values($1,$2) on conflict do nothing")
+            .bind(user).bind(&key).execute(db).await?.rows_affected() as usize;
+    }
+    Ok(added)
+}
+
+/// Spaces and boards other members published that this node does not hold:
+/// created empty with the board key of the keyring; roaming then brings the
+/// board snapshot (columns included) and its events. Deleted items and items
+/// that exist here under another owner are left alone.
+pub(crate) async fn adopt_items(db: &PgPool, user: Uuid, account: &str) -> AppResult<usize> {
+    let merged = ring::merge_keyrings(&copies_of(db, account).await?);
+    fn live<'a>(merged: &'a [Value], kind: &'static str) -> impl Iterator<Item = &'a Value> {
+        merged.iter().filter(move |i| i["kind"] == kind && i["deleted"] != true)
+    }
+    let mut adopted = 0;
+    for space in live(&merged, "space") {
+        let Some(id) = space["id"].as_str().and_then(|v| Uuid::parse_str(v).ok()) else { continue };
+        let name = space["name"].as_str().map(str::trim).filter(|n| !n.is_empty()).unwrap_or("Пространство");
+        let epoch = live(&merged, "board").filter(|b| b["spaceId"] == space["id"])
+            .filter_map(|b| b["roaming"]["epoch"].as_i64()).max().unwrap_or(1);
+        adopted += adopt_space(db, user, id, name, epoch).await?;
+    }
+    for board in live(&merged, "board") {
+        let (Some(id), Some(space)) = (board["id"].as_str().and_then(|v| Uuid::parse_str(v).ok()),
+            board["spaceId"].as_str().and_then(|v| Uuid::parse_str(v).ok())) else { continue };
+        let (Some(key), Some(epoch)) = (board["roaming"]["boardKey"].as_str(), board["roaming"]["epoch"].as_i64()) else { continue };
+        let owned: bool = sqlx::query_scalar("select exists(select 1 from workspaces where id=$1 and owner_user_id=$2 and deleted_at is null)")
+            .bind(space).bind(user).fetch_one(db).await?;
+        let present: bool = sqlx::query_scalar("select exists(select 1 from boards where id=$1)
+             or exists(select 1 from tombstones where entity_type='board' and entity_id=$1)")
+            .bind(id).fetch_one(db).await?;
+        if !owned || present {
+            continue;
+        }
+        let Ok(material) = NostrCodec::roaming_capability_from_board_key(&id.to_string(), key) else { continue };
+        let name = board["name"].as_str().map(str::trim).filter(|n| !n.is_empty()).unwrap_or("Доска");
+        let mut tx = db.begin().await?;
+        sqlx::query("insert into boards(id,workspace_id,name,board_type,created_by_user_id) values($1,$2,$3,'kanban',$4) on conflict(id) do nothing")
+            .bind(id).bind(space).bind(clip(name)).bind(user).execute(&mut *tx).await?;
+        sqlx::query("insert into roaming_board_capabilities(board_id,board_tag,board_key_base64,source_kind,capability_epoch) values($1,$2,$3,'imported_capability',$4) on conflict(board_id) do nothing")
+            .bind(id).bind(&material.board_tag).bind(&material.board_key).bind(epoch).execute(&mut *tx).await?;
+        tx.commit().await?;
+        adopted += 1;
+    }
+    Ok(adopted)
+}
+
+async fn adopt_space(db: &PgPool, user: Uuid, id: Uuid, name: &str, epoch: i64) -> AppResult<usize> {
+    let exists: bool = sqlx::query_scalar("select exists(select 1 from workspaces where id=$1)
+         or exists(select 1 from tombstones where entity_type='workspace' and entity_id=$1)")
+        .bind(id).fetch_one(db).await?;
+    if exists {
+        return Ok(0);
+    }
+    let mut tx = db.begin().await?;
+    sqlx::query("insert into workspaces(id,name,owner_user_id,visibility,access_epoch) values($1,$2,$3,'private',$4) on conflict(id) do nothing")
+        .bind(id).bind(clip(name)).bind(user).bind(epoch.max(1)).execute(&mut *tx).await?;
+    sqlx::query("insert into workspace_members(id,workspace_id,user_id,role) values(gen_random_uuid(),$1,$2,'owner') on conflict do nothing")
+        .bind(id).bind(user).execute(&mut *tx).await?;
+    tx.commit().await?;
+    Ok(1)
 }
 
 // ---------------------------------------------------------------- relay exchange
@@ -387,6 +460,8 @@ pub async fn sync_account(settings: &Settings, db: &PgPool, user: Uuid, account:
 
     let (absorbed, final_state) = absorb(db, &keys, account, &exchange.fetched).await?;
     let final_members = member_keys(&final_state);
+    trust_members(db, user, &final_state, &node).await?;
+    let adopted = adopt_items(db, user, account).await?;
 
     // Presence last, so it reports the heads and keyring after this exchange.
     let reachable: HashSet<String> = exchange.published.iter().flat_map(|p| p.accepted.iter().map(|u| u.trim_end_matches('/').to_string())).collect();
@@ -425,6 +500,7 @@ pub async fn sync_account(settings: &Settings, db: &PgPool, user: Uuid, account:
         "newEntries": absorbed.new_entries,
         "keyringCopies": absorbed.keyring_copies,
         "presences": absorbed.presences,
+        "adopted": adopted,
         "errors": errors,
     });
     sqlx::query("update account_rings set last_sync_at=now(), last_sync_json=$2 where account_id=$1")
@@ -448,7 +524,7 @@ pub async fn sync_all(settings: Arc<Settings>, db: PgPool) {
     }
 }
 
-fn sync_later(state: &AppState, user: Uuid, account: String) {
+pub(crate) fn sync_later(state: &AppState, user: Uuid, account: String) {
     let settings = state.settings.clone();
     let db = state.db.clone();
     tokio::spawn(async move {
@@ -460,7 +536,7 @@ fn sync_later(state: &AppState, user: Uuid, account: String) {
 
 // ---------------------------------------------------------------- handlers
 
-async fn view(state: &AppState, user: Uuid) -> AppResult<Value> {
+pub(crate) async fn view(state: &AppState, user: Uuid) -> AppResult<Value> {
     let nostr_enabled = state.settings.transports.nostr.enabled;
     if !nostr_enabled {
         return Ok(json!({"enabled": false, "ring": null, "legacy": [], "keyring": null, "presences": [], "skew": [], "lastSync": null}));

@@ -14,8 +14,8 @@
         "boards": 1,
         "columns": 8,
         "cards": 87,
-        "comments": 133,
-        "checklists": 37,
+        "comments": 135,
+        "checklists": 38,
         "attachments": 0
       },
       "includesActivityHistory": false,
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-22T09:30:00Z",
+    "generatedAt": "2026-10-22T11:00:00Z",
     "selfHosted": true,
-    "boardRevision": 70,
-    "lastPatchId": "2026-10-22-web-card-form-keeps-edits",
+    "boardRevision": 71,
+    "lastPatchId": "2026-10-22-web-ring-r4-rendezvous",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -382,7 +382,7 @@
       {
         "id": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
         "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
-        "columnId": "01a10f95-3881-7180-a590-42ae48360f07",
+        "columnId": "01a10d38-f906-7bcb-9c4b-d200e2342e39",
         "title": "R4: добавление устройства по QR в двух режимах через relay, затем короткий код",
         "description": "Зачем: этап решения «кольцо устройств» (docs/ecosystem/trusted-devices.md).\n\nГотово, когда: телефон входит в кольцо, сканируя QR узла, и добавляет узел в своё кольцо, сканируя его QR; в обоих режимах новое устройство получает всё кольцо и все доски; этап реализован, проверен детерминированно и принят на хосте.\n\nНачинается после R3. Порядок обновления контрактов: web-узлы → mobile → abl.\n\nПроверка: тесты web и mobile читают векторы contracts/rendezvous/1 (invite-mode, join-mode, refuse-ring-merge).",
         "priority": "medium",
@@ -1975,6 +1975,12 @@
         "cardId": "01a15950-6e8b-7c36-89bc-0ef045a48274",
         "title": "Приёмка на Arch",
         "position": 1024
+      },
+      {
+        "id": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "title": "Приёмка",
+        "position": 1024
       }
     ],
     "checklistItems": [
@@ -3286,6 +3292,41 @@
         "title": "Сеанс с GNOME Keyring/KWallet: панели нет, vault: secret-service как раньше",
         "isDone": false,
         "position": 7168
+      },
+      {
+        "id": "01a1660c-0002-7381-ac3f-d7ad756453a7",
+        "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
+        "title": "Тесты web читают contracts/rendezvous/1 (invite-mode, join-mode, refuse-ring-merge)",
+        "isDone": true,
+        "position": 1024
+      },
+      {
+        "id": "01a1660c-0003-7380-ac3b-11cf1666dd40",
+        "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
+        "title": "Тесты mobile читают contracts/rendezvous/1",
+        "isDone": false,
+        "position": 2048
+      },
+      {
+        "id": "01a1660c-0004-7fc0-a6e2-01e87be9c38b",
+        "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
+        "title": "Docker: телефон входит в кольцо узла по QR «телефон входит», коды совпадают",
+        "isDone": false,
+        "position": 3072
+      },
+      {
+        "id": "01a1660c-0005-7d51-ab00-50f23683608e",
+        "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
+        "title": "Docker: телефон добавляет узел по QR «добавить узел»",
+        "isDone": false,
+        "position": 4096
+      },
+      {
+        "id": "01a1660c-0006-7622-a27a-fa56497c9d46",
+        "checklistId": "01a1660c-0001-7ca0-a5b3-e3c666b60ff3",
+        "title": "Новое устройство получает всё кольцо и все доски (в обоих режимах)",
+        "isDone": false,
+        "position": 5120
       }
     ],
     "comments": [
@@ -4086,6 +4127,18 @@
         "cardId": "01a1650a-7e1a-7c3b-9f4e-5c2a1b0d7e01",
         "createdAt": "2026-10-22T09:00:00Z",
         "body": "patch 2026-10-22-web-card-form-keeps-edits: форма карточки принимает значение с узла только для полей, которые пользователь не правил; новая смена карточки или пользователя по-прежнему сбрасывает всё. Юнит-тест cardForm.test.ts, tsc и vitest зелёные. Ждёт приёмки в браузере на узле."
+      },
+      {
+        "id": "01a1660c-0007-7558-ac63-38bb6ee00b61",
+        "cardId": "01a10f95-389a-7a0f-9f73-fc5fed34b5ca",
+        "createdAt": "2026-10-22T11:00:00Z",
+        "body": "patch 2026-10-22-web-ring-r4-rendezvous: web-узел показывает QR в обоих режимах («телефон входит в кольцо узла» — invite, «добавить узел в кольцо телефона» — join) и ведёт встречу через почтовый ящик kind 1991 на relay: hello → код из шести цифр → подтверждение на поручителе → welcome с журналом и связкой → ack. Проверки поручителя и входящего — по контракту (expired, contested, sponsor-not-admin, sponsor-stale, key-removed, ring-merge-unsupported, joiner-outdated, declined, welcome-invalid). Узел теперь импортирует доски и пространства из связок других участников (ключ, затем колонки из первого снимка), а участники кольца становятся доверенными устройствами — их правки на досках принимаются. Миграция 0025 (ring_rendezvous_sessions). Проверено: векторы rendezvous/1 в крейте nostr-transport (11 тестов), сквозной тест на Postgres с relay в памяти (оба режима, contested, ring-merge, переподключение, замена кольца из одного узла, отмена; 6 прогонов подряд), vitest 97/97, tsc, OpenAPI parity, check_contracts. На Docker не запускалось; телефонная сторона — следующий патч пачки."
+      },
+      {
+        "id": "01a1660c-0008-719c-aa1e-f0098c0338b6",
+        "cardId": "01a10f95-388b-772c-a194-c6e391bef505",
+        "createdAt": "2026-10-22T11:00:00Z",
+        "body": "patch 2026-10-22-web-ring-r4-rendezvous: R4 на web готов в исходниках — узел показывает QR и сам ведёт встречу. Телефонная сторона R3+R4 — следующий патч пачки."
       }
     ],
     "boardAppearanceSettings": [],

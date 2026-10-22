@@ -1966,6 +1966,21 @@ async fn apply_remote_board_snapshot(
       values($1,$2,$3,$4,$5,$6,$7,$8,$5,'board.snapshot','applied',$9,$10,now()) on conflict(event_id) do nothing"#)
       .bind(event_id).bind(&recovered.nostr_event_id).bind(&recovered.author_public_key).bind(workspace_id).bind(board_id)
       .bind(replica_id).bind(event.replica_seq).bind(event.logical_clock).bind(event.capability_epoch).bind(actor_user_id).execute(&mut *tx).await?;
+    // A board adopted from the ring keyring arrives without structure: its first
+    // snapshot brings the columns. A board that has any column row is left as is.
+    let has_columns=sqlx::query_scalar::<_,bool>("select exists(select 1 from board_columns where board_id=$1)")
+      .bind(board_id).fetch_one(&mut *tx).await?;
+    if !has_columns {
+      for column in snapshot.get("columns").and_then(Value::as_array).into_iter().flatten() {
+        if string_field(column,"boardId")!=Some(event.board_id.as_str()) {continue;}
+        let (Some(id),Some(name))=(string_field(column,"id").and_then(|v|Uuid::parse_str(v).ok()),
+          string_field(column,"name").map(str::trim).filter(|v|!v.is_empty())) else {continue};
+        sqlx::query("insert into board_columns(id,board_id,name,description,position,color_token,wip_limit) values($1,$2,$3,$4,$5,$6,$7) on conflict(id) do nothing")
+          .bind(id).bind(board_id).bind(name).bind(column.get("description").and_then(Value::as_str))
+          .bind(finite_number(column,"position",1000.0)?).bind(column.get("colorToken").and_then(Value::as_str))
+          .bind(column.get("wipLimit").and_then(Value::as_i64).map(|v|v as i32)).execute(&mut *tx).await?;
+      }
+    }
     let mut parents=Vec::new();
     for card in cards {
       anyhow::ensure!(string_field(card,"boardId")==Some(event.board_id.as_str()),"snapshot card scope mismatch");

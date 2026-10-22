@@ -17,6 +17,8 @@ resolver = "2"
 default = ["nostr-shadow"]
 nostr-shadow = ["dep:p2p-kanban-nostr-transport"]
 iroh-transport = ["dep:p2p-kanban-iroh-transport"]
+# Tests only: rendezvous mailbox in memory at wss://memory.invalid (tests/ring_r4_smoke.rs).
+test-memory-relay = ["nostr-shadow", "p2p-kanban-nostr-transport/memory-relay"]
 
 [dependencies]
 argon2 = "0.5"

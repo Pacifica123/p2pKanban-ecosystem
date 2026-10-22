@@ -6,8 +6,9 @@ import { Panel } from '@/shared/ui/Panel';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/Field';
 import { Badge } from '@/shared/ui/Badge';
+import { RingQrMeeting } from './RingQrMeeting';
 
-// R2 of the device ring: contracts/account-ring/1 and contracts/keyring/1.
+// The device ring: contracts/account-ring/1 and contracts/keyring/1 (R2), adding by QR (R4).
 type DeviceKind = 'web' | 'android' | 'arch';
 type Member = { publicKey: string; name: string; kind: DeviceKind; role: string; addedBy: string | null };
 type Presence = { publicKey: string; seenAt: number; software?: { direction: string; version: string } };
@@ -97,6 +98,7 @@ export function RingPanel() {
       <Button disabled={busy || !view.relays || !nodeName.trim()} onClick={() => void run('/ring/genesis', { name: nodeName })}>
         Создать кольцо</Button>
       {legacy}
+      {view.relays && <RingQrMeeting hasRing={false} members={0} />}
       {error && <><p role="alert">{error}</p><ErrorDetails message={error} operation="Кольцо устройств" /></>}
     </Panel>;
   }
@@ -126,11 +128,12 @@ export function RingPanel() {
         </li>;
       })}
     </ul>
+    <RingQrMeeting hasRing members={ring.members.length} />
     {legacy}
     <h4>Связка ключей</h4>
     <p>Досок с ключами: {view.keyring?.summary.boards ?? 0} · элементов: {view.keyring?.summary.items ?? 0} · копий от других устройств: {view.keyring?.copies ?? 0}.</p>
     {elsewhere.length > 0 && <>
-      <p>Созданы на других устройствах, на этот узел ещё не перенесены (это следующий этап):</p>
+      <p>Созданы на других устройствах; узел заводит их у себя при обмене с relay, содержимое приходит роумингом:</p>
       <ul>{elsewhere.map((item) => <li key={`${item.kind}:${item.id}`}>{item.kind === 'space' ? 'Пространство' : item.kind === 'board' ? 'Доска' : item.kind} «{item.name ?? item.id}»</li>)}</ul>
     </>}
     <h4>Relay кольца</h4>

@@ -6300,6 +6300,53 @@ paths:
         "200":
           description: Данные в ApiEnvelope
       x-v1Status: real_v1
+  /ring/rendezvous:
+    post:
+      tags: [ring]
+      summary: Показать QR встречи (rendezvous/1) — mode invite (телефон входит в кольцо узла) или join (узел входит в кольцо телефона)
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/rendezvous/{sessionId}:
+    get:
+      tags: [ring]
+      summary: Состояние встречи; каждый запрос читает почтовый ящик на relay
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/rendezvous/{sessionId}/confirm:
+    post:
+      tags: [ring]
+      summary: Код совпал — принять устройство в кольцо (role admin или member) и отправить welcome
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
+  /ring/rendezvous/{sessionId}/cancel:
+    post:
+      tags: [ring]
+      summary: Отменить или отклонить встречу
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Данные в ApiEnvelope
+      x-v1Status: real_v1
   /integrations/projects:
     get:
       tags: [integrations]

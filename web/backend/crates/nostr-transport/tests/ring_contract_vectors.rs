@@ -1,10 +1,10 @@
 //! The web implementation of R1 contracts checked against the shared vectors in
-//! `contracts/` (account-ring/1, keyring/1). The vectors are the source of truth;
+//! `contracts/` (account-ring/1, keyring/1, rendezvous/1). The vectors are the source of truth;
 //! when this test and `tools/ecosystem/contract_ref.py` disagree, this side is wrong.
 use std::path::{Path, PathBuf};
 
 use nostr_sdk::prelude::*;
-use p2p_kanban_nostr_transport::ring;
+use p2p_kanban_nostr_transport::{rendezvous, ring};
 use serde_json::Value;
 
 fn contracts_dir() -> PathBuf {
@@ -51,8 +51,7 @@ fn every_ring_vector_folds_to_expected_state_in_any_order() {
 
 #[test]
 fn rendezvous_welcome_entries_fold_to_ring_after() {
-    // R2 does not run rendezvous yet (that is R3), but the welcome log it would
-    // receive must fold here exactly as on the other directions.
+    // The welcome log a joiner receives folds here exactly as on the other directions.
     for name in ["invite-mode.json", "join-mode.json"] {
         let data = vector(&format!("rendezvous/1/vectors/{name}"));
         let expected = &data["expectedRingAfter"];
@@ -116,4 +115,89 @@ fn presence_opens_and_skew_matches() {
     }
     let heads: Vec<String> = data["ringHeads"].as_array().unwrap().iter().map(|h| h.as_str().unwrap().to_string()).collect();
     assert_eq!(Value::Array(ring::presence_skew(&presences, &heads)), data["expectedSkew"]);
+}
+
+fn rendezvous_vectors() -> Vec<(String, Value)> {
+    ["invite-mode.json", "join-mode.json", "refuse-ring-merge.json"].iter()
+        .map(|name| (name.to_string(), vector(&format!("rendezvous/1/vectors/{name}")))).collect()
+}
+
+#[test]
+fn rendezvous_qr_and_derived_values_match() {
+    for (name, data) in rendezvous_vectors() {
+        let qr = &data["qr"];
+        assert_eq!(rendezvous::qr_encode(qr), data["qrText"].as_str().unwrap(), "{name}");
+        assert_eq!(&rendezvous::qr_decode(data["qrText"].as_str().unwrap()).unwrap(), qr, "{name}");
+        let secret = ring::unb64url(qr["s"].as_str().unwrap()).unwrap();
+        let session = rendezvous::session_id(&secret);
+        assert_eq!(session, data["derived"]["sessionId"].as_str().unwrap(), "{name}");
+        let key: String = rendezvous::session_key(&secret).iter().map(|b| format!("{b:02x}")).collect();
+        assert_eq!(key, data["derived"]["sessionKey"].as_str().unwrap(), "{name}");
+        let joiner = data["roles"]["joiner"].as_str().unwrap();
+        assert_eq!(rendezvous::confirm_code(&session, joiner), data["derived"]["confirmCode"].as_str().unwrap(), "{name}");
+    }
+}
+
+#[test]
+fn rendezvous_mailbox_opens_to_expected_messages() {
+    for (name, data) in rendezvous_vectors() {
+        let secret = ring::unb64url(data["qr"]["s"].as_str().unwrap()).unwrap();
+        let mails = rendezvous::open_mailbox(data["events"].as_array().unwrap(), &secret);
+        let messages: Vec<Value> = mails.iter().map(|m| m.message.clone()).collect();
+        assert_eq!(Value::Array(messages), data["expectedMessages"], "{name}");
+        let mut reversed = data["events"].as_array().unwrap().clone();
+        reversed.reverse();
+        assert_eq!(rendezvous::open_mailbox(&reversed, &secret), mails, "{name} reversed");
+        assert!(rendezvous::open_mailbox(data["events"].as_array().unwrap(), &[0u8; 32]).is_empty(), "{name}: foreign secret");
+    }
+}
+
+#[test]
+fn rendezvous_sponsor_and_joiner_reach_the_vector_outcome() {
+    for (name, data) in rendezvous_vectors() {
+        let qr = &data["qr"];
+        let secret = ring::unb64url(qr["s"].as_str().unwrap()).unwrap();
+        let mails = rendezvous::open_mailbox(data["events"].as_array().unwrap(), &secret);
+        let sponsor = data["roles"]["sponsor"].as_str().unwrap();
+        let joiner = data["roles"]["joiner"].as_str().unwrap();
+        let expected = &data["expectedMessages"];
+        // The sponsor's own ring before the meeting: it is the admin.
+        let state = serde_json::json!({"accountId": "00".repeat(32), "removed": [],
+            "members": [{"publicKey": sponsor, "role": "admin"}]});
+        let before = qr["x"].as_u64().unwrap() - 60;
+        let review = rendezvous::sponsor_review(qr, &mails, sponsor, &state, true, before);
+        match expected.as_array().unwrap().iter().find(|m| m["type"] == "refuse") {
+            Some(refuse) => {
+                let refusal = review.unwrap_err();
+                assert_eq!(refusal.message(mails[0].message["sessionId"].as_str().unwrap()), *refuse, "{name}");
+            }
+            None => {
+                assert_eq!(review.unwrap().unwrap(), expected[0], "{name}: hello to answer");
+                let welcome = mails.iter().find(|m| m.message["type"] == "welcome").unwrap();
+                let ring_after = rendezvous::verify_welcome(welcome, qr, joiner).unwrap();
+                assert_eq!(&ring_after, &data["expectedRingAfter"], "{name}");
+                let stranger = "11".repeat(32);
+                assert_eq!(rendezvous::verify_welcome(welcome, qr, &stranger).unwrap_err().reason, "welcome-invalid");
+            }
+        }
+        assert_eq!(rendezvous::sponsor_review(qr, &mails, sponsor, &state, true, qr["x"].as_u64().unwrap() + 1).unwrap_err().reason, "expired");
+        assert_eq!(rendezvous::sponsor_review(qr, &mails, sponsor, &state, false, before).unwrap_err().reason, "sponsor-stale", "{name}");
+    }
+}
+
+#[test]
+fn rendezvous_second_hello_contests_invite() {
+    let data = vector("rendezvous/1/vectors/invite-mode.json");
+    let qr = &data["qr"];
+    let secret = ring::unb64url(qr["s"].as_str().unwrap()).unwrap();
+    let mut events = data["events"].as_array().unwrap().clone();
+    let intruder = Keys::generate();
+    let mut hello = data["expectedMessages"][0].clone();
+    hello["device"]["publicKey"] = Value::String(intruder.public_key().to_hex());
+    events.extend(rendezvous::mailbox_events(&intruder, &secret, &hello, 1_791_244_831, qr["x"].as_u64().unwrap()).unwrap());
+    let mails = rendezvous::open_mailbox(&events, &secret);
+    let sponsor = data["roles"]["sponsor"].as_str().unwrap();
+    let state = serde_json::json!({"accountId": "00".repeat(32), "removed": [], "members": [{"publicKey": sponsor, "role": "admin"}]});
+    let refusal = rendezvous::sponsor_review(qr, &mails, sponsor, &state, true, qr["x"].as_u64().unwrap() - 60).unwrap_err();
+    assert_eq!(refusal.reason, "contested");
 }

@@ -15,6 +15,8 @@ pub mod labels;
 pub mod project_board;
 #[cfg(feature = "nostr-shadow")]
 pub mod ring;
+#[cfg(feature = "nostr-shadow")]
+pub mod ring_rendezvous;
 pub mod sync;
 pub mod users;
 pub mod workspaces;
@@ -22,7 +24,7 @@ pub mod workspaces;
 pub fn router() -> Router<AppState> {
     let router = Router::new();
     #[cfg(feature = "nostr-shadow")]
-    let router = router.merge(ring::router());
+    let router = router.merge(ring::router()).merge(ring_rendezvous::router());
     router
         .merge(activity::router())
         .merge(appearance::router())

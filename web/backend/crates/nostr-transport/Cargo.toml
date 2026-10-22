@@ -5,6 +5,10 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "Encrypted Nostr shadow mirror for p2pKanban sync envelopes"
 
+[features]
+# In-process mailbox at wss://memory.invalid for end-to-end tests of rendezvous/1.
+memory-relay = []
+
 [dependencies]
 anyhow = "1"
 base64 = "0.22"
