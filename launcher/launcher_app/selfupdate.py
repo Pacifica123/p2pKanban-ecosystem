@@ -2,7 +2,7 @@
 
 Git-checkout обновляется `git pull --ff-only` и только чистый: лаунчер не
 сливает и не откатывает чужую работу. Распакованный архивом (get.py --archive)
-каталог обновляется архивом main поверх: файлы перезаписываются, локальное
+каталог и копия без git (Download ZIP, UTS, zip от друга) обновляются архивом main поверх: файлы перезаписываются, локальное
 состояние направлений (например, web/.dev-bootstrap) не трогается.
 
 Установленные направления этим не обновляются: web обновляет свой узел своей
@@ -39,11 +39,14 @@ def archive_marker(root: Path) -> dict | None:
 
 
 def mode(root: Path | None) -> str:
+    """git | archive (get.py --archive) | copy (Download ZIP, копия UTS, zip от друга) | none."""
     if root is None:
         return "none"
     if (root / ".git").exists():
         return "git"
-    return "archive" if archive_marker(root) else "none"
+    if archive_marker(root):
+        return "archive"
+    return "copy" if (root / "ecosystem.json").is_file() else "none"
 
 
 def revision(root: Path | None) -> str | None:
@@ -62,6 +65,7 @@ def status_payload(root: Path | None, version: str) -> dict:
     """Ответ `self-status --json` по контракту launcher-entry/1: лаунчер объявляет и себя."""
     kind = mode(root)
     detail = {"git": "git-checkout", "archive": "распакован из архива main",
+              "copy": "копия без git: сверка с main по содержимому файлов",
               "none": "запущен не из checkout экосистемы"}[kind]
     return {"schema": STATUS_SCHEMA, "component": "launcher", "installed": True, "running": True,
             "version": version, "revision": revision(root), "url": None, "values": {},
@@ -126,14 +130,14 @@ def update_archive(root: Path, dry_run: bool, say: Callable[[str], None]) -> int
     if dry_run:
         say("Пробный прогон: ничего не скачано.")
         return 0
-    return get.archive_get(root, repository, branch, marker.get("only") or [])
+    return get.archive_get(root, repository, branch, get.present_only(root, marker.get("only") or []))
 
 
 def update(root: Path | None, branch: str = "main", dry_run: bool = False, say: Callable[[str], None] = print) -> int:
     kind = mode(root)
     if kind == "git":
         return update_git(root, branch, dry_run, say)
-    if kind == "archive":
+    if kind in ("archive", "copy"):
         return update_archive(root, dry_run, say)
-    say("Лаунчер запущен не из checkout экосистемы: обновлять нечего. Новая машина — launcher/get.py.")
+    say("Рядом с лаунчером нет экосистемы: скачайте её кнопкой «Скачать с GitHub» или launcher/get.py.")
     return 2

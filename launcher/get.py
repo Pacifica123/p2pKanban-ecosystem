@@ -11,6 +11,10 @@ Windows (PowerShell или cmd):
     --only web,abl    sparse: только эти направления (лаунчер и файлы корня — всегда)
     --archive         без git: zip последнего коммита main
     --no-gui          не ставить окно (PySide6, около 80 МБ)
+    --dry-run         только сказать, что будет сделано
+
+Готовый каталог дополняется: `--only abl` к sparse-клону добавляет abl/, к
+архиву или копии без git — докачивает abl/ архивом main.
 
 Только стандартная библиотека Python 3.11+. Ничего не ставит в систему: git
 clone (или архив) в выбранный каталог и venv лаунчера в каталоге данных
@@ -61,11 +65,23 @@ def is_our_checkout(target: Path) -> bool:
     return (target / "ecosystem.json").is_file() and (target / "launcher" / "launcher.py").is_file()
 
 
+def present_only(target: Path, extra: list[str]) -> list[str]:
+    """Направления копии плюс extra; пусто — все (полная копия)."""
+    have = [name for name in DIRECTIONS if name != "launcher" and ((target / name).is_dir() or name in extra)]
+    return [] if len(have) == len(DIRECTIONS) - 1 else have
+
+
 def git_get(target: Path, repository: str, branch: str, only: list[str]) -> int:
     url = f"https://github.com/{repository}.git"
     if (target / ".git").is_dir():
         say(f"{target} уже checkout: обновляю (git pull --ff-only).")
-        return run(["git", "-C", str(target), "pull", "--ff-only", "origin", branch])
+        code = run(["git", "-C", str(target), "pull", "--ff-only", "origin", branch])
+        missing = [name for name in only if not (target / name).is_dir()]
+        sparse = subprocess.run(["git", "-C", str(target), "config", "--bool", "core.sparseCheckout"],
+                                capture_output=True, text=True).stdout.strip() == "true"
+        if code == 0 and missing and sparse:
+            code = run(["git", "-C", str(target), "sparse-checkout", "add", *missing])
+        return code
     argv = ["git", "clone", "--branch", branch, "--filter=blob:none"]
     if only:
         argv.append("--sparse")
@@ -137,6 +153,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-gui", action="store_true", help="не ставить окно на PySide6")
     parser.add_argument("--repo", default=REPOSITORY)
     parser.add_argument("--branch", default=BRANCH)
+    parser.add_argument("--dry-run", action="store_true", help="только сказать, что будет сделано")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     only = [item.strip() for item in args.only.split(",") if item.strip()]
@@ -149,10 +166,18 @@ def main(argv: list[str] | None = None) -> int:
     if target.exists() and any(target.iterdir()) and not is_our_checkout(target):
         say(f"{target} не пуст и это не экосистема p2pKanban: выберите другой --dir.")
         return 2
-    use_git = not args.archive and shutil.which("git") is not None and not (target / ARCHIVE_MARKER).is_file()
-    if not args.archive and not use_git and not (target / ARCHIVE_MARKER).is_file():
+    existing = is_our_checkout(target)
+    copy = existing and not (target / ".git").is_dir()  # архив, «Download ZIP», копия UTS
+    use_git = not args.archive and not copy and shutil.which("git") is not None
+    if not args.archive and not use_git and not copy:
         say("git не найден: беру архив main (обновлять — тоже архивом, launcher.py self-update).")
+    if copy:
+        only = present_only(target, only)
+        say(f"{target} — копия без git: файлы main ложатся поверх, локальное состояние направлений остаётся.")
     say(f"Экосистема → {target}" + (f" (только launcher, {', '.join(only)})" if only else ""))
+    if args.dry_run:
+        say("Пробный прогон: " + ("git " + ("pull" if existing else "clone") if use_git else "архив main") + "; ничего не скачано.")
+        return 0
     code = git_get(target, args.repo, args.branch, only) if use_git else archive_get(target, args.repo, args.branch, only)
     if code != 0:
         return code

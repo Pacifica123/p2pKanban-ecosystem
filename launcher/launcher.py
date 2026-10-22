@@ -9,7 +9,8 @@
     python launcher/launcher.py run web install --set port=8091 --dry-run
     python launcher/launcher.py settings web --set listen=lan
     python launcher/launcher.py apk             # ссылка на свежий APK и «ожидайте APK»
-    python launcher/launcher.py self-update     # обновить этот checkout из main (--dry-run — план)
+    python launcher/launcher.py get abl         # скачать направление с GitHub в эту копию (или в новую)
+    python launcher/launcher.py self-update     # обновить эту копию из main (--dry-run — план)
     python launcher/launcher.py doctor          # диагностика: окно, предпосылки, направления, сеть
 
 Новая машина — одной командой, см. launcher/get.py.
@@ -51,8 +52,15 @@ def print_status(value: dict) -> None:
     source = {"network": "сеть", "cache": "кеш", "none": "нет данных"}.get(glob["source"], glob["source"])
     print(f"Глобальное состояние: {source}" + (f", проверено {glob['checkedAt']}" if glob.get("checkedAt") else "")
           + (f" — {glob['error']}" if glob.get("error") else ""))
-    if not value["checkout"]["available"]:
-        print(f"Checkout: {value['checkout']['reason']}")
+    alone = eco.get("standalone")
+    method = value["checkout"].get("method")
+    if alone is not None:
+        print(f"Рядом с лаунчером экосистемы нет: направления из main ({alone['source']}). "
+              f"Скачать: launcher.py get <направление> → {alone['downloadDir']}")
+    elif method == "content":
+        print("Копия без git: сверка с main по содержимому файлов.")
+    elif method is None:
+        print(f"Копия: {value['checkout']['reason']}")
     print()
     for row in value["components"]:
         fit = row["fit"]
@@ -245,8 +253,22 @@ def cmd_run(args: argparse.Namespace) -> int:
     print()
     code = runner.stream(command)
     parsed = runner.status(root, entry, given) if not args.dry_run and action_id != "status" else None
-    runner.record(registry, command, code, args.dry_run, given, parsed)
+    source_commit = state.source_commit(root, args.component) \
+        if not args.dry_run and code == 0 and action_id in runner.SOURCE_ACTIONS else None
+    runner.record(registry, command, code, args.dry_run, given, parsed, source_commit)
     print(f"\nКод выхода: {code}" + (f"; теперь: {state.INSTALL_LABELS[parsed['state']]}" if parsed else ""))
+    return code
+
+
+def cmd_get(args: argparse.Namespace) -> int:
+    root = paths.ecosystem_root()
+    target = Path(args.dir).expanduser().resolve() if args.dir else root or paths.default_download_dir()
+    command = runner.get_command(target, ",".join(args.components) or None, args.dry_run)
+    print(f"$ {runner.display(command['argv'])}")
+    code = runner.stream(command)
+    if code == 0 and not args.dry_run and root is None:
+        paths.save_root(target)
+        print(f"Лаунчер запомнил копию: {target}")
     return code
 
 
@@ -287,7 +309,12 @@ def main(argv: list[str] | None = None) -> int:
     apk_cmd.add_argument("--json", action="store_true")
     apk_cmd.add_argument("--offline", action="store_true")
 
-    update = commands.add_parser("self-update", help="обновить checkout лаунчера из main")
+    get_cmd = commands.add_parser("get", help="скачать направления с GitHub в эту копию (или в новую, если её нет)")
+    get_cmd.add_argument("components", nargs="*", help="web, abl, mobile, devctl; пусто — все")
+    get_cmd.add_argument("--dir", help="куда (по умолчанию эта копия или ~/p2pkanban-ecosystem)")
+    get_cmd.add_argument("--dry-run", action="store_true")
+
+    update = commands.add_parser("self-update", help="обновить копию лаунчера из main (git, архив или копия без git)")
     update.add_argument("--dry-run", action="store_true")
     self_status = commands.add_parser("self-status", help="ответ status лаунчера о себе (launcher-entry/1)")
     self_status.add_argument("--json", action="store_true")
@@ -296,6 +323,8 @@ def main(argv: list[str] | None = None) -> int:
     check.add_argument("--offline", action="store_true")
 
     args = parser.parse_args(argv)
+    if args.command == "get":
+        return cmd_get(args)
     if args.command == "self-update":
         root = paths.ecosystem_root()
         branch = state.load_ecosystem(root).get("branch", "main") if root else "main"

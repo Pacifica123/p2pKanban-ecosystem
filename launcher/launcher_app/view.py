@@ -16,7 +16,7 @@ def _label(entry: dict, action_id: str) -> str:
 
 
 def card_actions(row: dict) -> dict:
-    """{buttons: [{id, label, main}], menu: [{id, label}], blocked: str|None}.
+    """{buttons: [{id, label, main}], menu: [{id, label}], blocked: str|None, settings: bool}.
 
     `open` — не действие направления, а «открыть url из status».
     """
@@ -30,6 +30,8 @@ def card_actions(row: dict) -> dict:
         if apk_value.get("page"):
             return {"buttons": [{"id": "@page", "label": "Сборки на expo.dev ↗", "main": False}], "menu": [], "blocked": None}
         return {"buttons": [], "menu": [], "blocked": None}
+    if row.get("canGet"):
+        return {"buttons": [{"id": "@get", "label": "Скачать с GitHub", "main": True}], "menu": [], "blocked": None}
     entry = row.get("entry")
     if not entry or row["fit"]["fit"] != "yes":
         return {"buttons": [], "menu": [], "blocked": None}
@@ -50,10 +52,15 @@ def card_actions(row: dict) -> dict:
         buttons += [a for a in ("doctor", "install") if _has(entry, a)]
     else:  # absent или status не спрашивали
         buttons += [a for a in ("install",) if _has(entry, a)]
-    buttons = list(dict.fromkeys(buttons))[:3]
+    buttons = list(dict.fromkeys(buttons))[:2]  # третья кнопка не влезает в карточку — она в «Ещё»
     shown = set(buttons)
     menu = [{"id": a["id"], "label": a["label"]} for a in entry["actions"]
             if a["id"] not in shown and a["id"] not in SKIP_IN_MENU]
+    # «Настройки» — отдельной кнопкой, пока она влезает рядом; при двух кнопках — первой в «Ещё».
+    tunable = bool(entry.get("settings") or entry.get("profiles"))
+    settings_button = tunable and len(buttons) < 2
+    if tunable and not settings_button:
+        menu.insert(0, {"id": "@settings", "label": "Настройки…"})
     result = [{"id": "open", "label": "Открыть", "main": index == 0} if action_id == "open"
               else {"id": action_id, "label": SHORT.get(action_id) or _label(entry, action_id), "main": index == 0}
               for index, action_id in enumerate(buttons)]
@@ -61,7 +68,7 @@ def card_actions(row: dict) -> dict:
     if not row.get("ready", True):
         missing = [item["label"] for item in row.get("requires", []) if item["ok"] is False]
         blocked = "Сначала нужно: " + ", ".join(missing) if missing else "Машина не готова"
-    return {"buttons": result, "menu": menu, "blocked": blocked}
+    return {"buttons": result, "menu": menu, "blocked": blocked, "settings": settings_button}
 
 
 APK_KIND = {"current": "ok", "awaiting": "warn", "building": "info", "expired": "warn", "none": None, "unknown": None}

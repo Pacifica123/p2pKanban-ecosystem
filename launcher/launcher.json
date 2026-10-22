@@ -2,8 +2,8 @@
   "schema": "p2p-kanban-launcher-entry/1",
   "component": "launcher",
   "actions": [
-    {"id": "update", "label": "Обновить checkout из main",
-     "help": "git pull --ff-only (только чистый checkout на main) или, если каталог распакован архивом, архив main поверх. Направления обновляются своими командами.",
+    {"id": "update", "label": "Обновить копию из main",
+     "help": "git pull --ff-only (только чистый checkout на main) или, если копия без git (архив, Download ZIP, UTS), архив main поверх. Направления обновляются своими командами.",
      "argv": ["{python}", "launcher.py", "self-update"], "dryRun": ["--dry-run"], "timeoutSeconds": 900},
     {"id": "doctor", "label": "Диагностика лаунчера",
      "help": "Python, окно, предпосылки всех направлений, их status, доступ к GitHub и ленте APK; отчёт JSON — в кеше лаунчера.",

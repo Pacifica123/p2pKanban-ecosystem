@@ -13,8 +13,8 @@
         "workspaces": 1,
         "boards": 1,
         "columns": 8,
-        "cards": 85,
-        "comments": 130,
+        "cards": 86,
+        "comments": 132,
         "checklists": 37,
         "attachments": 0
       },
@@ -30,10 +30,10 @@
     "boardId": "01a10d38-f902-7665-8612-3e74278ceafa"
   },
   "origin": {
-    "generatedAt": "2026-10-20T13:50:00Z",
+    "generatedAt": "2026-10-22T09:00:00Z",
     "selfHosted": true,
-    "boardRevision": 68,
-    "lastPatchId": "2026-10-20-launcher-l5-get-update-doctor",
+    "boardRevision": 69,
+    "lastPatchId": "2026-10-22-launcher-source-freshness",
     "rules": "docs/ecosystem/development.md"
   },
   "includes": {
@@ -968,6 +968,16 @@
         "priority": "medium",
         "position": 18432,
         "archivedAt": null
+      },
+      {
+        "id": "01a162c1-3427-7700-8d52-ad7994de02b4",
+        "boardId": "01a10d38-f902-7665-8612-3e74278ceafa",
+        "columnId": "01a10d38-f907-7a40-a58c-1e2a69cbe66c",
+        "title": "Лаунчер: сверка любой копии с main и «Скачать с GitHub»",
+        "description": "Зачем: John (2026-10-22) — лаунчер, запущенный из копии UTS или из zip, присланного другом, писал «каталог не является git-checkout» и не показывал, насколько копия отстаёт от GitHub; человек без git должен видеть, что ничего не установлено, и подтянуть нужное прямо с GitHub.\n\nСделано (лаунчер 0.5.0): без git копия сверяется с main по содержимому файлов — sha blob-ов как в git против дерева main на GitHub (git/trees); если не совпадает с последней версией каталога, лаунчер ищет совпадение среди 10 последних коммитов каталога и пишет «устарело: как main N коммитов назад» или «не как в main» со списком файлов. Деревья кешируются по sha. Установка без коммита в status сверяется по копии, из которой ставил лаунчер. Лаунчер, рядом с которым экосистемы нет, берёт каталог из main и даёт «Скачать с GitHub» на карточке; get.py дополняет sparse-клон, архив и копию без git. self-update обновляет копию без git архивом main поверх. Кнопки карточки больше не обрезаются: две кнопки, остальное в «Ещё».\n\nГотово, когда: на Manjaro из копии UTS колонка «Эта копия» показывает версию каждого направления без жёлтой плашки; лаунчер из отдельно распакованного zip показывает «не скачано» и «Скачать с GitHub» ставит выбранное направление.\n\nДальше: web пишет activeRevision только для сборки из git-checkout (source_revision) — для копии без git это отдельная правка web; без GITHUB_TOKEN GitHub даёт 60 запросов в час на машину.",
+        "priority": null,
+        "position": 38912,
+        "archivedAt": null
       }
     ],
     "labels": [
@@ -1722,6 +1732,10 @@
       },
       {
         "cardId": "01a159b8-23e4-77fc-9a53-6d3a9c99386d",
+        "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
+      },
+      {
+        "cardId": "01a162c1-3427-7700-8d52-ad7994de02b4",
         "labelId": "01a15878-5ff4-745f-bf7f-c892478000fa"
       }
     ],
@@ -4040,6 +4054,18 @@
         "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
         "createdAt": "2026-10-20T13:50:00Z",
         "body": "patch 2026-10-20-launcher-l5-get-update-doctor: пачкой 2026-10-20 L2–L5 написаны и ждут хоста — контракт launcher-entry/1, web и abl из окна, лента APK через GitHub Action (нужен секрет EXPO_TOKEN), get.py, self-update, doctor. Не сделано: второй тестовый web-узел (своя карточка web) и L6 (ждёт E-ADR-002)."
+      },
+      {
+        "id": "01a162c1-3427-7e2a-8e50-b2afe1ad7525",
+        "cardId": "01a162c1-3427-7700-8d52-ad7994de02b4",
+        "createdAt": "2026-10-22T09:00:00Z",
+        "body": "patch 2026-10-22-launcher-source-freshness: сверка по содержимому файлов вместо требования git-checkout, лаунчер без экосистемы рядом и «Скачать с GitHub», self-update копии без git, кнопки карточки не обрезаются. Ждёт хоста: копия UTS и отдельный zip на Manjaro."
+      },
+      {
+        "id": "01a162c1-3427-780b-a98f-6fadc37d997b",
+        "cardId": "01a10d38-f921-7009-b275-60e6cec1fc08",
+        "createdAt": "2026-10-22T09:00:00Z",
+        "body": "patch 2026-10-22-launcher-source-freshness: актуальность любой копии относительно main (без git) — карточка в «Ждёт хоста»."
       }
     ],
     "boardAppearanceSettings": [],

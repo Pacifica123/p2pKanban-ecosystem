@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QTableWidgetItem, QToolButton, QVBoxLayout, QWidget,
 )
 
-from . import entry as entries, local, paths, settings, themes, view
+from . import entry as entries, local, paths, runner, settings, themes, view
 
 NAMES = {
     "web": ("Web-узел", "W"),
@@ -29,7 +29,7 @@ NAMES = {
     "launcher": ("Лаунчер", "⌂"),
 }
 PLATFORM = {"windows": "Windows", "macos": "macOS", "linux": "Linux", "arch-linux": "Arch-based", "android": "Android"}
-VERDICT_KIND = {"current": "ok", "outdated": "warn", "modified": "warn", "ahead": "info"}
+VERDICT_KIND = {"current": "ok", "outdated": "warn", "modified": "warn", "ahead": "info", "absent": "info"}
 INSTALL_KIND = {"running": "ok", "stopped": "info", "installed": "info", "broken": "bad", "absent": None}
 CARD_WIDTH = 330
 ICON = paths.LAUNCHER_DIR / "assets" / "icon.svg"
@@ -191,9 +191,11 @@ class Card(QFrame):
                 if plan["blocked"]:
                     button.setToolTip(plan["blocked"])
                 button.clicked.connect(lambda _=False, aid=item["id"]: act and act(row, aid))
+                button.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)  # не сжимать подпись
                 actions.addWidget(button)
-            if row.get("entry") and (row["entry"].get("settings") or row["entry"].get("profiles")):
+            if plan.get("settings"):
                 tune = QPushButton("Настройки")
+                tune.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
                 tune.clicked.connect(lambda _=False: act and act(row, "@settings"))
                 actions.addWidget(tune)
             if plan["menu"]:
@@ -334,7 +336,8 @@ class Window(QMainWindow):
         self.apps = Grid()
         self.body.addWidget(self.apps)
         self.body.addWidget(label("СОСТОЯНИЕ", "section"))
-        self.body.addWidget(label("Исходники этого checkout рядом с последним коммитом main, менявшим каталог направления.", "lead", wrap=True))
+        self.lead = label("Исходники этой копии рядом с последним коммитом main, менявшим каталог направления.", "lead", wrap=True)
+        self.body.addWidget(self.lead)
         self.body.addWidget(self.build_table())
         self.body.addWidget(label("ДЛЯ РАЗРАБОТКИ", "section"))
         self.dev = Grid()
@@ -413,7 +416,7 @@ class Window(QMainWindow):
         box = QVBoxLayout(panel)
         box.setContentsMargins(6, 6, 6, 6)
         self.table = QTableWidget(0, 5)
-        self.table.setHorizontalHeaderLabels(["Направление", "main", "Этот checkout", "Сверка", "Установлено"])
+        self.table.setHorizontalHeaderLabels(["Направление", "main", "Эта копия", "Сверка", "Установлено"])
         self.table.verticalHeader().setVisible(False)
         self.table.setShowGrid(False)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -484,9 +487,19 @@ class Window(QMainWindow):
         if glob.get("error"):
             notices.append(f"Нет свежих данных о main ({glob['error']}); показан кеш." if glob.get("source") == "cache"
                            else f"Нет данных о main: {glob['error']}.")
-        if not value["checkout"]["available"]:
-            notices.append(f"Checkout: {value['checkout']['reason']}.")
+        alone = eco.get("standalone")
+        method = value["checkout"].get("method")
+        if alone is not None:
+            notices.append(f"Рядом с лаунчером экосистемы нет: направления взяты из main. «Скачать с GitHub» на карточке "
+                           f"кладёт нужное в {alone['downloadDir']}."
+                           + (f" ({alone['error']})" if alone.get("error") else ""))
+        elif method is None:
+            notices.append(f"Копия: {value['checkout']['reason']}; сверить с main не с чем, пока GitHub не ответит.")
         self.show_notice(" ".join(notices))
+        how = {"git": "Копия — git-checkout: сверка через git.",
+               "content": "Копия без git (архив, zip, UTS): сверка по содержимому файлов с деревом main на GitHub."}
+        self.lead.setText("Исходники этой копии рядом с последним коммитом main, менявшим каталог направления. "
+                          + how.get(method, ""))
 
         order = {"yes": 0, "phone": 1, "no": 2}
         users = sorted((row for row in value["components"] if row.get("audience", "user") == "user"),
@@ -512,7 +525,8 @@ class Window(QMainWindow):
             cells = [
                 f"{NAMES.get(row['id'], (row['id'],))[0]}\n{row['dir']}/",
                 commit_text(row.get("remote")),
-                commit_text((row.get("local") or {}).get("commit")),
+                "не скачано" if row["checkout"]["id"] == "absent"
+                else commit_text((row.get("local") or {}).get("commit")),
                 f"{row['checkout']['label']}\n{row['checkout']['detail']}",
                 f"{view.installed_text(row)}\n{installed['detail'] if isinstance(installed['detail'], str) else ''}",
             ]
@@ -547,6 +561,9 @@ class Window(QMainWindow):
             elif url:
                 open_url(url)
             return
+        if action_id == "@get":
+            self.get_sources(row)
+            return
         if action_id == "@settings":
             dialog = qt_dialogs.SettingsDialog(self, entry, values, (row.get("status") or {}).get("values"))
             dialog.saved.connect(lambda chosen: self.save_values(row["id"], chosen))
@@ -565,6 +582,35 @@ class Window(QMainWindow):
         if row["id"] == "launcher" and action_id == "update":
             dialog.ran.connect(lambda _aid, code: code == 0 and self.show_notice(
                 "Checkout обновлён. Перезапустите лаунчер, чтобы взять его новую версию."))
+        dialog.setModal(False)
+        dialog.show()
+        self.dialogs.append(dialog)
+        dialog.finished.connect(lambda *_, d=dialog: self.dialogs.remove(d) if d in self.dialogs else None)
+
+    def get_sources(self, row: dict) -> None:
+        """«Скачать с GitHub»: get.py лаунчера кладёт каталог направления в копию (или создаёт её)."""
+        from . import qt_dialogs
+
+        known = self.last_state["ecosystem"]["root"]
+        target = Path(known) if known else paths.default_download_dir()
+        action = {"label": "Скачать с GitHub",
+                  "help": f"Скачать {row['dir']}/ из main в {target}: git, если он есть, иначе архив main. "
+                          "Лаунчер и файлы корня приходят всегда; уже скачанное обновляется.",
+                  "dryRun": ["--dry-run"]}
+        dialog = qt_dialogs.RunDialog(self, target, {"component": row["id"]}, "get", {}, paths.registry_file(),
+                                      f"Скачать с GitHub · {row['dir']}/",
+                                      factory=lambda dry: runner.get_command(target, row["dir"], dry), action=action)
+
+        def done(_aid: str, code: int) -> None:
+            if code != 0:
+                return
+            if not known:
+                try:
+                    paths.save_root(target)
+                except OSError as error:
+                    self.show_notice(f"Скачано в {target}, но путь не сохранился: {error}")
+            self.load(True)
+        dialog.ran.connect(done)
         dialog.setModal(False)
         dialog.show()
         self.dialogs.append(dialog)

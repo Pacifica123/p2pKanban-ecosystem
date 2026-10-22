@@ -264,7 +264,7 @@ def parse_status(entry: dict, exit_code: int, stdout: str) -> dict:
 def load(root: Path | None, component: str) -> dict:
     """{available, entry, error}: launcher.json направления, если оно его положило."""
     if root is None:
-        return {"available": False, "entry": None, "error": "лаунчер запущен не из checkout экосистемы"}
+        return {"available": False, "entry": None, "error": "направление ещё не скачано: «Скачать с GitHub»"}
     path = root / component / "launcher.json"
     if not path.is_file():
         return {"available": False, "entry": None, "error": None}

@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
-from . import entry as entries, local
+from . import entry as entries, local, paths
 
 StatusRun = Callable[[list[str], Path, dict, float], tuple[int, str]]
 
@@ -77,13 +77,22 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+SOURCE_ACTIONS = ("install", "update")  # после них установка собрана из исходников копии
+
+
 def record(registry_file: Path, command: dict, exit_code: int, dry_run: bool, given: dict | None,
-           parsed_status: dict | None = None) -> None:
-    """Записать в реестр установок, что лаунчер сделал (пробный прогон не считается установкой)."""
-    if dry_run or command["action"] == "status":
+           parsed_status: dict | None = None, source_commit: dict | None = None) -> None:
+    """Записать в реестр установок, что лаунчер сделал (пробный прогон не считается установкой).
+
+    source_commit — коммит main, с которым совпадали исходники копии при install/update:
+    по нему сверяется установка, если направление само не сообщает свой коммит.
+    """
+    if dry_run or command["action"] in ("status", "get"):
         return
     item = {"action": command["action"], "at": now_iso(), "exitCode": exit_code, "argv": command["argv"]}
     fields = {"lastAction": item, "values": dict(given or {}), "root": str(Path(command["cwd"]).parent)}
+    if command["action"] in SOURCE_ACTIONS and exit_code == 0:
+        fields["sourceCommit"] = source_commit
     if parsed_status and parsed_status.get("state") not in (None, "broken"):
         fields.update({"state": parsed_status["state"], "version": parsed_status.get("version"),
                        "revision": parsed_status.get("revision")})
@@ -91,6 +100,17 @@ def record(registry_file: Path, command: dict, exit_code: int, dry_run: bool, gi
         local.forget_install(registry_file, command["component"])
     else:
         local.record_install(registry_file, command["component"], fields)
+
+
+def get_command(target: Path, only: str | None, dry_run: bool = False) -> dict:
+    """«Скачать с GitHub»: get.py самого лаунчера — клон, sparse или архив main в target."""
+    argv = [child_python(), str(paths.LAUNCHER_DIR / "get.py"), "--dir", str(target), "--no-gui"]
+    if only:
+        argv += ["--only", only]
+    if dry_run:
+        argv.append("--dry-run")
+    return {"component": "launcher", "action": "get", "argv": argv, "cwd": str(paths.LAUNCHER_DIR),
+            "privileged": False, "detached": False, "timeoutSeconds": 1800}
 
 
 def stream(command: dict, on_line: Callable[[str], None] = print) -> int:

@@ -1,6 +1,6 @@
 # p2pKanban Launcher
 
-Дата: 2026-10-20. Решение о направлении — [E-ADR-004](../docs/ecosystem/adr/E-ADR-004-ecosystem-launcher.md)
+Дата: 2026-10-22. Решение о направлении — [E-ADR-004](../docs/ecosystem/adr/E-ADR-004-ecosystem-launcher.md)
 (принято John 2026-10-20).
 
 Лаунчер экосистемы p2pKanban: одно окно, из которого видно, какие приложения
@@ -27,6 +27,25 @@ py -c "import urllib.request as u; exec(u.urlopen('https://raw.githubusercontent
 sparse по выбранным направлениям; без git или с `--archive` — zip последнего
 коммита `main`), ставит окно (`install-gui`, `--no-gui` — пропустить) и пишет,
 как запустить. Повторный запуск на том же каталоге его обновляет.
+
+## Любая копия: zip от друга, «Download ZIP», копия UTS
+
+git не обязателен ни для запуска, ни для сверки. Копия без git сверяется с
+`main` по содержимому файлов: лаунчер считает sha каждого файла так же, как
+git (`blob <размер>\0` + содержимое), и сравнивает с деревом каталога в `main`
+на GitHub. Совпало — «актуально»; нет — лаунчер ищет совпадение среди 10
+последних версий каталога в `main` и пишет «устарело: как main N коммитов
+назад» или «не как в main» со списком отличающихся файлов. Лишние файлы копии
+(кеши, сборки, `web/.dev-bootstrap`) не считаются, CRLF Windows — тоже.
+Деревья по sha неизменны и кешируются: повторная проверка стоит один запрос.
+
+Лаунчер, распакованный отдельно (рядом нет `ecosystem.json`), берёт каталог
+направлений из `main` и показывает их «не скачано»; кнопка «Скачать с GitHub»
+на карточке (`launcher.py get abl`) кладёт нужное направление в
+`~/p2pkanban-ecosystem` — git-клоном, если git есть, иначе архивом `main`, — и
+лаунчер дальше работает с этой копией. Каталог, которого нет в копии, той же
+кнопкой докачивается: к sparse-клону — `sparse-checkout add`, к копии без
+git — архивом `main` поверх.
 
 ## Запуск
 
@@ -73,12 +92,14 @@ PySide6; если окна ещё нет, он говорит, какой скр
 | `run <направление> [действие] [--set k=v] [--profile id] [--dry-run] [--yes]` | выполнить объявленное действие; без действия — `status` |
 | `settings <направление> [--set k=v]` | показать или запомнить настройки (пустое значение — «решает направление») |
 | `apk [--json]` | ссылка на последнюю APK из ленты, «ожидайте APK», «собирается» |
-| `self-update [--dry-run]` | обновить checkout, из которого запущен лаунчер: `git pull --ff-only` или архив `main` поверх |
+| `get [направления] [--dir] [--dry-run]` | скачать направления с GitHub в эту копию или, если её нет, в `~/p2pkanban-ecosystem` |
+| `self-update [--dry-run]` | обновить копию, из которой запущен лаунчер: `git pull --ff-only` или (копия без git) архив `main` поверх |
 | `self-status [--json]` | ответ `status` лаунчера о себе (лаунчер объявляет и себя в `launcher.json`) |
 | `doctor [--json] [--offline]` | Python, окно, предпосылки всех направлений, их `status`, доступ к GitHub и ленте APK |
 
 `GITHUB_TOKEN` в окружении необязателен: без него GitHub даёт 60 запросов в
-час, а лаунчер делает шесть не чаще раза в 10 минут.
+час, а лаунчер делает семь не чаще раза в 10 минут (и разово — деревья
+каталогов для копии без git, дальше они в кеше).
 
 ## Принцип
 
@@ -91,7 +112,7 @@ mobile — APK. Лаунчер выполняет только команды, �
 - Всё, что видно в окне, доступно из CLI (`status --json`) для UTS и агента.
 - «Актуально» в лаунчере не значит «принято»: приёмку даёт UTS на хосте.
 
-## Состояние на 2026-10-20: ступени L2–L5 — web и abl из лаунчера, ссылка на APK, самообновление
+## Состояние на 2026-10-22: ступени L2–L5 — web и abl из лаунчера, ссылка на APK, самообновление, любая копия
 
 | Что | Откуда |
 |---|---|
@@ -99,11 +120,11 @@ mobile — APK. Лаунчер выполняет только команды, �
 | Подходит ли машине | платформа хоста против `platforms`; abl вне Arch-based Linux — серый с причиной, Android — «на телефон» |
 | Предпосылки | короткие пробы `requires`: Python, Docker (установлен, запущен, Linux containers, Compose v2), git, pacman, WebKitGTK |
 | Глобальное состояние | GitHub: последний коммит `main` по каталогу каждого направления, `origin` доски; кеш 10 минут, без сети — кеш с пометкой |
-| Состояние checkout | git корня: последний локальный коммит каталога, незакоммиченные правки; в файлы соседних направлений лаунчер не заглядывает |
-| Сверка исходников | актуально, устарело (сколько коммитов, если `main` уже скачан), впереди main, изменено локально, нет в checkout, неизвестно |
+| Состояние копии | git-checkout: git корня — последний локальный коммит каталога, незакоммиченные правки. Копия без git: sha файлов против деревьев `main` на GitHub (`launcher_app/source.py`) |
+| Сверка исходников | актуально, устарело (на сколько коммитов каталога), впереди main, изменено локально / не как в main (какие файлы), не скачано, неизвестно |
 | Действия и настройки | `<направление>/launcher.json` по контракту [`launcher-entry/1`](../contracts/launcher-entry/1/SPEC.md); объявили web и abl |
 | APK Android | лента `apk.json` в ветке `launcher-feed`, её пишет GitHub Action с секретом `EXPO_TOKEN` ([feed/README.md](feed/README.md)) |
-| Установлено | ответ `status` направления: не установлено, работает (с адресом), остановлено, установлено, не работает; рядом — актуальна ли установка относительно `main` (её коммит против последнего коммита каталога в `main`) |
+| Установлено | ответ `status` направления: не установлено, работает (с адресом), остановлено, установлено, не работает; рядом — актуальна ли установка относительно `main` (её коммит против последнего коммита каталога в `main`: git копии, иначе история каталога и GitHub compare). Если направление не сообщает коммит, берётся коммит копии, из которой лаунчер делал install/update |
 | Темы | четыре темы словаря `p2p-kanban-ui-themes/1` (`launcher_app/themes.py`, из них же QSS окна); выбор и размер окна — в `settings.json` |
 
 ### Как лаунчер выполняет команды
@@ -152,10 +173,10 @@ abl объявил `tools/user_install.py`: «Установить» собир�
 
 Лаунчер объявляет и себя тем же контрактом ([`launcher.json`](launcher.json)):
 его карточка в «Для разработки» показывает «Обновить», когда в `main` есть
-коммит `launcher/` новее checkout. Обновление — только чистого checkout на
-`main` и только fast-forward: свои правки и коммиты лаунчер не сливает и не
-откатывает, а называет. Каталог, распакованный архивом, обновляется архивом
-`main` поверх: файлы перезаписываются, состояние направлений (например,
+коммит `launcher/` новее копии. Обновление git-checkout — только чистого и на
+`main`, только fast-forward: свои правки и коммиты лаунчер не сливает и не
+откатывает, а называет. Копия без git (архив, «Download ZIP», копия UTS)
+обновляется архивом `main` поверх, по тем направлениям, что в ней есть: файлы перезаписываются, состояние направлений (например,
 `web/.dev-bootstrap`) остаётся, удалённые в `main` файлы остаются у вас.
 Установленный web этим не обновляется — у него своя кнопка «Обновить»; abl
 после обновления checkout пересобирается своей.
@@ -170,7 +191,7 @@ L6 (вступление устройства в кольцо аккаунта �
 
 | Что | Windows | Linux | macOS |
 |---|---|---|---|
-| `settings.json`, `installs.json` | `%APPDATA%\p2pkanban\launcher` | `$XDG_CONFIG_HOME/p2pkanban/launcher` | `~/Library/Application Support/p2pkanban/launcher` |
+| `settings.json`, `installs.json`, `ecosystem-root.json` | `%APPDATA%\p2pkanban\launcher` | `$XDG_CONFIG_HOME/p2pkanban/launcher` | `~/Library/Application Support/p2pkanban/launcher` |
 | кеш `main` | `%LOCALAPPDATA%\p2pkanban\launcher\cache` | `$XDG_CACHE_HOME/p2pkanban/launcher` | `~/Library/Caches/p2pkanban/launcher` |
 | venv с PySide6 | `%LOCALAPPDATA%\p2pkanban\launcher\data\venv` | `$XDG_DATA_HOME/p2pkanban/launcher/venv` | `~/Library/Application Support/p2pkanban/launcher/data/venv` |
 
@@ -200,7 +221,8 @@ python -B -m unittest discover -s tests
 | `requirements-gui.txt` | зафиксированная версия PySide6 |
 | `launcher_app/install.py` | venv и установка PySide6 |
 | `launcher_app/probes.py` | платформа и предпосылки |
-| `launcher_app/remote.py` | `main` на GitHub и кеш |
+| `launcher_app/remote.py` | `main` на GitHub и кеш; `ecosystem.json` из `main` для лаунчера без экосистемы рядом |
+| `launcher_app/source.py` | сверка копии без git: sha файлов против деревьев `main`, кеш деревьев по sha |
 | `launcher_app/local.py` | checkout, реестр установок и сохранённые настройки направлений |
 | `launcher_app/entry.py` | своя реализация `launcher-entry/1`: проверка `launcher.json`, argv, разбор `status` |
 | `launcher_app/runner.py` | запуск объявленных команд, `status`, запись в реестр |
@@ -208,7 +230,7 @@ python -B -m unittest discover -s tests
 | `launcher_app/qt_dialogs.py` | окна запуска действия и настроек направления |
 | `launcher_app/apk.py` | лента APK: загрузка, кеш, вердикт для карточки Android |
 | `feed/apk_feed.py` | сборка ленты из EAS; его запускает `.github/workflows/launcher-apk-feed.yml` |
-| `launcher_app/selfupdate.py` | обновление checkout: git fast-forward или архив `main` |
+| `launcher_app/selfupdate.py` | обновление копии: git fast-forward или архив `main` |
 | `launcher_app/doctor.py` | диагностика и её отчёт |
 | `launcher_app/state.py` | сборка состояния и сверка |
 | `launcher_app/qt_app.py` | окно PySide6: только рисует состояние ядра |

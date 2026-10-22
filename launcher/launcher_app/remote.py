@@ -46,8 +46,11 @@ def http_get(url: str) -> bytes:
         raise RemoteError(f"нет связи с GitHub: {getattr(error, 'reason', error)}") from error
 
 
-def commits_url(repository: str, branch: str, path: str) -> str:
-    query = urllib.parse.urlencode({"sha": branch, "path": path, "per_page": 1})
+HISTORY = 10  # последние коммиты каталога: по ним копия без git находит свою версию
+
+
+def commits_url(repository: str, branch: str, path: str, per_page: int = HISTORY) -> str:
+    query = urllib.parse.urlencode({"sha": branch, "path": path, "per_page": per_page})
     return f"https://api.github.com/repos/{repository}/commits?{query}"
 
 
@@ -55,22 +58,60 @@ def raw_url(repository: str, branch: str, path: str) -> str:
     return f"https://raw.githubusercontent.com/{repository}/{branch}/{path}"
 
 
-def _commit(payload: object) -> dict | None:
-    if not isinstance(payload, list) or not payload:
+def trees_url(repository: str, ref: str, recursive: bool = False) -> str:
+    query = "?recursive=1" if recursive else ""
+    return f"https://api.github.com/repos/{repository}/git/trees/{urllib.parse.quote(ref, safe='')}{query}"
+
+
+def compare_url(repository: str, base: str, head: str) -> str:
+    return f"https://api.github.com/repos/{repository}/compare/{base}...{head}"
+
+
+def top_trees(payload: object) -> dict[str, str]:
+    """Ответ git/trees корня → {каталог: sha его дерева}."""
+    if not isinstance(payload, dict) or not isinstance(payload.get("tree"), list):
+        raise ValueError("ответ git/trees не по формату")
+    return {item["path"]: item["sha"] for item in payload["tree"]
+            if isinstance(item, dict) and item.get("type") == "tree" and isinstance(item.get("path"), str)
+            and isinstance(item.get("sha"), str)}
+
+
+def _one(item: object) -> dict | None:
+    if not isinstance(item, dict):
         return None
-    item = payload[0]
     commit = item.get("commit") or {}
     when = (commit.get("committer") or {}).get("date") or (commit.get("author") or {}).get("date")
     message = (commit.get("message") or "").splitlines()
     return {"sha": item.get("sha"), "date": when, "subject": message[0] if message else ""}
 
 
+def _history(payload: object) -> list[dict]:
+    if not isinstance(payload, list):
+        return []
+    return [commit for commit in (_one(item) for item in payload) if commit and isinstance(commit.get("sha"), str)]
+
+
+def _commit(payload: object) -> dict | None:
+    history = _history(payload)
+    return history[0] if history else None
+
+
 def fetch_global(repository: str, branch: str, directories: list[str], fetch: Fetch = http_get) -> dict:
-    """Один запрос на каталог и один за доской; ошибка любого — RemoteError."""
-    result: dict = {"repository": repository, "branch": branch, "directories": {}, "board": None}
+    """Один запрос на каталог, корень дерева main и доска; ошибка коммитов — RemoteError.
+
+    `trees` — sha дерева каждого каталога в main: по нему копия без git
+    сверяется по содержимому (source.py). Без него сверка остаётся git-only.
+    """
+    result: dict = {"repository": repository, "branch": branch, "directories": {}, "history": {},
+                    "trees": None, "board": None}
     for directory in directories:
         payload = json.loads(fetch(commits_url(repository, branch, directory)).decode("utf-8"))
+        result["history"][directory] = _history(payload)
         result["directories"][directory] = _commit(payload)
+    try:
+        result["trees"] = top_trees(json.loads(fetch(trees_url(repository, branch)).decode("utf-8")))
+    except (RemoteError, ValueError):
+        result["trees"] = None
     try:
         board = json.loads(fetch(raw_url(repository, branch, "board/board.json")).decode("utf-8"))
         origin = board.get("origin") or {}
@@ -78,6 +119,39 @@ def fetch_global(repository: str, branch: str, directories: list[str], fetch: Fe
     except (RemoteError, ValueError):
         result["board"] = None
     return result
+
+
+DEFAULT_REPOSITORY = "Pacifica123/p2pKanban-ecosystem"
+
+
+def remote_ecosystem(cache_file: Path, fetch: Fetch = http_get, offline: bool = False,
+                     repository: str = DEFAULT_REPOSITORY, branch: str = "main") -> dict:
+    """ecosystem.json из main — для лаунчера, рядом с которым экосистемы ещё нет.
+
+    {ecosystem, source: network|cache|none, error}; кеш — последний удачный ответ.
+    """
+    def cached() -> dict | None:
+        try:
+            value = json.loads(cache_file.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        return value if isinstance(value, dict) and isinstance(value.get("components"), list) else None
+    if offline:
+        value = cached()
+        return {"ecosystem": value, "source": "cache" if value else "none", "error": None if value else "без сети, кеша нет"}
+    try:
+        value = json.loads(fetch(raw_url(repository, branch, "ecosystem.json")).decode("utf-8"))
+        if not isinstance(value, dict) or not isinstance(value.get("components"), list):
+            raise ValueError("ecosystem.json не по формату")
+    except (RemoteError, ValueError) as error:
+        value = cached()
+        return {"ecosystem": value, "source": "cache" if value else "none", "error": str(error)}
+    try:
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        cache_file.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+    except OSError:
+        pass
+    return {"ecosystem": value, "source": "network", "error": None}
 
 
 def now_iso() -> str:

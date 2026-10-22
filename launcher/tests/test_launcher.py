@@ -17,7 +17,7 @@ from typing import Callable
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from launcher_app import apk, entry as entries, install, local, paths, probes, remote, runner, settings, state, themes, view  # noqa: E402
+from launcher_app import apk, entry as entries, install, local, paths, probes, remote, runner, settings, source, state, themes, view  # noqa: E402
 
 DIRS = ["web", "mobile", "abl", "devctl", "launcher"]
 ROOT = Path(__file__).resolve().parents[2]
@@ -229,10 +229,13 @@ class WindowSmokeTest(unittest.TestCase):
             self.skipTest("лаунчер взят без корня экосистемы")
         with tempfile.TemporaryDirectory() as tmp:
             fetch = lambda url: (json.dumps({"origin": {"boardRevision": 1, "lastPatchId": "p"}}).encode()
-                                 if "raw.githubusercontent.com" in url else fake_commit("d" * 40, "x"))
+                                 if "raw.githubusercontent.com" in url
+                                 else json.dumps({"status": "behind"}).encode() if "/compare/" in url  # git копии коммита не знает
+                                 else fake_commit("d" * 40, "x"))
             value = state.build_state(root, remote.GlobalState(Path(tmp) / "g.json", fetch),
                                       runner=lambda argv, timeout: (0, "linux\n"), host=probes.detect_platform("Windows"),
-                                      status_run=web_status("running"), apk_feed=apk.Feed(Path(tmp) / "a.json", fetch))
+                                      status_run=web_status("running"), apk_feed=apk.Feed(Path(tmp) / "a.json", fetch),
+                                      trees=source.Trees(Path(tmp) / "trees", fetch))
             window = qt_app.Window(lambda force: value, Path(tmp) / "s.json")
             window.render(value)
             offs = [card for card in window.apps.cards if card.property("off") == "true"]
@@ -390,7 +393,8 @@ class CardActionsTest(unittest.TestCase):
         self.assertEqual(self.ids(self.row("absent")), ["install"])
         self.assertEqual(self.ids(self.row("running")), ["open", "stop"])
         self.assertEqual(self.ids(self.row("stopped")), ["start"])
-        self.assertEqual(self.ids(self.row("running", "outdated")), ["update", "open", "stop"])
+        self.assertEqual(self.ids(self.row("running", "outdated")), ["update", "open"])
+        self.assertIn("stop", [item["id"] for item in view.card_actions(self.row("running", "outdated"))["menu"]])
         self.assertEqual(self.ids(self.row("broken")), ["doctor", "install"])
 
     def test_menu_has_the_rest_but_not_status(self):

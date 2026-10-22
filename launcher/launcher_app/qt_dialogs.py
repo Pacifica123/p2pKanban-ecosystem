@@ -45,11 +45,12 @@ class RunDialog(QDialog):
     ran = Signal(str, int)  # id действия, код выхода
 
     def __init__(self, parent: QWidget | None, root: Path, entry: dict, action_id: str, values: dict,
-                 registry_file: Path, title: str | None = None):
+                 registry_file: Path, title: str | None = None, factory=None, action: dict | None = None):
         super().__init__(parent)
         self.root, self.entry, self.action_id = root, entry, action_id
         self.values, self.registry_file = values, registry_file
-        self.action = entries.find_action(entry, action_id)
+        self.factory = factory  # своя команда лаунчера (Скачать с GitHub), а не действие launcher.json
+        self.action = action or entries.find_action(entry, action_id)
         self.process: QProcess | None = None
         self.current: dict | None = None
         self.pending = ""
@@ -94,6 +95,8 @@ class RunDialog(QDialog):
         self.show_command(False)
 
     def command(self, dry_run: bool) -> dict:
+        if self.factory is not None:
+            return self.factory(dry_run)
         return runner.resolve(self.root, entries.command(self.entry, self.action_id, self.values, dry_run))
 
     def show_command(self, dry_run: bool) -> None:
@@ -193,7 +196,11 @@ class RunDialog(QDialog):
             self.process.deleteLater()
             self.process = None
         self.busy(False)
-        runner.record(self.registry_file, command, code, dry_run, self.values)
+        source_commit = None
+        if not dry_run and code == 0 and command["action"] in runner.SOURCE_ACTIONS:
+            from . import state
+            source_commit = state.source_commit(self.root, Path(command["cwd"]).name)
+        runner.record(self.registry_file, command, code, dry_run, self.values, source_commit=source_commit)
         verdict = "готово" if code == 0 else f"код выхода {code}"
         self.state.setText(f"Пробный прогон: {verdict}. Теперь можно выполнить по-настоящему." if dry_run and code == 0
                            else f"Пробный прогон: {verdict}" if dry_run else f"Завершено: {verdict}")
