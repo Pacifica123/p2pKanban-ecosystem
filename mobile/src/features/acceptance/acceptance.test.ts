@@ -1,4 +1,5 @@
 import { ApiError, setApiNodeOrigin } from '../../shared/api/client';
+import { nodeBlock, noteNodeSilent } from '../../shared/api/nodeReach';
 import * as endpoints from '../../shared/api/endpoints';
 import type { LocalBoardRuntime } from '../localFirst/useLocalBoard';
 import * as catalog from '../roaming/catalog';
@@ -172,6 +173,20 @@ describe('Android plan', () => {
     expect(text).not.toContain('john@example.test');
     expect(parseAcceptanceReport(text).summary.verdict).toBe('PASS');
     expect(CROSS_ITEM_FOR_WEB).toBe('Отметит web');
+  });
+
+  it('asks the node afresh even while an earlier silence still pauses requests (run jd21drv3)', async () => {
+    const w = world();
+    noteNodeSilent();
+    expect(nodeBlock('http://192.168.0.101:8082')?.reason).toBe('silent');
+    let blockedWhenAsked: unknown = 'not asked';
+    api.getBackendVersion.mockImplementation(async () => {
+      blockedWhenAsked = nodeBlock('http://192.168.0.101:8082');
+      return { status: 'ok', version: '2.1.0' } as any;
+    });
+    const results = await runSteps(mobileSteps().filter((step) => step.id.startsWith('env.')), context(w, {}));
+    expect(blockedWhenAsked).toBeNull();
+    expect(results.find((r) => r.id === 'env.node')!.status).not.toBe('FAIL');
   });
 
   it('names the bug when a board created on the node does not reach the mobile network', async () => {

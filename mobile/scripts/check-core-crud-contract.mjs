@@ -31,7 +31,7 @@ if (
   || packageLock.version !== packageJson.version
   || packageLock.packages?.['']?.version !== packageJson.version
   || appJson.expo.version !== packageJson.version
-  || appJson.expo.android.versionCode !== 30
+  || appJson.expo.android.versionCode !== 31
 ) {
   throw new Error('Версии Android package, lock и Expo не согласованы.');
 }
@@ -202,9 +202,12 @@ requireText('src/features/sync/syncService.ts', [
   "appVersion: '1.0.0'",
 ]);
 requireText('src/shared/debug/debugMode.ts', ['setJournalDebugMode', 'TAIL_LINES']);
+// Relay deadlines: opening, silence between frames and the whole exchange are separate (2026-10-22).
+requireText('src/features/roaming/nostrRelay.ts', ['RELAY_OPEN_TIMEOUT_MS', 'RELAY_QUIET_TIMEOUT_MS', 'RELAY_TOTAL_TIMEOUT_MS']);
+requireText('src/features/acceptance/mobileSteps.ts', ['resetNodeReach();']);
 requireText('src/features/settings/SettingsScreen.tsx', ["navigation.navigate('DebugJournal')"]);
 requireText('android/app/build.gradle', [
-  'versionCode 30',
+  'versionCode 31',
   'versionName "2.1.0"',
 ]);
 

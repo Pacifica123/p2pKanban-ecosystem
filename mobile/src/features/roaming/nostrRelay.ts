@@ -4,7 +4,17 @@ import { finalizeEvent, verifyEvent } from 'nostr-tools/pure';
 import { trace } from '../../shared/errorReport/journal';
 import { mapInSlices, throwIfCanceled } from '../../shared/lib/uiBudget';
 
-const RELAY_TIMEOUT_MS = 8_000;
+/**
+ * Three deadlines instead of one 8 s budget (2026-10-22, er-01235c9feb389f7a):
+ * in mobile data the TLS handshake alone ate most of the 8 s, and a relay that
+ * was still streaming a full board history counted as silent.
+ */
+/** Opening the socket: DNS, TCP and TLS. */
+export const RELAY_OPEN_TIMEOUT_MS = 10_000;
+/** After the socket opened: longest silence between two frames. */
+export const RELAY_QUIET_TIMEOUT_MS = 8_000;
+/** Whole exchange with one relay, opening included. */
+export const RELAY_TOTAL_TIMEOUT_MS = 30_000;
 
 function withRelay<T>(
   url: string,
@@ -12,35 +22,57 @@ function withRelay<T>(
 ) {
   return new Promise<T>((resolve, reject) => {
     let settled = false;
+    let opened = false;
+    let frames = 0;
     const socket = new WebSocket(url);
+    const stop = () => {
+      settled = true;
+      clearTimeout(quiet);
+      clearTimeout(total);
+      socket.close();
+    };
     const finish = (value: T) => {
       if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      socket.close();
+      stop();
       resolve(value);
     };
     const fail = (reason: unknown) => {
       if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      socket.close();
+      stop();
       reject(reason instanceof Error ? reason : new Error(`Релей ${url} недоступен.`));
     };
-    let opened = false;
     // An unopened socket points at the network (blocked or filtered), an opened one at the relay.
-    const timer = setTimeout(() => fail(new Error(opened
-      ? `Релей ${url} открыл соединение, но не ответил за ${RELAY_TIMEOUT_MS / 1000} с.`
-      : `Релей ${url} не открыл соединение за ${RELAY_TIMEOUT_MS / 1000} с: сеть не пускает к нему.`)), RELAY_TIMEOUT_MS);
+    let quiet = setTimeout(() => fail(new Error(
+      `Релей ${url} не открыл соединение за ${RELAY_OPEN_TIMEOUT_MS / 1000} с: сеть не пускает к нему.`)), RELAY_OPEN_TIMEOUT_MS);
+    const total = setTimeout(() => fail(new Error(opened
+      ? `Релей ${url} отвечал, но не закончил за ${RELAY_TOTAL_TIMEOUT_MS / 1000} с (сообщений: ${frames}).`
+      : `Релей ${url} не открыл соединение за ${RELAY_TOTAL_TIMEOUT_MS / 1000} с: сеть не пускает к нему.`)), RELAY_TOTAL_TIMEOUT_MS);
+    const waitQuietly = () => {
+      clearTimeout(quiet);
+      quiet = setTimeout(() => fail(new Error(frames
+        ? `Релей ${url} замолчал на ${RELAY_QUIET_TIMEOUT_MS / 1000} с, не закончив ответ (сообщений: ${frames}).`
+        : `Релей ${url} открыл соединение, но не ответил за ${RELAY_QUIET_TIMEOUT_MS / 1000} с.`)), RELAY_QUIET_TIMEOUT_MS);
+    };
     socket.onerror = () => fail(new Error(`Не удалось открыть ${url}.`));
     socket.onclose = () => fail(new Error(`Релей ${url} закрыл соединение до ответа.`));
     socket.onopen = () => {
+      if (settled) return;
       opened = true;
+      waitQuietly();
       try {
         run(socket, finish, fail);
       } catch (error) {
         fail(error);
+        return;
       }
+      // Every frame from the relay, whatever it is, proves the relay is still answering.
+      const handle = socket.onmessage;
+      socket.onmessage = (message) => {
+        if (settled) return;
+        frames += 1;
+        waitQuietly();
+        handle?.call(socket, message);
+      };
     };
   });
 }

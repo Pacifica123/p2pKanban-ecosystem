@@ -4,6 +4,7 @@
 // the test data lives only in the «Приёмка p2pKanban» workspace.
 import { UI_THEMES, type UiThemeId } from '../../app/uiThemes';
 import { ApiError, apiRequest } from '../../shared/api/client';
+import { resetNodeReach } from '../../shared/api/nodeReach';
 import {
   createBoard, createCard, createChecklist, createChecklistItem, createColumn, createWorkspace, deleteBoard,
   deleteCard, getBackendVersion, getBoard, getBoards, getCards, getChecklists, getColumns, getSession,
@@ -187,6 +188,10 @@ export function mobileSteps(): StepDefinition<MobileAcceptanceContext>[] {
     {
       id: 'env.node', phase: 'Wi-Fi', title: 'Узел отвечает и называет свою сборку',
       run: async (ctx) => {
+        // The check is a fresh question to the node: a pause left by an earlier silence
+        // (shared/api/nodeReach.ts) must not answer for it. Run jd21drv3 (2026-10-22)
+        // reported «не ответил 503 с назад» in 0 ms without asking the node.
+        resetNodeReach();
         const health = await getBackendVersion();
         const identity = peer();
         ctx.node = { origin: ctx.nodeOrigin, version: identity?.version ?? health.version ?? null,
