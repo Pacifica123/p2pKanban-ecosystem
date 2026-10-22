@@ -181,10 +181,14 @@ export function webSteps(): StepDefinition<WebAcceptanceContext>[] {
         expectThat(edited.title.endsWith('(изменена)') && edited.priority === 'high', 'изменение не сохранилось на узле');
         await moveCard(card.id, { targetColumnId: second!.id });
         expectThat((await getCard(card.id)).columnId === second!.id, 'карточка не переместилась');
+        // The node lists archived cards with isArchived and the board shows them with «в архиве»
+        // (BoardPage): archiving marks a card, it does not take it off the list.
         await archiveCard(card.id);
-        expectThat(!(await getCards(boardId)).items.some((item) => item.id === card.id), 'архивная карточка видна на доске');
+        const archived = (await getCards(boardId)).items.find((item) => item.id === card.id);
+        expectThat(archived?.isArchived === true, archived ? 'узел не отметил карточку архивной' : 'архивная карточка пропала с доски');
         await unarchiveCard(card.id);
-        expectThat((await getCards(boardId)).items.some((item) => item.id === card.id), 'карточка не вернулась из архива');
+        const restored = (await getCards(boardId)).items.find((item) => item.id === card.id);
+        expectThat(restored?.isArchived === false, 'карточка не вернулась из архива');
         return pass('создана, изменена, перемещена, архивирована и возвращена');
       },
     },

@@ -115,8 +115,8 @@ function fakeNode() {
     }
     if ((r = m(/^\/boards\/([^/]+)\/cards$/))) {
       if (method === 'GET') {
-        const all = url.searchParams.get('localVisibility') === 'all';
-        return ok({ items: cards.filter((c) => c.boardId === r![1] && !c.deleted && (all || !c.isArchived)), pageInfo: {} });
+        // Like the node (cards/repo.rs list_cards): archived cards stay in the list with isArchived.
+        return ok({ items: cards.filter((c) => c.boardId === r![1] && !c.deleted), pageInfo: {} });
       }
       const c = { id: id(), boardId: r[1], ...body, priority: body.priority ?? null, isArchived: false, labelIds: [], createdAt: at(), position: seq };
       cards.push(c); return ok(c, 201);

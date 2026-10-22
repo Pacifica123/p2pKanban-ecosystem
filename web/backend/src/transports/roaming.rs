@@ -486,10 +486,24 @@ async fn apply_device_catalog(
     Ok(())
 }
 
+// Boards whose baseline this node publishes. A board adopted from the ring
+// keyring stays an empty shell until another member's snapshot brings its
+// columns: such a shell is not recovery material, and a fresh device that
+// bootstraps from it would see an empty board.
+const BASELINE_BOARDS_SQL: &str = "select b.id,b.workspace_id,w.access_epoch,n.replica_id,c.board_key_base64,c.board_tag from boards b join workspaces w on w.id=b.workspace_id join roaming_board_capabilities c on c.board_id=b.id cross join local_node_identity n where b.deleted_at is null and w.deleted_at is null and c.capability_epoch=w.access_epoch and not (c.source_kind='imported_capability' and not exists(select 1 from board_columns col where col.board_id=b.id and col.deleted_at is null))";
+
+/// The baseline is republished when the board changes and also when the key it
+/// is sealed with changes: the same content under a new board tag is a new
+/// baseline for the readers of that tag (a rotated key, or a node that holds
+/// the board only through the ring keyring).
+fn baseline_fingerprint(epoch: i64, board_tag: &str, payload: &Value) -> String {
+    format!("{epoch}|{board_tag}|{payload}")
+}
+
 // Snapshots are recovery material, not acknowledgements or an origin authority.
 async fn publish_baselines(pool: &PgPool, transport: &NostrTransport) {
     let result: anyhow::Result<()> = async {
-        let boards = sqlx::query("select b.id,b.workspace_id,w.access_epoch,n.replica_id,c.board_key_base64 from boards b join workspaces w on w.id=b.workspace_id join roaming_board_capabilities c on c.board_id=b.id cross join local_node_identity n where b.deleted_at is null and w.deleted_at is null and c.capability_epoch=w.access_epoch")
+        let boards = sqlx::query(BASELINE_BOARDS_SQL)
             .fetch_all(pool).await?;
         for board in boards {
             let id: Uuid = board.try_get("id")?;
@@ -505,7 +519,7 @@ async fn publish_baselines(pool: &PgPool, transport: &NostrTransport) {
                       or v.entity_id in (select i.id from checklist_items i join checklists ch on ch.id=i.checklist_id join cards c on c.id=ch.card_id where c.board_id=$1)
                     )),'{}'::jsonb))
             "#).bind(id).bind(workspace).fetch_one(pool).await?;
-            let fingerprint = payload.to_string();
+            let fingerprint = baseline_fingerprint(board.try_get("access_epoch")?, &board.try_get::<String,_>("board_tag")?, &payload);
             let previous = sqlx::query_as::<_, (String, Value, bool)>("select fingerprint,event_json,delivered from roaming_board_baselines where board_id=$1").bind(id).fetch_optional(pool).await?;
             if previous.as_ref().is_some_and(|(old,_,delivered)| old==&fingerprint && *delivered) { continue; }
             let event: RoamingBoardEvent = if let Some((old, raw, _)) = previous.filter(|(old,_,_)| old==&fingerprint) {
@@ -2467,8 +2481,55 @@ mod tests {
     use uuid::Uuid;
 
     use super::{
-        actual_card_changes, checklist_delta_from_activity, normalized_card_priority, CARD_FIELDS,
+        actual_card_changes, baseline_fingerprint, checklist_delta_from_activity,
+        normalized_card_priority, BASELINE_BOARDS_SQL, CARD_FIELDS,
     };
+
+    #[test]
+    fn baseline_is_republished_under_a_new_board_tag_or_epoch() {
+        let payload = json!({"snapshot": {"cards": []}, "fieldVersions": {}});
+        let base = baseline_fingerprint(1, "tag-a", &payload);
+        assert_eq!(base, baseline_fingerprint(1, "tag-a", &payload));
+        assert_ne!(base, baseline_fingerprint(1, "tag-b", &payload));
+        assert_ne!(base, baseline_fingerprint(2, "tag-a", &payload));
+        assert_ne!(base, baseline_fingerprint(1, "tag-a", &json!({"snapshot": {"cards": [1]}})));
+    }
+
+    /// 2026-10-22: a laptop node held «релизы канбана» only through the ring
+    /// keyring (0 columns) while the board itself had not changed since its
+    /// baseline went out. Its own empty shell must not become a baseline.
+    #[tokio::test]
+    #[ignore = "requires TEST_DATABASE_URL or DATABASE_URL pointing to PostgreSQL"]
+    async fn adopted_board_without_columns_publishes_no_baseline() -> anyhow::Result<()> {
+        let url = std::env::var("TEST_DATABASE_URL").or_else(|_| std::env::var("DATABASE_URL"))?;
+        let pool = sqlx::PgPool::connect(&url).await?;
+        sqlx::migrate!().run(&pool).await?;
+        let user = Uuid::now_v7();
+        let space = Uuid::now_v7();
+        sqlx::query("insert into users(id,email,display_name) values($1,$2,'Baseline')")
+            .bind(user).bind(format!("{user}@baseline.test")).execute(&pool).await?;
+        sqlx::query("insert into workspaces(id,name,owner_user_id,visibility,access_epoch) values($1,'Baseline',$2,'private',1)")
+            .bind(space).bind(user).execute(&pool).await?;
+        let mut boards = Vec::new();
+        for (source, columns) in [("imported_capability", false), ("imported_capability", true), ("linked_node", false)] {
+            let board = Uuid::now_v7();
+            sqlx::query("insert into boards(id,workspace_id,name,board_type,created_by_user_id) values($1,$2,'b','kanban',$3)")
+                .bind(board).bind(space).bind(user).execute(&pool).await?;
+            if columns {
+                sqlx::query("insert into board_columns(id,board_id,name,position) values($1,$2,'Готово',1000)")
+                    .bind(Uuid::now_v7()).bind(board).execute(&pool).await?;
+            }
+            sqlx::query("insert into roaming_board_capabilities(board_id,board_tag,board_key_base64,source_kind,capability_epoch) values($1,$2,'a2V5',$3,1)")
+                .bind(board).bind(format!("tag-{board}")).bind(source).execute(&pool).await?;
+            boards.push(board);
+        }
+        let listed: Vec<Uuid> = sqlx::query_scalar(&format!("select id from ({BASELINE_BOARDS_SQL}) x"))
+            .fetch_all(&pool).await?;
+        assert!(!listed.contains(&boards[0]), "empty shell adopted from the keyring");
+        assert!(listed.contains(&boards[1]), "adopted board that already has columns");
+        assert!(listed.contains(&boards[2]), "a board created on this node, even empty");
+        Ok(())
+    }
 
     #[test]
     fn fixed_card_state_is_not_part_of_the_roaming_contract() {
