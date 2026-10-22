@@ -16,6 +16,9 @@ interface BoardColumnSectionProps {
   prioritySorted:boolean; onTogglePriority:()=>void;
   onRename: (column: BoardColumn) => void;
   onDelete: (column: BoardColumn) => void;
+  /** «Очистить колонку»: shown only for a column with cards. */
+  onClear?: (column: BoardColumn) => void;
+  isClearing?: boolean;
   onColumnDragOver: (columnId: string, itemCount: number, event: DragEvent<HTMLElement>) => void;
   onDrop: (event: DragEvent<HTMLElement>) => void;
   cardsContent: ReactNode;
@@ -31,6 +34,8 @@ export function BoardColumnSection({
   readOnly = false, prioritySorted, onTogglePriority,
   onRename,
   onDelete,
+  onClear,
+  isClearing = false,
   onColumnDragOver,
   onDrop,
   cardsContent,
@@ -51,6 +56,11 @@ export function BoardColumnSection({
           <Button iconOnly onClick={() => onRename(column)} disabled={isMutating} title="Переименовать колонку" aria-label="Переименовать колонку">
             <Icon name="edit" size={16} />
           </Button>
+          {onClear && cards.length ? (
+            <Button iconOnly variant="danger" onClick={() => onClear(column)} disabled={isMutating || isClearing} title="Удалить все карточки колонки" aria-label="Удалить все карточки колонки" data-testid="column-clear">
+              <Icon name="archive" size={16} />
+            </Button>
+          ) : null}
           <Button iconOnly variant="danger" onClick={() => onDelete(column)} disabled={isMutating} title="Удалить колонку" aria-label="Удалить колонку">
             <Icon name="trash" size={16} />
           </Button>

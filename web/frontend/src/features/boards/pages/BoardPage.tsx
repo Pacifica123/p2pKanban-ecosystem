@@ -24,6 +24,8 @@ import { getChecklistProgress } from '@/features/boards/lib/checklistProgress';
 import { useColumnsQuery, useCreateColumnMutation, useDeleteColumnMutation, useUpdateColumnMutation } from '@/features/columns/hooks/useColumns';
 import { CardDetailsDrawer } from '@/features/cards/components/CardDetailsDrawer';
 import { useCardsQuery, useUnhideCardLocallyMutation } from '@/features/cards/hooks/useCards';
+import { deleteCard } from '@/features/cards/api/cards';
+import { cardsToClear, clearColumnCards } from '@/features/cards/lib/clearColumn';
 import { LocalFirstStatusBanner } from '@/features/localFirst/components/LocalFirstStatusBanner';
 import { SyncBaselineStatus } from '@/features/sync/components/SyncBaselineStatus';
 import { useSyncBaseline } from '@/features/sync/hooks/useSyncBaseline';
@@ -82,6 +84,7 @@ export function BoardPage() {
   const [dragSession, setDragSession] = useState<DragSessionState | null>(null);
   const [optimisticCards, setOptimisticCards] = useState<Card[] | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
+  const [clearing, setClearing] = useState<{ text: string; failed: boolean; running: boolean } | null>(null);
   const [exportStatus, setExportStatus] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isColumnComposerOpen, setColumnComposerOpen] = useState(false);
@@ -146,6 +149,25 @@ export function BoardPage() {
   async function handleDeleteColumn(column: BoardColumn) {
     if (!window.confirm(`Удалить колонку «${column.name}»?`)) return;
     await deleteColumnMutation.mutateAsync(column.id);
+  }
+
+  async function handleClearColumn(column: BoardColumn) {
+    if (clearing?.running) return;
+    const cards = cardsToClear(cardsQuery.data?.items ?? [], column.id);
+    if (!cards.length) return;
+    const count = formatCountRu(cards.length, 'карточку', 'карточки', 'карточек');
+    if (!window.confirm(
+      `Удалить ${count} из колонки «${column.name}» на всех устройствах? Архивные карточки этой колонки тоже удалятся. Отменить это нельзя: старые локальные копии не восстановят их автоматически.`,
+    )) return;
+    setClearing({ text: `Удаляем 0 из ${cards.length}…`, failed: false, running: true });
+    const result = await clearColumnCards(cards, (cardId) => deleteCard(cardId),
+      (done, total) => setClearing({ text: `Удаляем ${done} из ${total}…`, failed: false, running: true }));
+    await Promise.all([cardsQuery.refetch(), boardActivityQuery.refetch()]);
+    const removed = result.deleted + result.missing;
+    setClearing(result.error
+      ? { failed: true, running: false,
+        text: `Удалено ${removed} из ${cards.length}, дальше остановились: ${result.error instanceof Error ? result.error.message : String(result.error)}` }
+      : { failed: false, running: false, text: `Колонка «${column.name}» очищена: удалено ${formatCountRu(removed, 'карточка', 'карточки', 'карточек')}.` });
   }
 
   async function handleRenameBoard() {
@@ -472,6 +494,16 @@ export function BoardPage() {
           </div>
         ) : null}
 
+        {clearing ? (
+          <div className={`inline-banner ${clearing.failed ? 'inline-banner--error' : ''}`} role="status">
+            <strong>Очистка колонки</strong>
+            <span>{clearing.text}</span>
+            <Button variant="ghost" iconOnly disabled={clearing.running} onClick={() => setClearing(null)} title="Скрыть сообщение" aria-label="Скрыть сообщение">
+              <Icon name="close" size={16} />
+            </Button>
+          </div>
+        ) : null}
+
         {moveError ? (
           <div className="inline-banner inline-banner--error">
             <strong>Перемещение карточки не сохранилось.</strong>
@@ -517,6 +549,8 @@ export function BoardPage() {
                         readOnly={!canEdit}
                         onRename={(item) => void handleRenameColumn(item)}
                         onDelete={(item) => void handleDeleteColumn(item)}
+                        onClear={(item) => void handleClearColumn(item)}
+                        isClearing={Boolean(clearing?.running)}
                         prioritySorted={Boolean(prioritySort[column.id])} onTogglePriority={()=>{setDragSession(null);setPrioritySort(current=>({...current,[column.id]:!current[column.id]}));}} onColumnDragOver={(id,count,event)=>{if(!prioritySort[id])handleColumnDragOver(id,count,event);}}
                         onDrop={(event) => void handleCardDrop(event)}
                         cardsContent={renderColumnCards(column.id, cards)}
