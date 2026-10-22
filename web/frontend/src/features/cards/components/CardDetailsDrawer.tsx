@@ -1,7 +1,7 @@
 import { ErrorDetails } from '@/shared/ui/ErrorDetails';
 import {MarkdownEditor} from '@/shared/markdown/MarkdownEditor';
 import {PriorityStars} from '@/shared/ui/PriorityStars';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAppearance } from '@/app/providers/AppearanceProvider';
 import { useAuthSession } from '@/app/providers/AuthSessionProvider';
@@ -34,6 +34,7 @@ import {
 import { useColumnsQuery } from '@/features/columns/hooks/useColumns';
 import { useOptionalLocalFirstBoard } from '@/features/localFirst/context/LocalFirstBoardContext';
 import { isLocalCardId, resolveLocalFirstCardId } from '@/features/localFirst/lib/localBoardStore';
+import { cardFormValues, mergeCardForm, type CardFormValues } from '@/features/cards/lib/cardForm';
 import {
   useBoardLabelsQuery,
   useCreateBoardLabelMutation,
@@ -134,12 +135,24 @@ export function CardDetailsDrawer({
   const checklistItemSubmitMode = effectiveUserAppearance?.checklistItemSubmitMode ?? 'ctrl_enter';
   const cardDetailsMode = effectiveUserAppearance?.cardDetailsMode ?? 'drawer';
 
+  const syncedFormRef = useRef<{ cardId: string; userId: string | null; values: CardFormValues } | null>(null);
+
   useEffect(() => {
     if (!card) return;
-    setTitle(card.title);
-    setDescription(card.description || '');
-    setPriority(card.priority || null);
-    setColumnId(card.columnId);
+    const next = { cardId: card.id, userId: user?.id ?? null, values: cardFormValues(card) };
+    const previous = syncedFormRef.current;
+    syncedFormRef.current = next;
+    if (previous && previous.cardId === next.cardId && previous.userId === next.userId) {
+      setTitle((current) => mergeCardForm('title', current, previous.values, next.values));
+      setDescription((current) => mergeCardForm('description', current, previous.values, next.values));
+      setPriority((current) => mergeCardForm('priority', current, previous.values, next.values));
+      setColumnId((current) => mergeCardForm('columnId', current, previous.values, next.values));
+      return;
+    }
+    setTitle(next.values.title);
+    setDescription(next.values.description);
+    setPriority(next.values.priority);
+    setColumnId(next.values.columnId);
     setReminderLocalDateTime(user ? getLocalCardReminder(card.id, user.id)?.localDateTime || '' : '');
     setReminderError(null);
     setReminderNotice(null);

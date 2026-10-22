@@ -27,3 +27,10 @@ npm run test:browser:real-backend
 
 Основным обязательным доказательством теперь считается custom UIX
 real-backend flow; Playwright-путь остаётся дополнительным.
+
+## Окно карточки и опрос узла
+
+`card-form-polling.smoke.spec.ts` (mocked API) проверяет, что выставленный, но
+ещё не сохранённый приоритет переживает опрос списка карточек, когда на доске
+меняется другая карточка, а правка названия с другого устройства попадает в
+нетронутое поле. Запуск: `npx playwright test e2e/smoke/card-form-polling.smoke.spec.ts`.
