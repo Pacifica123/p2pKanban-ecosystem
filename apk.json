@@ -1,0 +1,22 @@
+{
+  "schema": "p2p-kanban-launcher-apk-feed/1",
+  "generatedAt": "2026-10-31T14:54:01Z",
+  "repository": "Pacifica123/p2pKanban-ecosystem",
+  "project": {
+    "owner": "pacifica123program",
+    "slug": "p2pkanban-mobile",
+    "projectId": "19e01039-73f2-4df3-ac5b-ebe8a587b807",
+    "profile": "preview"
+  },
+  "buildsPage": "https://expo.dev/accounts/pacifica123program/projects/p2pkanban-mobile/builds",
+  "mobileHead": {
+    "sha": "942d05eb376058be73546c6d9c443d2d948d8314",
+    "date": "2026-10-22T18:35:15+07:00",
+    "subject": "mobile: сроки relay в мобильной сети, проверка узла в приёмке; versionCode 31"
+  },
+  "latest": null,
+  "building": null,
+  "lastFailed": null,
+  "fresh": null,
+  "error": "нет токена Expo (секрет репозитория EXPO_TOKEN)"
+}
